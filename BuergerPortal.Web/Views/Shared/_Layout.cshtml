@@ -1,29 +1,58 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="de" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - BuergerPortal.Web</title>
+
+    <!-- Theme-Init: vor CSS setzen, damit beim Laden nichts flackert -->
+    <script>
+        (function () {
+          const saved = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = saved || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Optional: Bootstrap Icons (für schönere Nav/Buttons) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BuergerPortal.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header class="border-bottom">
-        <nav class="navbar navbar-expand-lg container">
-            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Bürgerportal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+    <header class="navbar navbar-expand-lg bg-body sticky-top border-bottom navbar-blur">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-building-gear"></i> Bürgerportal
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNav" aria-controls="mainNav" aria-label="Menü öffnen">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div id="nav" class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Datenschutz">Datenschutz</a></li>
-                    <li class="nav-item">
-                        <button id="themeToggle" class="btn btn-sm btn-outline-secondary ms-2">Dark/Light</button>
-                    </li>
-                </ul>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="mainNav" aria-labelledby="mainNavLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="mainNavLabel">Menü</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Schließen"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Datenschutz">
+                                <i class="bi bi-shield-check me-1"></i> Datenschutz
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-3">
+                            <button class="btn btn-sm btn-outline-secondary js-theme-toggle">
+                                <i class="bi bi-moon-stars me-1"></i><span class="js-theme-label">Dark</span>/<span class="js-theme-label-2">Light</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </nav>
+        </div>
     </header>
 
     <main class="container py-4">
@@ -35,6 +64,7 @@
     </footer>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
     <script src="~/js/pwa.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

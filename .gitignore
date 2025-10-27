@@ -1,1 +1,23 @@
+# Build
+bin/
+obj/
+out/
+debug/
+Debug/
+Release/
+
+# VS / VSCode
 .vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
