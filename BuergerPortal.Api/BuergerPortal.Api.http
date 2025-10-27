@@ -1,0 +1,6 @@
+@BuergerPortal.Api_HostAddress = http://localhost:5228
+
+GET {{BuergerPortal.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
