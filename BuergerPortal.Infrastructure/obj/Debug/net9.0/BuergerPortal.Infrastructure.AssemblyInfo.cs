@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BuergerPortal.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+50d788ac32d4efc75a264daa166a247497c1860f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e76d8d919dd8d0323d0061a3185fb05ff9e0d035")]
 [assembly: System.Reflection.AssemblyProductAttribute("BuergerPortal.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BuergerPortal.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
