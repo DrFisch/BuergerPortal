@@ -21,7 +21,6 @@ C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\rj
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\scopedcss\bundle\BuergerPortal.Web.styles.css
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\scopedcss\projectbundle\BuergerPortal.Web.bundle.scp.css
-C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\infqcr946g-c2tiyv64ts.gz
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\lbl9fk3w9f-61n19gt1b8.gz
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\20x77ficcr-xtxxf3hu2r.gz
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\cw544079oa-agp80tu62r.gz
@@ -92,3 +91,8 @@ C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\re
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\BuergerPortal.Web.pdb
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\BuergerPortal.Web.genruntimeconfig.cache
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\ref\BuergerPortal.Web.dll
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\BuergerPortal.Web.sourcelink.json
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\9o4pzd9wmy-nn5ts9vb7i.gz
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\1h8bc42tag-uwaefytv6o.gz
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\infqcr946g-jyyxteaosv.gz
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\obj\Debug\net9.0\compressed\g8htjdkx8g-943sdzs8qd.gz

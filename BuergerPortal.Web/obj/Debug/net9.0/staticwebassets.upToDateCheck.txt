@@ -1,4 +1,3 @@
-wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -58,7 +57,10 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\css\site.css
+wwwroot\manifest.webmanifest
+wwwroot\service-worker.js
+wwwroot\css\site.css
+wwwroot\js\pwa.js
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\favicon.ico
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\js\site.js
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -117,3 +119,7 @@ C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\lib\jquery\
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\lib\jquery\dist\jquery.min.js
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\lib\jquery\dist\jquery.min.map
 C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\lib\jquery\LICENSE.txt
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\manifest.webmanifest
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\service-worker.js
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\css\site.css
+C:\Users\z18855\source\repos\BuergerPortal\BuergerPortal.Web\wwwroot\js\pwa.js

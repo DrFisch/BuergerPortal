@@ -1,8 +1,144 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Startseite";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12 col-lg-8">
+            <h1 class="h3 mb-2">Bürgerportal</h1>
+            <p class="text-muted mb-0">
+                Termine buchen, Antragsstatus prüfen, Benachrichtigungen verwalten und mehr.
+            </p>
+        </div>
+        <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+            <form method="get" action="#" class="d-flex gap-2">
+                <input class="form-control" type="search" placeholder="Suche nach Dienst, Vorgangsnummer …" aria-label="Suche">
+                <button class="btn btn-primary" type="submit">Suchen</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Termine -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">Termine</h5>
+                    <p class="card-text text-muted">
+                        Freie Zeitfenster finden, buchen, umbuchen oder absagen.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Home" asp-action="Termine" class="btn btn-primary">Termin buchen</a>
+                        <a href="#" class="btn btn-outline-secondary">Übersicht</a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent small text-muted">
+                    Nächste freie Slots heute und morgen
+                </div>
+            </div>
+        </div>
+
+        <!-- Antragsstatus -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <span class="badge bg-info mb-2">Neu</span>
+                    <h5 class="card-title">Antragsstatus</h5>
+                    <p class="card-text text-muted">
+                        Status mit Vorgangsnummer oder E-Mail prüfen.
+                    </p>
+                    <form class="d-flex gap-2" onsubmit="return false;">
+                        <input class="form-control" placeholder="Vorgangsnummer" />
+                        <button class="btn btn-outline-secondary">Prüfen</button>
+                    </form>
+                </div>
+                <div class="card-footer bg-transparent small text-muted">
+                    Letzte Aktualisierung wird angezeigt
+                </div>
+            </div>
+        </div>
+
+        <!-- Benachrichtigungen / Push -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">Benachrichtigungen</h5>
+                    <p class="card-text text-muted">
+                        Termin-Erinnerungen per Push aktivieren.
+                    </p>
+                    <button id="enablePush" class="btn btn-success">Push-Benachrichtigungen aktivieren</button>
+                    <div id="pushStatus" class="small text-muted mt-2"></div>
+                </div>
+                <div class="card-footer bg-transparent small text-muted">
+                    Erinnert vor Terminen und bei Statusänderungen
+                </div>
+            </div>
+        </div>
+
+        <!-- Dokumente (Platzhalter) -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">Dokumente</h5>
+                    <p class="card-text text-muted">
+                        Benötigte Unterlagen je Dienst als Checkliste.
+                    </p>
+                    <a href="#" class="btn btn-outline-secondary">Checklisten ansehen</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Einstellungen -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">Einstellungen</h5>
+                    <p class="card-text text-muted">
+                        Sprache, Designmodus und Datenschutz verwalten.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button id="themeToggle" class="btn btn-outline-dark">Dark/Light umschalten</button>
+                        <a href="#" class="btn btn-outline-secondary">Sprache</a>
+                        <a asp-controller="Home" asp-action="Datenschutz" class="btn btn-outline-secondary">Datenschutz</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hinweise (Platzhalter) -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">Hinweise</h5>
+                    <ul class="list-unstyled mb-0 small text-muted">
+                        <li>• Spitzenzeiten: 8–10 Uhr</li>
+                        <li>• Bitte Ausweis und Unterlagen mitbringen</li>
+                        <li>• Barrierefreier Zugang vorhanden</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Theme Toggle
+        document.getElementById("themeToggle")?.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+            localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+        });
+        if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+
+        // Push aktivieren (setzt pwa.js voraus, alternativ hier direkt implementieren)
+        document.getElementById("enablePush")?.addEventListener("click", () => {
+            if (window.enablePushFromHome) {
+                window.enablePushFromHome();
+            } else {
+                // Fallback: kurzer Hinweis falls pwa.js noch nicht geladen ist
+                const el = document.getElementById("pushStatus");
+                el.textContent = "Initialisierung wird vorbereitet. Bitte Seite neu laden, falls nichts passiert.";
+            }
+        });
+    </script>
+}
