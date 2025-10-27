@@ -119,16 +119,3 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Push Fallback (bleibt wie gehabt)
-        document.getElementById("enablePush")?.addEventListener("click", () => {
-          if (window.enablePushFromHome) {
-            window.enablePushFromHome();
-          } else {
-            const el = document.getElementById("pushStatus");
-            el.textContent = "Initialisierung wird vorbereitet. Bitte Seite neu laden, falls nichts passiert.";
-          }
-        });
-    </script>
-}

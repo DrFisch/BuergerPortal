@@ -1,4 +1,5 @@
-﻿(function () {
+﻿// wwwroot/js/theme.js
+(function () {
     const root = document.documentElement;
     const KEY = 'theme';
 
@@ -17,6 +18,7 @@
         btn.setAttribute('aria-pressed', String(isDark));
         const icon = btn.querySelector('i');
         const text = btn.querySelector('.js-theme-text');
+        // Icon/Text zeigen den AKTUELLEN Zustand
         if (icon) icon.className = isDark ? 'bi bi-moon-stars me-1' : 'bi bi-brightness-high me-1';
         if (text) text.textContent = isDark ? 'Dark' : 'Light';
     }

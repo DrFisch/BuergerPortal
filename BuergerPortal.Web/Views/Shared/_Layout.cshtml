@@ -1,31 +1,32 @@
-﻿<!DOCTYPE html>
-<html lang="de" data-bs-theme="light">
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+<!DOCTYPE html>
+<html lang="de">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - BuergerPortal.Web</title>
 
-    <!-- Theme-Init: früh laden -->
+    <!-- Env ins Frontend geben -->
+    <meta name="app-env" content="@Env.EnvironmentName" />
+
+    <!-- Theme-Init (vor CSS, kein festes data-bs-theme im <html>) -->
     <script>
         (function () {
           const saved = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia &&
-                              window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
           const theme = saved || (prefersDark ? 'dark' : 'light');
           document.documentElement.setAttribute('data-bs-theme', theme);
-          window.__initialTheme = theme; // fürs Button-Label
+          window.__initialTheme = theme;
         })();
     </script>
 
-
-
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BuergerPortal.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header class="navbar navbar-expand-lg bg-body sticky-top border-bottom">
+    <header class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Bürgerportal</a>
 
@@ -39,15 +40,10 @@
                         <a class="nav-link" asp-controller="Home" asp-action="Datenschutz">Datenschutz</a>
                     </li>
                     <li class="nav-item ms-lg-3">
-                        <!-- EINZIGER Theme-Button -->
-                        <button type="button"
-                                class="btn btn-sm btn-outline-secondary js-theme-toggle"
-                                aria-pressed="false" aria-label="Theme umschalten">
+                        <button type="button" class="btn btn-sm btn-outline-secondary js-theme-toggle" aria-pressed="false" aria-label="Theme umschalten">
                             <i class="bi bi-moon-stars me-1"></i>
                             <span class="js-theme-text">Light</span>
                         </button>
-
-
                     </li>
                 </ul>
             </div>
@@ -64,7 +60,13 @@
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/theme.js" asp-append-version="true"></script>
-    <script src="~/js/pwa.js"></script>
+
+    <!-- PWA/Push nur in Production laden -->
+    <environment include="Production">
+        <script src="~/js/pwa.js" asp-append-version="true"></script>
+        <script src="~/js/push.js" asp-append-version="true"></script>
+    </environment>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>
