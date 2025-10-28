@@ -15,18 +15,19 @@ builder.Services
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
-        options.Authority = "https://localhost:7001";   // AuthServer-URL
+        options.Authority = "https://localhost:7001";
         options.ClientId = "mvc_web";
-        options.ClientSecret = "dev_secret_very_long";  // wie im Seeding
+        options.ClientSecret = "dev_secret_very_long";
         options.ResponseType = "code";
+        options.ResponseMode = "form_post";
         options.SaveTokens = true;
         options.GetClaimsFromUserInfoEndpoint = true;
 
         options.Scope.Clear();
-        options.Scope.Add("openid");            // special-cased, muss hier aber angefordert werden
+        options.Scope.Add("openid");
         options.Scope.Add("profile");
         options.Scope.Add("email");
-        options.Scope.Add("buergerportal_api"); // dein API-Scope
+        options.Scope.Add("buergerportal_api");
     });
 
 var app = builder.Build();
