@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "LoginTest",
+    "Projects": [
+      {
+        "Path": "BuergerPortal.Web\\BuergerPortal.Web.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "AuthenticationServer\\AuthenticationServer.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      }
+    ]
+  }
+]
