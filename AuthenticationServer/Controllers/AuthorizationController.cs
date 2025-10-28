@@ -79,5 +79,25 @@ namespace AuthenticationServer.Controllers
             // 3) Erfolg -> OpenIddict erzeugt Code/Token
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
+
+        [HttpGet("~/connect/logout")]
+        [HttpPost("~/connect/logout")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            // Identity-Cookie abmelden (Benutzer am Auth-Server ausloggen)
+            await signInManager.SignOutAsync();
+
+            // OIDC-Request lesen (enthält ggf. post_logout_redirect_uri)
+            var request = HttpContext.GetOpenIddictServerRequest();
+
+            // An OpenIddict „zurücksignen“, es erzeugt die OIDC-Logout-Antwort
+            return SignOut(
+                new AuthenticationProperties
+                {
+                    RedirectUri = request?.PostLogoutRedirectUri ?? "/" // Fallback
+                },
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
     }
 }

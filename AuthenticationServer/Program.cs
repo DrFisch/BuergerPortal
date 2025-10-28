@@ -66,7 +66,7 @@ builder.Services.AddOpenIddict()
             options.SetIssuer(new Uri(issuer));
 
         // ASP.NET Core-Integration + Passthrough für bessere Fehlersicht
-        options.UseAspNetCore().EnableAuthorizationEndpointPassthrough();
+        options.UseAspNetCore().EnableAuthorizationEndpointPassthrough().EnableEndSessionEndpointPassthrough();
 
         // (Optional) Access Tokens nicht verschlüsseln – in DEV bequemer
         options.DisableAccessTokenEncryption();
