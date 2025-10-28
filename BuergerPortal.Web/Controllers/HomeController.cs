@@ -33,5 +33,11 @@ namespace BuergerPortal.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        [HttpGet("/home/testuser")]
+        public IActionResult TestUser()
+        {
+            var lines = User.Claims.Select(c => $"{c.Type} = {c.Value}");
+            return Content(string.Join("\n", lines));
+        }
     }
 }

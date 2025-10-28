@@ -1,5 +1,8 @@
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +24,24 @@ builder.Services
         options.ResponseType = "code";
         options.ResponseMode = "form_post";
         options.SaveTokens = true;
-        options.GetClaimsFromUserInfoEndpoint = true;
 
+        options.GetClaimsFromUserInfoEndpoint = true;   // UserInfo-Endpoint ziehen wir heran
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
         options.Scope.Add("email");
         options.Scope.Add("buergerportal_api");
+
+        //  Mapping: „name“ aus OIDC  ClaimTypes.Name
+        options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
+        //  Sag dem Token-Validator, welcher Claim der Anzeigename ist
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "name",              // <- HIER: "name"
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role
+        };
     });
 
 var app = builder.Build();
