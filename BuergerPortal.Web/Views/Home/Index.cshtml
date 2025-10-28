@@ -27,8 +27,12 @@
                     </div>
                     <p class="card-text text-muted">Freie Zeitfenster finden, buchen, umbuchen oder absagen.</p>
                     <div class="d-flex gap-2">
-                        <a asp-controller="Home" asp-action="Termine" class="btn btn-primary">Termin buchen</a>
-                        <a href="#" class="btn btn-outline-secondary">Übersicht</a>
+                        <a asp-controller="Termine" asp-action="Buchen" class="btn btn-primary">
+                            <i class="bi bi-calendar-plus me-1"></i> Termin buchen
+                        </a>
+                        <a asp-controller="Termine" asp-action="Index" class="btn btn-outline-secondary">
+                            Übersicht
+                        </a>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent small text-muted">Nächste freie Slots heute und morgen</div>

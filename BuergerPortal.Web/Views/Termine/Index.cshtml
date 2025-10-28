@@ -1,0 +1,84 @@
+﻿@model BuergerPortal.Web.Features.Termine.TermineIndexVm
+@{
+    ViewData["Title"] = "Termine – Übersicht";
+}
+
+<h1 class="h4 mb-3">Termine – Übersicht</h1>
+
+@if (TempData["BookingSuccess"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["BookingError"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">Hier siehst du deine gebuchten Termine. Du kannst Termine auch stornieren.</p>
+    <a asp-action="Buchen" class="btn btn-primary">
+        <i class="bi bi-calendar-plus me-1"></i> Neuen Termin buchen
+    </a>
+</div>
+
+@if (Model?.Termine is null || !Model.Termine.Any())
+{
+    <div class="card">
+        <div class="card-body">
+            <p class="text-muted mb-2">Du hast aktuell keine gebuchten Termine.</p>
+            <a asp-action="Buchen" class="btn btn-outline-primary">
+                Termin buchen
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Dienst</th>
+                    <th>Datum</th>
+                    <th>Uhrzeit</th>
+                    <th>Standort</th>
+                    <th>Status</th>
+                    <th class="text-end">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.Termine)
+                {
+                    <tr>
+                        <td>@t.Dienst</td>
+                        <td>@t.Datum.ToString("dd.MM.yyyy")</td>
+                        <td>@t.Uhrzeit</td>
+                        <td>@t.Standort</td>
+                        <td>
+                            @if (t.Storniert)
+                            {
+                                <span class="badge bg-secondary">storniert</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">aktiv</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            @if (!t.Storniert)
+                            {
+                                <form method="post" asp-action="Stornieren" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@t.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle me-1"></i> Stornieren
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -16,4 +16,11 @@
 - Sicherheit & DSGVO
 
 Nächste Schritte:
-- Authentication
+- Authentication (Done) -> AuthServer Login Page noch verschönern
+
+Wichtige Features der App:
+- Terminverwaltung
+- Anträge (Stellen + ANtragsstatus abfragen)
+- Mangelmelder
+
+
