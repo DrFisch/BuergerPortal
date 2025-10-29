@@ -1,5 +1,116 @@
-﻿@{
+﻿@using BuergerPortal.Web.Features.Termine
+@model BuergerPortal.Web.Features.Termine.BuchenVm
+@{
     ViewData["Title"] = "Termin buchen";
 }
 <h1 class="h4">Termin buchen</h1>
-<p class="text-muted">Hier entsteht die Buchungsseite (Dienst wählen, Datum, Slot auswählen …)</p>
+
+<form asp-action="Buchen" method="post" class="vstack gap-3">
+    <div>
+        <label class="form-label">Dienst</label>
+        <!-- Enum-Items rendern -->
+        <select asp-for="Service"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<ServiceType>()">
+        </select>
+        <span asp-validation-for="Service" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label class="form-label">Standort</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-sm-6">
+            <label class="form-label">Datum</label>
+            <input asp-for="LocalDate" type="date" class="form-control" id="dateInput" />
+            <span asp-validation-for="LocalDate" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label class="form-label">Uhrzeit</label>
+            <!-- 15-Minuten-Raster via <select> -->
+            <select asp-for="LocalTime" class="form-select" id="timeSelect"></select>
+            <span asp-validation-for="LocalTime" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div>
+        <label class="form-label">Dauer (Min.)</label>
+        <input asp-for="DurationMinutes" type="number" min="15" step="15" class="form-control" />
+        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Termin buchen</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Konfig: Öffnungszeiten (anpassen, falls nötig)
+        const START_HOUR = 8;   // 08:00
+        const END_HOUR   = 18;  // 18:00 (inkl.)
+        const STEP_MIN   = 15;  // 15-Minuten-Raster
+
+        const dateInput  = document.getElementById('dateInput');
+        const timeSelect = document.getElementById('timeSelect');
+
+        // min=heute
+        (function setMinToday() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+            if (!dateInput.value) dateInput.value = dateInput.min;
+        })();
+
+        function toHHMM(v) {
+            const h = String(v.getHours()).padStart(2,'0');
+            const m = String(v.getMinutes()).padStart(2,'0');
+            return `${h}:${m}`;
+        }
+
+        function buildOptions() {
+            const selected = timeSelect.value; // merken
+            timeSelect.innerHTML = "";
+
+            const chosen = new Date(dateInput.value + "T00:00:00");
+            const now    = new Date();
+            const isToday = chosen.toDateString() === now.toDateString();
+
+            // Start bei :00 oder :15 etc. (runden)
+            const start = new Date(chosen);
+            start.setHours(START_HOUR, 0, 0, 0);
+
+            const end = new Date(chosen);
+            end.setHours(END_HOUR, 0, 0, 0);
+
+            for (let t = new Date(start); t <= end; t.setMinutes(t.getMinutes() + STEP_MIN)) {
+                // heute: Vergangenes ausblenden
+                if (isToday && t <= now) continue;
+
+                const label = toHHMM(t);
+                const opt = document.createElement('option');
+                opt.value = label; // ModelBinder versteht "HH:mm" für TimeSpan
+                opt.textContent = label;
+                timeSelect.appendChild(opt);
+            }
+
+            // Vorbelegen: falls der vormals gewählte Wert noch vorhanden ist
+            if (selected) {
+                const found = Array.from(timeSelect.options).some(o => o.value === selected);
+                if (found) timeSelect.value = selected;
+            }
+            // sonst: erste Option wählen
+            if (!timeSelect.value && timeSelect.options.length > 0) {
+                timeSelect.selectedIndex = 0;
+            }
+        }
+
+        // Initial befüllen & bei Datum-Änderung neu berechnen
+        buildOptions();
+        dateInput.addEventListener('change', buildOptions);
+    </script>
+}

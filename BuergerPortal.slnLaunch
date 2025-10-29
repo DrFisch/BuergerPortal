@@ -11,6 +11,11 @@
         "Path": "AuthenticationServer\\AuthenticationServer.csproj",
         "Action": "Start",
         "DebugTarget": "https"
+      },
+      {
+        "Path": "BuergerPortal.Api\\BuergerPortal.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
       }
     ]
   }
