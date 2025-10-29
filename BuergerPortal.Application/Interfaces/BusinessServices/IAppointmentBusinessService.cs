@@ -1,4 +1,5 @@
 ﻿using BuergerPortal.Application.Appointments.DTOs;
+using BuergerPortal.Application.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace BuergerPortal.Application.Interfaces.BusinessServices
 {
     public interface IAppointmentBusinessService
     {
-        Task<Guid> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct);
+        Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct);
     }
 }
