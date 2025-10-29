@@ -86,13 +86,42 @@ namespace BuergerPortal.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // ProblemDetails anzeigen (409 bei Kollision, 400 bei Validation etc.)
-            var problem = await res.Content.ReadFromJsonAsync<ProblemDetails>(cancellationToken: ct);
-            ModelState.AddModelError(string.Empty, problem?.Title ?? "Buchung fehlgeschlagen.");
-            if (!string.IsNullOrWhiteSpace(problem?.Detail))
-                ModelState.AddModelError(string.Empty, problem!.Detail);
+            // --- robust: ProblemDetails bevorzugt, sonst Plain-Text/Fallback
+            ProblemDetails? problem = null;
+            try
+            {
+                // Nur versuchen, wenn Content-Typ plausibel ist
+                var ctHeader = res.Content.Headers.ContentType?.MediaType;
+                if (!string.IsNullOrEmpty(ctHeader) &&
+                    (ctHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase) ||
+                     ctHeader.Contains("application/problem+json", StringComparison.OrdinalIgnoreCase)))
+                {
+                    problem = await res.Content.ReadFromJsonAsync<ProblemDetails>(cancellationToken: ct);
+                }
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // Ignorieren, wir fallen unten auf Raw-Text/Fallback zurück
+            }
+
+            // Falls kein ProblemDetails geparst werden konnte, baue eines
+            if (problem is null)
+            {
+                var raw = await res.Content.ReadAsStringAsync(ct);
+                problem = new ProblemDetails
+                {
+                    Title = $"Fehler {(int)res.StatusCode} {res.ReasonPhrase}",
+                    Detail = string.IsNullOrWhiteSpace(raw) ? null : raw,
+                    Status = (int)res.StatusCode
+                };
+            }
+
+            ModelState.AddModelError(string.Empty, problem.Title ?? "Buchung fehlgeschlagen.");
+            if (!string.IsNullOrWhiteSpace(problem.Detail))
+                ModelState.AddModelError(string.Empty, problem.Detail);
 
             return View(vm);
+
         }
 
         [HttpPost]

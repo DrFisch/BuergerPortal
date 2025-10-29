@@ -2,7 +2,7 @@
 
 namespace BuergerPortal.Web.Features.Termine
 {
-    public enum ServiceType { Ausweis, Reisepass, Meldebescheinigung }
+    public enum ServiceType { Ausweis = 1, Reisepass = 2, Meldebescheinigung = 3 }
 
     public sealed class BuchenVm
     {

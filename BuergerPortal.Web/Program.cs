@@ -88,6 +88,52 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/auth/debug", async (HttpContext ctx) =>
+{
+    var idToken = await ctx.GetTokenAsync("id_token");
+    var accessToken = await ctx.GetTokenAsync("access_token");
+    var refreshToken = await ctx.GetTokenAsync("refresh_token");
+
+    // Alle Claims aus dem Cookie-Principal (basieren meist auf ID Token + UserInfo)
+    var claims = ctx.User.Claims.Select(c => new { c.Type, c.Value });
+
+    // Hilfsfunktion: JWT-Payload ohne Validierung decodieren
+    static string? DecodeJwtPayload(string? jwt)
+    {
+        if (string.IsNullOrEmpty(jwt)) return null;
+        var parts = jwt.Split('.');
+        if (parts.Length < 2) return null;
+        string Base64UrlDecode(string s)
+        {
+            s = s.Replace('-', '+').Replace('_', '/');
+            switch (s.Length % 4) { case 2: s += "=="; break; case 3: s += "="; break; }
+            var bytes = Convert.FromBase64String(s);
+            return System.Text.Encoding.UTF8.GetString(bytes);
+        }
+        return Base64UrlDecode(parts[1]);
+    }
+
+    var idPayload = DecodeJwtPayload(idToken);
+    var accessPayload = DecodeJwtPayload(accessToken);
+
+    var result = new
+    {
+        Authenticated = ctx.User.Identity?.IsAuthenticated,
+        Name = ctx.User.Identity?.Name,
+        Claims = claims,
+        Tokens = new
+        {
+            HasIdToken = idToken != null,
+            HasAccessToken = accessToken != null,
+            HasRefreshToken = refreshToken != null
+        },
+        IdTokenPayload = idPayload,         // JSON-String
+        AccessTokenPayload = accessPayload  // JSON-String (hier stehen aud/scope/sub)
+    };
+
+    await ctx.Response.WriteAsJsonAsync(result);
+}).RequireAuthorization(); // nur für angemeldete Nutzer
+
 // ---- (3) schlanke Login/Logout-Routen
 app.MapGet("/login", async (HttpContext ctx) =>
 {
@@ -119,14 +165,29 @@ app.Run();
 public sealed class AccessTokenHandler : DelegatingHandler
 {
     private readonly IHttpContextAccessor _accessor;
-    public AccessTokenHandler(IHttpContextAccessor accessor) => _accessor = accessor;
+    private readonly ILogger<AccessTokenHandler> _logger;
+    public AccessTokenHandler(IHttpContextAccessor accessor, ILogger<AccessTokenHandler> logger)
+    { _accessor = accessor; _logger = logger; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
     {
         var http = _accessor.HttpContext;
-        var token = await http!.GetTokenAsync("access_token");
-        if (!string.IsNullOrEmpty(token))
-            req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        if (http is null)
+        {
+            _logger.LogWarning("No HttpContext in AccessTokenHandler.");
+            return await base.SendAsync(req, ct); // => kein Token → 401
+        }
+
+        var token = await http.GetTokenAsync("access_token");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            _logger.LogWarning("No access_token found. User authenticated? {Auth}", http.User?.Identity?.IsAuthenticated);
+            // Optional hart: throw new InvalidOperationException("Kein access_token → bitte neu einloggen.");
+            return await base.SendAsync(req, ct);
+        }
+
+        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        _logger.LogInformation("Attached Bearer token ({Len} chars) to {Method} {Uri}", token.Length, req.Method, req.RequestUri);
 
         return await base.SendAsync(req, ct);
     }

@@ -4,6 +4,8 @@ using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Appointments.Entity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,6 +13,7 @@ namespace BuergerPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public sealed class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentBusinessService _svc;
@@ -25,8 +28,33 @@ namespace BuergerPortal.Api.Controllers
         public async Task<ActionResult<Guid>> Create([FromBody] AppointmentCreateRequest req, CancellationToken ct)
         {
             var userId = User.FindFirst("sub")?.Value
-                      ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                      ?? "demo-user";
+                      ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
+
+            // --- Serverseitige Validierung ---
+            if (req.EndUtc <= req.StartUtc)
+                return Problem(title: "Ungültiger Zeitraum",
+                               detail: "Ende muss nach dem Start liegen.",
+                               statusCode: StatusCodes.Status400BadRequest);
+
+            var duration = req.EndUtc - req.StartUtc;
+            if (duration < TimeSpan.FromMinutes(15) || duration > TimeSpan.FromHours(8))
+                return Problem(title: "Ungültige Dauer",
+                               detail: "Dauer muss zwischen 15 und 480 Minuten liegen.",
+                               statusCode: StatusCodes.Status400BadRequest);
+
+            bool IsQuarterAligned(DateTime dt)
+                => dt.Second == 0 && dt.Millisecond == 0 && (dt.Minute % 15) == 0;
+
+            if (!IsQuarterAligned(req.StartUtc) || !IsQuarterAligned(req.EndUtc))
+                return Problem(title: "Nur 15-Minuten-Takt erlaubt",
+                               detail: "Start und Ende müssen auf :00/:15/:30/:45 liegen.",
+                               statusCode: StatusCodes.Status400BadRequest);
+
+            // Optional: Öffnungszeiten in Europe/Berlin (wenn gewünscht)
+            // var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
+            // var startLocal = TimeZoneInfo.ConvertTimeFromUtc(req.StartUtc, tz);
+            // var endLocal   = TimeZoneInfo.ConvertTimeFromUtc(req.EndUtc, tz);
+            // if (startLocal.Hour < 8 || endLocal.Hour > 18) ...
 
             var dto = new AppointmentCreateDto
             {
@@ -41,7 +69,6 @@ namespace BuergerPortal.Api.Controllers
             if (result.IsSuccess)
                 return CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value);
 
-            // ProblemDetails für schöne Fehlermeldungen
             if (result.ErrorCode == ErrorCodes.SlotConflict)
                 return Problem(title: "Zeitslot bereits belegt",
                                detail: "Bitte wählen Sie einen anderen Zeitpunkt.",

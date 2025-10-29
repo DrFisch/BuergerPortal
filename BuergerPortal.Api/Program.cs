@@ -2,6 +2,7 @@ using BuergerPortal.Application.Appointments.BusinessServices;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,23 +18,67 @@ builder.Services.AddScoped<IAppointmentBusinessService, AppointmentBusinessServi
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = builder.Configuration["Auth:Authority"];   // z.B. https://auth.example.com
-        options.Audience = "buergerportal_api";                       // deine API-Ressource
-        options.RequireHttpsMetadata = true;                            // dev ggf. false
+        // 1) Authority & Discovery explizit
+        options.Authority = "https://localhost:7001";
+        options.MetadataAddress = "https://localhost:7001/.well-known/openid-configuration";
+        options.RequireHttpsMetadata = true;
 
-        // Optional, aber hilfreich für saubere Claims:
+        // 2) Token-Validierung: Issuer/Audience exakt setzen
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
+            ValidIssuer = "https://localhost:7001/", // <- beachte den Slash am Ende (dein Token hat den!)
             ValidateAudience = true,
+            ValidAudience = "buergerportal_api",
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            NameClaimType = "name",                    // oder ClaimTypes.Name
-            RoleClaimType = "role"                     // falls Rollen genutzt werden
+            NameClaimType = "name",
+            RoleClaimType = "role"
         };
 
-        // Inbound Claim Mapping ausschalten, wenn du „rohe“ Claim-Namen willst:
+        // 3) Claims unverändert lassen
         options.MapInboundClaims = false;
+
+        // 4) DEV: Discovery/JWKS auch mit self-signed zulassen (nur lokal!)
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+
+        // 5) Logs/ProblemDetails für 401/403 (hilft beim Debuggen & vermeidet leere Bodies)
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = ctx =>
+            {
+                var log = ctx.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+                              .CreateLogger("JWT");
+                log.LogError(ctx.Exception, "JWT authentication failed");
+                return Task.CompletedTask;
+            },
+            OnChallenge = ctx =>
+            {
+                ctx.HandleResponse();
+                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                ctx.Response.ContentType = "application/problem+json";
+                return ctx.Response.WriteAsJsonAsync(new ProblemDetails
+                {
+                    Title = "Unauthenticated",
+                    Detail = ctx.ErrorDescription ?? "Zugriff erfordert gültiges Access Token.",
+                    Status = StatusCodes.Status401Unauthorized
+                });
+            },
+            OnForbidden = ctx =>
+            {
+                ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                ctx.Response.ContentType = "application/problem+json";
+                return ctx.Response.WriteAsJsonAsync(new ProblemDetails
+                {
+                    Title = "Forbidden",
+                    Detail = "Fehlende Berechtigung/Scope.",
+                    Status = StatusCodes.Status403Forbidden
+                });
+            }
+        };
     });
 
 builder.Services.AddAuthorization(options =>
