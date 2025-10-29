@@ -1,7 +1,7 @@
 ﻿using BuergerPortal.Domain.Appointments;
 using System.ComponentModel.DataAnnotations;
 
-namespace BuergerPortal.Api.Contracts
+namespace BuergerPortal.Api.Contracts.Appointments
 {
     public sealed class AppointmentCreateRequest
     {

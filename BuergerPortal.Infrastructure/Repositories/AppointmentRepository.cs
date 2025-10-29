@@ -28,5 +28,13 @@ namespace BuergerPortal.Infrastructure.Repositories
             _db.Appointments.Add(entity);
             await _db.SaveChangesAsync(ct);
         }
+        public Task<List<Appointment>> GetAllForUserAsync(string userId, CancellationToken ct)
+        {
+            return _db.Appointments
+              .AsNoTracking()
+              .Where(a => a.UserId == userId)
+              .OrderBy(a => a.StartUtc)
+              .ToListAsync(ct);
+        }
     }
 }

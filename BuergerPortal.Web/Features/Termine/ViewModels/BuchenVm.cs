@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BuergerPortal.Web.Features.Termine
+namespace BuergerPortal.Web.Features.Termine.ViewModels
 {
     public enum ServiceType { Ausweis = 1, Reisepass = 2, Meldebescheinigung = 3 }
 
@@ -23,7 +23,7 @@ namespace BuergerPortal.Web.Features.Termine
 
         private static DateTime NextQuarterHour(DateTime dt)
         {
-            var add = 15 - (dt.Minute % 15);
+            var add = 15 - dt.Minute % 15;
             if (add == 15) add = 0;
             var rounded = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, DateTimeKind.Local)
                           .AddMinutes(add);

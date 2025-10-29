@@ -11,5 +11,9 @@ namespace BuergerPortal.Application.Interfaces.BusinessServices
     public interface IAppointmentBusinessService
     {
         Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct);
+
+        Task<List<AppointmentListItemDto>> GetAllForUserAsync(string userId, CancellationToken ct);
     }
+
 }
+

@@ -1,4 +1,4 @@
-﻿namespace BuergerPortal.Web.Features.Termine
+﻿namespace BuergerPortal.Web.Features.Termine.ViewModels
 {
     public sealed class TermineIndexVm
     {

@@ -53,5 +53,24 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             await _repo.CreateAsync(entity, ct);
             return Result<Guid>.Success(entity.Id);
         }
+
+        public async Task<List<AppointmentListItemDto>> GetAllForUserAsync(string userId, CancellationToken ct)
+        {
+            var list = await _repo.GetAllForUserAsync(userId, ct);
+
+            return list
+                .OrderBy(x => x.StartUtc)
+                .Select(x => new AppointmentListItemDto
+                {
+                    Id = x.Id,
+                    Service = x.Service,
+                    Location = x.Location,
+                    // Wichtig: als UTC markieren, damit im JSON ein „Z“ steht
+                    StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
+                    EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
+                    Cancelled = x.Status == AppointmentStatus.Cancelled
+                })
+                .ToList();
+        }
     }
 }

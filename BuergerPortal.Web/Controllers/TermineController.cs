@@ -1,4 +1,6 @@
 ﻿using BuergerPortal.Web.Features.Termine;
+using BuergerPortal.Web.Features.Termine.Contracts;
+using BuergerPortal.Web.Features.Termine.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuergerPortal.Web.Controllers
@@ -6,6 +8,8 @@ namespace BuergerPortal.Web.Controllers
     public class TermineController : Controller
     {
         private readonly IHttpClientFactory _cf;
+        private static readonly TimeZoneInfo BerlinTz =
+        TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
         public TermineController(IHttpClientFactory cf)
         {
@@ -13,33 +17,36 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken ct)
         {
-            // TODO: Später aus Application-Layer laden (aktueller Benutzer)
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var apiItems = await client.GetFromJsonAsync<List<AppointmentListItemResponse>>(
+                "api/appointments/mine", ct) ?? new();
+
+            DateTime ToBerlin(DateTime utc) =>
+                TimeZoneInfo.ConvertTimeFromUtc(
+                    utc.Kind == DateTimeKind.Utc ? utc : DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+                    BerlinTz);
+
             var vm = new TermineIndexVm
             {
-                Termine = new()
+                Termine = apiItems.Select(x =>
                 {
-                    new TerminListItemVm
+                    var startLocal = ToBerlin(x.StartUtc);
+                    var endLocal = ToBerlin(x.EndUtc);
+
+                    return new TerminListItemVm
                     {
-                        Id = Guid.NewGuid(),
-                        Dienst = "Ausweis beantragen",
-                        Datum = DateTime.Today.AddDays(2),
-                        Uhrzeit = "09:30",
-                        Standort = "Bürgeramt Mitte",
-                        Storniert = false
-                    },
-                    new TerminListItemVm
-                    {
-                        Id = Guid.NewGuid(),
-                        Dienst = "Meldebescheinigung",
-                        Datum = DateTime.Today.AddDays(5),
-                        Uhrzeit = "11:00",
-                        Standort = "Bürgeramt Süd",
-                        Storniert = false
-                    }
-                }
+                        Id = x.Id,
+                        Dienst = x.Service.ToString(), // oder DisplayName
+                        Datum = startLocal.Date,
+                        Uhrzeit = $"{startLocal:HH\\:mm}",
+                        Standort = x.Location,
+                        Storniert = x.Cancelled
+                    };
+                }).ToList()
             };
+
             return View(vm);
         }
 

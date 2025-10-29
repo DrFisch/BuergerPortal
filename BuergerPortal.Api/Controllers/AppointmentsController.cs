@@ -1,4 +1,4 @@
-﻿using BuergerPortal.Api.Contracts;
+﻿using BuergerPortal.Api.Contracts.Appointments;
 using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
@@ -77,6 +77,29 @@ namespace BuergerPortal.Api.Controllers
             return Problem(title: "Ungültige Eingaben",
                            detail: result.ErrorMessage ?? "Bitte Eingaben prüfen.",
                            statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        [HttpGet("mine")]
+        [ProducesResponseType(typeof(IEnumerable<AppointmentListItemResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<AppointmentListItemResponse>>> GetMine(CancellationToken ct)
+        {
+            var userId = User.FindFirst("sub")?.Value
+                      ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
+
+            var dtos = await _svc.GetAllForUserAsync(userId, ct);
+
+            // falls du strikt Contracts zurückgeben willst:
+            var resp = dtos.Select(x => new AppointmentListItemResponse
+            {
+                Id = x.Id,
+                Service = x.Service,
+                Location = x.Location,
+                StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
+                Cancelled = x.Cancelled
+            });
+
+            return Ok(resp);
         }
 
         [HttpGet("{id:guid}")]
