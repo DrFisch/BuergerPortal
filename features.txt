@@ -24,3 +24,5 @@ Wichtige Features der App:
 - Mangelmelder
 
 
+Morgen:
+- Kalender ansicht beim Termin
