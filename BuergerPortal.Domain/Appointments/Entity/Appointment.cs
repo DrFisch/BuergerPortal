@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BuergerPortal.Domain.Appointments
+namespace BuergerPortal.Domain.Appointments.Entity
 {
     public sealed class Appointment
     {

@@ -1,5 +1,8 @@
 ﻿using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Appointments;
+using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Infrastructure.Repositories
 {
-    public sealed class EfAppointmentRepository : IAppointmentRepository
+    public sealed class AppointmentRepository : IAppointmentRepository
     {
-        private readonly AppDbContext _db;
-        public EfAppointmentRepository(AppDbContext db) => _db = db;
+        private readonly PortalDbContext _db;
+        public AppointmentRepository(PortalDbContext db) => _db = db;
 
         public Task<bool> ExistsOverlapAsync(string userId, DateTime startUtc, DateTime endUtc, CancellationToken ct)
             => _db.Appointments.AnyAsync(a =>
