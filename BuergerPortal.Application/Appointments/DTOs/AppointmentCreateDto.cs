@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BuergerPortal.Application.Appointments
+namespace BuergerPortal.Application.Appointments.DTOs
 {
     public sealed class AppointmentCreateDto
     {
@@ -13,6 +13,5 @@ namespace BuergerPortal.Application.Appointments
         public string Location { get; init; } = "";
         public DateTime StartUtc { get; init; }
         public DateTime EndUtc { get; init; }
-        // UserId kommt NICHT vom Client – siehe BusinessService
     }
 }
