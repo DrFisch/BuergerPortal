@@ -13,6 +13,8 @@ namespace BuergerPortal.Application.Interfaces.BusinessServices
         Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct);
 
         Task<List<AppointmentListItemDto>> GetAllForUserAsync(string userId, CancellationToken ct);
+        Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct);
+
     }
 
 }

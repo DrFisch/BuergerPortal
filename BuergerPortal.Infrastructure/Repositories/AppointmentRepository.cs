@@ -36,5 +36,13 @@ namespace BuergerPortal.Infrastructure.Repositories
               .OrderBy(a => a.StartUtc)
               .ToListAsync(ct);
         }
+        public Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct)
+        {
+            return _db.Appointments
+          .AsNoTracking()
+          .Where(a => a.Status == AppointmentStatus.Booked &&
+                      a.StartUtc < toUtc && fromUtc < a.EndUtc)
+          .ToListAsync(ct);
+        }
     }
 }

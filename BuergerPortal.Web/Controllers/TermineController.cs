@@ -1,7 +1,9 @@
 ﻿using BuergerPortal.Web.Features.Termine;
 using BuergerPortal.Web.Features.Termine.Contracts;
 using BuergerPortal.Web.Features.Termine.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BuergerPortal.Web.Controllers
 {
@@ -130,6 +132,28 @@ namespace BuergerPortal.Web.Controllers
             return View(vm);
 
         }
+        [HttpGet]
+        [Authorize] // falls nicht auf Controller gesetzt
+        public async Task<IActionResult> Busy([FromQuery] string date, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(date))
+                return BadRequest("date (YYYY-MM-DD) fehlt.");
+
+            var client = _cf.CreateClient("BuergerPortalApi"); // <-- wichtiger named client mit AccessTokenHandler
+            var res = await client.GetAsync($"api/appointments/busy?date={date}", ct);
+
+            if (res.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(); // an den Browser durchreichen
+
+            if (!res.IsSuccessStatusCode)
+                return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+
+            var items = await res.Content.ReadFromJsonAsync<List<BusySlotResponse>>(cancellationToken: ct)
+                        ?? new List<BusySlotResponse>();
+
+            return Json(items);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

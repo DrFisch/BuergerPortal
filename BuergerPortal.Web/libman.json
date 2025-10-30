@@ -21,6 +21,11 @@
         "font/fonts/bootstrap-icons.woff2",
         "font/fonts/bootstrap-icons.woff"
       ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@daypilot/daypilot-lite-javascript@4.8.0",
+      "destination": "wwwroot/lib/daypilot"
     }
   ]
 }

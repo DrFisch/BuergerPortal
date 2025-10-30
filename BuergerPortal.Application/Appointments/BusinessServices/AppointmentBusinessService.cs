@@ -72,5 +72,21 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 })
                 .ToList();
         }
+        public async Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct)
+        {
+            // Guard
+            if (fromUtc.Kind != DateTimeKind.Utc) fromUtc = DateTime.SpecifyKind(fromUtc, DateTimeKind.Utc);
+            if (toUtc.Kind != DateTimeKind.Utc) toUtc = DateTime.SpecifyKind(toUtc, DateTimeKind.Utc);
+            if (toUtc <= fromUtc) return new List<BusySlotDto>();
+
+            var overlaps = await _repo.GetOverlappingAsync(fromUtc, toUtc, ct);
+            return overlaps
+                .Select(a => new BusySlotDto
+                {
+                    StartUtc = DateTime.SpecifyKind(a.StartUtc, DateTimeKind.Utc),
+                    EndUtc = DateTime.SpecifyKind(a.EndUtc, DateTimeKind.Utc)
+                })
+                .ToList();
+        }
     }
 }

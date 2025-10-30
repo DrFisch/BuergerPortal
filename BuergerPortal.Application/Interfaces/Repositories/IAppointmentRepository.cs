@@ -17,5 +17,7 @@ namespace BuergerPortal.Application.Interfaces.Repositories
         // Optional für später:
         // Task<Appointment?> GetAsync(Guid id, CancellationToken ct);
         // Task DeleteAsync(Guid id, CancellationToken ct);
+        Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct);
+
     }
 }

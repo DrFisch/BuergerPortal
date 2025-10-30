@@ -109,5 +109,28 @@ namespace BuergerPortal.Api.Controllers
         {
             return Ok(new { id }); // implementierst du später mit Read-UseCase
         }
+        [HttpGet("busy")]
+        [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date, CancellationToken ct)
+        {
+            // 08:00–12:00 Europe/Berlin -> in UTC umrechnen
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
+
+            var localStart = new DateTime(date.Year, date.Month, date.Day, 8, 0, 0, DateTimeKind.Unspecified);
+            var localEnd = new DateTime(date.Year, date.Month, date.Day, 12, 0, 0, DateTimeKind.Unspecified);
+
+            var fromUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
+            var toUtc = TimeZoneInfo.ConvertTimeToUtc(localEnd, tz);
+
+            var dtos = await _svc.GetBusyAsync(fromUtc, toUtc, ct);
+
+            var resp = dtos.Select(x => new BusySlotResponse
+            {
+                StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc)
+            });
+
+            return Ok(resp);
+        }
     }
 }
