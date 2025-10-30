@@ -19,11 +19,26 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var client = _cf.CreateClient("BuergerPortalApi");
-            var apiItems = await client.GetFromJsonAsync<List<AppointmentListItemResponse>>(
-                "api/appointments/mine", ct) ?? new();
+
+            List<AppointmentListItemResponse> apiItems;
+
+            var res = await client.GetAsync("api/appointments/mine", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                // Hinweis für die View
+                ViewBag.AuthNotice = "Bitte melde dich an, um deine Termine zu sehen und zu buchen.";
+                apiItems = new();
+            }
+            else
+            {
+                res.EnsureSuccessStatusCode(); // andere Fehler sauber hochwerfen
+                apiItems = await res.Content.ReadFromJsonAsync<List<AppointmentListItemResponse>>(cancellationToken: ct)
+                           ?? new();
+            }
 
             DateTime ToBerlin(DateTime utc) =>
                 TimeZoneInfo.ConvertTimeFromUtc(
@@ -36,11 +51,10 @@ namespace BuergerPortal.Web.Controllers
                 {
                     var startLocal = ToBerlin(x.StartUtc);
                     var endLocal = ToBerlin(x.EndUtc);
-
                     return new TerminListItemVm
                     {
                         Id = x.Id,
-                        Dienst = x.Service.ToString(), // oder DisplayName
+                        Dienst = x.Service.ToString(),
                         Datum = startLocal.Date,
                         Uhrzeit = $"{startLocal:HH\\:mm} - {endLocal:HH\\:mm}",
                         Standort = x.Location,
@@ -53,11 +67,13 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Buchen()
             => View(new BuchenVm());
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Buchen(BuchenVm vm, CancellationToken ct)
         {
             if (!ModelState.IsValid) return View(vm);

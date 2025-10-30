@@ -6,8 +6,25 @@
 }
 <h1 class="h4">Termin buchen</h1>
 
+
+
 <form asp-action="Buchen" method="post" class="vstack gap-3">
-    <div asp-validation-summary="All" class="text-danger mb-2"></div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="card border-danger mb-3">
+            <div class="card-body text-danger">
+                <div asp-validation-summary="All" class="mb-0"></div>
+            </div>
+        </div>
+    }
+    <span id="weekendNote" class="text-danger small d-block mt-1"></span>
+    <div class="alert alert-info d-flex align-items-start gap-2" role="alert">
+        <div>
+            <strong>Geschäftszeiten:</strong> Termine sind nur <strong>Montag–Freitag von 08:00 bis 12:00</strong> buchbar.
+            Bei 15-Minuten-Slots ist der letzte Starttermin <strong>11:45</strong>.
+        </div>
+    </div>
+    
     <div>
         <label class="form-label">Dienst</label>
         <!-- Enum-Items rendern -->
@@ -45,6 +62,8 @@
             <span asp-validation-for="LocalTime" class="text-danger"></span>
         </div>
     </div>
+    
+
 
     <div>
         <label class="form-label">Dauer (Min.)</label>
@@ -88,71 +107,157 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Konfig: Öffnungszeiten (anpassen, falls nötig)
-        const START_HOUR = 8;   // 08:00
-        const END_HOUR   = 18;  // 18:00 (inkl.)
-        const STEP_MIN   = 15;  // 15-Minuten-Raster
+        // Geschäftszeiten
+        const START_HOUR = 8;
+        const END_HOUR   = 12;   // <-- NUR bis 12!
+        const STEP_MIN   = 15;
 
-        const dateInput  = document.getElementById('dateInput');
-        const timeSelect = document.getElementById('timeSelect');
+        const dateInput     = document.getElementById('dateInput');
+        const timeSelect    = document.getElementById('timeSelect');
+        const durationInput = document.getElementById('DurationMinutes');
+        const form          = document.querySelector('form[method="post"]');
 
-        // min=heute
+        function isWeekendDateStr(yyyyMmDd) {
+          const d = new Date(yyyyMmDd + "T00:00:00");
+          const dow = d.getDay(); // 0=So, 6=Sa
+          return dow === 0 || dow === 6;
+        }
+
+        // min=heute + Wochenenden verhindern (springe auf nächsten Werktag)
         (function setMinToday() {
-            const d = new Date();
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            dateInput.min = `${yyyy}-${mm}-${dd}`;
-            if (!dateInput.value) dateInput.value = dateInput.min;
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          const today = `${yyyy}-${mm}-${dd}`;
+          dateInput.min = today;
+          if (!dateInput.value) dateInput.value = today;
+
+          if (isWeekendDateStr(dateInput.value)) {
+            // nächster Montag
+            const dt = new Date(dateInput.value + "T00:00:00");
+            const addDays = (8 - dt.getDay()) % 7 || 1; // 6=Sa(+2), 0=So(+1)
+            dt.setDate(dt.getDate() + addDays);
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d2 = String(dt.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d2}`;
+          }
         })();
 
         function toHHMM(v) {
-            const h = String(v.getHours()).padStart(2,'0');
-            const m = String(v.getMinutes()).padStart(2,'0');
-            return `${h}:${m}`;
+          const h = String(v.getHours()).padStart(2,'0');
+          const m = String(v.getMinutes()).padStart(2,'0');
+          return `${h}:${m}`;
         }
 
+        // Dropdown NUR 08:00–12:00 befüllen (und keine Vergangenheit für "heute")
         function buildOptions() {
-            const selected = timeSelect.value; // merken
-            timeSelect.innerHTML = "";
+          const selected = timeSelect.value;
+          timeSelect.innerHTML = "";
 
-            const chosen = new Date(dateInput.value + "T00:00:00");
-            const now    = new Date();
-            const isToday = chosen.toDateString() === now.toDateString();
+          const chosen = new Date(dateInput.value + "T00:00:00");
+          const now    = new Date();
+          const isToday = chosen.toDateString() === now.toDateString();
 
-            // Start bei :00 oder :15 etc. (runden)
-            const start = new Date(chosen);
-            start.setHours(START_HOUR, 0, 0, 0);
+          const start = new Date(chosen);
+          start.setHours(START_HOUR, 0, 0, 0);
 
-            const end = new Date(chosen);
-            end.setHours(END_HOUR, 0, 0, 0);
+          const end = new Date(chosen);
+          end.setHours(END_HOUR, 0, 0, 0);
 
-            for (let t = new Date(start); t <= end; t.setMinutes(t.getMinutes() + STEP_MIN)) {
-                // heute: Vergangenes ausblenden
-                if (isToday && t <= now) continue;
+          for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + STEP_MIN)) {
+            if (isToday && t <= now) continue; // Vergangenes ausblenden (heute)
 
-                const label = toHHMM(t);
-                const opt = document.createElement('option');
-                opt.value = label; // ModelBinder versteht "HH:mm" für TimeSpan
-                opt.textContent = label;
-                timeSelect.appendChild(opt);
-            }
+            const label = toHHMM(t);
+            const opt = document.createElement('option');
+            opt.value = label; // "HH:mm"
+            opt.textContent = label;
+            timeSelect.appendChild(opt);
+          }
 
-            // Vorbelegen: falls der vormals gewählte Wert noch vorhanden ist
-            if (selected) {
-                const found = Array.from(timeSelect.options).some(o => o.value === selected);
-                if (found) timeSelect.value = selected;
-            }
-            // sonst: erste Option wählen
-            if (!timeSelect.value && timeSelect.options.length > 0) {
-                timeSelect.selectedIndex = 0;
-            }
+          if (selected && Array.from(timeSelect.options).some(o => o.value === selected)) {
+            timeSelect.value = selected;
+          }
+          if (!timeSelect.value && timeSelect.options.length > 0) {
+            timeSelect.selectedIndex = 0;
+          }
         }
 
-        // Initial befüllen & bei Datum-Änderung neu berechnen
         buildOptions();
-        dateInput.addEventListener('change', buildOptions);
+
+        // Bei Datumswechsel: Wochenenden blocken + Zeiten neu
+                dateInput.addEventListener('change', () => {
+          const weekendNote = document.getElementById('weekendNote');
+
+          if (isWeekendDateStr(dateInput.value)) {
+            // Hinweis statt Alert
+            if (weekendNote) {
+              weekendNote.textContent = "Am Wochenende sind keine Termine möglich. Das Datum wurde auf den nächsten Werktag verschoben.";
+            }
+
+            // nächster Werktag
+            const dt = new Date(dateInput.value + "T00:00:00");
+            const addDays = (8 - dt.getDay()) % 7 || 1;
+            dt.setDate(dt.getDate() + addDays);
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d2 = String(dt.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d2}`;
+          } else {
+            if (weekendNote) weekendNote.textContent = "";
+          }
+
+          buildOptions();
+        });
+
+        // Frontend-Validierung: Start + Dauer darf nicht über 12:00 hinauslaufen
+        function violatesBusinessEnd() {
+          if (!timeSelect.value) return false;
+          const [hh, mm] = timeSelect.value.split(':').map(Number);
+          const dur = parseInt(durationInput?.value ?? "15", 10) || 15;
+
+          const d = new Date(dateInput.value + "T00:00:00");
+          const start = new Date(d);
+          start.setHours(hh, mm, 0, 0);
+
+          const end = new Date(start);
+          end.setMinutes(end.getMinutes() + dur);
+
+          const cutoff = new Date(d);
+          cutoff.setHours(END_HOUR, 0, 0, 0);
+
+          return end > cutoff; // z.B. 11:45 + 30 => 12:15 -> true
+        }
+
+        function showOrHideClientError() {
+          let msgEl = document.getElementById('clientErrorMsg');
+          if (!msgEl) {
+            msgEl = document.createElement('div');
+            msgEl.id = 'clientErrorMsg';
+            msgEl.className = 'text-danger mt-1';
+            durationInput.closest('div').appendChild(msgEl);
+          }
+          if (violatesBusinessEnd()) {
+            msgEl.textContent = `Die gewählte Dauer überschreitet die Geschäftszeit bis ${END_HOUR}:00.`;
+          } else {
+            msgEl.textContent = '';
+          }
+        }
+
+        timeSelect.addEventListener('change', showOrHideClientError);
+        durationInput.addEventListener('input', showOrHideClientError);
+
+        // Beim Absenden zusätzlich prüfen
+        form.addEventListener('submit', (e) => {
+          if (violatesBusinessEnd()) {
+            e.preventDefault();
+            showOrHideClientError();
+            alert("Der Termin überschreitet die Geschäftszeit (endet nach 12:00). Bitte Dauer oder Start ändern.");
+          }
+        });
     </script>
+
     <!-- DayPilot Kalender Script -->
     <script src="~/lib/daypilot/daypilot-javascript.min.js" asp-append-version="true"></script>
     <script>
@@ -162,15 +267,12 @@
           const reload  = document.getElementById('kalenderReload');
           const hostEl  = document.getElementById('dpCalendar');
 
-          // Form-Felder
           const dateInput  = document.getElementById('dateInput');
           const timeSelect = document.getElementById('timeSelect');
 
           if (!hostEl || !modalEl || !dateInput || !timeSelect) return;
 
-          // ---- Hilfsfunktion: ISO-String (+60 Minuten) -> lokales ISO "yyyy-MM-ddTHH:mm:ss"
           function addMinutesToIso(isoString, minutes) {
-            // isoString kann "Z" enthalten (UTC) oder nicht; JS Date normalisiert das
             const d = new Date(isoString);
             d.setMinutes(d.getMinutes() + minutes);
             const y  = d.getFullYear();
@@ -179,35 +281,32 @@
             const hh = String(d.getHours()).padStart(2, '0');
             const mi = String(d.getMinutes()).padStart(2, '0');
             const ss = String(d.getSeconds()).padStart(2, '0');
-            // ohne "Z" zurückgeben, damit DayPilot es als lokale Zeit rendert
             return `${y}-${mo}-${da}T${hh}:${mi}:${ss}`;
           }
 
-          // DayPilot init
+          // DayPilot init (nur BusinessHours sichtbar = 08–12)
           const dp = new DayPilot.Calendar(hostEl);
           dp.viewType = "Day";
           dp.locale = "de-de";
           dp.cellDuration = 15;
 
-          // Nur 08:00–12:00 sichtbar/auswählbar
           dp.businessBeginsHour = 8;
-          dp.businessEndsHour = 12;
-          dp.showNonBusiness = false;
-          dp.heightSpec = "BusinessHours";
-          dp.scrollLabelsVisible = false;
+          dp.businessEndsHour   = 12;
+          dp.showNonBusiness    = false;        // zeigt nur 08–12 Uhr
+          dp.heightSpec         = "BusinessHours";
+          dp.scrollLabelsVisible= false;
+          dp.allowEventOverlap  = true;
 
           dp.timeRangeSelectedHandling = "Enabled";
           dp.eventMoveHandling = "Disabled";
           dp.eventResizeHandling = "Disabled";
-          dp.allowEventOverlap = true;
 
-          // Auswahl außerhalb blocken
+          // Auswahl außerhalb blocken (redundant, da nicht sichtbar, aber okay)
           dp.onTimeRangeSelecting = (args) => {
             const h = args.start.hour();
             if (h < 8 || h >= 12) args.allowed = false;
           };
 
-          // Klick auf freien Slot -> exakt diese Uhrzeit ins Dropdown (ohne Offset)
           dp.onTimeRangeSelected = (args) => {
             const formDate = args.start.toString("yyyy-MM-dd");
             const hhmm     = args.start.toString("HH:mm");
@@ -228,16 +327,11 @@
 
           dp.init();
 
-          // Busy-Slots laden (und +60 Min verschoben anzeigen)
           async function loadBusy(dateStr) {
             const res = await fetch(`/Termine/Busy?date=${dateStr}`, { credentials: 'same-origin' });
-            if (!res.ok) {
-              dp.update({ events: [] });
-              return;
-            }
-            const items = await res.json(); // [{ startUtc, endUtc }]
+            if (!res.ok) { dp.update({ events: [] }); return; }
+            const items = await res.json();
 
-            // Anzeige bewusst +60 Minuten verschieben (nur Darstellung im Kalender)
             const events = items.map((x, i) => ({
               id: `busy-${i}`,
               text: "Belegt",
@@ -253,35 +347,28 @@
             dp.update({ events });
           }
 
-          // Datum in DayPilot synchronisieren
           function syncDatePicker() {
-            if (!dateEl.value) {
-              dateEl.value = dateInput.value; // Formular-Datum als Default
-            }
-            dp.startDate = dateEl.value;      // YYYY-MM-DD
+            if (!dateEl.value) dateEl.value = dateInput.value;
+            dp.startDate = dateEl.value;
             dp.update();
           }
 
-          // Modal geöffnet -> initial laden
           modalEl.addEventListener('shown.bs.modal', async () => {
             if (!dateEl.value) dateEl.value = dateInput.value;
             syncDatePicker();
             await loadBusy(dateEl.value);
           });
 
-          // Reload-Button
           reload?.addEventListener('click', async () => {
             syncDatePicker();
             await loadBusy(dateEl.value);
           });
 
-          // Datum im Modal geändert
           dateEl.addEventListener('change', async () => {
             syncDatePicker();
             await loadBusy(dateEl.value);
           });
 
-          // Formular-Datum geändert, Modal offen -> synchronisieren
           dateInput.addEventListener('change', async () => {
             if (modalEl.classList.contains('show')) {
               dateEl.value = dateInput.value;
@@ -290,6 +377,9 @@
             }
           });
         })();
+
+
+
     </script>
 
 }

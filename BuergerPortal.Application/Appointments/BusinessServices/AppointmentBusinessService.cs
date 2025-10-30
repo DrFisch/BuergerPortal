@@ -33,6 +33,51 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Datum liegt in der Vergangenheit.");
             }
 
+            // --- NEU: Geschäftszeitenvalidierung in Europe/Berlin ---
+            TimeZoneInfo tz;
+            try
+            {
+                tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
+            }
+            catch
+            {
+                // Fallback, wenn die TZ nicht gefunden wird
+                tz = TimeZoneInfo.Local;
+            }
+
+            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(dto.StartUtc, tz);
+            var endLocal = TimeZoneInfo.ConvertTimeFromUtc(dto.EndUtc, tz);
+
+            // Nur Montag–Freitag
+            if (startLocal.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+            {
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Nur Montag–Freitag 08:00–12:00.");
+            }
+
+            // Muss am selben Tag liegen (sicherheitshalber)
+            if (startLocal.Date != endLocal.Date)
+            {
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Termin muss am selben Tag enden (bis 12:00).");
+            }
+
+            // Zeitfenster 08:00–12:00
+            var windowStart = startLocal.Date.AddHours(8);   // 08:00
+            var windowEnd = startLocal.Date.AddHours(12);  // 12:00
+
+            if (startLocal < windowStart || endLocal > windowEnd)
+            {
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Termin liegt außerhalb der Geschäftszeit (08:00–12:00).");
+            }
+
+            // Optional: 15-Minuten-Raster (falls gewünscht)
+            bool isQuarter(DateTime t) => t.Minute % 15 == 0 && t.Second == 0 && t.Millisecond == 0;
+            if (!isQuarter(startLocal) || !isQuarter(endLocal))
+            {
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Termine müssen im 15-Minuten-Raster liegen.");
+            }
+
+            // --- Ende Geschäftszeiten-Check ---
+
             var collides = await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct);
             if (collides)
             {

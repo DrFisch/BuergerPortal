@@ -86,6 +86,32 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+app.Use(async (ctx, next) =>
+{
+    var auth = await ctx.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    if (auth.Succeeded)
+    {
+        var expiresAt = auth.Properties?.GetTokenValue("expires_at"); // kommt von SaveTokens = true
+        if (!string.IsNullOrEmpty(expiresAt) &&
+            DateTimeOffset.TryParse(expiresAt, out var expUtc))
+        {
+            // Wenn abgelaufen -> Logout + sofort neu anmelden (Challenge)
+            if (expUtc <= DateTimeOffset.UtcNow)
+            {
+                await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await ctx.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+
+                // Zurück auf dieselbe Seite nach Login
+                await ctx.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+                {
+                    RedirectUri = ctx.Request.Path + ctx.Request.QueryString
+                });
+                return; // Request hier beenden
+            }
+        }
+    }
+    await next();
+});
 app.UseAuthorization();
 
 app.MapGet("/auth/debug", async (HttpContext ctx) =>
