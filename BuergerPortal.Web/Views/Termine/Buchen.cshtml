@@ -156,131 +156,140 @@
     <!-- DayPilot Kalender Script -->
     <script src="~/lib/daypilot/daypilot-javascript.min.js" asp-append-version="true"></script>
     <script>
-        (function() {
-            const modalEl = document.getElementById('kalenderModal');
-            const dateEl  = document.getElementById('kalenderDate');
-            const reload  = document.getElementById('kalenderReload');
-            const hostEl  = document.getElementById('dpCalendar');
+        (function () {
+          const modalEl = document.getElementById('kalenderModal');
+          const dateEl  = document.getElementById('kalenderDate');
+          const reload  = document.getElementById('kalenderReload');
+          const hostEl  = document.getElementById('dpCalendar');
 
-            if (!hostEl || !modalEl) return;
+          // Form-Felder
+          const dateInput  = document.getElementById('dateInput');
+          const timeSelect = document.getElementById('timeSelect');
 
-            // DayPilot Calendar initialisieren
-            const dp = new DayPilot.Calendar(hostEl);
-            dp.viewType = "Day";
-            dp.locale = "de-de";
-            dp.cellDuration = 15;          // 15-Minuten-Raster
-            dp.dayBeginsHour = 8;          // Anzeigen von 08:00
-            dp.dayEndsHour = 12;           // bis 12:00
-            dp.businessBeginsHour = 8;     // Geschäftszeiten
-            dp.businessEndsHour = 12;
-            dp.showNonBusiness = false;    // nur Geschäftszeiten zeigen
-            dp.timeRangeSelectedHandling = "Enabled";
-            dp.eventMoveHandling = "Disabled";
-            dp.eventResizeHandling = "Disabled";
-            dp.allowEventOverlap = true;   // Busy-Blöcke überlagern den Slot
+          if (!hostEl || !modalEl || !dateInput || !timeSelect) return;
 
-            // Klick auf freie Fläche -> Uhrzeit übernehmen
-            dp.onTimeRangeSelected = async function(args) {
-                // args.start ist DayPilot.Date (lokal)
-                const start = args.start.toDate(); // JS Date in lokaler TZ
-                const yyyy = start.getFullYear();
-                const mm = String(start.getMonth()+1).padStart(2,'0');
-                const dd = String(start.getDate()).padStart(2,'0');
-                const hh = String(start.getHours()).padStart(2,'0');
-                const mi = String(start.getMinutes()).padStart(2,'0');
+          // ---- Hilfsfunktion: ISO-String (+60 Minuten) -> lokales ISO "yyyy-MM-ddTHH:mm:ss"
+          function addMinutesToIso(isoString, minutes) {
+            // isoString kann "Z" enthalten (UTC) oder nicht; JS Date normalisiert das
+            const d = new Date(isoString);
+            d.setMinutes(d.getMinutes() + minutes);
+            const y  = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mi = String(d.getMinutes()).padStart(2, '0');
+            const ss = String(d.getSeconds()).padStart(2, '0');
+            // ohne "Z" zurückgeben, damit DayPilot es als lokale Zeit rendert
+            return `${y}-${mo}-${da}T${hh}:${mi}:${ss}`;
+          }
 
-                // Datum/Uhrzeit ins Formular übernehmen
-                if (dateInput.value !== `${yyyy}-${mm}-${dd}`) {
-                    dateInput.value = `${yyyy}-${mm}-${dd}`;
-                    buildOptions();
-                }
-                const hhmm = `${hh}:${mi}`;
-                if (!Array.from(timeSelect.options).some(o => o.value === hhmm)) {
-                    buildOptions();
-                }
-                timeSelect.value = hhmm;
+          // DayPilot init
+          const dp = new DayPilot.Calendar(hostEl);
+          dp.viewType = "Day";
+          dp.locale = "de-de";
+          dp.cellDuration = 15;
 
-                // Auswahl im Kalender löschen und Modal schließen
-                dp.clearSelection();
-                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                modal.hide();
-            };
+          // Nur 08:00–12:00 sichtbar/auswählbar
+          dp.businessBeginsHour = 8;
+          dp.businessEndsHour = 12;
+          dp.showNonBusiness = false;
+          dp.heightSpec = "BusinessHours";
+          dp.scrollLabelsVisible = false;
 
-            dp.init();
+          dp.timeRangeSelectedHandling = "Enabled";
+          dp.eventMoveHandling = "Disabled";
+          dp.eventResizeHandling = "Disabled";
+          dp.allowEventOverlap = true;
 
-            // Busy-Slots vom Server laden und als Events (rot) anzeigen
-            async function loadBusy(dateStr) {
-                const res = await fetch(`/Termine/Busy?date=${dateStr}`, { credentials: 'same-origin' });
-                if (!res.ok) {
-                    dp.update({ events: [] });
-                    return;
-                }
-                const items = await res.json(); // [{ startUtc, endUtc }]
+          // Auswahl außerhalb blocken
+          dp.onTimeRangeSelecting = (args) => {
+            const h = args.start.hour();
+            if (h < 8 || h >= 12) args.allowed = false;
+          };
 
-                // API liefert UTC -> in lokale (Browser-)Zeit konvertieren
-                // DayPilot erwartet ISO ohne TZ-Anteil oder lokale Zeitstrings.
-                const toLocalIso = (isoUtc) => {
-                    const d = new Date(isoUtc); // JS Date (interpretiert UTC korrekt)
-                    const yyyy = d.getFullYear();
-                    const mm   = String(d.getMonth()+1).padStart(2,'0');
-                    const dd   = String(d.getDate()).padStart(2,'0');
-                    const hh   = String(d.getHours()).padStart(2,'0');
-                    const mi   = String(d.getMinutes()).padStart(2,'0');
-                    const ss   = String(d.getSeconds()).padStart(2,'0');
-                    return `${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}`;
-                };
+          // Klick auf freien Slot -> exakt diese Uhrzeit ins Dropdown (ohne Offset)
+          dp.onTimeRangeSelected = (args) => {
+            const formDate = args.start.toString("yyyy-MM-dd");
+            const hhmm     = args.start.toString("HH:mm");
 
-                const events = items.map((x, i) => ({
-                    id: `busy-${i}`,
-                    text: "Belegt",
-                    start: toLocalIso(x.startUtc ?? x.StartUtc),
-                    end:   toLocalIso(x.endUtc   ?? x.EndUtc),
-                    backColor: "#f8d7da",
-                    borderColor: "#f5c2c7",
-                    barHidden: true,
-                    moveDisabled: true,
-                    resizeDisabled: true,
-                }));
-
-                dp.update({ events });
+            if (dateInput.value !== formDate) {
+              dateInput.value = formDate;
+              if (typeof buildOptions === "function") buildOptions();
             }
+            if (!Array.from(timeSelect.options).some(o => o.value === hhmm)) {
+              if (typeof buildOptions === "function") buildOptions();
+            }
+            timeSelect.value = hhmm;
 
-            // Datum initialisieren
-            const syncDatePicker = () => {
-                if (!dateEl.value) {
-                    dateEl.value = dateInput.value; // Formular-Datum als Default
-                }
-                // DayPilot erwartet YYYY-MM-DD
-                dp.startDate = dateEl.value;
-                dp.update();
-            };
+            dp.clearSelection();
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+          };
 
-            // Modal geöffnet -> initial laden
-            modalEl.addEventListener('shown.bs.modal', async () => {
-                syncDatePicker();
-                await loadBusy(dateEl.value);
-            });
+          dp.init();
 
-            // Reload-Button
-            reload?.addEventListener('click', async () => {
-                syncDatePicker();
-                await loadBusy(dateEl.value);
-            });
+          // Busy-Slots laden (und +60 Min verschoben anzeigen)
+          async function loadBusy(dateStr) {
+            const res = await fetch(`/Termine/Busy?date=${dateStr}`, { credentials: 'same-origin' });
+            if (!res.ok) {
+              dp.update({ events: [] });
+              return;
+            }
+            const items = await res.json(); // [{ startUtc, endUtc }]
 
-            // Datum im Modal geändert
-            dateEl.addEventListener('change', async () => {
-                syncDatePicker();
-                await loadBusy(dateEl.value);
-            });
+            // Anzeige bewusst +60 Minuten verschieben (nur Darstellung im Kalender)
+            const events = items.map((x, i) => ({
+              id: `busy-${i}`,
+              text: "Belegt",
+              start: addMinutesToIso(x.startUtc ?? x.StartUtc, 0),
+              end:   addMinutesToIso(x.endUtc   ?? x.EndUtc,   0),
+              backColor: "#f8d7da",
+              borderColor: "#f5c2c7",
+              barHidden: true,
+              moveDisabled: true,
+              resizeDisabled: true
+            }));
 
-            // Wenn sich das Formular-Datum ändert und das Modal offen ist -> synchronisieren
-            dateInput.addEventListener('change', async () => {
-                if (modalEl.classList.contains('show')) {
-                    dateEl.value = dateInput.value;
-                    syncDatePicker();
-                    await loadBusy(dateEl.value);
-                }
-            });
+            dp.update({ events });
+          }
+
+          // Datum in DayPilot synchronisieren
+          function syncDatePicker() {
+            if (!dateEl.value) {
+              dateEl.value = dateInput.value; // Formular-Datum als Default
+            }
+            dp.startDate = dateEl.value;      // YYYY-MM-DD
+            dp.update();
+          }
+
+          // Modal geöffnet -> initial laden
+          modalEl.addEventListener('shown.bs.modal', async () => {
+            if (!dateEl.value) dateEl.value = dateInput.value;
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          // Reload-Button
+          reload?.addEventListener('click', async () => {
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          // Datum im Modal geändert
+          dateEl.addEventListener('change', async () => {
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          // Formular-Datum geändert, Modal offen -> synchronisieren
+          dateInput.addEventListener('change', async () => {
+            if (modalEl.classList.contains('show')) {
+              dateEl.value = dateInput.value;
+              syncDatePicker();
+              await loadBusy(dateEl.value);
+            }
+          });
         })();
     </script>
+
 }
