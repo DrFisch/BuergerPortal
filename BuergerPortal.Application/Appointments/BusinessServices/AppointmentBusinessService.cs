@@ -4,6 +4,7 @@ using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Appointments;
 using BuergerPortal.Domain.Appointments.Entity;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,77 +16,31 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
     public sealed class AppointmentBusinessService : IAppointmentBusinessService
     {
         private readonly IAppointmentRepository _repo;
+        private readonly IValidator<AppointmentCreateDto> _validator;
 
-        public AppointmentBusinessService(IAppointmentRepository repo)
+        public AppointmentBusinessService(IAppointmentRepository repo, IValidator<AppointmentCreateDto> validator)
         {
             _repo = repo;
+            _validator = validator;
         }
 
         public async Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(currentUserId) || dto.StartUtc >= dto.EndUtc)
-            {
+            if (string.IsNullOrWhiteSpace(currentUserId))
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
-            }
 
-            if (dto.StartUtc < DateTime.UtcNow.AddMinutes(-1))
+            var vr = await _validator.ValidateAsync(dto, ct);
+            if (!vr.IsValid)
             {
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Datum liegt in der Vergangenheit.");
+                var msg = string.Join(" ", vr.Errors.Select(e => e.ErrorMessage).Distinct());
+                return Result<Guid>.Fail(ErrorCodes.Validation, msg);
             }
-
-            // --- NEU: Geschäftszeitenvalidierung in Europe/Berlin ---
-            TimeZoneInfo tz;
-            try
-            {
-                tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
-            }
-            catch
-            {
-                // Fallback, wenn die TZ nicht gefunden wird
-                tz = TimeZoneInfo.Local;
-            }
-
-            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(dto.StartUtc, tz);
-            var endLocal = TimeZoneInfo.ConvertTimeFromUtc(dto.EndUtc, tz);
-
-            // Nur Montag–Freitag
-            if (startLocal.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
-            {
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Nur Montag–Freitag 08:00–12:00.");
-            }
-
-            // Muss am selben Tag liegen (sicherheitshalber)
-            if (startLocal.Date != endLocal.Date)
-            {
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Termin muss am selben Tag enden (bis 12:00).");
-            }
-
-            // Zeitfenster 08:00–12:00
-            var windowStart = startLocal.Date.AddHours(8);   // 08:00
-            var windowEnd = startLocal.Date.AddHours(12);  // 12:00
-
-            if (startLocal < windowStart || endLocal > windowEnd)
-            {
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Termin liegt außerhalb der Geschäftszeit (08:00–12:00).");
-            }
-
-            // Optional: 15-Minuten-Raster (falls gewünscht)
-            bool isQuarter(DateTime t) => t.Minute % 15 == 0 && t.Second == 0 && t.Millisecond == 0;
-            if (!isQuarter(startLocal) || !isQuarter(endLocal))
-            {
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Termine müssen im 15-Minuten-Raster liegen.");
-            }
-
-            // --- Ende Geschäftszeiten-Check ---
 
             var collides = await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct);
             if (collides)
-            {
                 return Result<Guid>.Fail(ErrorCodes.SlotConflict, "Zeitslot bereits belegt.");
-            }
 
-            var entity = new Appointment
-            {
+            var entity = new Appointment {
                 Id = Guid.NewGuid(),
                 Service = dto.Service,
                 Location = dto.Location,
@@ -94,7 +49,6 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 UserId = currentUserId,
                 Status = AppointmentStatus.Booked
             };
-
             await _repo.CreateAsync(entity, ct);
             return Result<Guid>.Success(entity.Id);
         }

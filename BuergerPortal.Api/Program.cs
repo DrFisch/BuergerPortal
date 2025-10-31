@@ -1,6 +1,9 @@
 using BuergerPortal.Application.Appointments.BusinessServices;
+using BuergerPortal.Application.Appointments.DTOs;
+using BuergerPortal.Application.Appointments.Validation;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +17,9 @@ builder.Services.AddSwaggerGen();           // Swagger Generator
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IAppointmentBusinessService, AppointmentBusinessService>();
+
+builder.Services.AddScoped<IValidator<AppointmentCreateDto>, AppointmentCreateDtoValidator>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

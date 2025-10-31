@@ -2,12 +2,9 @@
 using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
-using BuergerPortal.Application.Interfaces.Repositories;
-using BuergerPortal.Domain.Appointments.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace BuergerPortal.Api.Controllers
 {
@@ -18,43 +15,19 @@ namespace BuergerPortal.Api.Controllers
     {
         private readonly IAppointmentBusinessService _svc;
 
-        public AppointmentsController(IAppointmentBusinessService svc)
-            => _svc = svc;
+        public AppointmentsController(IAppointmentBusinessService svc) => _svc = svc;
 
+        // ---------- Create (201/400/409) ----------
         [HttpPost]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Guid>> Create([FromBody] AppointmentCreateRequest req, CancellationToken ct)
         {
+            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
             var userId = User.FindFirst("sub")?.Value
                       ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
-
-            // --- Serverseitige Validierung ---
-            if (req.EndUtc <= req.StartUtc)
-                return Problem(title: "Ungültiger Zeitraum",
-                               detail: "Ende muss nach dem Start liegen.",
-                               statusCode: StatusCodes.Status400BadRequest);
-
-            var duration = req.EndUtc - req.StartUtc;
-            if (duration < TimeSpan.FromMinutes(15) || duration > TimeSpan.FromHours(8))
-                return Problem(title: "Ungültige Dauer",
-                               detail: "Dauer muss zwischen 15 und 480 Minuten liegen.",
-                               statusCode: StatusCodes.Status400BadRequest);
-
-            bool IsQuarterAligned(DateTime dt)
-                => dt.Second == 0 && dt.Millisecond == 0 && (dt.Minute % 15) == 0;
-
-            if (!IsQuarterAligned(req.StartUtc) || !IsQuarterAligned(req.EndUtc))
-                return Problem(title: "Nur 15-Minuten-Takt erlaubt",
-                               detail: "Start und Ende müssen auf :00/:15/:30/:45 liegen.",
-                               statusCode: StatusCodes.Status400BadRequest);
-
-            // Optional: Öffnungszeiten in Europe/Berlin (wenn gewünscht)
-            // var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
-            // var startLocal = TimeZoneInfo.ConvertTimeFromUtc(req.StartUtc, tz);
-            // var endLocal   = TimeZoneInfo.ConvertTimeFromUtc(req.EndUtc, tz);
-            // if (startLocal.Hour < 8 || endLocal.Hour > 18) ...
 
             var dto = new AppointmentCreateDto
             {
@@ -66,19 +39,12 @@ namespace BuergerPortal.Api.Controllers
 
             var result = await _svc.BookAsync(dto, userId, ct);
 
-            if (result.IsSuccess)
-                return CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value);
-
-            if (result.ErrorCode == ErrorCodes.SlotConflict)
-                return Problem(title: "Zeitslot bereits belegt",
-                               detail: "Bitte wählen Sie einen anderen Zeitpunkt.",
-                               statusCode: StatusCodes.Status409Conflict);
-
-            return Problem(title: "Ungültige Eingaben",
-                           detail: result.ErrorMessage ?? "Bitte Eingaben prüfen.",
-                           statusCode: StatusCodes.Status400BadRequest);
+            // Erfolg -> 201 Created; Fehler -> ProblemDetails gemäß ErrorCodes
+            return FromResult(result, id =>
+                new CreatedAtActionResult(nameof(GetById), /* controller */ null, new { id }, id));
         }
 
+        // ---------- Eigene Termine (200) ----------
         [HttpGet("mine")]
         [ProducesResponseType(typeof(IEnumerable<AppointmentListItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AppointmentListItemResponse>>> GetMine(CancellationToken ct)
@@ -87,8 +53,6 @@ namespace BuergerPortal.Api.Controllers
                       ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
 
             var dtos = await _svc.GetAllForUserAsync(userId, ct);
-
-            // falls du strikt Contracts zurückgeben willst:
             var resp = dtos.Select(x => new AppointmentListItemResponse
             {
                 Id = x.Id,
@@ -102,18 +66,20 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
+        // ---------- Placeholder GetById (200/404 später) ----------
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetById(Guid id)
         {
-            return Ok(new { id }); // implementierst du später mit Read-UseCase
+            return Ok(new { id }); // TODO: echten Read-UseCase einbauen
         }
+
+        // ---------- Busy-Slots (200) ----------
         [HttpGet("busy")]
         [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date, CancellationToken ct)
         {
-            // 08:00–12:00 Europe/Berlin -> in UTC umrechnen
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
             var localStart = new DateTime(date.Year, date.Month, date.Day, 8, 0, 0, DateTimeKind.Unspecified);
@@ -133,36 +99,65 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
-        private IActionResult FromResult<T>(Result<T> r, Func<T, IActionResult> onOk)
-        {
-            if (r.IsSuccess)
-                return onOk(r.Value!);
-
-            return r.ErrorCode switch
-            {
-                ErrorCodes.NotFound => Problem(r.ErrorMessage, statusCode: StatusCodes.Status404NotFound),
-                ErrorCodes.Forbidden => Problem(r.ErrorMessage, statusCode: StatusCodes.Status403Forbidden),
-                ErrorCodes.SlotConflict => Problem(r.ErrorMessage, statusCode: StatusCodes.Status409Conflict),
-                ErrorCodes.Validation => Problem(r.ErrorMessage, statusCode: StatusCodes.Status400BadRequest),
-                _ => Problem(r.ErrorMessage ?? "Fehler", statusCode: StatusCodes.Status400BadRequest)
-            };
-        }
-
+        // ---------- Cancel (204/400/403/404) ----------
         [HttpPost("{id:guid}/cancel")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
         {
             var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
             var result = await _svc.CancelAsync(id, userId, ct);
-            return FromResult(result, _ => NoContent());
+            return FromResult(result, () => NoContent());
         }
 
-        // Optional: Hard-Delete
+        // ---------- Delete (204/400/403/404) ----------
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {
             var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
             var result = await _svc.DeleteAsync(id, userId, ct);
-            return FromResult(result, _ => NoContent());
+            return FromResult(result, () => NoContent());
+        }
+
+        // ============================================================
+        // Einheitliches Mapping: Result<T> -> HTTP
+        // ============================================================
+
+        // Für Endpoints mit Rückgabewert (z. B. Create -> Guid)
+        private ActionResult<T> FromResult<T>(Result<T> r, Func<T, ActionResult<T>> onOk)
+        {
+            if (r.IsSuccess)
+                return onOk(r.Value!);
+
+            var problem = MapProblem(r.ErrorCode, r.ErrorMessage);
+            return problem; // ObjectResult ist kompatibel mit ActionResult<T>
+        }
+
+        // Für Endpoints ohne Rückgabewert (z. B. Cancel/Delete -> NoContent)
+        private IActionResult FromResult<T>(Result<T> r, Func<IActionResult> onOk)
+        {
+            if (r.IsSuccess)
+                return onOk();
+
+            return MapProblem(r.ErrorCode, r.ErrorMessage);
+        }
+
+        private ObjectResult MapProblem(string? code, string? message)
+        {
+            return (code) switch
+            {
+                ErrorCodes.NotFound => Problem(message, statusCode: StatusCodes.Status404NotFound),
+                ErrorCodes.Forbidden => Problem(message, statusCode: StatusCodes.Status403Forbidden),
+                ErrorCodes.SlotConflict => Problem(message, statusCode: StatusCodes.Status409Conflict),
+                ErrorCodes.Validation => Problem(message, statusCode: StatusCodes.Status400BadRequest),
+                _ => Problem(message ?? "Fehler", statusCode: StatusCodes.Status400BadRequest)
+            };
         }
     }
 }
