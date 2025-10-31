@@ -2,7 +2,20 @@
 
 namespace BuergerPortal.Web.Features.Termine.ViewModels
 {
-    public enum ServiceType { Ausweis = 1, Reisepass = 2, Meldebescheinigung = 3 }
+    public enum ServiceType
+    {
+        [Display(Name = "Allgemeine Beratung")]
+        AllgemeineBeratung = 1,
+
+        [Display(Name = "Dokumente und Ausweise")]
+        DokumenteUndAusweise = 2,
+
+        [Display(Name = "Meldeangelegenheiten")]
+        Meldeangelegenheiten = 3,
+
+        [Display(Name = "Sonstiges")]
+        Sonstiges = 4
+    }
 
     public enum LocationType
     {
