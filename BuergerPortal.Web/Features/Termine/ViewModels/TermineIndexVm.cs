@@ -11,7 +11,7 @@
         public string Dienst { get; set; } = "";
         public DateTime Datum { get; set; }    // nur Datum nutzen wir in der View
         public string Uhrzeit { get; set; } = ""; // "HH:mm"
-        public string Standort { get; set; } = "";
+        public LocationType Location { get; set; } 
         public bool Storniert { get; set; }
     }
 }

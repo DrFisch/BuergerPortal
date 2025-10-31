@@ -1,6 +1,6 @@
 ﻿using BuergerPortal.Application.Interfaces.Repositories;
-using BuergerPortal.Domain.Appointments;
 using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Domain.Appointments.Enums;
 using BuergerPortal.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,7 +16,7 @@ namespace BuergerPortal.Infrastructure.Repositories
         private readonly PortalDbContext _db;
         public AppointmentRepository(PortalDbContext db) => _db = db;
 
-        public Task<bool> ExistsOverlapAsync(string userId, DateTime startUtc, DateTime endUtc, CancellationToken ct)
+        public Task<bool> ExistsOverlapAsync(Guid userId, DateTime startUtc, DateTime endUtc, CancellationToken ct)
             => _db.Appointments.AnyAsync(a =>
                    a.UserId == userId &&
                    a.Status == AppointmentStatus.Booked &&
@@ -28,7 +28,7 @@ namespace BuergerPortal.Infrastructure.Repositories
             _db.Appointments.Add(entity);
             await _db.SaveChangesAsync(ct);
         }
-        public Task<List<Appointment>> GetAllForUserAsync(string userId, CancellationToken ct)
+        public Task<List<Appointment>> GetAllForUserAsync(Guid userId, CancellationToken ct)
         {
             return _db.Appointments
               .AsNoTracking()

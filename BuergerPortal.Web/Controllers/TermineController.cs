@@ -57,7 +57,7 @@ namespace BuergerPortal.Web.Controllers
                         Dienst = x.Service.ToString(),
                         Datum = startLocal.Date,
                         Uhrzeit = $"{startLocal:HH\\:mm} - {endLocal:HH\\:mm}",
-                        Standort = x.Location,
+                        Location = x.Location,
                         Storniert = x.Cancelled
                     };
                 }).ToList()

@@ -1,4 +1,4 @@
-﻿using BuergerPortal.Domain.Appointments;
+﻿using BuergerPortal.Domain.Appointments.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

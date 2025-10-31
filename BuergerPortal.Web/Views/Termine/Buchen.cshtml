@@ -27,9 +27,7 @@
     
     <div>
         <label class="form-label">Dienst</label>
-        <!-- Enum-Items rendern -->
-        <select asp-for="Service"
-                class="form-select"
+        <select asp-for="Service" class="form-select"
                 asp-items="Html.GetEnumSelectList<ServiceType>()">
         </select>
         <span asp-validation-for="Service" class="text-danger"></span>
@@ -37,7 +35,9 @@
 
     <div>
         <label class="form-label">Standort</label>
-        <input asp-for="Location" class="form-control" />
+        <select asp-for="Location" class="form-select"
+                asp-items="Html.GetEnumSelectList<LocationType>()">
+        </select>
         <span asp-validation-for="Location" class="text-danger"></span>
     </div>
 
@@ -62,14 +62,15 @@
             <span asp-validation-for="LocalTime" class="text-danger"></span>
         </div>
     </div>
-    
-
 
     <div>
-        <label class="form-label">Dauer (Min.)</label>
-        <input asp-for="DurationMinutes" type="number" min="15" step="15" class="form-control" />
-        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+        <label class="form-label">Dauer</label>
+        <select asp-for="Duration" class="form-select" id="durationSelect"
+                asp-items="Html.GetEnumSelectList<DurationOption>()">
+        </select>
+        <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
+
 
     <button class="btn btn-primary">Termin buchen</button>
 </form>
@@ -114,8 +115,8 @@
 
         const dateInput     = document.getElementById('dateInput');
         const timeSelect    = document.getElementById('timeSelect');
-        const durationInput = document.getElementById('DurationMinutes');
-        const form          = document.querySelector('form[method="post"]');
+        const durationSelect = document.getElementById('durationSelect'); // NEU
+            const form          = document.querySelector('form[method="post"]');
 
         function isWeekendDateStr(yyyyMmDd) {
           const d = new Date(yyyyMmDd + "T00:00:00");
@@ -211,11 +212,10 @@
           buildOptions();
         });
 
-        // Frontend-Validierung: Start + Dauer darf nicht über 12:00 hinauslaufen
-        function violatesBusinessEnd() {
+            function violatesBusinessEnd() {
           if (!timeSelect.value) return false;
           const [hh, mm] = timeSelect.value.split(':').map(Number);
-          const dur = parseInt(durationInput?.value ?? "15", 10) || 15;
+          const dur = parseInt(durationSelect?.value ?? "15", 10) || 15; // NEU
 
           const d = new Date(dateInput.value + "T00:00:00");
           const start = new Date(d);
@@ -227,7 +227,7 @@
           const cutoff = new Date(d);
           cutoff.setHours(END_HOUR, 0, 0, 0);
 
-          return end > cutoff; // z.B. 11:45 + 30 => 12:15 -> true
+          return end > cutoff;
         }
 
         function showOrHideClientError() {
@@ -236,19 +236,16 @@
             msgEl = document.createElement('div');
             msgEl.id = 'clientErrorMsg';
             msgEl.className = 'text-danger mt-1';
-            durationInput.closest('div').appendChild(msgEl);
+            durationSelect.closest('div').appendChild(msgEl); // NEU
           }
-          if (violatesBusinessEnd()) {
-            msgEl.textContent = `Die gewählte Dauer überschreitet die Geschäftszeit bis ${END_HOUR}:00.`;
-          } else {
-            msgEl.textContent = '';
-          }
+          msgEl.textContent = violatesBusinessEnd()
+            ? `Die gewählte Dauer überschreitet die Geschäftszeit bis ${END_HOUR}:00.`
+            : '';
         }
 
         timeSelect.addEventListener('change', showOrHideClientError);
-        durationInput.addEventListener('input', showOrHideClientError);
+        durationSelect.addEventListener('change', showOrHideClientError); // NEU
 
-        // Beim Absenden zusätzlich prüfen
         form.addEventListener('submit', (e) => {
           if (violatesBusinessEnd()) {
             e.preventDefault();

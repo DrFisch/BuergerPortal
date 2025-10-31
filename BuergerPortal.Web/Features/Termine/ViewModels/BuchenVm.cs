@@ -4,13 +4,27 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
 {
     public enum ServiceType { Ausweis = 1, Reisepass = 2, Meldebescheinigung = 3 }
 
+    public enum LocationType
+    {
+        [Display(Name = "Bürgeramt Mitte")] BuergermtMitte = 1,
+        [Display(Name = "Bürgeramt Nord")] BuergermtNord = 2,
+        [Display(Name = "Bürgeramt Süd")] BuergermtSued = 3
+    }
+
+    public enum DurationOption
+    {
+        [Display(Name = "15 Minuten")] Min15 = 15,
+        [Display(Name = "30 Minuten")] Min30 = 30,
+        [Display(Name = "45 Minuten")] Min45 = 45
+    }
+
     public sealed class BuchenVm
     {
         [Required]
         public ServiceType Service { get; set; }
 
-        [Required, StringLength(200)]
-        public string Location { get; set; } = "Bürgeramt Mitte";
+        [Required]  // jetzt Enum statt string
+        public LocationType Location { get; set; } = LocationType.BuergermtMitte;
 
         [Required, DataType(DataType.Date)]
         public DateTime LocalDate { get; set; } = DateTime.Today.AddDays(1);
@@ -18,8 +32,12 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
         [Required, DataType(DataType.Time)]
         public TimeSpan LocalTime { get; set; } = NextQuarterHour(DateTime.Now).TimeOfDay;
 
-        [Range(15, 480)]
-        public int DurationMinutes { get; set; } = 15;
+        [Required]
+        [EnumDataType(typeof(DurationOption))]
+        public DurationOption Duration { get; set; } = DurationOption.Min15;
+
+        // Für die API: Minutenwert aus dem Enum
+        public int DurationMinutes => (int)Duration;
 
         private static DateTime NextQuarterHour(DateTime dt)
         {

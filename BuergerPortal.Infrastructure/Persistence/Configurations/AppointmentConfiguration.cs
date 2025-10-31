@@ -1,5 +1,5 @@
-﻿using BuergerPortal.Domain.Appointments;
-using BuergerPortal.Domain.Appointments.Entity;
+﻿using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Domain.Appointments.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

@@ -2,8 +2,8 @@
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Repositories;
-using BuergerPortal.Domain.Appointments;
 using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Domain.Appointments.Enums;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -24,10 +24,10 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             _validator = validator;
         }
 
-        public async Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, string currentUserId, CancellationToken ct)
+        public async Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, Guid currentUserId, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(currentUserId))
-                return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
+            if (currentUserId == Guid.Empty)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Benutzer-ID.");
 
             var vr = await _validator.ValidateAsync(dto, ct);
             if (!vr.IsValid)
@@ -53,7 +53,7 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             return Result<Guid>.Success(entity.Id);
         }
 
-        public async Task<List<AppointmentListItemDto>> GetAllForUserAsync(string userId, CancellationToken ct)
+        public async Task<List<AppointmentListItemDto>> GetAllForUserAsync(Guid userId, CancellationToken ct)
         {
             var list = await _repo.GetAllForUserAsync(userId, ct);
 
@@ -87,9 +87,9 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 })
                 .ToList();
         }
-        public async Task<Result<Guid>> CancelAsync(Guid id, string currentUserId, CancellationToken ct)
+        public async Task<Result<Guid>> CancelAsync(Guid id, Guid currentUserId, CancellationToken ct)
         {
-            if (id == Guid.Empty || string.IsNullOrWhiteSpace(currentUserId))
+            if (id == Guid.Empty || currentUserId==Guid.Empty)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
 
             var appt = await _repo.GetByIdAsync(id, ct);
@@ -109,9 +109,9 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             return Result<Guid>.Success(appt.Id);
         }
 
-        public async Task<Result<Guid>> DeleteAsync(Guid id, string currentUserId, CancellationToken ct)
+        public async Task<Result<Guid>> DeleteAsync(Guid id, Guid currentUserId, CancellationToken ct)
         {
-            if (id == Guid.Empty || string.IsNullOrWhiteSpace(currentUserId))
+            if (id == Guid.Empty || currentUserId == Guid.Empty)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
 
             var appt = await _repo.GetByIdAsync(id, ct);

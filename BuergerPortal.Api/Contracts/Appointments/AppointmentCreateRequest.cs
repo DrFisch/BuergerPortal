@@ -1,4 +1,4 @@
-﻿using BuergerPortal.Domain.Appointments;
+﻿using BuergerPortal.Domain.Appointments.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace BuergerPortal.Api.Contracts.Appointments
@@ -8,8 +8,8 @@ namespace BuergerPortal.Api.Contracts.Appointments
         [Required]
         public ServiceType Service { get; init; }
 
-        [Required, StringLength(200)]
-        public string Location { get; init; } = "";
+        [Required]
+        public LocationType Location { get; init; }
 
         // Erwartet UTC-Zeiten
         [Required]

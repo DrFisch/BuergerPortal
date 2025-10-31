@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BuergerPortal.Domain.Appointments
+namespace BuergerPortal.Domain.Appointments.Enums
 {
     public enum ServiceType { Ausweis = 1, Reisepass = 2, Meldebescheinigung = 3 }
 }

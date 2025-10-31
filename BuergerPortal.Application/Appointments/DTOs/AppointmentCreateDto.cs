@@ -1,4 +1,4 @@
-﻿using BuergerPortal.Domain.Appointments;
+﻿using BuergerPortal.Domain.Appointments.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace BuergerPortal.Application.Appointments.DTOs
     public sealed class AppointmentCreateDto
     {
         public ServiceType Service { get; init; }
-        public string Location { get; init; } = "";
+        public LocationType Location { get; init; } 
         public DateTime StartUtc { get; init; }
         public DateTime EndUtc { get; init; }
     }

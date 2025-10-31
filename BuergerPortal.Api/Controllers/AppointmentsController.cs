@@ -24,10 +24,12 @@ namespace BuergerPortal.Api.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Guid>> Create([FromBody] AppointmentCreateRequest req, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            var userId = User.FindFirst("sub")?.Value
-                      ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
+            var sub = User.FindFirst("sub")?.Value;
+            if (!Guid.TryParse(sub, out var userId))
+                return Problem("Ungültiges Token (sub).", statusCode: StatusCodes.Status401Unauthorized);
 
             var dto = new AppointmentCreateDto
             {
@@ -41,7 +43,7 @@ namespace BuergerPortal.Api.Controllers
 
             // Erfolg -> 201 Created; Fehler -> ProblemDetails gemäß ErrorCodes
             return FromResult(result, id =>
-                new CreatedAtActionResult(nameof(GetById), /* controller */ null, new { id }, id));
+                new CreatedAtActionResult(nameof(GetById), null, new { id }, id));
         }
 
         // ---------- Eigene Termine (200) ----------
@@ -49,10 +51,12 @@ namespace BuergerPortal.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AppointmentListItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AppointmentListItemResponse>>> GetMine(CancellationToken ct)
         {
-            var userId = User.FindFirst("sub")?.Value
-                      ?? throw new UnauthorizedAccessException("Kein Benutzer im Token.");
+            var sub = User.FindFirst("sub")?.Value;
+            if (!Guid.TryParse(sub, out var userId))
+                return Problem("Ungültiges Token (sub).", statusCode: StatusCodes.Status401Unauthorized);
 
             var dtos = await _svc.GetAllForUserAsync(userId, ct);
+
             var resp = dtos.Select(x => new AppointmentListItemResponse
             {
                 Id = x.Id,
@@ -107,12 +111,13 @@ namespace BuergerPortal.Api.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
         {
-            var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
+            if (!TryGetUserId(out var userId))
+                return Problem("Ungültiges Token (sub).", statusCode: StatusCodes.Status401Unauthorized);
+
             var result = await _svc.CancelAsync(id, userId, ct);
             return FromResult(result, () => NoContent());
         }
 
-        // ---------- Delete (204/400/403/404) ----------
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -120,7 +125,9 @@ namespace BuergerPortal.Api.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {
-            var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
+            if (!TryGetUserId(out var userId))
+                return Problem("Ungültiges Token (sub).", statusCode: StatusCodes.Status401Unauthorized);
+
             var result = await _svc.DeleteAsync(id, userId, ct);
             return FromResult(result, () => NoContent());
         }
@@ -158,6 +165,12 @@ namespace BuergerPortal.Api.Controllers
                 ErrorCodes.Validation => Problem(message, statusCode: StatusCodes.Status400BadRequest),
                 _ => Problem(message ?? "Fehler", statusCode: StatusCodes.Status400BadRequest)
             };
+        }
+        private bool TryGetUserId(out Guid userId)
+        {
+            userId = Guid.Empty;
+            var sub = User.FindFirst("sub")?.Value;
+            return Guid.TryParse(sub, out userId);
         }
     }
 }

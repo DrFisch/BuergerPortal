@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BuergerPortal.Domain.Appointments.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,10 +11,10 @@ namespace BuergerPortal.Domain.Appointments.Entity
     {
         public Guid Id { get; set; }
         public ServiceType Service { get; set; }
-        public string Location { get; set; } = "Bürgeramt Mitte";
+        public LocationType Location { get; set; } = LocationType.BuergermtMitte;
         public DateTime StartUtc { get; set; }
         public DateTime EndUtc { get; set; }
-        public string UserId { get; set; } = default!;
+        public Guid UserId { get; set; } = default!;
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Booked;
 
         // Concurrency
