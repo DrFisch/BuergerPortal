@@ -18,6 +18,8 @@ namespace BuergerPortal.Application.Interfaces.Repositories
         // Task<Appointment?> GetAsync(Guid id, CancellationToken ct);
         // Task DeleteAsync(Guid id, CancellationToken ct);
         Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct);
-
+        Task<Appointment?> GetByIdAsync(Guid id, CancellationToken ct);
+        Task UpdateAsync(Appointment entity, CancellationToken ct);
+        Task DeleteAsync(Appointment entity, CancellationToken ct);
     }
 }

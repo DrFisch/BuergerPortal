@@ -44,5 +44,19 @@ namespace BuergerPortal.Infrastructure.Repositories
                       a.StartUtc < toUtc && fromUtc < a.EndUtc)
           .ToListAsync(ct);
         }
+        public Task<Appointment?> GetByIdAsync(Guid id, CancellationToken ct)
+        => _db.Appointments.AsTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        public async Task UpdateAsync(Appointment entity, CancellationToken ct)
+        {
+            _db.Appointments.Update(entity);
+            await _db.SaveChangesAsync(ct);
+        }
+
+        public async Task DeleteAsync(Appointment entity, CancellationToken ct)
+        {
+            _db.Remove(entity);
+            await _db.SaveChangesAsync(ct);
+        }
     }
 }

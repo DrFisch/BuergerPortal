@@ -133,5 +133,42 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 })
                 .ToList();
         }
+        public async Task<Result<Guid>> CancelAsync(Guid id, string currentUserId, CancellationToken ct)
+        {
+            if (id == Guid.Empty || string.IsNullOrWhiteSpace(currentUserId))
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
+
+            var appt = await _repo.GetByIdAsync(id, ct);
+            if (appt is null)
+                return Result<Guid>.Fail(ErrorCodes.NotFound, "Termin nicht gefunden.");
+
+            if (appt.UserId != currentUserId) // oder Rollenprüfung
+                return Result<Guid>.Fail(ErrorCodes.Forbidden, "Keine Berechtigung.");
+
+            if (appt.Status == AppointmentStatus.Cancelled)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Termin ist bereits storniert.");
+
+            appt.Status = AppointmentStatus.Cancelled;
+            
+
+            await _repo.UpdateAsync(appt, ct);
+            return Result<Guid>.Success(appt.Id);
+        }
+
+        public async Task<Result<Guid>> DeleteAsync(Guid id, string currentUserId, CancellationToken ct)
+        {
+            if (id == Guid.Empty || string.IsNullOrWhiteSpace(currentUserId))
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Ungültige Eingaben.");
+
+            var appt = await _repo.GetByIdAsync(id, ct);
+            if (appt is null)
+                return Result<Guid>.Fail(ErrorCodes.NotFound, "Termin nicht gefunden.");
+
+            if (appt.UserId != currentUserId)
+                return Result<Guid>.Fail(ErrorCodes.Forbidden, "Keine Berechtigung.");
+
+            await _repo.DeleteAsync(appt, ct);
+            return Result<Guid>.Success(id);
+        }
     }
 }

@@ -132,5 +132,37 @@ namespace BuergerPortal.Api.Controllers
 
             return Ok(resp);
         }
+
+        private IActionResult FromResult<T>(Result<T> r, Func<T, IActionResult> onOk)
+        {
+            if (r.IsSuccess)
+                return onOk(r.Value!);
+
+            return r.ErrorCode switch
+            {
+                ErrorCodes.NotFound => Problem(r.ErrorMessage, statusCode: StatusCodes.Status404NotFound),
+                ErrorCodes.Forbidden => Problem(r.ErrorMessage, statusCode: StatusCodes.Status403Forbidden),
+                ErrorCodes.SlotConflict => Problem(r.ErrorMessage, statusCode: StatusCodes.Status409Conflict),
+                ErrorCodes.Validation => Problem(r.ErrorMessage, statusCode: StatusCodes.Status400BadRequest),
+                _ => Problem(r.ErrorMessage ?? "Fehler", statusCode: StatusCodes.Status400BadRequest)
+            };
+        }
+
+        [HttpPost("{id:guid}/cancel")]
+        public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
+        {
+            var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
+            var result = await _svc.CancelAsync(id, userId, ct);
+            return FromResult(result, _ => NoContent());
+        }
+
+        // Optional: Hard-Delete
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        {
+            var userId = User?.FindFirst("sub")?.Value ?? User?.Identity?.Name ?? string.Empty;
+            var result = await _svc.DeleteAsync(id, userId, ct);
+            return FromResult(result, _ => NoContent());
+        }
     }
 }

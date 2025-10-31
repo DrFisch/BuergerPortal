@@ -173,10 +173,44 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Stornieren(Guid id)
+        [Authorize] // falls nicht auf dem Controller
+        public async Task<IActionResult> Stornieren(Guid id, CancellationToken ct)
         {
-            // TODO: später POST /api/appointments/{id}/cancel
-            TempData["BookingSuccess"] = "Termin wurde storniert (Mock).";
+            if (id == Guid.Empty)
+            {
+                TempData["BookingError"] = "Ungültige Termin-ID.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var client = _cf.CreateClient("BuergerPortalApi"); // named client mit Auth-Handler
+                                                                   // Variante A: Soft-Cancel
+                var res = await client.PostAsync($"api/appointments/{id}/cancel", content: null, ct);
+
+                // Variante B (Hard-Delete): 
+                // var res = await client.DeleteAsync($"api/appointments/{id}", ct);
+
+                if (res.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    TempData["BookingError"] = "Nicht autorisiert. Bitte erneut anmelden.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var msg = await res.Content.ReadAsStringAsync(ct);
+                    TempData["BookingError"] = string.IsNullOrWhiteSpace(msg) ? "Stornierung fehlgeschlagen." : msg;
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["BookingSuccess"] = "Termin wurde storniert.";
+            }
+            catch (Exception)
+            {
+                TempData["BookingError"] = "Stornierung derzeit nicht möglich.";
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }
