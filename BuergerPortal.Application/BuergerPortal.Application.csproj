@@ -15,4 +15,8 @@
     <ProjectReference Include="..\BuergerPortal.Domain\BuergerPortal.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Antraege\AntragSperrmuell\" />
+  </ItemGroup>
+
 </Project>
