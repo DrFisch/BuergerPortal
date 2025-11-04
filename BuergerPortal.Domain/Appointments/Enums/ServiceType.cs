@@ -15,6 +15,8 @@ namespace BuergerPortal.Domain.Appointments.Enums
 
         Meldeangelegenheiten = 3,
 
-        Sonstiges = 4
+        AntragRueckfrage=4,
+
+        Sonstiges = 5
     }
 }

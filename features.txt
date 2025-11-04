@@ -24,5 +24,16 @@ Wichtige Features der App:
 - Mangelmelder
 
 
-Morgen:
-- Kalender ansicht beim Termin
+ANtrag Features:
+
+- 2 Beispiel-Anträge: Sperrmüll & Reisepass (jeweils vollständiger CRUD).
+
+- Gemeinsame Basisklasse Antrag + typspezifische Detailobjekte.
+
+- Leichte, aber nützliche Verknüpfung zu Terminen:
+
+	- Nach Absenden eines Antrags: Terminvorschläge anbieten (Purpose-bezogen).
+
+	- Antrag kann optional eine AppointmentId referenzieren (z. B. Abholtermin für Sperrmüll, Behörden-Slot für Reisepass).
+
+	- Dashboard zeigt Anträge inkl. verknüpftem Termin und Status.

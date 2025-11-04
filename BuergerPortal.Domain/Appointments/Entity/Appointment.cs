@@ -17,6 +17,10 @@ namespace BuergerPortal.Domain.Appointments.Entity
         public Guid UserId { get; set; } = default!;
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Booked;
 
+        //Antrag
+        public Guid? AntragId { get; set; }          
+
+
         // Concurrency
         public byte[] RowVersion { get; set; } = default!;
     }
