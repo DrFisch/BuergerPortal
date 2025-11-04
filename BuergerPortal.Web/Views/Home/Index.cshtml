@@ -39,23 +39,31 @@
             </div>
         </div>
 
-        <!-- Antragsstatus -->
+        <!-- Antraege -->
         <div class="col">
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Antragsstatus</h5>
-                        <span class="badge bg-info">Neu</span>
+                        <h5 class="card-title mb-0">Anträge</h5>
+                        <i class="bi bi-file-earmark-text fs-4 opacity-50"></i>
                     </div>
-                    <p class="card-text text-muted">Status mit Vorgangsnummer oder E-Mail prüfen.</p>
-                    <form class="d-flex gap-2" onsubmit="return false;">
-                        <input class="form-control" placeholder="Vorgangsnummer" />
-                        <button class="btn btn-outline-secondary">Prüfen</button>
-                    </form>
+
+                    <p class="card-text text-muted mb-3">
+                        Hier kannst du neue Anträge stellen, z.&nbsp;B. für Reisepass oder Sperrmüll,
+                        und den Bearbeitungsstatus deiner bestehenden Anträge verfolgen.
+                    </p>
+
+                    <a asp-controller="Antraege" asp-action="Index" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-circle me-1"></i> Zu meinen Anträgen
+                    </a>
                 </div>
-                <div class="card-footer bg-transparent small text-muted">Letzte Aktualisierung wird angezeigt</div>
+
+                <div class="card-footer bg-transparent small text-muted">
+                    Zugriff auf alle Anträge &amp; Statusübersicht
+                </div>
             </div>
         </div>
+
 
         <!-- Benachrichtigungen -->
         <div class="col">

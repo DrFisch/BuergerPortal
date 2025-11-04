@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Antraege\" />
     <Folder Include="wwwroot\lib\daypilot\" />
   </ItemGroup>
 
