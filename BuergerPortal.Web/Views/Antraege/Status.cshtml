@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Meine Antragsstatus";
+}
+<div class="container py-4">
+    @if (TempData["AntragSuccess"] is string ok)
+    {
+        <div class="alert alert-success">@ok</div>
+    }
+    <h1 class="h4 mb-3">Meine Anträge</h1>
+    <p>Hier später: Liste aller Reisepassanträge aus <code>GET /api/antraege/reisepass</code>.</p>
+</div>
