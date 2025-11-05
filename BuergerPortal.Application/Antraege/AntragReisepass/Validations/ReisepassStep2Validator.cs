@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Application.Antraege.AntragReisepass.Validations
 {
-    public class ReisepassStep2Validator : AbstractValidator<ReisepassStep2Dto>
+    public sealed class ReisepassStep2Validator : AbstractValidator<ReisepassStep2Dto>
     {
         public ReisepassStep2Validator()
         {

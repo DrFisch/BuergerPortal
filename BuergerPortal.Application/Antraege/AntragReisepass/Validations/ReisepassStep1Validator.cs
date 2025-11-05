@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Application.Antraege.AntragReisepass.Validations
 {
-    public class ReisepassStep1Validator : AbstractValidator<ReisepassStep1Dto>
+    public sealed class ReisepassStep1Validator : AbstractValidator<ReisepassStep1Dto>
     {
         public ReisepassStep1Validator()
         {
@@ -17,7 +17,8 @@ namespace BuergerPortal.Application.Antraege.AntragReisepass.Validations
             RuleFor(x => x.Geburtsdatum)
                 .LessThan(DateOnly.FromDateTime(DateTime.UtcNow.Date));
             RuleFor(x => x.Email)
-                .EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.Email));
+                .EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.Email))
+                .MaximumLength(200);
             RuleFor(x => x.Telefon)
                 .MaximumLength(50).When(x => !string.IsNullOrWhiteSpace(x.Telefon));
         }

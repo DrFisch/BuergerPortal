@@ -23,6 +23,7 @@ namespace BuergerPortal.Infrastructure
                 opt.UseSqlServer(cs));
 
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IReisepassRepository, ReisepassRepository>();
 
             return services;
         }

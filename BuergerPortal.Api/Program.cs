@@ -1,3 +1,4 @@
+using BuergerPortal.Application;
 using BuergerPortal.Application.Appointments.BusinessServices;
 using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Appointments.Validation;
@@ -16,9 +17,8 @@ builder.Services.AddEndpointsApiExplorer(); // erforderlich für Swagger
 builder.Services.AddSwaggerGen();           // Swagger Generator
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<IAppointmentBusinessService, AppointmentBusinessService>();
+builder.Services.AddApplicationServices();
 
-builder.Services.AddScoped<IValidator<AppointmentCreateDto>, AppointmentCreateDtoValidator>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -1,6 +1,10 @@
 ﻿using BuergerPortal.Application.Antraege.AntragReisepass.DTOs;
+using BuergerPortal.Application.Antraege.AntragReisepass.Mappings;
+using BuergerPortal.Application.Common;
+using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Antrag.Entity;
+using BuergerPortal.Domain.Antrag.Enums;
 using BuergerPortal.Domain.Antrag.ValueObjects;
 using FluentValidation;
 using System;
@@ -11,82 +15,73 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Application.Antraege.AntragReisepass.BusinessServices
 {
-    public class ReisepassAntragService
+    public sealed class ReisepassAntragBusinessService : IReisepassAntragBusinessService
     {
-        //private readonly IAntragRepository _repo;
-        //private readonly IUnitOfWork _uow;
-        //private readonly ICurrentUser _user;
-        //private readonly IDateTimeProvider _time;
-        //private readonly IValidator<ReisepassStep1Dto> _step1Validator;
-        //private readonly IValidator<ReisepassStep2Dto> _step2Validator;
+        private readonly IReisepassRepository _repo;
+        private readonly IValidator<ReisepassStep1Dto> _v1;
+        private readonly IValidator<ReisepassStep2Dto> _v2;
 
-        //public ReisepassAntragService(
-        //    IAntragRepository repo,
-        //    IUnitOfWork uow,
-        //    ICurrentUser user,
-        //    IDateTimeProvider time,
-        //    IValidator<ReisepassStep1Dto> step1Validator,
-        //    IValidator<ReisepassStep2Dto> step2Validator)
-        //{
-        //    _repo = repo; _uow = uow; _user = user; _time = time;
-        //    _step1Validator = step1Validator; _step2Validator = step2Validator;
-        //}
+        public ReisepassAntragBusinessService(
+            IReisepassRepository repo,
+            IValidator<ReisepassStep1Dto> v1,
+            IValidator<ReisepassStep2Dto> v2)
+        { _repo = repo; _v1 = v1; _v2 = v2; }
 
-        //public async Task<Guid> CreateStep1Async(ReisepassStep1Dto dto, CancellationToken ct = default)
-        //{
-        //    await _step1Validator.ValidateAndThrowAsync(dto, ct);
+        public async Task<Result<Guid>> CreateStep1Async(ReisepassStep1Dto dto, Guid userId, CancellationToken ct)
+        {
+            var vr = await _v1.ValidateAsync(dto, ct);
+            if (!vr.IsValid) return Result<Guid>.Fail(ErrorCodes.Validation, string.Join("; ", vr.Errors.Select(e => e.ErrorMessage)));
 
-        //    if (string.IsNullOrWhiteSpace(_user.UserId))
-        //        throw new InvalidOperationException("User not authenticated.");
+            var entity = ReisepassMapper.ToNewEntity(dto, userId);
+            await _repo.AddAsync(entity, ct); // speichert selbst
+            return Result<Guid>.Success(entity.Id);
+        }
 
-        //    var entity = new ReisepassAntrag();
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.ApplicantUserId))!
-        //          .SetValue(entity, _user.UserId);
-        //    // Domain-Methoden nutzen, falls vorhanden:
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Name))!
-        //          .SetValue(entity, new PersonName(dto.Vorname, dto.Nachname));
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Birth))!
-        //          .SetValue(entity, new PersonBirth(dto.Geburtsdatum));
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Kontakt))!
-        //          .SetValue(entity, new Kontakt(dto.Email, dto.Telefon));
+        public async Task<Result<bool>> UpdateStep2Async(Guid id, ReisepassStep2Dto dto, Guid userId, CancellationToken ct)
+        {
+            var vr = await _v2.ValidateAsync(dto, ct);
+            if (!vr.IsValid) return Result<bool>.Fail(ErrorCodes.Validation, string.Join("; ", vr.Errors.Select(e => e.ErrorMessage)));
 
-        //    await _repo.AddReisepassAsync(entity, ct);
-        //    await _uow.SaveChangesAsync(ct);
-        //    return entity.Id;
-        //}
+            var a = await _repo.GetAsync(id, ct);
+            if (a is null) return Result<bool>.Fail(ErrorCodes.NotFound, "Antrag nicht gefunden.");
+            if (a.ApplicantUserId != userId) return Result<bool>.Fail(ErrorCodes.Forbidden, "Zugriff verweigert.");
 
-        //public async Task UpdateStep2Async(Guid antragId, ReisepassStep2Dto dto, CancellationToken ct = default)
-        //{
-        //    await _step2Validator.ValidateAndThrowAsync(dto, ct);
+            a.Express = dto.Express;
+            a.AltpassVorhanden = dto.AltpassVorhanden;
+            a.Hinweis = string.IsNullOrWhiteSpace(dto.Hinweis) ? null : dto.Hinweis.Trim();
 
-        //    var entity = await _repo.GetReisepassAntragByIdAsync(antragId, ct)
-        //              ?? throw new KeyNotFoundException("Antrag nicht gefunden.");
+            await _repo.UpdateAsync(a, ct); // speichert selbst
+            return Result<bool>.Success(true);
+        }
 
-        //    if (entity.ApplicantUserId != _user.UserId)
-        //        throw new UnauthorizedAccessException();
+        public async Task<Result<bool>> SubmitAsync(Guid id, Guid userId, CancellationToken ct)
+        {
+            var a = await _repo.GetAsync(id, ct);
+            if (a is null) return Result<bool>.Fail(ErrorCodes.NotFound, "Antrag nicht gefunden.");
+            if (a.ApplicantUserId != userId) return Result<bool>.Fail(ErrorCodes.Forbidden, "Zugriff verweigert.");
 
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Express))!.SetValue(entity, dto.Express);
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.AltpassVorhanden))!.SetValue(entity, dto.AltpassVorhanden);
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Hinweis))!.SetValue(entity, string.IsNullOrWhiteSpace(dto.Hinweis) ? null : dto.Hinweis.Trim());
+            if (a.Status is not (AntragStatus.Entwurf or AntragStatus.InPruefung))
+                return Result<bool>.Fail(ErrorCodes.Validation, $"Statuswechsel nicht erlaubt aus {a.Status}.");
 
-        //    await _repo.UpdateAsync(entity, ct);
-        //    await _uow.SaveChangesAsync(ct);
-        //}
+            a.Status = AntragStatus.Eingereicht;
+            a.SubmittedUtc = DateTime.UtcNow;
 
-        //public async Task SubmitAsync(Guid antragId, CancellationToken ct = default)
-        //{
-        //    var entity = await _repo.GetReisepassAntragByIdAsync(antragId, ct)
-        //              ?? throw new KeyNotFoundException("Antrag nicht gefunden.");
+            await _repo.UpdateAsync(a, ct); // speichert selbst
+            return Result<bool>.Success(true);
+        }
 
-        //    if (entity.ApplicantUserId != _user.UserId)
-        //        throw new UnauthorizedAccessException();
+        public async Task<Result<ReisepassDetailDto>> GetAsync(Guid id, Guid userId, CancellationToken ct)
+        {
+            var a = await _repo.GetAsync(id, ct);
+            if (a is null) return Result<ReisepassDetailDto>.Fail(ErrorCodes.NotFound, "Antrag nicht gefunden.");
+            if (a.ApplicantUserId != userId) return Result<ReisepassDetailDto>.Fail(ErrorCodes.Forbidden, "Zugriff verweigert.");
+            return Result<ReisepassDetailDto>.Success(ReisepassMapper.ToDetailDto(a));
+        }
 
-        //    // Domain-Invariante: Statuswechsel
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.Status))!.SetValue(entity, Domain.Antrag.Enums.AntragStatus.Eingereicht);
-        //    entity.GetType().GetProperty(nameof(ReisepassAntrag.SubmittedUtc))!.SetValue(entity, _time.UtcNow);
-
-        //    await _repo.UpdateAsync(entity, ct);
-        //    await _uow.SaveChangesAsync(ct);
-        //}
+        public async Task<IReadOnlyList<ReisepassSummaryDto>> GetAllForUserAsync(Guid userId, CancellationToken ct)
+        {
+            var list = await _repo.GetAllForUserAsync(userId, ct);
+            return list.Select(ReisepassMapper.ToSummaryDto).ToList();
+        }
     }
 }
