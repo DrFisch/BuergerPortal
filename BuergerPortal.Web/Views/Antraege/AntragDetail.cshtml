@@ -1,0 +1,99 @@
+﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.AntragDetailVm
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@{
+    ViewData["Title"] = "Antrag – Details";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <h1 class="h4 mb-0">Reisepassantrag</h1>
+        <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+    </div>
+
+    <div class="progress mb-3" role="progressbar" aria-valuenow="@Model.ProgressPercent" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width:@Model.ProgressPercent%"></div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">Antragsdaten</div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Antragsteller</dt>
+                        <dd class="col-sm-8">@Model.Antragsteller</dd>
+
+                        <dt class="col-sm-4">Geburtsdatum</dt>
+                        <dd class="col-sm-8">@Model.Geburtsdatum:dd.MM.yyyy</dd>
+
+                        <dt class="col-sm-4">Express</dt>
+                        <dd class="col-sm-8">@((Model.Express ? "Ja" : "Nein"))</dd>
+
+                        <dt class="col-sm-4">Alter Pass vorhanden</dt>
+                        <dd class="col-sm-8">@((Model.AltpassVorhanden ? "Ja" : "Nein"))</dd>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
+                        {
+                            <dt class="col-sm-4">Hinweis</dt>
+                            <dd class="col-sm-8">@Model.Hinweis</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">Verlauf</div>
+                <div class="card-body">
+                    <ul class="timeline list-unstyled mb-0">
+                        <li class="mb-2">
+                            <span class="fw-semibold">Angelegt</span>
+                            <div class="text-secondary small">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
+                        </li>
+                        @if (Model.SubmittedUtc.HasValue)
+                        {
+                            <li class="mb-2">
+                                <span class="fw-semibold">Eingereicht</span>
+                                <div class="text-secondary small">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
+                            </li>
+                        }
+                        <li class="text-secondary small">Aktueller Status: @Model.StatusText</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">Kontakt & Aktionen</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrWhiteSpace(Model.Email))
+                    {
+                        <div class="mb-2"><span class="text-secondary small d-block">E-Mail</span>@Model.Email</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Telefon))
+                    {
+                        <div class="mb-3"><span class="text-secondary small d-block">Telefon</span>@Model.Telefon</div>
+                    }
+
+                    <a class="btn btn-outline-primary w-100"
+                       asp-controller="Termine"
+                       asp-action="Buchen"
+                       asp-route-service="@(ServiceType.AntragRueckfrage)">
+                        Termin zur Klärung buchen
+                    </a>
+
+                    <div class="text-secondary small mt-2">
+                        Du wirst zur Terminbuchung weitergeleitet (Dienst vorbelegt: „Antrag Rückfrage“).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline li::marker {
+            content: "• "
+        }
+    </style>
+}

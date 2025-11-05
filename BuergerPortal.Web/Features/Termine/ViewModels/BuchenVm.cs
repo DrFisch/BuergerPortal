@@ -13,8 +13,12 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
         [Display(Name = "Meldeangelegenheiten")]
         Meldeangelegenheiten = 3,
 
+        [Display(Name ="Rückfrage zu Antrag")]
+        AntragRueckfrage = 4,
+
+
         [Display(Name = "Sonstiges")]
-        Sonstiges = 4
+        Sonstiges = 5
     }
 
     public enum LocationType

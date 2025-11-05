@@ -1,11 +1,43 @@
-﻿@{
-    ViewData["Title"] = "Meine Antragsstatus";
+﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.StatusListeVm
+@{
+    ViewData["Title"] = "Meine Anträge";
 }
 <div class="container py-4">
-    @if (TempData["AntragSuccess"] is string ok)
-    {
-        <div class="alert alert-success">@ok</div>
-    }
     <h1 class="h4 mb-3">Meine Anträge</h1>
-    <p>Hier später: Liste aller Reisepassanträge aus <code>GET /api/antraege/reisepass</code>.</p>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="alert alert-secondary">Noch keine Anträge. Starte einen neuen Reisepassantrag über die Übersicht.</div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var a in Model.Items)
+            {
+                <div class="col-12 col-md-6">
+                    <a class="card text-decoration-none h-100" href="@Url.Action("Antrag", "Antraege", new { id = a.Id })">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">@a.Antragsteller</div>
+                                    <div class="small text-secondary">
+                                        Angelegt: @a.Angelegt:dd.MM.yyyy HH:mm
+                                        @if (a.Eingereicht.HasValue)
+                                        {
+                                            <span> • Eingereicht: @a.Eingereicht.Value:dd.MM.yyyy HH:mm</span>
+                                        }
+                                    </div>
+                                </div>
+                                <span class="badge @a.BadgeClass">@a.StatusText</span>
+                            </div>
+
+                            <div class="progress mt-3" role="progressbar" aria-valuenow="@a.ProgressPercent" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width:@a.ProgressPercent%"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
 </div>
