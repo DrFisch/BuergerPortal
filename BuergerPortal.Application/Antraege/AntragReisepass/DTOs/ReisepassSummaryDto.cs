@@ -7,5 +7,5 @@ using BuergerPortal.Domain.Antrag.Enums;
 
 namespace BuergerPortal.Application.Antraege.AntragReisepass.DTOs
 {
-    public record ReisepassSummaryDto(Guid Id,AntragStatus Status,DateTime CreatedUtc, DateTime? SubmittedUtc);
+    public record ReisepassSummaryDto(Guid Id, AntragTyp Typ, AntragStatus Status,DateTime CreatedUtc, DateTime? SubmittedUtc);
 }

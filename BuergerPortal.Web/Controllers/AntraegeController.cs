@@ -159,19 +159,27 @@ namespace BuergerPortal.Web.Controllers
             var vm = new StatusListeVm
             {
                 Items = items.OrderByDescending(x => x.SubmittedUtc ?? x.CreatedUtc)
-                             .Select(x => {
-                                 var m = AntragStatusUi.Map(x.Status);
-                                 return new StatusListItemVm
-                                 {
-                                     Id = x.Id,
-                                     Antragsteller = $"{x.Vorname} {x.Nachname}",
-                                     Angelegt = x.CreatedUtc.ToLocalTime(),
-                                     Eingereicht = x.SubmittedUtc?.ToLocalTime(),
-                                     StatusText = m.text,
-                                     BadgeClass = m.badge,
-                                     ProgressPercent = m.progress
-                                 };
-                             }).ToList()
+                 .Select(x => {
+                     var s = AntragStatusUi.Map(x.Status);
+                     var t = AntragTypUiMap.Map(x.Typ);
+
+                     return new StatusListItemVm
+                     {
+                         Id = x.Id,
+                         Antragsteller = $"{x.Vorname} {x.Nachname}",
+
+                         Typ = x.Typ,
+                         TypText = t.text,
+                         TypBadgeClass = t.badgeClass,
+
+                         Angelegt = x.CreatedUtc.ToLocalTime(),
+                         Eingereicht = x.SubmittedUtc?.ToLocalTime(),
+
+                         StatusText = s.text,
+                         BadgeClass = s.badge,
+                         ProgressPercent = s.progress
+                     };
+                 }).ToList()
             };
 
             return View("Status", vm);

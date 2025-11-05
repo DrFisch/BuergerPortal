@@ -37,3 +37,7 @@ ANtrag Features:
 	- Antrag kann optional eine AppointmentId referenzieren (z. B. Abholtermin für Sperrmüll, Behörden-Slot für Reisepass).
 
 	- Dashboard zeigt Anträge inkl. verknüpftem Termin und Status.
+
+TODO DO 06.11.:
+
+- Von einem Antrag auf Terminbuchung kommen

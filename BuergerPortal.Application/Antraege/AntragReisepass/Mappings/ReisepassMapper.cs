@@ -14,23 +14,36 @@ namespace BuergerPortal.Application.Antraege.AntragReisepass.Mappings
         public static ReisepassAntrag ToNewEntity(ReisepassStep1Dto dto, Guid applicantUserId)
             => new ReisepassAntrag
             {
-                // Basisklasse Felder
                 ApplicantUserId = applicantUserId,
-                // Step 1
                 Name = new PersonName(dto.Vorname, dto.Nachname),
                 Birth = new PersonBirth(dto.Geburtsdatum),
                 Kontakt = new Kontakt(dto.Email, dto.Telefon)
             };
 
         public static ReisepassDetailDto ToDetailDto(ReisepassAntrag a)
-            => new(
-                a.Id, a.Status, a.CreatedUtc, a.SubmittedUtc,
-                a.Name.Vorname, a.Name.Nachname, a.Birth.Geburtsdatum,
-                a.Kontakt.Email, a.Kontakt.Telefon,
-                a.Express, a.AltpassVorhanden, a.Hinweis
+            => new ReisepassDetailDto(
+                Id: a.Id,
+                Typ: a.Typ,               // <<< NEU: AntragTyp
+                Status: a.Status,
+                CreatedUtc: a.CreatedUtc,
+                SubmittedUtc: a.SubmittedUtc,
+                Vorname: a.Name.Vorname,
+                Nachname: a.Name.Nachname,
+                Geburtsdatum: a.Birth.Geburtsdatum,
+                Email: a.Kontakt.Email,
+                Telefon: a.Kontakt.Telefon,
+                Express: a.Express,
+                AltpassVorhanden: a.AltpassVorhanden,
+                Hinweis: a.Hinweis
             );
 
         public static ReisepassSummaryDto ToSummaryDto(ReisepassAntrag a)
-            => new(a.Id, a.Status, a.CreatedUtc, a.SubmittedUtc);
+            => new ReisepassSummaryDto(
+                Id: a.Id,
+                Typ: a.Typ,               // <<< NEU: AntragTyp
+                Status: a.Status,
+                CreatedUtc: a.CreatedUtc,
+                SubmittedUtc: a.SubmittedUtc
+            );
     }
 }

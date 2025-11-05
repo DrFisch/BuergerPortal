@@ -7,6 +7,7 @@
         public string Nachname { get; set; } = "";
         public DateTime CreatedUtc { get; set; }
         public DateTime? SubmittedUtc { get; set; }
-        public int Status { get; set; }           
+        public int Status { get; set; }
+        public int Typ { get; set; }
     }
 }

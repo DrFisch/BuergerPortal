@@ -9,6 +9,7 @@ namespace BuergerPortal.Application.Antraege.AntragReisepass.DTOs
 {
     public sealed record ReisepassDetailDto(
     Guid Id,
+    AntragTyp Typ,
     AntragStatus Status,
     DateTime CreatedUtc,
     DateTime? SubmittedUtc,
