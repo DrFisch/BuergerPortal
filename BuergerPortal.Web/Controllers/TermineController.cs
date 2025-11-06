@@ -54,11 +54,12 @@ namespace BuergerPortal.Web.Controllers
                     return new TerminListItemVm
                     {
                         Id = x.Id,
-                        Dienst = x.Service.ToString(),
+                        Service = x.Service,
                         Datum = startLocal.Date,
                         Uhrzeit = $"{startLocal:HH\\:mm} - {endLocal:HH\\:mm}",
                         Location = x.Location,
-                        Storniert = x.Cancelled
+                        Storniert = x.Cancelled,
+                        AntragId = x.AntragId
                     };
                 }).ToList()
             };

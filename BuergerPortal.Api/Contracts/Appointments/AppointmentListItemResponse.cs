@@ -10,5 +10,6 @@ namespace BuergerPortal.Api.Contracts.Appointments
         public DateTime StartUtc { get; set; } // UTC (Kind=Utc)
         public DateTime EndUtc { get; set; }   // UTC (Kind=Utc)
         public bool Cancelled { get; set; }
+        public Guid? AntragId { get; set; }
     }
 }

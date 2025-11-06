@@ -15,5 +15,6 @@ namespace BuergerPortal.Application.Appointments.DTOs
         public DateTime StartUtc { get; set; }   // UTC!
         public DateTime EndUtc { get; set; }     // UTC!
         public bool Cancelled { get; set; }
+        public Guid? AntragId { get; set; }
     }
 }

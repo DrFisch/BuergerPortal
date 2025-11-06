@@ -1,4 +1,6 @@
 ﻿using BuergerPortal.Web.Features.Termine.ViewModels;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace BuergerPortal.Web.Extensions
 {
@@ -11,6 +13,13 @@ namespace BuergerPortal.Web.Extensions
             LocationType.BuergermtSued => "Bürgeramt Süd",
             _ => v.ToString()
         };
+
+        public static string ToDisplayName(this Enum value)
+        {
+            var field = value.GetType().GetField(value.ToString());
+            var attr = field?.GetCustomAttribute<DisplayAttribute>();
+            return attr?.GetName() ?? value.ToString();
+        }
     }
 
 }

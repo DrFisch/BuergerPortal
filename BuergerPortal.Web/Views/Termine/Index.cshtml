@@ -51,8 +51,27 @@ else
             <tbody>
                 @foreach (var t in Model.Termine)
                 {
+                    var hasAntrag = t.AntragId.HasValue;
+                    var shortId = hasAntrag ? t.AntragId!.Value.ToString().Substring(0, 8) : null;
+
                     <tr>
-                        <td>@t.Dienst</td>
+                        <td>
+                            <div class="fw-semibold">@t.Service.ToDisplayName()</div>
+
+                            @if (hasAntrag)
+                            {
+                                <div class="small text-secondary mt-1">
+                                    Antrag:
+                                    <a class="badge rounded-pill bg-secondary text-decoration-none antrag-chip"
+                                       asp-controller="Antraege"
+                                       asp-action="Antrag"
+                                       asp-route-id="@t.AntragId">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>@shortId
+                                    </a>
+                                </div>
+                            }
+                        </td>
+
                         <td>@t.Datum.ToString("dd.MM.yyyy")</td>
                         <td>@t.Uhrzeit</td>
                         <td>@t.Location.ToDisplay()</td>
@@ -67,6 +86,7 @@ else
                                 <span class="badge bg-success">aktiv</span>
                             }
                         </td>
+
                         <td class="text-end">
                             @if (!t.Storniert)
                             {
@@ -84,4 +104,19 @@ else
             </tbody>
         </table>
     </div>
+}
+
+@section Styles {
+    <style>
+        /* dezente „Chip“-Optik für den Antrag-Link in der Dienst-Spalte */
+        .antrag-chip {
+            border: 1px dashed var(--bs-border-color);
+            background: color-mix(in oklab, var(--bs-body-bg) 70%, var(--bs-tertiary-bg));
+        }
+
+            .antrag-chip:hover {
+                border-style: solid;
+                background: color-mix(in oklab, var(--bs-primary) 10%, var(--bs-body-bg));
+            }
+    </style>
 }

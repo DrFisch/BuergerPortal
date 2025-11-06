@@ -1,4 +1,6 @@
-﻿namespace BuergerPortal.Web.Features.Termine.ViewModels
+﻿using BuergerPortal.Web.Features.Antraege.Reisepass;
+
+namespace BuergerPortal.Web.Features.Termine.ViewModels
 {
     public sealed class TermineIndexVm
     {
@@ -8,10 +10,13 @@
     public sealed class TerminListItemVm
     {
         public Guid Id { get; set; }
-        public string Dienst { get; set; } = "";
-        public DateTime Datum { get; set; }    // nur Datum nutzen wir in der View
+        public ServiceType Service { get; set; }
+        public DateTime Datum { get; set; }    
         public string Uhrzeit { get; set; } = ""; // "HH:mm"
         public LocationType Location { get; set; } 
         public bool Storniert { get; set; }
+
+        public Guid? AntragId { get; set; }
+        
     }
 }

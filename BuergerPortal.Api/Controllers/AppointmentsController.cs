@@ -65,7 +65,9 @@ namespace BuergerPortal.Api.Controllers
                 Location = x.Location,
                 StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
                 EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
-                Cancelled = x.Cancelled
+                Cancelled = x.Cancelled,
+                AntragId = x.AntragId
+
             });
 
             return Ok(resp);

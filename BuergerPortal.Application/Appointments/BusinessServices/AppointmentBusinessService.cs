@@ -68,7 +68,9 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                     // Wichtig: als UTC markieren, damit im JSON ein „Z“ steht
                     StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
                     EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
-                    Cancelled = x.Status == AppointmentStatus.Cancelled
+                    Cancelled = x.Status == AppointmentStatus.Cancelled,
+                    AntragId = x.AntragId
+
                 })
                 .ToList();
         }

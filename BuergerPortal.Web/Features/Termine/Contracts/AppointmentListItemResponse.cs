@@ -10,5 +10,6 @@ namespace BuergerPortal.Web.Features.Termine.Contracts
         public DateTime StartUtc { get; set; }
         public DateTime EndUtc { get; set; }
         public bool Cancelled { get; set; }
+        public Guid? AntragId { get; set; }
     }
 }
