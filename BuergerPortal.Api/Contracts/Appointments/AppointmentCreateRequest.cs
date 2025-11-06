@@ -18,6 +18,7 @@ namespace BuergerPortal.Api.Contracts.Appointments
         [Required]
         public DateTime EndUtc { get; init; }
 
-        public Guid AntragId { get; set; }
+        // <-- nullable, damit null / fehlendes Feld nicht zu ModelState-Fehlern führt
+        public Guid? AntragId { get; init; }
     }
 }

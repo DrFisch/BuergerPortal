@@ -4,6 +4,20 @@
     ViewData["Title"] = "Antrag – Details";
 }
 <div class="container py-4">
+    @if (TempData["AntragTerminOk"] is string bookedMsg)
+    {
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1080">
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @bookedMsg
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
         <h1 class="h4 mb-0">Reisepassantrag</h1>
         <span class="badge @Model.BadgeClass">@Model.StatusText</span>
@@ -41,25 +55,60 @@
             </div>
 
             <div class="card mt-3">
-                <div class="card-header">Verlauf</div>
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>Verlauf</span>
+                    <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+                </div>
                 <div class="card-body">
-                    <ul class="timeline list-unstyled mb-0">
-                        <li class="mb-2">
-                            <span class="fw-semibold">Angelegt</span>
-                            <div class="text-secondary small">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
+                    <ol class="timeline-vertical list-unstyled mb-0">
+                        <li class="tl-item @(Model.CreatedUtc != default ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">Angelegt</div>
+                                <div class="tl-meta">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
+                            </div>
                         </li>
-                        @if (Model.SubmittedUtc.HasValue)
-                        {
-                            <li class="mb-2">
-                                <span class="fw-semibold">Eingereicht</span>
-                                <div class="text-secondary small">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
-                            </li>
-                        }
-                        <li class="text-secondary small">Aktueller Status: @Model.StatusText</li>
-                    </ul>
+
+                        <li class="tl-item @(Model.SubmittedUtc.HasValue ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">Eingereicht</div>
+                                @if (Model.SubmittedUtc.HasValue)
+                                {
+                                    <div class="tl-meta">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
+                                }
+                                else
+                                {
+                                    <div class="tl-meta text-secondary">noch nicht erfolgt</div>
+                                }
+                            </div>
+                        </li>
+
+                        <li class="tl-item @((Model.ProgressPercent >= 70) ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">Prüfung</div>
+                                <div class="tl-meta @(Model.ProgressPercent >= 70 ? "" : "text-secondary")">
+                                    @(Model.ProgressPercent >= 70 ? "läuft/abgeschlossen" : "ausstehend")
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="tl-item @((Model.ProgressPercent >= 100) ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">Abschluss</div>
+                                <div class="tl-meta @(Model.ProgressPercent >= 100 ? "" : "text-secondary")">
+                                    @(Model.ProgressPercent >= 100 ? "abgeschlossen" : "ausstehend")
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
                 </div>
             </div>
+
         </div>
+        
 
         <div class="col-lg-4">
             <div class="card">
@@ -96,6 +145,69 @@
     <style>
         .timeline li::marker {
             content: "• "
+        }
+        /* --- Timeline --- */
+        .timeline-vertical {
+            position: relative;
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+            .timeline-vertical::before {
+                content: "";
+                position: absolute;
+                left: .5rem;
+                top: .25rem;
+                bottom: .25rem;
+                width: 2px;
+                background: var(--bs-border-color);
+                opacity: .7;
+            }
+
+        .tl-item {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: .75rem;
+        }
+
+            .tl-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .tl-dot {
+            position: absolute;
+            left: -.1rem;
+            top: .25rem;
+            width: .75rem;
+            height: .75rem;
+            border-radius: 50%;
+            background: var(--bs-secondary-bg);
+            border: 2px solid var(--bs-border-color);
+            box-shadow: 0 0 0 2px var(--bs-body-bg);
+        }
+
+        .tl-item.done .tl-dot {
+            background: var(--bs-success);
+            border-color: var(--bs-success);
+            box-shadow: 0 0 0 3px color-mix(in oklab, var(--bs-success) 20%, transparent);
+        }
+
+        .tl-content {
+            margin-left: .25rem;
+        }
+
+        .tl-title {
+            font-weight: 600;
+        }
+
+        .tl-meta {
+            font-size: .875rem;
+            color: var(--bs-secondary-color);
+        }
+
+        /* Optional: Fortschritts-Header sauberer */
+        .progress {
+            height: .6rem;
         }
     </style>
 }
