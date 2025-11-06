@@ -5,37 +5,16 @@
 }
 
 <div class="container py-4 status-list">
-    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-        <h1 class="h4 mb-0">Meine Anträge</h1>
-
-        <!-- Toolbar (optional GET-Filter, funktioniert auch ohne Controller-Änderung) -->
-        <form method="get" class="d-flex flex-wrap gap-2">
-            <div class="input-group">
-                <span class="input-group-text" aria-hidden="true">🔎</span>
-                <input name="q" class="form-control" placeholder="Suche nach Name/ID…" />
-            </div>
-            <select name="status" class="form-select">
-                <option value="">Alle Status</option>
-                <option value="1">Entwurf</option>
-                <option value="2">Eingereicht</option>
-                <option value="3">In Prüfung</option>
-                <option value="4">Genehmigt</option>
-                <option value="5">Abgelehnt</option>
-            </select>
-            <button class="btn btn-outline-secondary">Filtern</button>
-        </form>
-    </div>
+    <h1 class="h4 mb-3">Meine Anträge</h1>
 
     @if (Model.Items.Count == 0)
     {
         <div class="card border-0 bg-body-tertiary">
-            <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="empty-icon" aria-hidden="true">📄</div>
-                    <div>
-                        <div class="fw-semibold">Noch keine Anträge</div>
-                        <div class="text-secondary">Starte einen neuen Reisepassantrag über die Übersicht.</div>
-                    </div>
+            <div class="card-body d-flex align-items-start gap-3">
+                <div class="empty-icon" aria-hidden="true">📄</div>
+                <div>
+                    <div class="fw-semibold">Noch keine Anträge</div>
+                    <div class="text-secondary">Starte einen neuen Reisepassantrag über die Übersicht.</div>
                 </div>
             </div>
         </div>
@@ -46,35 +25,40 @@
             @foreach (var a in Model.Items)
             {
                 var shortId = a.Id.ToString().Substring(0, 8);
+
                 <div class="card shadow-sm border-0 status-item">
                     <div class="card-body">
                         <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                             <div class="d-flex align-items-start gap-3">
-                                <!-- Status-Dot -->
                                 <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
 
                                 <div>
-                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                                         <span class="fw-semibold">@a.Antragsteller</span>
+                                        <span class="badge rounded-pill @a.TypBadgeClass">@a.TypText</span>
+                                        <span class="badge rounded-pill @a.BadgeClass">@a.StatusText</span>
+                                    </div>
 
-                                        <!-- Typ-Badge dynamisch -->
-                                        <span class="badge rounded-pill @a.TypBadgeClass">@a.TypText
+                                    <!-- META-CHIPS (nur Datum, gut sichtbar) -->
+                                    <div class="meta-chips">
+                                        <span class="chip">
+                                            <span class="chip-label">Angelegt</span>
+                                            <span class="chip-value">@a.Angelegt.ToString("dd.MM.yyyy")</span>
                                         </span>
 
-                                        <span class="badge rounded-pill @a.BadgeClass">@a.StatusText</span>
-
-                                        <span class="text-secondary small">ID: <code>@a.Id.ToString().Substring(0, 8)</code></span>
-                                    </div>
-
-                                    <div class="text-secondary small mt-1">
-                                        Angelegt: @a.Angelegt:dd.MM.yyyy
                                         @if (a.Eingereicht.HasValue)
                                         {
-                                            <span> • Eingereicht: @a.Eingereicht.Value:dd.MM.yyyy</span>
+                                            <span class="chip">
+                                                <span class="chip-label">Eingereicht</span>
+                                                <span class="chip-value">@a.Eingereicht.Value.ToString("dd.MM.yyyy")</span>
+                                            </span>
                                         }
+
+                                        <span class="chip chip-id">
+                                            <span class="chip-label">ID</span>
+                                            <span class="chip-value"><code>@shortId</code></span>
+                                        </span>
                                     </div>
-
-
                                 </div>
                             </div>
 
@@ -171,6 +155,36 @@
             .status-dot.text-bg-danger {
                 background: var(--bs-danger);
             }
+
+        .meta-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem .75rem;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .25rem .6rem;
+            border-radius: .75rem;
+            background: var(--bs-tertiary-bg);
+            border: 1px solid var(--bs-border-color);
+        }
+
+            .chip .chip-label {
+                font-size: .8rem;
+                color: var(--bs-secondary-color);
+            }
+
+            .chip .chip-value {
+                font-weight: 600;
+            }
+
+        .chip-id {
+            background: transparent;
+            border-style: dashed;
+        }
 
         .progress-thin {
             height: .5rem;
