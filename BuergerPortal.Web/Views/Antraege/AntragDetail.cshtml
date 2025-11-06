@@ -6,16 +6,7 @@
 <div class="container py-4">
     @if (TempData["AntragTerminOk"] is string bookedMsg)
     {
-        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1080">
-            <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        @bookedMsg
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
+        <div class="alert alert-success">@bookedMsg</div>
     }
 
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">

@@ -120,11 +120,16 @@ namespace BuergerPortal.Web.Controllers
             if (res.IsSuccessStatusCode)
             {
                 var id = await res.Content.ReadFromJsonAsync<Guid>(cancellationToken: ct);
+
+                // Allgemeine Success-TempData (für Termin-Übersicht)
                 TempData["BookingSuccess"] = $"Termin gebucht ({id}).";
 
-                // NEU: wenn von einem Antrag gekommen, zurück zu dessen Detailseite
+                // Wenn Termin einem Antrag zugeordnet ist: spezielle Meldung setzen und zurück zum Antrag
                 if (vm.RelatedAntragId.HasValue)
+                {
+                    TempData["AntragTerminOk"] = "Termin zum Antrag gebucht.";
                     return RedirectToAction("Antrag", "Antraege", new { id = vm.RelatedAntragId.Value });
+                }
 
                 // sonst zur Termin-Übersicht (oder wohin du willst)
                 return RedirectToAction(nameof(Index));
