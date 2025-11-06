@@ -68,46 +68,13 @@
             <label class="form-label">Dienst</label>
             <select asp-for="Service" class="form-select"
                     asp-items="Html.GetEnumSelectList<ServiceType>()">
+                <option value="">– Bitte auswählen –</option>
             </select>
             <span asp-validation-for="Service" class="text-danger"></span>
+
         </div>
     }
-    @section Styles {
-        <style>
-            /* Banner: weniger “grau”, mehr Fokus */
-            .context-banner {
-                border-left: 6px solid var(--bs-primary);
-                border-radius: .75rem;
-            }
-
-                .context-banner .banner-icon {
-                    font-size: 1.25rem;
-                    line-height: 1;
-                }
-
-            /* Readonly-Pill für den Dienst */
-            .readonly-pill {
-                display: inline-flex;
-                align-items: center;
-                gap: .5rem;
-                padding: .5rem .75rem;
-                border-radius: .75rem;
-                background: var(--bs-tertiary-bg);
-                border: 1px solid var(--bs-border-color);
-                font-weight: 600;
-            }
-
-                .readonly-pill .lock {
-                    opacity: .7;
-                }
-
-            /* dezenter Label-Ton, damit der Inhalt (Pill) dominiert */
-            .muted-label {
-                color: var(--bs-secondary-color);
-            }
-        </style>
-    }
-
+    
 
     <div>
         <label class="form-label">Standort</label>
@@ -148,7 +115,9 @@
     </div>
 
 
-    <button class="btn btn-primary">Termin buchen</button>
+    <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-primary">Termin buchen</button>
+    </div>
 </form>
 
 <!-- Kalender-Modal (DayPilot) -->
@@ -178,6 +147,43 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        /* Banner: weniger “grau”, mehr Fokus */
+        .context-banner {
+            border-left: 6px solid var(--bs-primary);
+            border-radius: .75rem;
+        }
+
+            .context-banner .banner-icon {
+                font-size: 1.25rem;
+                line-height: 1;
+            }
+
+        /* Readonly-Pill für den Dienst */
+        .readonly-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem .75rem;
+            border-radius: .75rem;
+            background: var(--bs-tertiary-bg);
+            border: 1px solid var(--bs-border-color);
+            font-weight: 600;
+        }
+
+            .readonly-pill .lock {
+                opacity: .7;
+            }
+
+        /* dezenter Label-Ton, damit der Inhalt (Pill) dominiert */
+        .muted-label {
+            color: var(--bs-secondary-color);
+        }
+
+    </style>
+}
 
 
 @section Scripts {
@@ -365,7 +371,7 @@
           dp.businessBeginsHour = 8;
           dp.businessEndsHour   = 12;
           dp.showNonBusiness    = false;        // zeigt nur 08–12 Uhr
-          dp.heightSpec         = "BusinessHours";
+          dp.heightSpec         = "BusinessHoursNoScroll";
           dp.scrollLabelsVisible= false;
           dp.allowEventOverlap  = true;
 

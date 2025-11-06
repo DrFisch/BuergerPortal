@@ -36,8 +36,8 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
 
     public sealed class BuchenVm
     {
-        [Required]
-        public ServiceType Service { get; set; }
+        [Required(ErrorMessage = "Bitte einen Dienst wählen.")]
+        public ServiceType? Service { get; set; }
 
         [Required]  // jetzt Enum statt string
         public LocationType Location { get; set; } = LocationType.BuergermtMitte;
