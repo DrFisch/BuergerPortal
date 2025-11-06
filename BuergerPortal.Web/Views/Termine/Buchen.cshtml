@@ -25,15 +25,7 @@
         </div>
     }
 
-    @if (Model.RelatedAntragId.HasValue)
-    {
-        <div class="alert alert-secondary d-flex align-items-center gap-2" role="status">
-            <div>
-                <strong>Verknüpfter Antrag:</strong> @Model.RelatedAntragId.Value.ToString().Substring(0, 8)
-                <div class="small text-secondary">Der Termin wird diesem Antrag zugeordnet.</div>
-            </div>
-        </div>
-    }
+    
 
     <span id="weekendNote" class="text-danger small d-block mt-1"></span>
     <div class="alert alert-info d-flex align-items-start gap-2" role="alert">
@@ -42,25 +34,80 @@
             Bei 15-Minuten-Slots ist der letzte Starttermin <strong>11:45</strong>.
         </div>
     </div>
+
+   
     
+    @* Hidden, damit die AntragId im POST landet *@
+    <input asp-for="RelatedAntragId" type="hidden" />
+
     @if (Model.RelatedAntragId.HasValue)
     {
-        <!-- Anzeige „read-only“ -->
+        <!-- Kontext-Banner mit Icon -->
+        <div class="context-banner alert alert-primary d-flex align-items-center gap-3" role="status">
+            <div class="banner-icon" aria-hidden="true"></div>
+            <div>
+                <div class="fw-semibold">Dieser Termin wird einem Antrag zugeordnet</div>
+                <div class="small text-primary-emphasis">
+                    Antrag-ID: <code>@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dienst als "read-only" präsentiert (aber weiterhin postbar) -->
         <div>
-            <label class="form-label">Dienst</label>
-            <div class="form-control-plaintext fw-semibold">Rückfrage zu Antrag</div>
-            <input type="hidden" asp-for="Service" value="@(ServiceType.AntragRueckfrage)" />
+            <div class="readonly-pill">
+                Rückfrage zu Antrag
+            </div>
+            <!-- wichtig: hidden, damit der Enum-Wert im POST bleibt -->
+            <input asp-for="Service" type="hidden" />
         </div>
     }
     else
     {
-        <!-- normale Select -->
         <div>
             <label class="form-label">Dienst</label>
-            <select asp-for="Service" class="form-select" asp-items="Html.GetEnumSelectList<ServiceType>()"></select>
+            <select asp-for="Service" class="form-select"
+                    asp-items="Html.GetEnumSelectList<ServiceType>()">
+            </select>
             <span asp-validation-for="Service" class="text-danger"></span>
         </div>
     }
+    @section Styles {
+        <style>
+            /* Banner: weniger “grau”, mehr Fokus */
+            .context-banner {
+                border-left: 6px solid var(--bs-primary);
+                border-radius: .75rem;
+            }
+
+                .context-banner .banner-icon {
+                    font-size: 1.25rem;
+                    line-height: 1;
+                }
+
+            /* Readonly-Pill für den Dienst */
+            .readonly-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: .5rem;
+                padding: .5rem .75rem;
+                border-radius: .75rem;
+                background: var(--bs-tertiary-bg);
+                border: 1px solid var(--bs-border-color);
+                font-weight: 600;
+            }
+
+                .readonly-pill .lock {
+                    opacity: .7;
+                }
+
+            /* dezenter Label-Ton, damit der Inhalt (Pill) dominiert */
+            .muted-label {
+                color: var(--bs-secondary-color);
+            }
+        </style>
+    }
+
 
     <div>
         <label class="form-label">Standort</label>
@@ -120,7 +167,6 @@
                 </div>
 
                 <div class="mb-2">
-                    <span class="badge bg-success">&nbsp;</span> frei
                     <span class="badge bg-danger ms-2">&nbsp;</span> belegt
                 </div>
 
