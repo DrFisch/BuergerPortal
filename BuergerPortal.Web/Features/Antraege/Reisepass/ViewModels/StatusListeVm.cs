@@ -15,6 +15,7 @@
         public string StatusText { get; set; } = "";
         public string BadgeClass { get; set; } = "text-bg-secondary";
         public int ProgressPercent { get; set; }
+        public int Status { get; set; }
 
         // --- Zeitpunkte ---
         public DateTime Angelegt { get; set; }

@@ -176,6 +176,7 @@ namespace BuergerPortal.Web.Controllers
                          Eingereicht = x.SubmittedUtc?.ToLocalTime(),
 
                          StatusText = s.text,
+                         Status= x.Status,
                          BadgeClass = s.badge,
                          ProgressPercent = s.progress
                      };

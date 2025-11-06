@@ -24,6 +24,8 @@
         <div class="vstack gap-3">
             @foreach (var a in Model.Items)
             {
+                if(a.Status!=1)
+                {
                 var shortId = a.Id.ToString().Substring(0, 8);
 
                 <div class="card shadow-sm border-0 status-item">
@@ -33,32 +35,32 @@
                                 <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
 
                                 <div>
-                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                        <span class="fw-semibold">@a.Antragsteller</span>
-                                        <span class="badge rounded-pill @a.TypBadgeClass">@a.TypText</span>
-                                        <span class="badge rounded-pill @a.BadgeClass">@a.StatusText</span>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
+                                        <span class="fw-semibold me-1">@a.Antragsteller</span>
+
+                                        <!-- Antragtyp (größer + deutlicher) -->
+                                        <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
+                                            @a.TypText
+                                        </span>
+
+                                        <!-- Status (größer + deutlicher) -->
+                                        <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
+                                            @a.StatusText
+                                        </span>
                                     </div>
 
                                     <!-- META-CHIPS (nur Datum, gut sichtbar) -->
-                                    <div class="meta-chips">
-                                        <span class="chip">
-                                            <span class="chip-label">Angelegt</span>
-                                            <span class="chip-value">@a.Angelegt.ToString("dd.MM.yyyy")</span>
-                                        </span>
+                                    <!-- META-INFOS (untereinander, dezent) -->
+                                    <div class="meta-info ms-2 mt-2">
 
                                         @if (a.Eingereicht.HasValue)
                                         {
-                                            <span class="chip">
-                                                <span class="chip-label">Eingereicht</span>
-                                                <span class="chip-value">@a.Eingereicht.Value.ToString("dd.MM.yyyy")</span>
-                                            </span>
+                                            <div><strong>Eingereicht:</strong> @a.Eingereicht.Value.ToString("dd.MM.yyyy")</div>
                                         }
 
-                                        <span class="chip chip-id">
-                                            <span class="chip-label">ID</span>
-                                            <span class="chip-value"><code>@shortId</code></span>
-                                        </span>
+                                        <div class="text-secondary ">ID: <code>@shortId</code></div>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -67,24 +69,13 @@
                                    asp-action="Antrag" asp-route-id="@a.Id">
                                     Details
                                 </a>
-                                <a class="btn btn-primary"
-                                   asp-controller="Termine" asp-action="Buchen"
-                                   asp-route-service="@(ServiceType.AntragRueckfrage)">
-                                    Termin zur Klärung
-                                </a>
+                                
                             </div>
                         </div>
 
                         <!-- Fortschritt -->
                         <div class="mt-3">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Fortschritt</span>
-                                <span>@a.ProgressPercent%</span>
-                            </div>
-                            <div class="progress progress-thin" role="progressbar"
-                                 aria-valuenow="@a.ProgressPercent" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar" style="width:@a.ProgressPercent%"></div>
-                            </div>
+                            
                             <div class="progress-steps small text-secondary mt-2">
                                 <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">Entwurf</span>
                                 <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">Eingereicht</span>
@@ -94,6 +85,7 @@
                         </div>
                     </div>
                 </div>
+                }
             }
         </div>
     }
@@ -101,6 +93,34 @@
 
 @section Styles {
     <style>
+        /* === Karten-Rahmen & linke Statusleiste === */
+        .card.status-item {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid color-mix(in oklab, var(--bs-border-color) 80%, transparent) !important; /* überschreibt .border-0 */
+            border-radius: .75rem;
+            background: var(--bs-body-bg);
+            transition: box-shadow .2s ease, border-color .2s ease;
+        }
+
+            .card.status-item:hover {
+                border-color: color-mix(in oklab, var(--bs-primary) 30%, var(--bs-border-color)) !important;
+                box-shadow: 0 0 10px rgba(0, 0, 0, .05);
+            }
+
+            .card.status-item::before {
+                content: "";
+                position: absolute;
+                inset-inline-start: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: color-mix(in oklab, var(--bs-primary) 40%, transparent);
+                border-top-left-radius: .75rem;
+                border-bottom-left-radius: .75rem;
+            }
+
+        /* === Leeres-Icon (Empty State) === */
         .status-list .empty-icon {
             font-size: 28px;
             line-height: 1;
@@ -112,21 +132,7 @@
             place-items: center;
         }
 
-        .status-item {
-            position: relative;
-            overflow: hidden;
-        }
-
-            .status-item::before {
-                content: "";
-                position: absolute;
-                inset-inline-start: 0;
-                top: 0;
-                bottom: 0;
-                width: 4px;
-                background: color-mix(in oklab, var(--bs-primary) 50%, transparent);
-            }
-
+        /* === Status-Dot (kleiner Punkt links neben Header) === */
         .status-dot {
             width: 12px;
             height: 12px;
@@ -156,53 +162,125 @@
                 background: var(--bs-danger);
             }
 
-        .meta-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem .75rem;
+        /* === Header-Badges (Typ/Status größer & deutlicher) === */
+        .header-line {
+            gap: .5rem .6rem;
         }
 
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: .5rem;
-            padding: .25rem .6rem;
-            border-radius: .75rem;
-            background: var(--bs-tertiary-bg);
-            border: 1px solid var(--bs-border-color);
+        .badge-lg {
+            font-size: .95rem;
+            padding: .45rem .8rem;
+            letter-spacing: .01em;
+            box-shadow: 0 2px 6px rgba(0,0,0,.06);
         }
 
-            .chip .chip-label {
+        .badge-type {
+            border: 1px solid color-mix(in oklab, var(--bs-primary) 25%, var(--bs-border-color));
+            box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-primary) 12%, transparent), 0 2px 6px rgba(0,0,0,.06);
+        }
+
+        .badge-status {
+            border: 1px solid color-mix(in oklab, currentColor 25%, transparent);
+        }
+
+        .header-line .fw-semibold {
+            font-size: 1.05rem;
+        }
+
+        /* === Meta-Infos (untereinander, dezent) === */
+        .meta-info {
+            font-size: .9rem;
+            color: var(--bs-body-color);
+            border-top: 1px solid color-mix(in oklab, var(--bs-border-color) 80%, transparent);
+            margin-top: .5rem;
+            padding-top: .5rem;
+            line-height: 1.5;
+        }
+
+            .meta-info div + div {
+                margin-top: .15rem;
+            }
+
+            .meta-info code {
                 font-size: .8rem;
                 color: var(--bs-secondary-color);
             }
 
-            .chip .chip-value {
-                font-weight: 600;
-            }
-
-        .chip-id {
-            background: transparent;
-            border-style: dashed;
-        }
-
-        .progress-thin {
-            height: .5rem;
-        }
-
+        /* === Fortschritt (Step-Chips mit Dot & ✓ bei done) === */
         .progress-steps {
+            position: relative;
             display: flex;
             gap: .75rem;
             flex-wrap: wrap;
+            padding: .25rem .5rem;
+            border-radius: .75rem;
+            background: color-mix(in oklab, var(--bs-body-bg) 70%, var(--bs-tertiary-bg));
+            border: 1px solid var(--bs-border-color);
         }
 
             .progress-steps .step {
+                position: relative;
+                padding: .25rem .6rem .25rem 1.75rem; /* Platz für Dot links */
+                border-radius: 999px;
+                background: transparent;
+                border: 1px dashed transparent;
+                transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
                 opacity: .6;
             }
 
-                .progress-steps .step.done {
-                    opacity: 1;
-                    font-weight: 600;
+                .progress-steps .step::before {
+                    content: "";
+                    position: absolute;
+                    left: .5rem;
+                    top: 50%;
+                    width: .65rem;
+                    height: .65rem;
+                    border-radius: 50%;
+                    border: 2px solid var(--bs-border-color);
+                    background: var(--bs-secondary-bg);
+                    transform: translateY(-50%);
                 }
+
+                .progress-steps .step.done {
+                    background: var(--bs-success-bg-subtle, #d1e7dd);
+                    border-color: color-mix(in oklab, var(--bs-success) 60%, var(--bs-success-bg-subtle));
+                    color: var(--bs-success-text-emphasis, #0f5132);
+                    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-success) 30%, transparent);
+                    font-weight: 600;
+                    opacity: 1;
+                }
+
+                    .progress-steps .step.done::before {
+                        border-color: var(--bs-success);
+                        background: var(--bs-success);
+                        box-shadow: 0 0 0 3px color-mix(in oklab, var(--bs-success) 20%, transparent);
+                    }
+
+                    .progress-steps .step.done::after {
+                        content: "✓";
+                        font-weight: 900;
+                        margin-left: .35rem;
+                        color: var(--bs-success);
+                    }
+
+                .progress-steps .step:not(.done):hover {
+                    background: color-mix(in oklab, var(--bs-primary) 8%, var(--bs-body-bg));
+                    border-color: color-mix(in oklab, var(--bs-primary) 30%, var(--bs-border-color));
+                    color: var(--bs-body-color);
+                }
+
+        /* === Mobile Feinschliff === */
+        @@media (max-width: 576px) {
+            .progress-steps
+
+        {
+            padding: .25rem;
+        }
+
+        .progress-steps .step {
+            padding-left: 1.5rem;
+        }
+
+        }
     </style>
 }
