@@ -182,6 +182,28 @@
             color: var(--bs-secondary-color);
         }
 
+        .modal-dialog.modal-lg {
+            display: flex;
+            align-items: center; /* vertikal zentrieren */
+        }
+
+        .modal-content {
+            display: inline-block; /* Inhalt bestimmt Höhe */
+            width: auto; /* kein Zwang auf volle Breite */
+            max-width: 95vw; /* etwas Luft lassen */
+        }
+
+        /* Der Kalender darf bei Bedarf wachsen, aber nie über den Viewport */
+        #dpCalendar {
+            width: 100%;
+            height: auto;
+            min-height: 400px; /* Mindesthöhe */
+            max-height: 80vh; /* Sicherheit für sehr kleine Bildschirme */
+        }
+
+        .modal-body {
+            overflow: visible !important; /* verhindert Scrollen im Modal */
+        }
     </style>
 }
 
