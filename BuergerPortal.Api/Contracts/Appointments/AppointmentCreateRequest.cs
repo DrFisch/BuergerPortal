@@ -17,5 +17,7 @@ namespace BuergerPortal.Api.Contracts.Appointments
 
         [Required]
         public DateTime EndUtc { get; init; }
+
+        public Guid AntragId { get; set; }
     }
 }

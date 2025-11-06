@@ -47,7 +47,8 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 StartUtc = dto.StartUtc,
                 EndUtc = dto.EndUtc,
                 UserId = currentUserId,
-                Status = AppointmentStatus.Booked
+                Status = AppointmentStatus.Booked,
+                AntragId=dto.AntragId
             };
             await _repo.CreateAsync(entity, ct);
             return Result<Guid>.Success(entity.Id);

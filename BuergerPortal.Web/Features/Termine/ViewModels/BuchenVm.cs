@@ -17,8 +17,7 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
         AntragRueckfrage = 4,
 
 
-        [Display(Name = "Sonstiges")]
-        Sonstiges = 5
+        
     }
 
     public enum LocationType
@@ -52,6 +51,9 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
         [Required]
         [EnumDataType(typeof(DurationOption))]
         public DurationOption Duration { get; set; } = DurationOption.Min15;
+
+        public Guid? RelatedAntragId { get; set; }
+        public bool ComesFromAntrag { get; set; } = false;
 
         // Für die API: Minutenwert aus dem Enum
         public int DurationMinutes => (int)Duration;

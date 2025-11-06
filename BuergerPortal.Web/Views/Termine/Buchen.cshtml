@@ -9,6 +9,13 @@
 
 
 <form asp-action="Buchen" method="post" class="vstack gap-3">
+    @Html.AntiForgeryToken()
+
+    <!-- NEU: Hidden Feld, damit die AntragId im POST mitkommt -->
+    <input asp-for="RelatedAntragId" type="hidden" />
+
+    
+
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="card border-danger mb-3">
@@ -17,6 +24,17 @@
             </div>
         </div>
     }
+
+    @if (Model.RelatedAntragId.HasValue)
+    {
+        <div class="alert alert-secondary d-flex align-items-center gap-2" role="status">
+            <div>
+                <strong>Verknüpfter Antrag:</strong> @Model.RelatedAntragId.Value.ToString().Substring(0, 8)
+                <div class="small text-secondary">Der Termin wird diesem Antrag zugeordnet.</div>
+            </div>
+        </div>
+    }
+
     <span id="weekendNote" class="text-danger small d-block mt-1"></span>
     <div class="alert alert-info d-flex align-items-start gap-2" role="alert">
         <div>
@@ -25,13 +43,24 @@
         </div>
     </div>
     
-    <div>
-        <label class="form-label">Dienst</label>
-        <select asp-for="Service" class="form-select"
-                asp-items="Html.GetEnumSelectList<ServiceType>()">
-        </select>
-        <span asp-validation-for="Service" class="text-danger"></span>
-    </div>
+    @if (Model.RelatedAntragId.HasValue)
+    {
+        <!-- Anzeige „read-only“ -->
+        <div>
+            <label class="form-label">Dienst</label>
+            <div class="form-control-plaintext fw-semibold">Rückfrage zu Antrag</div>
+            <input type="hidden" asp-for="Service" value="@(ServiceType.AntragRueckfrage)" />
+        </div>
+    }
+    else
+    {
+        <!-- normale Select -->
+        <div>
+            <label class="form-label">Dienst</label>
+            <select asp-for="Service" class="form-select" asp-items="Html.GetEnumSelectList<ServiceType>()"></select>
+            <span asp-validation-for="Service" class="text-danger"></span>
+        </div>
+    }
 
     <div>
         <label class="form-label">Standort</label>

@@ -13,5 +13,6 @@ namespace BuergerPortal.Application.Appointments.DTOs
         public LocationType Location { get; init; } 
         public DateTime StartUtc { get; init; }
         public DateTime EndUtc { get; init; }
+        public Guid? AntragId { get; set; }
     }
 }

@@ -36,7 +36,8 @@ namespace BuergerPortal.Api.Controllers
                 Service = req.Service,
                 Location = req.Location,
                 StartUtc = req.StartUtc,
-                EndUtc = req.EndUtc
+                EndUtc = req.EndUtc,
+                AntragId=req.AntragId
             };
 
             var result = await _svc.BookAsync(dto, userId, ct);

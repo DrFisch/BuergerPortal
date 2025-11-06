@@ -68,8 +68,18 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Buchen()
-            => View(new BuchenVm());
+        public IActionResult Buchen(Guid? antragId, ServiceType? service)
+        {
+            var vm = new BuchenVm
+            {
+                // Wenn vom Link gekommen: Dienst vorbesetzen
+                Service = service ?? ServiceType.AntragRueckfrage,
+                RelatedAntragId = antragId
+            };
+
+            return View(vm);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -78,7 +88,7 @@ namespace BuergerPortal.Web.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
-            // Serverseitiger 15-Minuten-Check (zusätzlich zur UI)
+            // 15-Minuten-Check
             bool aligned = vm.LocalTime.TotalMinutes % 15 == 0 && vm.DurationMinutes % 15 == 0;
             if (!aligned)
             {
@@ -86,7 +96,7 @@ namespace BuergerPortal.Web.Controllers
                 return View(vm);
             }
 
-            // Lokale Zeit (Europe/Berlin) -> UTC
+            // Lokal (Europe/Berlin) -> UTC
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
             var localStart = vm.LocalDate.Date + vm.LocalTime; // Unspecified
             var startUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localStart, DateTimeKind.Unspecified), tz);
@@ -94,12 +104,14 @@ namespace BuergerPortal.Web.Controllers
 
             var client = _cf.CreateClient("BuergerPortalApi");
 
+            // NEU: antragId mitgeben (Guid? ist okay)
             var payload = new
             {
-                service = vm.Service,        // Enum-Name/Wert muss zur API passen
+                service = vm.Service,
                 location = vm.Location,
                 startUtc,
-                endUtc
+                endUtc,
+                antragId = vm.RelatedAntragId
             };
 
             var res = await client.PostAsJsonAsync("api/appointments", payload, ct);
@@ -108,14 +120,19 @@ namespace BuergerPortal.Web.Controllers
             {
                 var id = await res.Content.ReadFromJsonAsync<Guid>(cancellationToken: ct);
                 TempData["BookingSuccess"] = $"Termin gebucht ({id}).";
+
+                // NEU: wenn von einem Antrag gekommen, zurück zu dessen Detailseite
+                if (vm.RelatedAntragId.HasValue)
+                    return RedirectToAction("Antrag", "Antraege", new { id = vm.RelatedAntragId.Value });
+
+                // sonst zur Termin-Übersicht (oder wohin du willst)
                 return RedirectToAction(nameof(Index));
             }
 
-            // --- robust: ProblemDetails bevorzugt, sonst Plain-Text/Fallback
+            // Fehlerbehandlung (unverändert)
             ProblemDetails? problem = null;
             try
             {
-                // Nur versuchen, wenn Content-Typ plausibel ist
                 var ctHeader = res.Content.Headers.ContentType?.MediaType;
                 if (!string.IsNullOrEmpty(ctHeader) &&
                     (ctHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase) ||
@@ -124,12 +141,8 @@ namespace BuergerPortal.Web.Controllers
                     problem = await res.Content.ReadFromJsonAsync<ProblemDetails>(cancellationToken: ct);
                 }
             }
-            catch (System.Text.Json.JsonException)
-            {
-                // Ignorieren, wir fallen unten auf Raw-Text/Fallback zurück
-            }
+            catch (System.Text.Json.JsonException) { /* fallback unten */ }
 
-            // Falls kein ProblemDetails geparst werden konnte, baue eines
             if (problem is null)
             {
                 var raw = await res.Content.ReadAsStringAsync(ct);
@@ -146,8 +159,8 @@ namespace BuergerPortal.Web.Controllers
                 ModelState.AddModelError(string.Empty, problem.Detail);
 
             return View(vm);
-
         }
+
         [HttpGet]
         [Authorize] // falls nicht auf Controller gesetzt
         public async Task<IActionResult> Busy([FromQuery] string date, CancellationToken ct)
