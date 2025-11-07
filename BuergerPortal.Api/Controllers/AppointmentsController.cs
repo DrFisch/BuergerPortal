@@ -2,6 +2,7 @@
 using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
+using BuergerPortal.Application.Interfaces.Mail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,13 @@ namespace BuergerPortal.Api.Controllers
     public sealed class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentBusinessService _svc;
+        private readonly IEmailSender _email;
 
-        public AppointmentsController(IAppointmentBusinessService svc) => _svc = svc;
+        public AppointmentsController(IAppointmentBusinessService svc, IEmailSender email) 
+        { 
+            _svc = svc;
+            _email = email;
+        }
 
         // ---------- Create (201/400/409) ----------
         [HttpPost]
@@ -41,6 +47,35 @@ namespace BuergerPortal.Api.Controllers
             };
 
             var result = await _svc.BookAsync(dto, userId, ct);
+
+            // 📧 E-Mail-Versand nach erfolgreicher Buchung
+            try
+            {
+                var userEmail = User.FindFirst("email")?.Value;
+                var userName = User.Identity?.Name ?? "Bürger/in";
+
+                if (!string.IsNullOrWhiteSpace(userEmail))
+                {
+                    var subject = $"Termin bestätigt: {req.Service} am {req.StartUtc.ToLocalTime():dd.MM.yyyy HH:mm}";
+                    var html = $"""
+                        <p>Hallo {userName},</p>
+                        <p>Ihr Termin für den Service <b>{req.Service}</b> wurde erfolgreich gebucht.</p>
+                        <p><b>Datum:</b> {req.StartUtc.ToLocalTime():dddd, dd.MM.yyyy HH:mm}<br/>
+                           <b>Ort:</b> {req.Location}</p>
+                        <p>Sie können den Termin im Bürgerportal unter 
+                           <a href="https://localhost:7017/termine">„Meine Termine“</a> einsehen.</p>
+                        <p>Viele Grüße,<br/>Ihr Bürgerportal-Team</p>
+                    """;
+
+                    await _email.SendAsync(userEmail, subject, html, ct);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fehler beim E-Mail-Versand dürfen die Terminbuchung NICHT verhindern
+                // => optional in dein Logging-System schreiben
+                Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
+            }
 
             // Erfolg -> 201 Created; Fehler -> ProblemDetails gemäß ErrorCodes
             return FromResult(result, id =>
