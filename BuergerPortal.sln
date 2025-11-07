@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Application",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Domain", "BuergerPortal.Domain\BuergerPortal.Domain.csproj", "{C0CCC8B4-F659-42BD-BD07-EED05AB23367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Infrastructure", "BuergerPortal.Infrastructure\BuergerPortal.Infrastructure.csproj", "{FCB51735-166D-4478-A60E-B183CC173DE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Infrastructure.Database", "BuergerPortal.Infrastructure\BuergerPortal.Infrastructure.Database.csproj", "{FCB51735-166D-4478-A60E-B183CC173DE4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{84D27F74-D2BA-6C25-2661-968F101900D9}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Pr
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationServer", "AuthenticationServer\AuthenticationServer.csproj", "{AF0148B5-0DD5-4F23-A306-F9B5108D689D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Infrastructure.Email", "BuergerPortal.Infrastructure.Email\BuergerPortal.Infrastructure.Email.csproj", "{C5DBF513-5A82-482F-85FF-60FE47CBF0C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +60,10 @@ Global
 		{AF0148B5-0DD5-4F23-A306-F9B5108D689D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF0148B5-0DD5-4F23-A306-F9B5108D689D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF0148B5-0DD5-4F23-A306-F9B5108D689D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5DBF513-5A82-482F-85FF-60FE47CBF0C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5DBF513-5A82-482F-85FF-60FE47CBF0C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5DBF513-5A82-482F-85FF-60FE47CBF0C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5DBF513-5A82-482F-85FF-60FE47CBF0C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

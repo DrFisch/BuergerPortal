@@ -4,6 +4,7 @@ using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Appointments.Validation;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Infrastructure;
+using BuergerPortal.Infrastructure.Email;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer(); // erforderlich für Swagger
 builder.Services.AddSwaggerGen();           // Swagger Generator
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddMailJetEmailSender(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 
