@@ -74,7 +74,7 @@ namespace BuergerPortal.Web.Controllers
             var vm = new BuchenVm
             {
                 // Wenn vom Link gekommen: Dienst vorbesetzen
-                Service = service ?? ServiceType.AntragRueckfrage,
+                Service = service ,
                 RelatedAntragId = antragId
             };
 
