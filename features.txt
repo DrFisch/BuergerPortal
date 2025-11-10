@@ -41,3 +41,11 @@ ANtrag Features:
 TODO DO 06.11.:
 
 - Von einem Antrag auf Terminbuchung kommen
+
+TODO 10.11.:
+
+- AUTH cookie + jwt überarbeiten dass keine exception kommt (socket exception)
+
+- PWA ausfeilen (gibt es noch mehr pwa funktionen?)
+
+- Settings page 

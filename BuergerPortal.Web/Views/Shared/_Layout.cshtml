@@ -5,8 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - BuergerPortal.Web</title>
-
-    <!-- Env fürs Frontend -->
     <meta name="app-env" content="@Env.EnvironmentName" />
 
     <!-- Theme-Init (vor CSS) -->
@@ -19,6 +17,10 @@
             window.__initialTheme = theme;
         })();
     </script>
+
+     <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="icon" sizes="128x128" href="/icons/portal-128.png"> 
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" asp-append-version="true" />
@@ -123,11 +125,19 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/theme.js" asp-append-version="true"></script>
 
-    <environment include="Production">
-        <script src="~/js/pwa.js" asp-append-version="true"></script>
-        <script src="~/js/push.js" asp-append-version="true"></script>
-    </environment>
+     <script src="~/pwa-install.js" asp-append-version="true"></script>
+ 
+
+    
 
     @RenderSection("Scripts", required: false)
+
+     <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+          });
+        }
+    </script> 
 </body>
 </html>

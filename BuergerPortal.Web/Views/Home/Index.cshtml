@@ -58,20 +58,31 @@
             </div>
         </div>
 
-
-        <!-- Benachrichtigungen -->
+        <!-- Benachrichtigungen / PWA -->
         <div class="col">
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Benachrichtigungen</h5>
+                        <h5 class="card-title mb-0">Benachrichtigungen & App</h5>
                         <i class="bi bi-bell fs-4 opacity-50"></i>
                     </div>
-                    <p class="card-text text-muted">Termin-Erinnerungen per Push aktivieren.</p>
-                    <button id="enablePush" class="btn btn-success">Push-Benachrichtigungen aktivieren</button>
-                    <div id="pushStatus" class="small text-muted mt-2"></div>
+
+                    <p class="card-text text-muted">Termin-Erinnerungen aktivieren oder App installieren.</p>
+
+                    <!-- Push -->
+                    <button id="enablePush" class="btn btn-success w-100 mb-2">Push-Benachrichtigungen aktivieren</button>
+                    <div id="pushStatus" class="small text-muted mb-3"></div>
+                    <!-- Install -->
+                    <button id="btnInstall" class="btn btn-primary w-100 d-none" onclick="installApp()">
+                        App installieren
+                    </button>
+
+                    <div id="installStatus" class="small text-muted mt-2"></div>
                 </div>
-                <div class="card-footer bg-transparent small text-muted">Erinnert vor Terminen und bei Statusänderungen</div>
+
+                <div class="card-footer bg-transparent small text-muted">
+                    Erinnert vor Terminen und bei Statusänderungen
+                </div>
             </div>
         </div>
 

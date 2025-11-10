@@ -1,18 +1,18 @@
 {
-  "name": "B�rgerportal",
-  "short_name": "B�rgerportal",
+  "name": "Buergerportal",
+  "short_name": "Buergerportal",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "/icons/portal-28.png",
+      "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/portal-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
