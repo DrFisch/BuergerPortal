@@ -81,6 +81,12 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
+builder.Services.ConfigureApplicationCookie(o =>
+{
+    o.ExpireTimeSpan = TimeSpan.FromHours(24);
+    o.SlidingExpiration = false;
+});
+
 // ---------- Auth/Cookies ----------
 //builder.Services.AddAuthentication()
 //    .AddIdentityCookies();

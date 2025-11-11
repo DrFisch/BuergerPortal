@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,18 +24,20 @@ builder.Services.AddHttpClient("BuergerPortalApi", client =>
 builder.Services
     .AddAuthentication(options =>
     {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;          // "Cookies"
-        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;       // "oidc"
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
     {
-        // UX: bei 401 automatisch zum Login
+        o.ExpireTimeSpan = TimeSpan.FromHours(24);  // harte 24h
+        o.SlidingExpiration = false;                // nicht verlängern
         o.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
             {
                 if (ctx.Request.Path.StartsWithSegments("/api")) { ctx.Response.StatusCode = 401; return Task.CompletedTask; }
-                ctx.Response.Redirect(ctx.RedirectUri); return Task.CompletedTask;
+                ctx.Response.Redirect(ctx.RedirectUri);
+                return Task.CompletedTask;
             }
         };
     })
@@ -45,19 +49,22 @@ builder.Services
         options.ResponseType = "code";
         options.ResponseMode = "form_post";
         options.SaveTokens = true;
-
         options.GetClaimsFromUserInfoEndpoint = true;
 
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
         options.Scope.Add("email");
-        options.Scope.Add("buergerportal_api");   // <-- der API-Scope muss am AuthServer für Client mvc_web erlaubt sein
+        options.Scope.Add("buergerportal_api");
 
-        // --- Claim-Mapping
+        // Nach 24h IdP-seitig wirklich neu einloggen
+        options.MaxAge = TimeSpan.FromHours(24);
+
+        // kürzere Timeouts, damit „Auth down“ nicht lange blockiert
+        options.BackchannelTimeout = TimeSpan.FromSeconds(3);
+
         options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
         options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-        // wichtig: sub -> NameIdentifier, falls du das z. B. in der API nutzt
         options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
 
         options.TokenValidationParameters = new TokenValidationParameters
@@ -66,9 +73,63 @@ builder.Services
             RoleClaimType = ClaimTypes.Role
         };
 
-        // Dev-Quality-of-life:
-        options.RequireHttpsMetadata = true; // bei https-Dev bleibt das true
+        options.Events = new OpenIdConnectEvents
+        {
+            // Wenn Authority nicht erreichbar: freundlich abbiegen statt Exception
+            OnRedirectToIdentityProvider = async ctx =>
+            {
+                if (!await IsAuthorityAlive(ctx.HttpContext.RequestServices, TimeSpan.FromSeconds(2)))
+                {
+                    ctx.HandleResponse();
+                    ctx.Response.Redirect("/auth-down");
+                }
+            },
+            OnRemoteFailure = ctx =>
+            {
+                ctx.HandleResponse();
+                ctx.Response.Redirect("/auth-error?reason=" + Uri.EscapeDataString(ctx.Failure?.Message ?? ""));
+                return Task.CompletedTask;
+            },
+            // UI-Cookie-Lebensdauer hier explizit setzen (24h hart)
+            OnTokenValidated = ctx =>
+            {
+                ctx.Properties.IsPersistent = false;
+                ctx.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24);
+                return Task.CompletedTask;
+            }
+        };
     });
+
+static async Task<bool> IsAuthorityAlive(IServiceProvider sp, TimeSpan timeout)
+{
+    var opts = sp.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
+                 .Get(OpenIdConnectDefaults.AuthenticationScheme);
+
+    using var cts = new CancellationTokenSource(timeout);
+    var wellKnown = opts.MetadataAddress ?? $"{opts.Authority!.TrimEnd('/')}/.well-known/openid-configuration";
+
+    try
+    {
+        if (opts.Backchannel is not null)
+        {
+            // WICHTIG: Backchannel NICHT disposen – er gehört dem OIDC-Handler!
+            using var req = new HttpRequestMessage(HttpMethod.Get, wellKnown);
+            using var res = await opts.Backchannel.SendAsync(req, cts.Token);
+            return res.IsSuccessStatusCode;
+        }
+
+        // Nur den selbst erstellten Client disposen
+        using var hc = new HttpClient();
+        using var res2 = await hc.GetAsync(wellKnown, cts.Token);
+        return res2.IsSuccessStatusCode;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+
 
 var app = builder.Build();
 
@@ -86,32 +147,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-app.Use(async (ctx, next) =>
-{
-    var auth = await ctx.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    if (auth.Succeeded)
-    {
-        var expiresAt = auth.Properties?.GetTokenValue("expires_at"); // kommt von SaveTokens = true
-        if (!string.IsNullOrEmpty(expiresAt) &&
-            DateTimeOffset.TryParse(expiresAt, out var expUtc))
-        {
-            // Wenn abgelaufen -> Logout + sofort neu anmelden (Challenge)
-            if (expUtc <= DateTimeOffset.UtcNow)
-            {
-                await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                await ctx.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
 
-                // Zurück auf dieselbe Seite nach Login
-                await ctx.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
-                {
-                    RedirectUri = ctx.Request.Path + ctx.Request.QueryString
-                });
-                return; // Request hier beenden
-            }
-        }
-    }
-    await next();
-});
 app.UseAuthorization();
 
 app.MapGet("/auth/debug", async (HttpContext ctx) =>
@@ -171,12 +207,39 @@ app.MapGet("/login", async (HttpContext ctx) =>
 
 app.MapGet("/logout", async (HttpContext ctx) =>
 {
+    // Lokales Cookie immer löschen
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    await ctx.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+
+    // OIDC-Logout nur, wenn Authority erreichbar
+    if (await IsAuthorityAlive(ctx.RequestServices, TimeSpan.FromSeconds(2)))
     {
-        RedirectUri = "/"
-    });
+        await ctx.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+        {
+            RedirectUri = "/"
+        });
+    }
+    else
+    {
+        ctx.Response.Redirect("/?signedout=1&authDown=1");
+    }
 });
+app.MapGet("/auth-error", async ctx =>
+{
+    var reason = ctx.Request.Query["reason"].ToString();
+    var text = string.IsNullOrWhiteSpace(reason)
+        ? "Authentifizierungsfehler."
+        : $"Authentifizierungsfehler: {WebUtility.UrlDecode(reason)}";
+    ctx.Response.ContentType = "text/plain; charset=utf-8";
+    await ctx.Response.WriteAsync(text);
+}).AllowAnonymous();
+
+app.MapGet("/auth-down", async ctx =>
+{
+    ctx.Response.ContentType = "text/plain; charset=utf-8";
+    await ctx.Response.WriteAsync(
+        "Der Anmeldedienst ist derzeit nicht erreichbar. Bitte später erneut versuchen."
+    );
+}).AllowAnonymous();
 
 app.MapControllerRoute(
     name: "default",
