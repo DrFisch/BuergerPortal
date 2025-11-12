@@ -1,14 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Startseite";
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@{
+    ViewData["Title"] = T["Title"];
 }
+
 
 <div class="py-4">
     <div class="row align-items-center g-3 mb-4">
         <div class="col-12 col-lg">
-            <h1 class="h3 mb-2">Bürgerportal</h1>
-            <p class="text-muted mb-0">Termine buchen, Antragsstatus prüfen, Benachrichtigungen verwalten und mehr.</p>
+            <h1 class="h3 mb-2">@T["AppTitle"]</h1>
+            <p class="text-muted mb-0">@T["AppLead"]</p>
         </div>
-        
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
@@ -17,44 +18,37 @@
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Beratungstermine</h5>
+                        <h5 class="card-title mb-0">@T["Card_Appointments"]</h5>
                         <i class="bi bi-calendar3-range fs-4 opacity-50"></i>
                     </div>
-                    <p class="card-text text-muted">Freie Zeitfenster finden, buchen, umbuchen oder absagen.</p>
+                    <p class="card-text text-muted">@T["Card_Appointments_Text"]</p>
                     <div class="d-flex gap-2">
                         <a asp-controller="Termine" asp-action="Buchen" class="btn btn-primary">
-                            <i class="bi bi-calendar-plus me-1"></i> Termin buchen
+                            <i class="bi bi-calendar-plus me-1"></i> @T["BookAppointment"]
                         </a>
                         <a asp-controller="Termine" asp-action="Index" class="btn btn-outline-secondary">
-                            Übersicht
+                            @T["Overview"]
                         </a>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent small text-muted">Freie Slots für Beratungstermine</div>
+                <div class="card-footer bg-transparent small text-muted">@T["Card_NotifyPwa_Foot"]</div>
             </div>
         </div>
 
-        <!-- Antraege -->
+        <!-- Anträge -->
         <div class="col">
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Anträge</h5>
+                        <h5 class="card-title mb-0">@T["Card_Applications"]</h5>
                         <i class="bi bi-file-earmark-text fs-4 opacity-50"></i>
                     </div>
-
-                    <p class="card-text text-muted mb-3">
-                        Neue Anträge stellen und den Bearbeitungsstatus bestehenden Anträge verfolgen.
-                    </p>
-
+                    <p class="card-text text-muted mb-3">@T["Card_Applications_Text"]</p>
                     <a asp-controller="Antraege" asp-action="Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-right-circle me-1"></i> Zu meinen Anträgen
+                        <i class="bi bi-arrow-right-circle me-1"></i> @T["GoToMyApplications"]
                     </a>
                 </div>
-
-                <div class="card-footer bg-transparent small text-muted">
-                    Zugriff auf alle Anträge &amp; Statusübersicht
-                </div>
+                <div class="card-footer bg-transparent small text-muted">@T["Card_Applications_Foot"]</div>
             </div>
         </div>
 
@@ -63,26 +57,18 @@
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Benachrichtigungen & App</h5>
+                        <h5 class="card-title mb-0">@T["Card_NotifyPwa"]</h5>
                         <i class="bi bi-bell fs-4 opacity-50"></i>
                     </div>
-
-                    <p class="card-text text-muted">Termin-Erinnerungen aktivieren oder App installieren.</p>
-
-                    <!-- Push -->
-                    <button id="enablePush" class="btn btn-success w-100 mb-2">Push-Benachrichtigungen aktivieren</button>
+                    <p class="card-text text-muted">@T["Card_NotifyPwa_Text"]</p>
+                    <button id="enablePush" class="btn btn-success w-100 mb-2">@T["EnablePush"]</button>
                     <div id="pushStatus" class="small text-muted mb-3"></div>
-                    <!-- Install -->
                     <button id="btnInstall" class="btn btn-primary w-100 d-none" onclick="installApp()">
-                        App installieren
+                        @T["InstallApp"]
                     </button>
-
                     <div id="installStatus" class="small text-muted mt-2"></div>
                 </div>
-
-                <div class="card-footer bg-transparent small text-muted">
-                    Erinnert vor Terminen und bei Statusänderungen
-                </div>
+                <div class="card-footer bg-transparent small text-muted">@T["Card_NotifyPwa_Foot"]</div>
             </div>
         </div>
 
@@ -91,27 +77,26 @@
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Dokumente</h5>
+                        <h5 class="card-title mb-0">@T["Card_Documents"]</h5>
                         <i class="bi bi-files fs-4 opacity-50"></i>
                     </div>
-                    <p class="card-text text-muted">Benötigte Unterlagen je Dienst als Checkliste.</p>
-                    <a href="#" class="btn btn-outline-secondary">Checklisten ansehen</a>
+                    <p class="card-text text-muted">@T["Card_Documents_Text"]</p>
+                    <a href="#" class="btn btn-outline-secondary">@T["ShowChecklists"]</a>
                 </div>
             </div>
         </div>
 
-        <!-- Einstellungen (nur Link auf Settings-Seite) -->
+        <!-- Einstellungen -->
         <div class="col">
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Einstellungen</h5>
+                        <h5 class="card-title mb-0">@T["Card_Settings"]</h5>
                         <i class="bi bi-sliders2 fs-4 opacity-50"></i>
                     </div>
-                    <p class="card-text text-muted">Sprache, Designmodus und Datenschutz verwalten.</p>
+                    <p class="card-text text-muted">@T["Card_Settings_Text"]</p>
                     <div class="d-flex flex-wrap gap-2">
-                        <!-- nur Weiterleitung -->
-                        <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-secondary">Zur Settings-Seite</a>
+                        <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-secondary">@T["GoToSettings"]</a>
                     </div>
                 </div>
             </div>
@@ -122,13 +107,13 @@
             <div class="card feature-card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">Hinweise</h5>
+                        <h5 class="card-title mb-0">@T["Card_Hints"]</h5>
                         <i class="bi bi-info-circle fs-4 opacity-50"></i>
                     </div>
                     <ul class="list-unstyled mb-0 small text-muted">
-                        <li>• Spitzenzeiten: 8–10 Uhr</li>
-                        <li>• Bitte Ausweis und Unterlagen mitbringen</li>
-                        <li>• Barrierefreier Zugang vorhanden</li>
+                        <li>@T["Hint_Peak"]</li>
+                        <li>@T["Hint_Documents"]</li>
+                        <li>@T["Hint_Access"]</li>
                     </ul>
                 </div>
             </div>

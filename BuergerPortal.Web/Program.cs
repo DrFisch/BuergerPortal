@@ -1,15 +1,41 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+
+// MVC + View/DataAnnotations-Lokalisierung
+builder.Services
+    .AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+var supportedCultures = new[] { "de", "en" };
+builder.Services.Configure<RequestLocalizationOptions>(opts =>
+{
+    var cultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    opts.SupportedCultures = cultures;
+    opts.SupportedUICultures = cultures;
+
+    // Wichtig: Cookie zuerst, dann QueryString, dann Browser
+    opts.RequestCultureProviders = new IRequestCultureProvider[]
+    {
+        new CookieRequestCultureProvider(),        // liest dein Culture-Cookie
+        new QueryStringRequestCultureProvider(),   // optional ?culture=en
+        new AcceptLanguageHeaderRequestCultureProvider()
+    };
+
+    opts.SetDefaultCulture("de");
+});
 
 // ---- (1) AccessTokenHandler für Bearer-Token an die API
 builder.Services.AddHttpContextAccessor();
@@ -100,6 +126,8 @@ builder.Services
         };
     });
 
+
+
 static async Task<bool> IsAuthorityAlive(IServiceProvider sp, TimeSpan timeout)
 {
     var opts = sp.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
@@ -143,6 +171,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var locOptions = app.Services.GetRequiredService<
+    Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(locOptions);
 
 app.UseRouting();
 
