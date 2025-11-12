@@ -10,13 +10,24 @@
     <!-- Theme-Init (vor CSS) -->
     <script>
         (function () {
-            const saved = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-bs-theme', theme);
-            window.__initialTheme = theme;
+          function readCookie(n){
+            return document.cookie.split('; ').find(x=>x.startsWith(n+'='))?.split('=')[1];
+          }
+          const cookieTheme = readCookie('theme');               // von Server gesetzt (DB-Quelle)
+          const lsTheme     = localStorage.getItem('theme');     // letzte Clientwahl
+          const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+
+          const theme = cookieTheme || lsTheme || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-bs-theme', theme);
+          window.__initialTheme = theme;
+
+          // einmalige Harmonisierung: wenn Cookie existiert und abweicht → LocalStorage angleichen
+          if (cookieTheme && cookieTheme !== lsTheme) {
+            localStorage.setItem('theme', cookieTheme);
+          }
         })();
     </script>
+
 
      <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#0d6efd">
@@ -68,7 +79,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                    <a class="dropdown-item" asp-controller="Settings" asp-action="">
                                         <i class="bi bi-gear me-2"></i> Profil & Einstellungen
                                     </a>
                                 </li>
