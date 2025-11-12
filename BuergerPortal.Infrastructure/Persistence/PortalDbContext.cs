@@ -1,5 +1,6 @@
 ﻿using BuergerPortal.Domain.Antrag.Entity;
 using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Domain.Settings.Entity;
 using BuergerPortal.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,8 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<Antrag> Antraege => Set<Antrag>();
         public DbSet<ReisepassAntrag> ReisepassAntraege => Set<ReisepassAntrag>();
+        public DbSet<UserSettings> UserSettings { get; set; } = default!;
+
 
         protected override void OnModelCreating(ModelBuilder b)
         {
@@ -76,6 +79,39 @@ namespace BuergerPortal.Infrastructure.Persistence
             });
 
             pass.Property(x => x.Hinweis).HasMaxLength(1000);
+
+            // -------------------------
+            // USER SETTINGS
+            // -------------------------
+            var settings = b.Entity<UserSettings>();
+            settings.ToTable("UserSettings");
+            settings.HasKey(x => x.Id);
+
+            settings.Property(x => x.UserId).IsRequired();
+
+            // Ein Benutzer -> genau ein Settings-Datensatz
+            settings.HasIndex(x => x.UserId).IsUnique();
+
+            // Theme als string speichern (lesbarer als int). Alternativ: int ohne Conversion.
+            settings.Property(x => x.Theme)
+                    .HasConversion<string>()        // speichert "Light"/"Dark"
+                    .IsRequired();
+
+            settings.Property(x => x.Language)
+                    .HasMaxLength(8)
+                    .IsRequired();
+
+            settings.Property(x => x.PushEnabled).IsRequired();
+            settings.Property(x => x.ReduceDataUsage).IsRequired();
+            settings.Property(x => x.AnalyticsOptIn).IsRequired();
+            settings.Property(x => x.AllowGeolocation).IsRequired();
+
+            // Concurrency-Token
+            settings.Property(x => x.RowVersion).IsRowVersion();
+
+            // UpdatedUtc: optional DB-Default (SQL Server). Bei SQLite/PG entsprechend anpassen.
+            settings.Property(x => x.UpdatedUtc)
+                    .HasDefaultValueSql("GETUTCDATE()");
         }
     }
 }

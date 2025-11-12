@@ -3,3 +3,4 @@ Ausführen in Root solution
 dotnet ef migrations add <Migration_Name> -c PortalDbContext -p .\BuergerPortal.Infrastructure\ -s .\BuergerPortal.Api\
 
 dotnet ef database update -c PortalDbContext -p .\BuergerPortal.Infrastructure\ -s .\BuergerPortal.Api\
+
