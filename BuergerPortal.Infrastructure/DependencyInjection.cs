@@ -1,4 +1,6 @@
 ﻿using BuergerPortal.Application.Interfaces.Repositories;
+using BuergerPortal.Application.Interfaces.UserEinstellungen;
+using BuergerPortal.Infrastructure.Database.Repositories;
 using BuergerPortal.Infrastructure.Persistence;
 using BuergerPortal.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,7 @@ namespace BuergerPortal.Infrastructure
 
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IReisepassRepository, ReisepassRepository>();
+            services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
 
             return services;
         }

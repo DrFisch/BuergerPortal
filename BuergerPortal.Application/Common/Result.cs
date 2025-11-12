@@ -25,5 +25,6 @@ namespace BuergerPortal.Application.Common
         public const string Validation = "validation_error";
         public const string NotFound = "not_found";     // neu
         public const string Forbidden = "forbidden";     // neu
+        public const string Concurrency = "concurrency_conflict";
     }
 }

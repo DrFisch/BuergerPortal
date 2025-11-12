@@ -1,5 +1,7 @@
 ﻿using BuergerPortal.Api.Contracts.Settings;
-using BuergerPortal.Domain.Settings.Entity;
+using BuergerPortal.Application.Common;
+using BuergerPortal.Application.Interfaces.UserEinstellungen;
+using BuergerPortal.Application.UserEinstellungen.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,88 +15,92 @@ namespace BuergerPortal.Api.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public sealed class UserSettingsController : ControllerBase
     {
-        private readonly IUserSettingsService _svc;
-        public UserSettingsController(IUserSettingsService svc) => _svc = svc;
+        private readonly IUserSettingsBusinessService _bs;
+        public UserSettingsController(IUserSettingsBusinessService bs) => _bs = bs;
 
-        private bool TryGetUserId(out Guid userId)
-            => Guid.TryParse(User.FindFirstValue("sub"), out userId);
+        private bool TryGetUserId(out Guid id) =>
+            Guid.TryParse(User.FindFirstValue("sub"), out id);
 
         [HttpGet]
         [ProducesResponseType(typeof(UserSettingsResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<UserSettingsResponse>> Get(CancellationToken ct)
         {
-            if (!TryGetUserId(out var userId))
-                return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var s = await _svc.GetAsync(userId, ct) ?? new UserSettings { UserId = userId };
-            var resp = ToResponse(s);
+            var dto = await _bs.GetForUserAsync(userId, ct);
+            var resp = new UserSettingsResponse
+            {
+                Theme = dto.Theme,
+                Language = dto.Language,
+                PushEnabled = dto.PushEnabled,
+                ReduceDataUsage = dto.ReduceDataUsage,
+                AnalyticsOptIn = dto.AnalyticsOptIn,
+                AllowGeolocation = dto.AllowGeolocation,
+                Version = dto.Version
+            };
 
-            // ETag (RowVersion) zurückgeben
-            Response.Headers.ETag = $"W/\"{resp.Version}\"";
+            if (!string.IsNullOrEmpty(resp.Version))
+                Response.Headers.ETag = $"W/\"{resp.Version}\"";
+
             return Ok(resp);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromBody] UserSettingsUpdateRequest req, CancellationToken ct)
         {
-            if (!TryGetUserId(out var userId))
-                return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var expected = TryReadIfMatch(out var tag) ? Base64ToBytes(tag)
-                           : (req.Version is not null ? Convert.FromBase64String(req.Version) : null);
-
-            try
+            // If-Match bevorzugen; sonst Body.Version
+            byte[]? expected = null;
+            if (Request.Headers.TryGetValue("If-Match", out var ifm))
             {
-                var updated = await _svc.UpsertAsync(userId, new UserSettings
+                var raw = ifm.ToString().Trim().Trim('W', '/', '"');
+                if (!string.IsNullOrWhiteSpace(raw))
+                    try { expected = Convert.FromBase64String(raw); } catch { }
+            }
+            if (expected is null && !string.IsNullOrWhiteSpace(req.Version))
+            {
+                try { expected = Convert.FromBase64String(req.Version!); } catch { }
+            }
+
+            var dto = new UserSettingsUpdateDto
+            {
+                Theme = req.Theme,
+                Language = req.Language,
+                PushEnabled = req.PushEnabled,
+                ReduceDataUsage = req.ReduceDataUsage,
+                AnalyticsOptIn = req.AnalyticsOptIn,
+                AllowGeolocation = req.AllowGeolocation,
+                ExpectedVersion = expected
+            };
+
+            var result = await _bs.UpsertForUserAsync(userId, dto, ct);
+            if (!result.IsSuccess)
+            {
+                return result.ErrorCode switch
                 {
-                    Theme = SanitizeTheme(req.Theme),
-                    Language = string.IsNullOrWhiteSpace(req.Language) ? "de" : req.Language,
-                    PushEnabled = req.PushEnabled,
-                    ReduceDataUsage = req.ReduceDataUsage,
-                    AnalyticsOptIn = req.AnalyticsOptIn,
-                    AllowGeolocation = req.AllowGeolocation
-                }, expected, ct);
-
-                Response.Headers.ETag = $"W/\"{Convert.ToBase64String(updated.RowVersion)}\"";
-                return NoContent();
+                    ErrorCodes.Validation => ValidationProblem(detail: result.ErrorMessage),
+                    ErrorCodes.Concurrency => Problem(
+                                                  title: "Version conflict",
+                                                  statusCode: StatusCodes.Status412PreconditionFailed,
+                                                  detail: result.ErrorMessage),
+                    ErrorCodes.Forbidden => Problem(statusCode: StatusCodes.Status403Forbidden, detail: result.ErrorMessage),
+                    ErrorCodes.NotFound => Problem(statusCode: StatusCodes.Status404NotFound, detail: result.ErrorMessage),
+                    _ => Problem(statusCode: StatusCodes.Status400BadRequest, detail: result.ErrorMessage)
+                };
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                return Problem(title: "Version conflict", statusCode: StatusCodes.Status412PreconditionFailed,
-                    detail: "Die Einstellungen wurden parallel geändert. Seite aktualisieren und erneut speichern.");
-            }
-        }
 
-        private static string SanitizeTheme(string v) =>
-            string.Equals(v, "Dark", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light";
+            // Erfolg
 
-        private static UserSettingsResponse ToResponse(UserSettings s) => new()
-        {
-            Theme = s.Theme,
-            Language = s.Language,
-            PushEnabled = s.PushEnabled,
-            ReduceDataUsage = s.ReduceDataUsage,
-            AnalyticsOptIn = s.AnalyticsOptIn,
-            AllowGeolocation = s.AllowGeolocation,
-            Version = Convert.ToBase64String(s.RowVersion ?? Array.Empty<byte>())
-        };
+            // neue ETag zurückgeben (erneut GET wäre sauber; hier optionaler Roundtrip vermeiden):
+            var fresh = await _bs.GetForUserAsync(userId, ct);
+            if (!string.IsNullOrEmpty(fresh.Version))
+                Response.Headers.ETag = $"W/\"{fresh.Version}\"";
 
-        private bool TryReadIfMatch(out string base64)
-        {
-            base64 = "";
-            if (!Request.Headers.TryGetValue("If-Match", out var h)) return false;
-            var v = h.ToString();
-            var i = v.IndexOf('"');
-            if (i < 0) return false;
-            base64 = v.Trim().Trim('W', '/', '"');
-            return !string.IsNullOrWhiteSpace(base64);
-        }
-        private static byte[]? Base64ToBytes(string b64)
-        {
-            try { return Convert.FromBase64String(b64); } catch { return null; }
+            return NoContent();
         }
     }
-
 }
