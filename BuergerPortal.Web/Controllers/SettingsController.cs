@@ -39,9 +39,17 @@ namespace BuergerPortal.Web.Controllers
             new SelectListItem("English","en", dto.Language=="en")
         }
             };
+            // nach dem Erstellen von vm:
+            if (Request.Cookies.TryGetValue("theme", out var cookieTheme))
+            {
+                vm.Theme = string.Equals(cookieTheme, "dark", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light";
+            }
 
-            // Optional: Hinweis anzeigen, wenn die API nicht erreichbar war
-            if (dto.__ApiFallbackUsed) TempData["Saved"] = "Hinweis: Einstellungen lokal mit Standardwerten geladen (API nicht erreichbar).";
+
+            if (dto.__ApiFallbackUsed) 
+            { 
+                TempData["Saved"] = "Hinweis: Einstellungen lokal mit Standardwerten geladen (API nicht erreichbar)."; 
+            }
 
             return View("Index", vm);
         }

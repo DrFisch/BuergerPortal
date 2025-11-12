@@ -156,6 +156,17 @@
 
 @section Scripts {
     <script>
+              (function syncThemeRadiosWithEffectiveTheme(){
+          const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
+          const isDark = eff === 'dark';
+          const rLight = document.getElementById('themeLight');
+          const rDark  = document.getElementById('themeDark');
+          if (rLight && rDark) {
+            rLight.checked = !isDark;
+            rDark.checked  =  isDark;
+          }
+        })();
+
         // Theme sofort umschalten
         const html = document.documentElement;
         function setTheme(mode) {
