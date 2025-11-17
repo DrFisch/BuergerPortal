@@ -122,7 +122,7 @@ namespace BuergerPortal.Web.Controllers
             };
 
             var http = _httpClientFactory.CreateClient("BuergerPortalApi");
-            var res = await http.PutAsJsonAsync("users/me/settings", payload, ct);
+            var res = await http.PutAsJsonAsync("api/users/me/settings", payload, ct);
 
             if (res.IsSuccessStatusCode || res.StatusCode == HttpStatusCode.NoContent)
             {
