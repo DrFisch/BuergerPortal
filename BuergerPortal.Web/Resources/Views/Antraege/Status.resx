@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="StatusList_Title" xml:space="preserve">
+    <value>Meine Anträge</value>
+  </data>
+	<data name="StatusList_Heading" xml:space="preserve">
+    <value>Meine Anträge</value>
+  </data>
+
+	<data name="StatusList_Empty_Title" xml:space="preserve">
+    <value>Noch keine Anträge</value>
+  </data>
+	<data name="StatusList_Empty_Text" xml:space="preserve">
+    <value>Starte einen neuen Reisepassantrag über die Übersicht.</value>
+  </data>
+
+	<data name="StatusList_Field_SubmittedLabel" xml:space="preserve">
+    <value>Eingereicht:</value>
+  </data>
+	<data name="StatusList_Field_IdLabel" xml:space="preserve">
+    <value>ID: </value>
+  </data>
+
+	<data name="StatusList_Button_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+
+	<data name="StatusList_Step_Draft" xml:space="preserve">
+    <value>Entwurf</value>
+  </data>
+	<data name="StatusList_Step_Submitted" xml:space="preserve">
+    <value>Eingereicht</value>
+  </data>
+	<data name="StatusList_Step_Review" xml:space="preserve">
+    <value>Prüfung</value>
+  </data>
+	<data name="StatusList_Step_Completed" xml:space="preserve">
+    <value>Abschluss</value>
+  </data>
+</root>
