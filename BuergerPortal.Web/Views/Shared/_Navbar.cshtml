@@ -1,0 +1,82 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+
+<header class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+            @T["BrandTitle"]
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#nav"
+                aria-controls="nav" aria-expanded="false"
+                aria-label="@T["NavbarToggleAria"]">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="nav" class="collapse navbar-collapse">
+            <!-- Linkbereich links (noch leer) -->
+            <ul class="navbar-nav me-auto">
+            </ul>
+
+            <!-- Rechts ausgerichteter Bereich -->
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                @if (User?.Identity?.IsAuthenticated ?? false)
+                {
+                    <!-- Begrüßung: Desktop -->
+                    <li class="nav-item d-none d-lg-inline ms-lg-2">
+                        <span class="navbar-text">
+                            @T["HelloUser", User.Identity!.Name]
+                        </span>
+                    </li>
+
+                    <!-- Profil / Logout -->
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2"></i> @T["Account"]
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Settings" asp-action="">
+                                    <i class="bi bi-gear me-2"></i> @T["ProfileSettings"]
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right me-2"></i> @T["Logout"]
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Mobile Begrüßung -->
+                    <li class="nav-item d-lg-none mt-2">
+                        <span class="nav-link disabled text-muted">
+                            @T["HelloUser", User.Identity!.Name]
+                        </span>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> @T["Login"]
+                        </a>
+                    </li>
+                }
+
+                <!-- Theme Toggle -->
+                <li class="nav-item">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary d-flex align-items-center js-theme-toggle"
+                            aria-pressed="false"
+                            aria-label="@T["ThemeToggleAria"]">
+                        <i class="bi bi-moon-stars me-2 js-theme-icon"></i>
+                        <span class="js-theme-text">@T["ThemeLight"]</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

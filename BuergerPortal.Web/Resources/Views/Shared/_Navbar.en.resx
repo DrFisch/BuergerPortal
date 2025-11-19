@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="BrandTitle" xml:space="preserve">
+    <value>Citizen Portal</value>
+  </data>
+
+	<data name="NavbarToggleAria" xml:space="preserve">
+    <value>Toggle navigation</value>
+  </data>
+
+	<data name="HelloUser" xml:space="preserve">
+    <value>Hello, {0}</value>
+  </data>
+
+	<data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+
+	<data name="ProfileSettings" xml:space="preserve">
+    <value>Profile &amp; settings</value>
+  </data>
+
+	<data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+
+	<data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+
+	<data name="ThemeToggleAria" xml:space="preserve">
+    <value>Toggle theme</value>
+  </data>
+
+	<data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+
+	<data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+</root>
