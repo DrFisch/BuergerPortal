@@ -1,7 +1,10 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.AntragDetailVm
 @using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
 @{
-    ViewData["Title"] = "Antrag – Details";
+    ViewData["Title"] = L["ApplicationDetails_Title"];
 }
 <div class="container py-4">
     @if (TempData["AntragTerminOk"] is string bookedMsg)
@@ -10,7 +13,7 @@
     }
 
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-        <h1 class="h4 mb-0">Reisepassantrag</h1>
+        <h1 class="h4 mb-0">@L["ApplicationDetails_Heading"]</h1>
         <span class="badge @Model.BadgeClass">@Model.StatusText</span>
     </div>
 
@@ -21,24 +24,24 @@
     <div class="row g-3">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header">Antragsdaten</div>
+                <div class="card-header">@L["ApplicationDetails_DataCardTitle"]</div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-4">Antragsteller</dt>
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_Applicant"]</dt>
                         <dd class="col-sm-8">@Model.Antragsteller</dd>
 
-                        <dt class="col-sm-4">Geburtsdatum</dt>
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_BirthDate"]</dt>
                         <dd class="col-sm-8">@Model.Geburtsdatum:dd.MM.yyyy</dd>
 
-                        <dt class="col-sm-4">Express</dt>
-                        <dd class="col-sm-8">@((Model.Express ? "Ja" : "Nein"))</dd>
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_Express"]</dt>
+                        <dd class="col-sm-8">@((Model.Express ? L["Yes"] : L["No"]))</dd>
 
-                        <dt class="col-sm-4">Alter Pass vorhanden</dt>
-                        <dd class="col-sm-8">@((Model.AltpassVorhanden ? "Ja" : "Nein"))</dd>
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_OldPass"]</dt>
+                        <dd class="col-sm-8">@((Model.AltpassVorhanden ? L["Yes"] : L["No"]))</dd>
 
                         @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
                         {
-                            <dt class="col-sm-4">Hinweis</dt>
+                            <dt class="col-sm-4">@L["ApplicationDetails_Field_Note"]</dt>
                             <dd class="col-sm-8">@Model.Hinweis</dd>
                         }
                     </dl>
@@ -47,7 +50,7 @@
 
             <div class="card mt-3">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <span>Verlauf</span>
+                    <span>@L["ApplicationDetails_Timeline_Title"]</span>
                     <span class="badge @Model.BadgeClass">@Model.StatusText</span>
                 </div>
                 <div class="card-body">
@@ -55,7 +58,7 @@
                         <li class="tl-item @(Model.CreatedUtc != default ? "done" : "")">
                             <div class="tl-dot"></div>
                             <div class="tl-content">
-                                <div class="tl-title">Angelegt</div>
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Created"]</div>
                                 <div class="tl-meta">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
                             </div>
                         </li>
@@ -63,14 +66,14 @@
                         <li class="tl-item @(Model.SubmittedUtc.HasValue ? "done" : "")">
                             <div class="tl-dot"></div>
                             <div class="tl-content">
-                                <div class="tl-title">Eingereicht</div>
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Submitted"]</div>
                                 @if (Model.SubmittedUtc.HasValue)
                                 {
                                     <div class="tl-meta">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
                                 }
                                 else
                                 {
-                                    <div class="tl-meta text-secondary">noch nicht erfolgt</div>
+                                    <div class="tl-meta text-secondary">@L["ApplicationDetails_Timeline_Submitted_NotYet"]</div>
                                 }
                             </div>
                         </li>
@@ -78,9 +81,11 @@
                         <li class="tl-item @((Model.ProgressPercent >= 70) ? "done" : "")">
                             <div class="tl-dot"></div>
                             <div class="tl-content">
-                                <div class="tl-title">Prüfung</div>
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Review"]</div>
                                 <div class="tl-meta @(Model.ProgressPercent >= 70 ? "" : "text-secondary")">
-                                    @(Model.ProgressPercent >= 70 ? "läuft/abgeschlossen" : "ausstehend")
+                                    @(Model.ProgressPercent >= 70
+                                                                        ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"]
+                                                                        : L["ApplicationDetails_Timeline_Pending"])
                                 </div>
                             </div>
                         </li>
@@ -88,9 +93,11 @@
                         <li class="tl-item @((Model.ProgressPercent >= 100) ? "done" : "")">
                             <div class="tl-dot"></div>
                             <div class="tl-content">
-                                <div class="tl-title">Abschluss</div>
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Completed"]</div>
                                 <div class="tl-meta @(Model.ProgressPercent >= 100 ? "" : "text-secondary")">
-                                    @(Model.ProgressPercent >= 100 ? "abgeschlossen" : "ausstehend")
+                                    @(Model.ProgressPercent >= 100
+                                                                        ? L["ApplicationDetails_Timeline_Completed_Done"]
+                                                                        : L["ApplicationDetails_Timeline_Pending"])
                                 </div>
                             </div>
                         </li>
@@ -99,19 +106,25 @@
             </div>
 
         </div>
-        
+
 
         <div class="col-lg-4">
             <div class="card">
-                <div class="card-header">Kontakt & Aktionen</div>
+                <div class="card-header">@L["ApplicationDetails_ContactCardTitle"]</div>
                 <div class="card-body">
                     @if (!string.IsNullOrWhiteSpace(Model.Email))
                     {
-                        <div class="mb-2"><span class="text-secondary small d-block">E-Mail</span>@Model.Email</div>
+                        <div class="mb-2">
+                            <span class="text-secondary small d-block">@L["ApplicationDetails_Email_Label"]</span>
+                            @Model.Email
+                        </div>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.Telefon))
                     {
-                        <div class="mb-3"><span class="text-secondary small d-block">Telefon</span>@Model.Telefon</div>
+                        <div class="mb-3">
+                            <span class="text-secondary small d-block">@L["ApplicationDetails_Phone_Label"]</span>
+                            @Model.Telefon
+                        </div>
                     }
 
                     <a class="btn btn-outline-primary w-100"
@@ -119,12 +132,11 @@
                        asp-action="Buchen"
                        asp-route-service="@(ServiceType.AntragRueckfrage)"
                        asp-route-antragId="@Model.Id">
-                        Termin zur Klärung buchen
+                        @L["ApplicationDetails_Appointment_Button"]
                     </a>
 
-
                     <div class="text-secondary small mt-2">
-                        Du wirst zur Terminbuchung weitergeleitet (Dienst vorbelegt: „Antrag Rückfrage“).
+                        @L["ApplicationDetails_Appointment_Info"]
                     </div>
                 </div>
             </div>
@@ -196,7 +208,6 @@
             color: var(--bs-secondary-color);
         }
 
-        /* Optional: Fortschritts-Header sauberer */
         .progress {
             height: .6rem;
         }
