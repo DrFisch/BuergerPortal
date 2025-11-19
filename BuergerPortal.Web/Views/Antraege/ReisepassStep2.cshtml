@@ -1,20 +1,25 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.ReisepassStep2Vm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
 @{
-    ViewData["Title"] = "Reisepass – Schritt 2 von 2";
+    ViewData["Title"] = L["PassportStep2_Title"];
 }
 
 <div class="container py-4">
-    <nav aria-label="Fortschritt" class="mb-4">
+    <nav aria-label="@L["PassportStep2_Progress_Aria"]" class="mb-4">
         <ol class="progress-steps">
-            <li>Persönliche Daten</li>
-            <li class="active">Optionen & Einreichen</li>
+            <li>@L["PassportStep2_Step1"]</li>
+            <li class="active">@L["PassportStep2_Step2"]</li>
         </ol>
         <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar" style="width:100%">Schritt 2/2</div>
+            <div class="progress-bar" style="width:100%">
+                @L["PassportStep2_ProgressLabel"]
+            </div>
         </div>
     </nav>
 
-    <h1 class="h4 mb-3">Reisepassantrag – Optionen & Einreichen</h1>
+    <h1 class="h4 mb-3">@L["PassportStep2_Heading"]</h1>
 
     @if (TempData["AntragInfo"] is string info)
     {
@@ -25,14 +30,16 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                 <div>
-                    <strong>Antragsteller:</strong>
+                    <strong>@L["PassportStep2_Applicant"]</strong>
                     <div>@Model.AntragstellerName</div>
                     @if (Model.Geburtsdatum.HasValue)
                     {
-                        <div><small>Geburtsdatum: @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</small></div>
+                        <div>
+                            <small>@L["PassportStep2_Birthdate"]: @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</small>
+                        </div>
                     }
                 </div>
-                <span class="badge text-bg-secondary">ID: @Model.Id</span>
+                <span class="badge text-bg-secondary">@L["PassportStep2_Id"]: @Model.Id</span>
             </div>
         </div>
     </div>
@@ -64,9 +71,17 @@
         </div>
 
         <div class="col-12 d-flex gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary">Abbrechen</a>
-            <button type="submit" name="submitAction" value="save" class="btn btn-secondary">Speichern</button>
-            <button type="submit" name="submitAction" value="submit" class="btn btn-primary">Jetzt einreichen</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                @L["PassportStep2_Cancel"]
+            </a>
+
+            <button type="submit" name="submitAction" value="save" class="btn btn-secondary">
+                @L["PassportStep2_Save"]
+            </button>
+
+            <button type="submit" name="submitAction" value="submit" class="btn btn-primary">
+                @L["PassportStep2_Submit"]
+            </button>
         </div>
     </form>
 </div>
