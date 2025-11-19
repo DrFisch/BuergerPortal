@@ -1,6 +1,9 @@
 ﻿@model BuergerPortal.Web.Features.Settings.ViewModels.SettingsVm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
 @{
-    ViewData["Title"] = "Einstellungen";
+    ViewData["Title"] = L["Settings_Title"];
 }
 
 <div class="container py-4">
@@ -8,14 +11,30 @@
         <!-- Sidebar -->
         <nav class="col-12 col-md-3 mb-3 mb-md-0">
             <div class="list-group" id="settingsNav" role="tablist">
-                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-theme" role="tab">Theme</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">Sprache</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-push" role="tab">Push-Benachrichtigungen</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">App-Installation (PWA)</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">Datenschutz</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-cache" role="tab">Offline & Cache</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-sensors" role="tab">Sensoren & Standort</a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-data" role="tab">Datenverbrauch</a>
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-theme" role="tab">
+                    @L["Settings_Tab_Theme"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">
+                    @L["Settings_Tab_Language"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-push" role="tab">
+                    @L["Settings_Tab_Push"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">
+                    @L["Settings_Tab_Install"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">
+                    @L["Settings_Tab_Privacy"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-cache" role="tab">
+                    @L["Settings_Tab_Cache"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-sensors" role="tab">
+                    @L["Settings_Tab_Sensors"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-data" role="tab">
+                    @L["Settings_Tab_Data"]
+                </a>
             </div>
         </nav>
 
@@ -34,15 +53,15 @@
                     <div class="tab-pane fade show active" id="tab-theme" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Theme</h5>
-                                <p class="text-muted">Wechselt zwischen hellem und dunklem Erscheinungsbild. Wird auf allen Geräten gespeichert.</p>
+                                <h5 class="card-title">@L["Settings_Theme_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Theme_Description"]</p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="Theme" value="Light" id="themeLight" @(Model.Theme == "Light" ? "checked" : "") />
-                                    <label class="form-check-label" for="themeLight">Hell</label>
+                                    <label class="form-check-label" for="themeLight">@L["Settings_Theme_Light"]</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="Theme" value="Dark" id="themeDark" @(Model.Theme == "Dark" ? "checked" : "") />
-                                    <label class="form-check-label" for="themeDark">Dunkel</label>
+                                    <label class="form-check-label" for="themeDark">@L["Settings_Theme_Dark"]</label>
                                 </div>
                             </div>
                         </div>
@@ -52,9 +71,9 @@
                     <div class="tab-pane fade" id="tab-language" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Sprache</h5>
-                                <p class="text-muted">Legt die Anzeigesprache der App fest.</p>
-                                <label class="form-label" for="Language">Sprache wählen</label>
+                                <h5 class="card-title">@L["Settings_Language_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Language_Description"]</p>
+                                <label class="form-label" for="Language">@L["Settings_Language_SelectLabel"]</label>
                                 <select asp-for="Language" asp-items="Model.Languages" class="form-select" id="Language"></select>
                             </div>
                         </div>
@@ -64,13 +83,13 @@
                     <div class="tab-pane fade" id="tab-push" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Push-Benachrichtigungen</h5>
-                                <p class="text-muted">Erlaubt Mitteilungen bei Statusänderungen oder Terminerinnerungen.</p>
+                                <h5 class="card-title">@L["Settings_Push_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Push_Description"]</p>
                                 <input type="hidden" name="PushEnabled" id="PushEnabled" value="@(Model.PushEnabled.ToString().ToLower())" />
                                 <div class="d-flex flex-wrap gap-2">
-                                    <button class="btn btn-primary" type="button" id="btnEnablePush">Aktivieren</button>
-                                    <button class="btn btn-outline-secondary" type="button" id="btnTestPush">Testnachricht</button>
-                                    <button class="btn btn-outline-danger" type="button" id="btnDisablePush">Deaktivieren</button>
+                                    <button class="btn btn-primary" type="button" id="btnEnablePush">@L["Settings_Push_Enable"]</button>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnTestPush">@L["Settings_Push_Test"]</button>
+                                    <button class="btn btn-outline-danger" type="button" id="btnDisablePush">@L["Settings_Push_Disable"]</button>
                                 </div>
                             </div>
                         </div>
@@ -80,9 +99,11 @@
                     <div class="tab-pane fade" id="tab-install" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">App-Installation</h5>
-                                <p class="text-muted">Installiere die WebApp als PWA für Offline-Modus und Homescreen-Zugriff.</p>
-                                <button class="btn btn-success" type="button" id="btnInstall" onclick="installApp()">App installieren</button>
+                                <h5 class="card-title">@L["Settings_Install_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Install_Description"]</p>
+                                <button class="btn btn-success" type="button" id="btnInstall" onclick="installApp()">
+                                    @L["Settings_Install_Button"]
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -91,11 +112,11 @@
                     <div class="tab-pane fade" id="tab-privacy" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Datenschutz</h5>
-                                <p class="text-muted">Steuert, ob anonyme Nutzungsdaten zur Verbesserung gesammelt werden dürfen.</p>
+                                <h5 class="card-title">@L["Settings_Privacy_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Privacy_Description"]</p>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="AnalyticsOptIn" name="AnalyticsOptIn" @(Model.AnalyticsOptIn ? "checked" : "")>
-                                    <label class="form-check-label" for="AnalyticsOptIn">Anonyme Analytics erlauben</label>
+                                    <label class="form-check-label" for="AnalyticsOptIn">@L["Settings_Privacy_AnalyticsLabel"]</label>
                                 </div>
                             </div>
                         </div>
@@ -105,10 +126,14 @@
                     <div class="tab-pane fade" id="tab-cache" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Offline & Cache</h5>
-                                <p class="text-muted">Verwalte zwischengespeicherte Daten für Offline-Verfügbarkeit.</p>
-                                <button class="btn btn-outline-primary me-2" type="button" id="btnPrecache">Offline-Assets aktualisieren</button>
-                                <button class="btn btn-outline-danger" type="button" id="btnClearCache">Cache leeren</button>
+                                <h5 class="card-title">@L["Settings_Cache_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Cache_Description"]</p>
+                                <button class="btn btn-outline-primary me-2" type="button" id="btnPrecache">
+                                    @L["Settings_Cache_Precache"]
+                                </button>
+                                <button class="btn btn-outline-danger" type="button" id="btnClearCache">
+                                    @L["Settings_Cache_Clear"]
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -117,13 +142,15 @@
                     <div class="tab-pane fade" id="tab-sensors" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Sensoren & Standort</h5>
-                                <p class="text-muted">Aktiviere den Zugriff auf Standortdaten für regionale Funktionen.</p>
+                                <h5 class="card-title">@L["Settings_Sensors_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Sensors_Description"]</p>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="AllowGeolocation" name="AllowGeolocation" @(Model.AllowGeolocation ? "checked" : "")>
-                                    <label class="form-check-label" for="AllowGeolocation">Standort verwenden</label>
+                                    <label class="form-check-label" for="AllowGeolocation">@L["Settings_Sensors_UseLocation"]</label>
                                 </div>
-                                <button class="btn btn-outline-secondary mt-2" type="button" id="btnRequestGeo">Zugriff anfragen</button>
+                                <button class="btn btn-outline-secondary mt-2" type="button" id="btnRequestGeo">
+                                    @L["Settings_Sensors_RequestButton"]
+                                </button>
                                 <div id="geoStatus" class="mt-2 small text-muted"></div>
                             </div>
                         </div>
@@ -133,11 +160,11 @@
                     <div class="tab-pane fade" id="tab-data" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">Datenverbrauch</h5>
-                                <p class="text-muted">Reduziert den Datenverbrauch bei mobiler Verbindung.</p>
+                                <h5 class="card-title">@L["Settings_Data_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Data_Description"]</p>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="ReduceDataUsage" name="ReduceDataUsage" @(Model.ReduceDataUsage ? "checked" : "")>
-                                    <label class="form-check-label" for="ReduceDataUsage">Daten sparen</label>
+                                    <label class="form-check-label" for="ReduceDataUsage">@L["Settings_Data_ReduceLabel"]</label>
                                 </div>
                             </div>
                         </div>
@@ -146,8 +173,8 @@
                 </div>
 
                 <div class="d-flex gap-2 mt-3">
-                    <button type="submit" class="btn btn-primary">Speichern</button>
-                    <a href="/" class="btn btn-outline-secondary">Abbrechen</a>
+                    <button type="submit" class="btn btn-primary">@L["Settings_Save_Button"]</button>
+                    <a href="/" class="btn btn-outline-secondary">@L["Settings_Cancel_Button"]</a>
                 </div>
             </form>
         </div>
@@ -156,15 +183,15 @@
 
 @section Scripts {
     <script>
-              (function syncThemeRadiosWithEffectiveTheme(){
-          const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
-          const isDark = eff === 'dark';
-          const rLight = document.getElementById('themeLight');
-          const rDark  = document.getElementById('themeDark');
-          if (rLight && rDark) {
-            rLight.checked = !isDark;
-            rDark.checked  =  isDark;
-          }
+        (function syncThemeRadiosWithEffectiveTheme() {
+            const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
+            const isDark = eff === 'dark';
+            const rLight = document.getElementById('themeLight');
+            const rDark  = document.getElementById('themeDark');
+            if (rLight && rDark) {
+                rLight.checked = !isDark;
+                rDark.checked  =  isDark;
+            }
         })();
 
         // Theme sofort umschalten
@@ -183,49 +210,60 @@
             if (saved) setTheme(saved);
         })();
 
+        // Sprache: beim Wechsel direkt speichern & Seite neu laden
+        document.getElementById('Language')?.addEventListener('change', () => {
+            const form = document.querySelector('form[method="post"]');
+            if (form) {
+                form.submit(); // POST Settings/Index → API + Cookies → Redirect → neue Sprache
+            }
+        });
+
         // Push
         async function registerSw() {
             if (!('serviceWorker' in navigator)) return null;
             try { return await navigator.serviceWorker.register('/service-worker.js'); } catch { return null; }
         }
         document.getElementById('btnEnablePush')?.addEventListener('click', async () => {
-            if (!('Notification' in window)) return alert('Push wird nicht unterstützt.');
+            if (!('Notification' in window)) return alert('@L["Settings_Push_NotSupported"]');
             const perm = await Notification.requestPermission();
-            if (perm !== 'granted') return alert('Keine Berechtigung.');
-            const reg = await registerSw(); if (!reg) return alert('Kein Service Worker verfügbar.');
+            if (perm !== 'granted') return alert('@L["Settings_Push_NoPermission"]');
+            const reg = await registerSw(); if (!reg) return alert('@L["Settings_Push_NoServiceWorker"]');
             document.getElementById('PushEnabled').value = 'true';
-            alert('Push aktiviert (Demo). Jetzt speichern.');
+            alert('@L["Settings_Push_Activated_Demo"]');
         });
         document.getElementById('btnTestPush')?.addEventListener('click', async () => {
             const reg = await navigator.serviceWorker.getRegistration();
-            if (!reg) return alert('Kein Service Worker.');
-            reg.showNotification('Test', { body: 'So sieht eine Push-Mitteilung aus.', icon: '/icons/portal-128.png' });
+            if (!reg) return alert('@L["Settings_Push_NoServiceWorker"]');
+            reg.showNotification('@L["Settings_Push_Test_Title"]', {
+                body: '@L["Settings_Push_Test_Body"]',
+                icon: '/icons/portal-128.png'
+            });
         });
         document.getElementById('btnDisablePush')?.addEventListener('click', () => {
             document.getElementById('PushEnabled').value = 'false';
-            alert('Push deaktiviert (Demo). Jetzt speichern.');
+            alert('@L["Settings_Push_Deactivated_Demo"]');
         });
 
         // Cache
         document.getElementById('btnClearCache')?.addEventListener('click', async () => {
-            if (!('caches' in window)) return alert('Caches API nicht verfügbar.');
+            if (!('caches' in window)) return alert('@L["Settings_Cache_NoCachesApi"]');
             const keys = await caches.keys(); await Promise.all(keys.map(k => caches.delete(k)));
-            alert('Cache geleert.');
+            alert('@L["Settings_Cache_Cleared"]');
         });
         document.getElementById('btnPrecache')?.addEventListener('click', async () => {
             const reg = await navigator.serviceWorker.getRegistration();
-            if (!reg) return alert('Kein Service Worker.');
+            if (!reg) return alert('@L["Settings_Cache_NoServiceWorker"]');
             reg.active?.postMessage({ type: 'PRECACHE_NOW' });
-            alert('Offline-Assets werden aktualisiert.');
+            alert('@L["Settings_Cache_Precache_Started"]');
         });
 
         // Geolocation
         const geoStatus = document.getElementById('geoStatus');
         document.getElementById('btnRequestGeo')?.addEventListener('click', () => {
-            if (!navigator.geolocation) { geoStatus.textContent = 'Nicht unterstützt.'; return; }
+            if (!navigator.geolocation) { geoStatus.textContent = '@L["Settings_Sensors_NotSupported"]'; return; }
             navigator.geolocation.getCurrentPosition(
-                pos => geoStatus.textContent = `Position OK (~${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`,
-                err => geoStatus.textContent = 'Fehler: ' + err.message
+                pos => geoStatus.textContent = '@L["Settings_Sensors_Status_Ok"]'.replace('{lat}', pos.coords.latitude.toFixed(4)).replace('{lng}', pos.coords.longitude.toFixed(4)),
+                err => geoStatus.textContent = '@L["Settings_Sensors_Status_Error"]' + err.message
             );
         });
     </script>

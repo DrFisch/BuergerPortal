@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<!-- Allgemein -->
+	<data name="Settings_Title" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+
+	<!-- Tabs -->
+	<data name="Settings_Tab_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+	<data name="Settings_Tab_Language" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+	<data name="Settings_Tab_Push" xml:space="preserve">
+    <value>Push-Benachrichtigungen</value>
+  </data>
+	<data name="Settings_Tab_Install" xml:space="preserve">
+    <value>App-Installation (PWA)</value>
+  </data>
+	<data name="Settings_Tab_Privacy" xml:space="preserve">
+    <value>Datenschutz</value>
+  </data>
+	<data name="Settings_Tab_Cache" xml:space="preserve">
+    <value>Offline &amp; Cache</value>
+  </data>
+	<data name="Settings_Tab_Sensors" xml:space="preserve">
+    <value>Sensoren &amp; Standort</value>
+  </data>
+	<data name="Settings_Tab_Data" xml:space="preserve">
+    <value>Datenverbrauch</value>
+  </data>
+
+	<!-- Theme -->
+	<data name="Settings_Theme_Title" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+	<data name="Settings_Theme_Description" xml:space="preserve">
+    <value>Wechselt zwischen hellem und dunklem Erscheinungsbild. Wird auf allen Geräten gespeichert.</value>
+  </data>
+	<data name="Settings_Theme_Light" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+	<data name="Settings_Theme_Dark" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+
+	<!-- Language -->
+	<data name="Settings_Language_Title" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+	<data name="Settings_Language_Description" xml:space="preserve">
+    <value>Legt die Anzeigesprache der App fest.</value>
+  </data>
+	<data name="Settings_Language_SelectLabel" xml:space="preserve">
+    <value>Sprache wählen</value>
+  </data>
+
+	<!-- Push -->
+	<data name="Settings_Push_Title" xml:space="preserve">
+    <value>Push-Benachrichtigungen</value>
+  </data>
+	<data name="Settings_Push_Description" xml:space="preserve">
+    <value>Erlaubt Mitteilungen bei Statusänderungen oder Terminerinnerungen.</value>
+  </data>
+	<data name="Settings_Push_Enable" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+	<data name="Settings_Push_Test" xml:space="preserve">
+    <value>Testnachricht</value>
+  </data>
+	<data name="Settings_Push_Disable" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+
+	<!-- Push JS-Texte -->
+	<data name="Settings_Push_NotSupported" xml:space="preserve">
+    <value>Push wird nicht unterstützt.</value>
+  </data>
+	<data name="Settings_Push_NoPermission" xml:space="preserve">
+    <value>Keine Berechtigung.</value>
+  </data>
+	<data name="Settings_Push_NoServiceWorker" xml:space="preserve">
+    <value>Kein Service Worker verfügbar.</value>
+  </data>
+	<data name="Settings_Push_Activated_Demo" xml:space="preserve">
+    <value>Push aktiviert (Demo). Jetzt speichern.</value>
+  </data>
+	<data name="Settings_Push_Test_Title" xml:space="preserve">
+    <value>Test</value>
+  </data>
+	<data name="Settings_Push_Test_Body" xml:space="preserve">
+    <value>So sieht eine Push-Mitteilung aus.</value>
+  </data>
+	<data name="Settings_Push_Deactivated_Demo" xml:space="preserve">
+    <value>Push deaktiviert (Demo). Jetzt speichern.</value>
+  </data>
+
+	<!-- Install -->
+	<data name="Settings_Install_Title" xml:space="preserve">
+    <value>App-Installation</value>
+  </data>
+	<data name="Settings_Install_Description" xml:space="preserve">
+    <value>Installiere die WebApp als PWA für Offline-Modus und Homescreen-Zugriff.</value>
+  </data>
+	<data name="Settings_Install_Button" xml:space="preserve">
+    <value>App installieren</value>
+  </data>
+
+	<!-- Privacy -->
+	<data name="Settings_Privacy_Title" xml:space="preserve">
+    <value>Datenschutz</value>
+  </data>
+	<data name="Settings_Privacy_Description" xml:space="preserve">
+    <value>Steuert, ob anonyme Nutzungsdaten zur Verbesserung gesammelt werden dürfen.</value>
+  </data>
+	<data name="Settings_Privacy_AnalyticsLabel" xml:space="preserve">
+    <value>Anonyme Analytics erlauben</value>
+  </data>
+
+	<!-- Cache -->
+	<data name="Settings_Cache_Title" xml:space="preserve">
+    <value>Offline &amp; Cache</value>
+  </data>
+	<data name="Settings_Cache_Description" xml:space="preserve">
+    <value>Verwalte zwischengespeicherte Daten für Offline-Verfügbarkeit.</value>
+  </data>
+	<data name="Settings_Cache_Precache" xml:space="preserve">
+    <value>Offline-Assets aktualisieren</value>
+  </data>
+	<data name="Settings_Cache_Clear" xml:space="preserve">
+    <value>Cache leeren</value>
+  </data>
+
+	<!-- Cache JS -->
+	<data name="Settings_Cache_NoCachesApi" xml:space="preserve">
+    <value>Caches API nicht verfügbar.</value>
+  </data>
+	<data name="Settings_Cache_Cleared" xml:space="preserve">
+    <value>Cache geleert.</value>
+  </data>
+	<data name="Settings_Cache_NoServiceWorker" xml:space="preserve">
+    <value>Kein Service Worker.</value>
+  </data>
+	<data name="Settings_Cache_Precache_Started" xml:space="preserve">
+    <value>Offline-Assets werden aktualisiert.</value>
+  </data>
+
+	<!-- Sensors -->
+	<data name="Settings_Sensors_Title" xml:space="preserve">
+    <value>Sensoren &amp; Standort</value>
+  </data>
+	<data name="Settings_Sensors_Description" xml:space="preserve">
+    <value>Aktiviere den Zugriff auf Standortdaten für regionale Funktionen.</value>
+  </data>
+	<data name="Settings_Sensors_UseLocation" xml:space="preserve">
+    <value>Standort verwenden</value>
+  </data>
+	<data name="Settings_Sensors_RequestButton" xml:space="preserve">
+    <value>Zugriff anfragen</value>
+  </data>
+
+	<!-- Sensors JS -->
+	<data name="Settings_Sensors_NotSupported" xml:space="preserve">
+    <value>Nicht unterstützt.</value>
+  </data>
+	<data name="Settings_Sensors_Status_Ok" xml:space="preserve">
+    <value>Position OK (~{lat}, {lng})</value>
+  </data>
+	<data name="Settings_Sensors_Status_Error" xml:space="preserve">
+    <value>Fehler: </value>
+  </data>
+
+	<!-- Data -->
+	<data name="Settings_Data_Title" xml:space="preserve">
+    <value>Datenverbrauch</value>
+  </data>
+	<data name="Settings_Data_Description" xml:space="preserve">
+    <value>Reduziert den Datenverbrauch bei mobiler Verbindung.</value>
+  </data>
+	<data name="Settings_Data_ReduceLabel" xml:space="preserve">
+    <value>Daten sparen</value>
+  </data>
+
+	<!-- Buttons -->
+	<data name="Settings_Save_Button" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+	<data name="Settings_Cancel_Button" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+</root>

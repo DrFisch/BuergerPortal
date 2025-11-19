@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Views\Settings\" />
     <Folder Include="wwwroot\lib\daypilot\" />
   </ItemGroup>
 
