@@ -40,7 +40,7 @@ builder.Services.AddOpenIddict()
         options.SetAuthorizationEndpointUris("/connect/authorize")
                .SetTokenEndpointUris("/connect/token")
                .SetEndSessionEndpointUris("/connect/logout")
-               .SetUserInfoEndpointUris("/connect/userinfo");
+               .SetUserInfoEndpointUris("/connect/userinfo").SetAccessTokenLifetime(TimeSpan.FromMinutes(60));
 
         // Code-Flow + PKCE (für Web & MAUI)
         options.AllowAuthorizationCodeFlow()
