@@ -181,17 +181,18 @@
     </div>
 </div>
 
+
 @section Scripts {
     <script>
-        (function syncThemeRadiosWithEffectiveTheme() {
-            const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
-            const isDark = eff === 'dark';
-            const rLight = document.getElementById('themeLight');
-            const rDark  = document.getElementById('themeDark');
-            if (rLight && rDark) {
-                rLight.checked = !isDark;
-                rDark.checked  =  isDark;
-            }
+              (function syncThemeRadiosWithEffectiveTheme(){
+          const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
+          const isDark = eff === 'dark';
+          const rLight = document.getElementById('themeLight');
+          const rDark  = document.getElementById('themeDark');
+          if (rLight && rDark) {
+            rLight.checked = !isDark;
+            rDark.checked  =  isDark;
+          }
         })();
 
         // Theme sofort umschalten
@@ -210,60 +211,49 @@
             if (saved) setTheme(saved);
         })();
 
-        // Sprache: beim Wechsel direkt speichern & Seite neu laden
-        document.getElementById('Language')?.addEventListener('change', () => {
-            const form = document.querySelector('form[method="post"]');
-            if (form) {
-                form.submit(); // POST Settings/Index → API + Cookies → Redirect → neue Sprache
-            }
-        });
-
         // Push
         async function registerSw() {
             if (!('serviceWorker' in navigator)) return null;
             try { return await navigator.serviceWorker.register('/service-worker.js'); } catch { return null; }
         }
         document.getElementById('btnEnablePush')?.addEventListener('click', async () => {
-            if (!('Notification' in window)) return alert('@L["Settings_Push_NotSupported"]');
+            if (!('Notification' in window)) return alert('Push wird nicht unterstützt.');
             const perm = await Notification.requestPermission();
-            if (perm !== 'granted') return alert('@L["Settings_Push_NoPermission"]');
-            const reg = await registerSw(); if (!reg) return alert('@L["Settings_Push_NoServiceWorker"]');
+            if (perm !== 'granted') return alert('Keine Berechtigung.');
+            const reg = await registerSw(); if (!reg) return alert('Kein Service Worker verfügbar.');
             document.getElementById('PushEnabled').value = 'true';
-            alert('@L["Settings_Push_Activated_Demo"]');
+            alert('Push aktiviert (Demo). Jetzt speichern.');
         });
         document.getElementById('btnTestPush')?.addEventListener('click', async () => {
             const reg = await navigator.serviceWorker.getRegistration();
-            if (!reg) return alert('@L["Settings_Push_NoServiceWorker"]');
-            reg.showNotification('@L["Settings_Push_Test_Title"]', {
-                body: '@L["Settings_Push_Test_Body"]',
-                icon: '/icons/portal-128.png'
-            });
+            if (!reg) return alert('Kein Service Worker.');
+            reg.showNotification('Test', { body: 'So sieht eine Push-Mitteilung aus.', icon: '/icons/portal-128.png' });
         });
         document.getElementById('btnDisablePush')?.addEventListener('click', () => {
             document.getElementById('PushEnabled').value = 'false';
-            alert('@L["Settings_Push_Deactivated_Demo"]');
+            alert('Push deaktiviert (Demo). Jetzt speichern.');
         });
 
         // Cache
         document.getElementById('btnClearCache')?.addEventListener('click', async () => {
-            if (!('caches' in window)) return alert('@L["Settings_Cache_NoCachesApi"]');
+            if (!('caches' in window)) return alert('Caches API nicht verfügbar.');
             const keys = await caches.keys(); await Promise.all(keys.map(k => caches.delete(k)));
-            alert('@L["Settings_Cache_Cleared"]');
+            alert('Cache geleert.');
         });
         document.getElementById('btnPrecache')?.addEventListener('click', async () => {
             const reg = await navigator.serviceWorker.getRegistration();
-            if (!reg) return alert('@L["Settings_Cache_NoServiceWorker"]');
+            if (!reg) return alert('Kein Service Worker.');
             reg.active?.postMessage({ type: 'PRECACHE_NOW' });
-            alert('@L["Settings_Cache_Precache_Started"]');
+            alert('Offline-Assets werden aktualisiert.');
         });
 
         // Geolocation
         const geoStatus = document.getElementById('geoStatus');
         document.getElementById('btnRequestGeo')?.addEventListener('click', () => {
-            if (!navigator.geolocation) { geoStatus.textContent = '@L["Settings_Sensors_NotSupported"]'; return; }
+            if (!navigator.geolocation) { geoStatus.textContent = 'Nicht unterstützt.'; return; }
             navigator.geolocation.getCurrentPosition(
-                pos => geoStatus.textContent = '@L["Settings_Sensors_Status_Ok"]'.replace('{lat}', pos.coords.latitude.toFixed(4)).replace('{lng}', pos.coords.longitude.toFixed(4)),
-                err => geoStatus.textContent = '@L["Settings_Sensors_Status_Error"]' + err.message
+                pos => geoStatus.textContent = `Position OK (~${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`,
+                err => geoStatus.textContent = 'Fehler: ' + err.message
             );
         });
     </script>
