@@ -195,4 +195,91 @@
   <data name="Title" xml:space="preserve">
     <value>Home</value>
   </data>
+	<!-- Hero section -->
+	<data name="CityNameShort" xml:space="preserve">
+    <value>City</value>
+  </data>
+	<data name="DigitalServices" xml:space="preserve">
+    <value>Digital services</value>
+  </data>
+	<data name="Hero_PrivacyShort" xml:space="preserve">
+    <value>Compliant with data protection standards.</value>
+  </data>
+	<data name="Hero_PwaShort" xml:space="preserve">
+    <value>Also available as an app on your phone or tablet.</value>
+  </data>
+	<data name="Hero_Stat_Appointments" xml:space="preserve">
+    <value>Currently booked appointments</value>
+  </data>
+	<data name="Hero_Stat_Applications" xml:space="preserve">
+    <value>Ongoing applications</value>
+  </data>
+
+	<!-- Recent activity -->
+	<data name="Section_Recent" xml:space="preserve">
+    <value>Recent activity</value>
+  </data>
+	<data name="ShowAll" xml:space="preserve">
+    <value>Show all</value>
+  </data>
+	<data name="Recent_Item_Passport" xml:space="preserve">
+    <value>Passport application</value>
+  </data>
+	<data name="Recent_Item_Passport_Sub" xml:space="preserve">
+    <value>Pre-check in progress</value>
+  </data>
+	<data name="Recent_Item_BulkWaste" xml:space="preserve">
+    <value>Bulk waste collection</value>
+  </data>
+	<data name="Recent_Item_BulkWaste_Sub" xml:space="preserve">
+    <value>Appointment confirmed</value>
+  </data>
+	<data name="Recent_Item_Appointment" xml:space="preserve">
+    <value>Citizen office appointment</value>
+  </data>
+	<data name="Recent_Item_Appointment_Sub" xml:space="preserve">
+    <value>Upcoming appointment</value>
+  </data>
+	<data name="Status_InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+	<data name="Status_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+	<data name="Status_Upcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+	<data name="Toggle" xml:space="preserve">
+    <value>Toggle</value>
+  </data>
+
+	<!-- Feature section -->
+	<data name="Section_Shortcuts" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+	<data name="Section_Shortcuts_Lead" xml:space="preserve">
+    <value>Key actions at a glance.</value>
+  </data>
+
+	<!-- City map card -->
+	<data name="Cityplan" xml:space="preserve">
+    <value>City map</value>
+  </data>
+	<data name="Cityplan_Text" xml:space="preserve">
+    <value>Opening hours and locations of important offices.</value>
+  </data>
+
+	<data name="Hero_Stat_NextAppointment" xml:space="preserve">
+    <value>Next appointment</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_None" xml:space="preserve">
+    <value>No appointment booked at the moment.</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_Hint" xml:space="preserve">
+    <value>You can find all appointments in the overview.</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_Link" xml:space="preserve">
+    <value>Go to “My appointments”</value>
+  </data>
+
 </root>

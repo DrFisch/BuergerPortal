@@ -1,123 +1,396 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+﻿@model BuergerPortal.Web.Features.Home.ViewModels.HomeIndexVm
+@using BuergerPortal.Web.Extensions
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @{
     ViewData["Title"] = T["Title"];
 }
 
 
-<div class="py-4">
-    <div class="row align-items-center g-3 mb-4">
-        <div class="col-12 col-lg">
-            <h1 class="h3 mb-2">@T["AppTitle"]</h1>
-            <p class="text-muted mb-0">@T["AppLead"]</p>
-        </div>
-    </div>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@{
+    ViewData["Title"] = T["Title"];
+}
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-        <!-- Termine -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_Appointments"]</h5>
-                        <i class="bi bi-calendar3-range fs-4 opacity-50"></i>
-                    </div>
-                    <p class="card-text text-muted">@T["Card_Appointments_Text"]</p>
-                    <div class="d-flex gap-2">
-                        <a asp-controller="Termine" asp-action="Buchen" class="btn btn-primary">
-                            <i class="bi bi-calendar-plus me-1"></i> @T["BookAppointment"]
-                        </a>
-                        <a asp-controller="Termine" asp-action="Index" class="btn btn-outline-secondary">
-                            @T["Overview"]
-                        </a>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent small text-muted">@T["Card_NotifyPwa_Foot"]</div>
-            </div>
-        </div>
+<div class="container py-4">
 
-        <!-- Anträge -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_Applications"]</h5>
-                        <i class="bi bi-file-earmark-text fs-4 opacity-50"></i>
-                    </div>
-                    <p class="card-text text-muted mb-3">@T["Card_Applications_Text"]</p>
-                    <a asp-controller="Antraege" asp-action="Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-right-circle me-1"></i> @T["GoToMyApplications"]
+    <!-- HERO-BEREICH -->
+    <section class="hero rounded-4 shadow-sm mb-4 p-4 p-md-5 position-relative overflow-hidden">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+
+                <p class="text-uppercase fw-semibold small text-primary mb-1">
+                    @T["CityNameShort"] · @T["DigitalServices"]
+                </p>
+
+                <h1 class="display-6 fw-semibold mb-2">
+                    @T["AppTitle"]
+                </h1>
+
+                <p class="lead mb-4 text-muted">
+                    @T["AppLead"]
+                </p>
+
+                @* <div class="d-flex flex-wrap gap-2 mb-4">
+                    <a asp-controller="Termine" asp-action="Buchen" class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-plus me-1"></i> @T["BookAppointment"]
                     </a>
+                    <a asp-controller="Antraege" asp-action="Index" class="btn btn-primary btn-lg">
+                        <i class="bi bi-file-earmark-text me-1"></i> @T["GoToMyApplications"]
+                    </a>
+                </div> *@
+
+                <div class="d-flex flex-wrap gap-3 small text-muted">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check"></i>
+                        <span>@T["Hero_PrivacyShort"]</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-phone"></i>
+                        <span>@T["Hero_PwaShort"]</span>
+                    </div>
                 </div>
-                <div class="card-footer bg-transparent small text-muted">@T["Card_Applications_Foot"]</div>
+            </div>
+
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-stats rounded-4 p-3">
+                    <!-- Nächster Termin -->
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="small text-muted">
+                                @T["Hero_Stat_NextAppointment"]
+                            </div>
+
+                            @if (Model?.NextAppointment is not null)
+                            {
+                                <div class="fw-semibold">
+                                    @Model.NextAppointment.Datum.ToString("dd.MM.yyyy"), @Model.NextAppointment.Uhrzeit Uhr
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.NextAppointment.Uhrzeit))
+                                {
+                                    <div class="small">
+                                        
+                                    </div>
+                                }
+                                <div class="small text-muted">
+                                    Ort: @Model.NextAppointment.Location.ToDisplay()<br />
+                                    Beratung zu: @Model.NextAppointment.Service.ToDisplayName()
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="small text-muted">
+                                    @T["Hero_Stat_NextAppointment_None"]
+                                </div>
+                            }
+                        </div>
+
+                        <i class="bi bi-calendar3-range fs-3 opacity-50"></i>
+                    </div>
+
+                    @*<hr />
+
+                     <div class="d-flex justify-content-between align-items-center">
+                        <div class="small text-muted">
+                            @T["Hero_Stat_NextAppointment_Hint"]
+                        </div>
+                        <a asp-controller="Termine" asp-action="Index" class="small">
+                            @T["Hero_Stat_NextAppointment_Link"]
+                        </a>
+                    </div> *@
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- Benachrichtigungen / PWA -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_NotifyPwa"]</h5>
-                        <i class="bi bi-bell fs-4 opacity-50"></i>
+    @* <!-- LETZTE AKTIVITÄTEN (nur wenn eingeloggt) -->
+    @if (User?.Identity?.IsAuthenticated == true)
+    {
+        <section class="mb-4">
+            <div class="card recent-card border-0 rounded-4 shadow-sm">
+
+                <!-- Header mit Toggle -->
+                <div class="recent-header d-flex justify-content-between align-items-center px-3 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history"></i>
+                        <span class="fw-semibold">@T["Section_Recent"]</span>
                     </div>
-                    <p class="card-text text-muted">@T["Card_NotifyPwa_Text"]</p>
-                    <button id="enablePush" class="btn btn-success w-100 mb-2">@T["EnablePush"]</button>
-                    <div id="pushStatus" class="small text-muted mb-3"></div>
-                    <button id="btnInstall" class="btn btn-primary w-100 d-none" onclick="installApp()">
-                        @T["InstallApp"]
+
+                    <button class="btn btn-sm btn-outline-light recent-toggle-btn"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#recentCollapse"
+                            aria-expanded="true"
+                            aria-controls="recentCollapse">
+                        <span class="me-1">@T["Toggle"]</span>
+                        <i class="bi bi-chevron-down"></i>
                     </button>
-                    <div id="installStatus" class="small text-muted mt-2"></div>
                 </div>
-                <div class="card-footer bg-transparent small text-muted">@T["Card_NotifyPwa_Foot"]</div>
+
+                <!-- Inhalt -->
+                <div class="collapse show" id="recentCollapse">
+                    <div class="card-body">
+
+                        <ul class="list-unstyled mb-0 small">
+
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <div class="fw-semibold">@T["Recent_Item_Passport"]</div>
+                                    <div class="text-muted">@T["Recent_Item_Passport_Sub"]</div>
+                                </div>
+                                <span class="badge rounded-pill bg-info-subtle text-info-emphasis">
+                                    @T["Status_InProgress"]
+                                </span>
+                            </li>
+
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <div class="fw-semibold">@T["Recent_Item_BulkWaste"]</div>
+                                    <div class="text-muted">@T["Recent_Item_BulkWaste_Sub"]</div>
+                                </div>
+                                <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
+                                    @T["Status_Completed"]
+                                </span>
+                            </li>
+
+                            <li class="d-flex justify-content-between align-items-center py-2">
+                                <div>
+                                    <div class="fw-semibold">@T["Recent_Item_Appointment"]</div>
+                                    <div class="text-muted">@T["Recent_Item_Appointment_Sub"]</div>
+                                </div>
+                                <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis">
+                                    @T["Status_Upcoming"]
+                                </span>
+                            </li>
+
+                        </ul>
+
+                        <div class="text-end mt-3">
+                            <a asp-controller="Antraege" asp-action="Status" class="small">
+                                @T["ShowAll"]
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
             </div>
+        </section>
+    } *@
+
+
+    <!-- FEATURE-KARTEN / SCHNELLZUGRIFFE -->
+    <section>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">@T["Section_Shortcuts"]</h2>
+            <span class="small text-muted">@T["Section_Shortcuts_Lead"]</span>
         </div>
 
-        <!-- Dokumente -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_Documents"]</h5>
-                        <i class="bi bi-files fs-4 opacity-50"></i>
-                    </div>
-                    <p class="card-text text-muted">@T["Card_Documents_Text"]</p>
-                    <a href="#" class="btn btn-outline-secondary">@T["ShowChecklists"]</a>
-                </div>
-            </div>
-        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
 
-        <!-- Einstellungen -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_Settings"]</h5>
-                        <i class="bi bi-sliders2 fs-4 opacity-50"></i>
-                    </div>
-                    <p class="card-text text-muted">@T["Card_Settings_Text"]</p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-secondary">@T["GoToSettings"]</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <!-- Termine -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary-subtle text-primary mb-3">
+                            <i class="bi bi-calendar3-range"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Appointments"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_Appointments_Text"]</p>
 
-        <!-- Hinweise -->
-        <div class="col">
-            <div class="card feature-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h5 class="card-title mb-0">@T["Card_Hints"]</h5>
-                        <i class="bi bi-info-circle fs-4 opacity-50"></i>
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Termine" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                                @T["Overview"]
+                            </a>
+                        </div>
                     </div>
-                    <ul class="list-unstyled mb-0 small text-muted">
-                        <li>@T["Hint_Peak"]</li>
-                        <li>@T["Hint_Documents"]</li>
-                        <li>@T["Hint_Access"]</li>
-                    </ul>
                 </div>
             </div>
+
+            <!-- Anträge -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-success-subtle text-success mb-3">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Applications"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_Applications_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Antraege" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-arrow-right-circle me-1"></i> @T["GoToMyApplications"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benachrichtigungen / PWA -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-warning-subtle text-warning mb-3">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_NotifyPwa"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_NotifyPwa_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-column gap-2">
+                            <button id="enablePush" class="btn btn-outline-primary btn-sm w-100">
+                                @T["EnablePush"]
+                            </button>
+                            <div id="pushStatus" class="small text-muted"></div>
+                            <button id="btnInstall" class="btn btn-outline-primary btn-sm w-100 d-none" onclick="installApp()">
+                                @T["InstallApp"]
+                            </button>
+                            <div id="installStatus" class="small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dokumente -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-info-subtle text-info mb-3">
+                            <i class="bi bi-files"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Documents"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_Documents_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a href="#" class="btn btn-outline-primary btn-sm">@T["ShowChecklists"]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Einstellungen -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-secondary-subtle text-secondary mb-3">
+                            <i class="bi bi-sliders2"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Settings"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_Settings_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                                @T["GoToSettings"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadtplan -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary-subtle text-primary mb-3">
+                            <i class="bi bi-compass"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Cityplan"]</h5>
+                        <p class="card-text text-muted mb-0">
+                            @T["Cityplan_Text"]
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hinweise -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-light-subtle text-muted mb-3">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Hints"]</h5>
+                        <ul class="list-unstyled mb-0 small text-muted">
+                            <li>@T["Hint_Peak"]</li>
+                            <li>@T["Hint_Documents"]</li>
+                            <li>@T["Hint_Access"]</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </section>
+
+    
+
 </div>
 
+@section Styles {
+        <style>
+    .hero {
+        background: radial-gradient(circle at top left, rgba(13,110,253,0.16), transparent 55%), radial-gradient(circle at bottom right, rgba(32,201,151,0.18), transparent 55%);
+        background-color: var(--bs-body-bg);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-stats {
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    [data-bs-theme="dark"] .hero-stats {
+        background: rgba(15,23,42,0.85);
+        border-color: rgba(148,163,184,0.25);
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+        transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out, background-color .15s ease-out;
+        border-top: 3px solid transparent;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(15,23,42,0.14);
+        }
+
+    /* kleiner Icon-Container oben */
+    .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 999px;
+        font-size: 1.25rem;
+    }
+        /* Pfeil beim Aufklappen drehen */
+        .card-header [data-bs-toggle="collapse"] .bi-chevron-down {
+            transition: transform .2s ease;
+        }
+
+        .card-header [data-bs-toggle="collapse"][aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+    /* Letzte Aktivitäten Card */
+        .recent-card {
+            background: rgba(var(--bs-primary-rgb), 0.03); /* sehr zarter Farbakzent */
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: background .2s ease, border-color .2s ease;
+        }
+
+        /* Dark Mode */
+        [data-bs-theme="dark"] .recent-card {
+            background: rgba(13,110,253,0.10);
+            border-color: rgba(255,255,255,0.07);
+        }
+
+        /* Optionale leichte Hoverwirkung */
+        .recent-card:hover {
+            border-color: rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+        </style>}
