@@ -1,20 +1,17 @@
-﻿@using BuergerPortal.Web.Features.Termine
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@using BuergerPortal.Web.Features.Termine
 @using BuergerPortal.Web.Features.Termine.ViewModels
 @model BuchenVm
 @{
-    ViewData["Title"] = "Termin buchen";
+    ViewData["Title"] = T["Title"];
 }
-<h1 class="h4">Termin buchen</h1>
 
-
+<h1 class="h4">@T["Title"]</h1>
 
 <form asp-action="Buchen" method="post" class="vstack gap-3">
     @Html.AntiForgeryToken()
 
-    <!-- NEU: Hidden Feld, damit die AntragId im POST mitkommt -->
     <input asp-for="RelatedAntragId" type="hidden" />
-
-    
 
     @if (!ViewData.ModelState.IsValid)
     {
@@ -25,124 +22,109 @@
         </div>
     }
 
-    
-
     <span id="weekendNote" class="text-danger small d-block mt-1"></span>
+
     <div class="alert alert-info d-flex align-items-start gap-2" role="alert">
         <div>
-            <strong>Geschäftszeiten:</strong> Termine sind nur <strong>Montag–Freitag von 08:00 bis 12:00</strong> buchbar.
-            Bei 15-Minuten-Slots ist der letzte Starttermin <strong>11:45</strong>.
+            <strong>@T["OpeningHoursLabel"]</strong>
+            @T["OpeningHoursDetail"]
         </div>
     </div>
 
-   
-    
-    @* Hidden, damit die AntragId im POST landet *@
     <input asp-for="RelatedAntragId" type="hidden" />
 
     @if (Model.RelatedAntragId.HasValue)
     {
-        <!-- Kontext-Banner mit Icon -->
         <div class="context-banner alert alert-primary d-flex align-items-center gap-3" role="status">
             <div class="banner-icon" aria-hidden="true"></div>
             <div>
-                <div class="fw-semibold">Dieser Termin wird einem Antrag zugeordnet</div>
+                <div class="fw-semibold">@T["LinkedToApplication"]</div>
                 <div class="small text-primary-emphasis">
-                    Antrag-ID: <code>@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code>
+                    @T["ApplicationId"]: <code>@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code>
                 </div>
             </div>
         </div>
 
-        <!-- Dienst als "read-only" präsentiert (aber weiterhin postbar) -->
         <div>
             <div class="readonly-pill">
-                Rückfrage zu Antrag
+                @T["RelatedService"]
             </div>
-            <!-- wichtig: hidden, damit der Enum-Wert im POST bleibt -->
             <input asp-for="Service" type="hidden" />
         </div>
     }
     else
     {
         <div>
-            <label class="form-label">Dienst</label>
-            <select asp-for="Service" class="form-select"
-                    asp-items="Html.GetEnumSelectList<ServiceType>()">
-                <option value="">– Bitte auswählen –</option>
+            <label class="form-label">@T["Service"]</label>
+            <select asp-for="Service" class="form-select" asp-items="Html.GetEnumSelectList<ServiceType>()">
+                <option value="">@T["SelectPlaceholder"]</option>
             </select>
             <span asp-validation-for="Service" class="text-danger"></span>
-
         </div>
     }
-    
 
     <div>
-        <label class="form-label">Standort</label>
-        <select asp-for="Location" class="form-select"
-                asp-items="Html.GetEnumSelectList<LocationType>()">
-        </select>
+        <label class="form-label">@T["Location"]</label>
+        <select asp-for="Location" class="form-select" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
         <span asp-validation-for="Location" class="text-danger"></span>
     </div>
 
     <div class="row g-3">
         <div class="col-sm-6">
-            <label class="form-label">Datum</label>
+            <label class="form-label">@T["Date"]</label>
             <input asp-for="LocalDate" type="date" class="form-control" id="dateInput" />
             <span asp-validation-for="LocalDate" class="text-danger"></span>
         </div>
+
         <div class="col-sm-6">
-            <label class="form-label">Uhrzeit</label>
+            <label class="form-label">@T["Time"]</label>
             <div class="input-group">
                 <select asp-for="LocalTime" class="form-select" id="timeSelect"></select>
-                <button type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#kalenderModal">
-                    Verfügbarkeit
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#kalenderModal">
+                    @T["Availability"]
                 </button>
             </div>
-            <small class="text-muted">Kalender zeigt 08:00–12:00 im 15-Minuten-Raster.</small>
+            <small class="text-muted">@T["CalendarHint"]</small>
             <span asp-validation-for="LocalTime" class="text-danger"></span>
         </div>
     </div>
 
     <div>
-        <label class="form-label">Dauer</label>
-        <select asp-for="Duration" class="form-select" id="durationSelect"
-                asp-items="Html.GetEnumSelectList<DurationOption>()">
-        </select>
+        <label class="form-label">@T["Duration"]</label>
+        <select asp-for="Duration" class="form-select" id="durationSelect" asp-items="Html.GetEnumSelectList<DurationOption>()"></select>
         <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
 
-
     <div class="d-flex justify-content-end mt-3">
-        <button class="btn btn-primary">Termin buchen</button>
+        <button class="btn btn-primary">@T["BookAppointment"]</button>
     </div>
 </form>
 
-<!-- Kalender-Modal (DayPilot) -->
+<!-- Modal -->
 <div class="modal fade" id="kalenderModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Verfügbarkeit (08:00–12:00)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                <h5 class="modal-title">@T["ModalTitle"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
                 <div class="d-flex align-items-center gap-2 mb-3">
-                    <label class="form-label mb-0">Datum:</label>
-                    <input type="date" id="kalenderDate" class="form-control" style="max-width: 220px;">
-                    <button class="btn btn-sm btn-outline-primary" id="kalenderReload" type="button">Aktualisieren</button>
+                    <label class="form-label mb-0">@T["ModalDate"]</label>
+                    <input type="date" id="kalenderDate" class="form-control" style="max-width:220px">
+                    <button class="btn btn-sm btn-outline-primary" id="kalenderReload">@T["Reload"]</button>
                 </div>
 
                 <div class="mb-2">
-                    <span class="badge bg-danger ms-2">&nbsp;</span> belegt
+                    <span class="badge bg-danger ms-2">&nbsp;</span> @T["Busy"]
                 </div>
 
-                <div id="dpCalendar" style="height: 480px;"></div>
+                <div id="dpCalendar" style="height:480px"></div>
             </div>
+
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">@T["Close"]</button>
             </div>
         </div>
     </div>

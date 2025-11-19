@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve"><value>Book Appointment</value></data>
+	<data name="OpeningHoursLabel" xml:space="preserve"><value>Opening hours:</value></data>
+	<data name="OpeningHoursDetail" xml:space="preserve">
+    <value>Appointments can be booked Monday–Friday from 08:00 to 12:00. For 15-minute slots, the last possible start time is 11:45.</value>
+  </data>
+	<data name="LinkedToApplication" xml:space="preserve"><value>This appointment is linked to an application</value></data>
+	<data name="ApplicationId" xml:space="preserve"><value>Application ID</value></data>
+	<data name="RelatedService" xml:space="preserve"><value>Application follow-up</value></data>
+	<data name="Service" xml:space="preserve"><value>Service</value></data>
+	<data name="SelectPlaceholder" xml:space="preserve"><value>– Please select –</value></data>
+	<data name="Location" xml:space="preserve"><value>Location</value></data>
+	<data name="Date" xml:space="preserve"><value>Date</value></data>
+	<data name="Time" xml:space="preserve"><value>Time</value></data>
+	<data name="Availability" xml:space="preserve"><value>Availability</value></data>
+	<data name="CalendarHint" xml:space="preserve"><value>Calendar shows 08:00–12:00 in 15-minute steps.</value></data>
+	<data name="Duration" xml:space="preserve"><value>Duration</value></data>
+	<data name="BookAppointment" xml:space="preserve"><value>Book appointment</value></data>
+	<data name="ModalTitle" xml:space="preserve"><value>Availability (08:00–12:00)</value></data>
+	<data name="ModalDate" xml:space="preserve"><value>Date:</value></data>
+	<data name="Reload" xml:space="preserve"><value>Reload</value></data>
+	<data name="Busy" xml:space="preserve"><value>busy</value></data>
+	<data name="Close" xml:space="preserve"><value>Close</value></data>
+
+</root>
