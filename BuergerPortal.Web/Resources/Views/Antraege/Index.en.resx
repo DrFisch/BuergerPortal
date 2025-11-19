@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Applications_Title" xml:space="preserve">
+    <value>Applications</value>
+  </data>
+
+	<data name="Applications_Status_Aria" xml:space="preserve">
+    <value>Go to my application status</value>
+  </data>
+	<data name="Applications_Status_Title" xml:space="preserve">
+    <value>My applications</value>
+  </data>
+	<data name="Applications_Status_Text" xml:space="preserve">
+    <value>Overview of all ongoing and completed applications</value>
+  </data>
+
+	<data name="Applications_Pass_Aria" xml:space="preserve">
+    <value>Start a new passport application</value>
+  </data>
+	<data name="Applications_Pass_Title" xml:space="preserve">
+    <value>New application: passport</value>
+  </data>
+	<data name="Applications_Pass_Text" xml:space="preserve">
+    <value>Enter your data and optionally book an appointment for filing the application.</value>
+  </data>
+	<data name="Applications_Pass_Badge" xml:space="preserve">
+    <value>approx. 5–10 min</value>
+  </data>
+
+	<data name="Applications_Bulk_Aria" xml:space="preserve">
+    <value>Start a new bulky waste request</value>
+  </data>
+	<data name="Applications_Bulk_Title" xml:space="preserve">
+    <value>New application: bulky waste</value>
+  </data>
+	<data name="Applications_Bulk_Text" xml:space="preserve">
+    <value>Enter the pickup address and items and suggest a preferred pickup date.</value>
+  </data>
+	<data name="Applications_Bulk_Badge" xml:space="preserve">
+    <value>max. 5 min</value>
+  </data>
+</root>
