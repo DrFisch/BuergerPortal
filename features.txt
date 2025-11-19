@@ -49,3 +49,7 @@ TODO 10.11.:
 - PWA ausfeilen (gibt es noch mehr pwa funktionen?)
 
 - Settings page 
+
+
+Neu:
+- AUsloggen wenn jwt abgelaufen
