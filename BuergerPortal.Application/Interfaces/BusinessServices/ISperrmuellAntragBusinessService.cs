@@ -1,5 +1,4 @@
-﻿using BuergerPortal.Application.Antraege.AntragReisepass.DTOs;
-using BuergerPortal.Application.Antraege.AntragSperrmuell.DTOs;
+﻿using BuergerPortal.Application.Antraege.AntragSperrmuell.DTOs;
 using BuergerPortal.Application.Common;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Application.Interfaces.BusinessServices
 {
-    internal interface ISperrmuellAntragBusinessService
+    public interface ISperrmuellAntragBusinessService
     {
         Task<Result<Guid>> CreateStep1Async(SperrmuellStep1Dto dto, Guid currentUserId, CancellationToken ct);
         Task<Result<bool>> UpdateStep2Async(Guid antragId, SperrmuellStep2Dto dto, Guid currentUserId, CancellationToken ct);
