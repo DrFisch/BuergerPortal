@@ -19,6 +19,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<Antrag> Antraege => Set<Antrag>();
         public DbSet<ReisepassAntrag> ReisepassAntraege => Set<ReisepassAntrag>();
+        public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
 
 
@@ -79,6 +80,70 @@ namespace BuergerPortal.Infrastructure.Persistence
             });
 
             pass.Property(x => x.Hinweis).HasMaxLength(1000);
+
+            // -------------------------------------------------
+            // SPERRMÜLLANTRAG (TPT + Owned Types)
+            // -------------------------------------------------
+            var sperr = b.Entity<SperrmuellAntrag>();
+            sperr.ToTable("SperrmuellAntraege"); // eigene TPT-Tabelle
+
+            // PersonName
+            sperr.OwnsOne(x => x.Name, n =>
+            {
+                n.Property(p => p.Vorname).HasMaxLength(100).HasColumnName("Vorname").IsRequired();
+                n.Property(p => p.Nachname).HasMaxLength(100).HasColumnName("Nachname").IsRequired();
+            });
+
+            // PersonBirth
+            sperr.OwnsOne(x => x.Birth, n =>
+            {
+                n.Property(p => p.Geburtsdatum).HasColumnName("Geburtsdatum").IsRequired();
+            });
+
+            // Kontakt
+            sperr.OwnsOne(x => x.Kontakt, n =>
+            {
+                n.Property(p => p.Email).HasMaxLength(200).HasColumnName("Email");
+                n.Property(p => p.Telefon).HasMaxLength(50).HasColumnName("Telefon");
+            });
+
+            // Addresse als Owned Type
+            sperr.OwnsOne(x => x.Addresse, n =>
+            {
+                n.Property(p => p.Strasse)
+                    .HasMaxLength(200)
+                    .HasColumnName("Strasse")
+                    .IsRequired();
+
+                n.Property(p => p.PLZ)
+                    .HasMaxLength(10)
+                    .HasColumnName("PLZ")
+                    .IsRequired();
+
+                n.Property(p => p.Ort)
+                    .HasMaxLength(100)
+                    .HasColumnName("Ort")
+                    .IsRequired();
+            });
+
+            // SperrmuellMengen als Owned Type
+            sperr.OwnsOne(x => x.Mengen, n =>
+            {
+                n.Property(p => p.HolzKubikmeter)
+                    .HasColumnName("HolzKubikmeter");
+
+                n.Property(p => p.SonstigesKubikmeter)
+                    .HasColumnName("SonstigesKubikmeter");
+
+                n.Property(p => p.Matratzen)
+                    .HasColumnName("Matratzen");
+            });
+
+            sperr.Property(x => x.Wunschzeit)
+                 .IsRequired();
+
+            sperr.Property(x => x.Hinweis)
+                 .HasMaxLength(1000);
 
             // -------------------------
             // USER SETTINGS
