@@ -112,19 +112,17 @@ namespace BuergerPortal.Infrastructure.Persistence
             {
                 n.Property(p => p.Strasse)
                     .HasMaxLength(200)
-                    .HasColumnName("Strasse")
-                    .IsRequired();
+                    .HasColumnName("Strasse"); 
 
                 n.Property(p => p.PLZ)
                     .HasMaxLength(10)
-                    .HasColumnName("PLZ")
-                    .IsRequired();
+                    .HasColumnName("PLZ");     
 
                 n.Property(p => p.Ort)
                     .HasMaxLength(100)
-                    .HasColumnName("Ort")
-                    .IsRequired();
+                    .HasColumnName("Ort");     
             });
+
 
             // SperrmuellMengen als Owned Type
             sperr.OwnsOne(x => x.Mengen, n =>

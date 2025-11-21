@@ -16,17 +16,30 @@ namespace BuergerPortal.Application.Antraege.AntragSperrmuell.Mappings
         // Step 1: Neue Entity erzeugen
         // ------------------------------------------------------------
         public static SperrmuellAntrag ToNewEntity(SperrmuellStep1Dto dto, Guid applicantUserId)
-            => new SperrmuellAntrag
-            {
-                Id = Guid.NewGuid(),
-                ApplicantUserId = applicantUserId,
-                CreatedUtc = DateTime.UtcNow,
-                Status = AntragStatus.Entwurf,
+        => new SperrmuellAntrag
+        {
+            ApplicantUserId = applicantUserId,
+            Name = new PersonName(dto.Vorname, dto.Nachname),
+            Birth = new PersonBirth(dto.Geburtsdatum),
+            Kontakt = new Kontakt(dto.Email, dto.Telefon),
 
-                Name = new PersonName(dto.Vorname, dto.Nachname),
-                Birth = new PersonBirth(dto.Geburtsdatum),
-                Kontakt = new Kontakt(dto.Email, dto.Telefon)
-            };
+            // Dummy-Adresse für Step 1 (wird in Step 2 überschrieben)
+            Addresse = new Addresse(
+                Strasse: string.Empty,
+                PLZ: string.Empty,
+                Ort: string.Empty
+            ),
+
+            // leere Mengen
+            Mengen = new SperrmuellMengen(
+                HolzKubikmeter: null,
+                SonstigesKubikmeter: null,
+                Matratzen: null
+            ),
+
+            // irgendein Default für Wunschzeit (wird in Step 2 gesetzt)
+            Wunschzeit = DateTime.UtcNow
+        };
 
         // ------------------------------------------------------------
         // Step 2: Werte auf bestehende Entity anwenden

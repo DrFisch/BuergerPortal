@@ -1,5 +1,147 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellStep2Vm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
 @{
+    ViewData["Title"] = "Sperrmüll – Schritt 2";
+}
+
+<div class="container py-4">
+    <nav aria-label="Fortschritt Sperrmüll" class="mb-4">
+        <ol class="progress-steps">
+            <li>Persönliche Daten</li>
+            <li class="active">Abholort &amp; Mengen</li>
+        </ol>
+        <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" style="width:100%">
+                Schritt 2/2
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="h4 mb-3">Sperrmüll-Antrag – Abholort &amp; Mengen</h1>
+
+    @if (TempData["AntragInfo"] is string info)
+    {
+        <div class="alert alert-info">@info</div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <strong>Antragsteller</strong>
+                    <div>@Model.AntragstellerName</div>
+                    @if (Model.Geburtsdatum.HasValue)
+                    {
+                        <div>
+                            <small>Geburtsdatum: @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</small>
+                        </div>
+                    }
+                </div>
+                <span class="badge text-bg-secondary">Antrags-ID: @Model.Id</span>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="SperrmuellStep2" method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <!-- Adresse -->
+        <div class="col-md-6">
+            <label asp-for="Strasse" class="form-label"></label>
+            <input asp-for="Strasse" class="form-control" />
+            <span asp-validation-for="Strasse" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="PLZ" class="form-label"></label>
+            <input asp-for="PLZ" class="form-control" />
+            <span asp-validation-for="PLZ" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="Ort" class="form-label"></label>
+            <input asp-for="Ort" class="form-control" />
+            <span asp-validation-for="Ort" class="text-danger"></span>
+        </div>
+
+        <!-- Müllmengen -->
+        <div class="col-md-4">
+            <label asp-for="HolzKubikmeter" class="form-label"></label>
+            <input asp-for="HolzKubikmeter" class="form-control" type="number" min="0" />
+            <span asp-validation-for="HolzKubikmeter" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="SonstigesKubikmeter" class="form-label"></label>
+            <input asp-for="SonstigesKubikmeter" class="form-control" type="number" min="0" />
+            <span asp-validation-for="SonstigesKubikmeter" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Matratzen" class="form-label"></label>
+            <input asp-for="Matratzen" class="form-control" type="number" min="0" />
+            <span asp-validation-for="Matratzen" class="text-danger"></span>
+        </div>
+
+        <!-- Wunschzeit -->
+        <div class="col-md-6">
+            <label asp-for="Wunschzeit" class="form-label"></label>
+            <input asp-for="Wunschzeit" class="form-control" type="datetime-local" />
+            <span asp-validation-for="Wunschzeit" class="text-danger"></span>
+        </div>
+
+        <!-- Hinweis -->
+        <div class="col-12">
+            <label asp-for="Hinweis" class="form-label"></label>
+            <textarea asp-for="Hinweis" rows="4" class="form-control"></textarea>
+            <span asp-validation-for="Hinweis" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Abbrechen
+            </a>
+
+            <button type="submit" name="submitAction" value="save" class="btn btn-secondary">
+                Speichern
+            </button>
+
+            <button type="submit" name="submitAction" value="submit" class="btn btn-primary">
+                Jetzt einreichen
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        .progress-steps {
+            list-style: none;
+            padding-left: 0;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: .5rem
+        }
+
+            .progress-steps li {
+                padding: .25rem .75rem;
+                border-radius: 999px;
+                background: var(--bs-secondary-bg);
+                color: var(--bs-secondary-color);
+            }
+
+                .progress-steps li.active {
+                    background: var(--bs-primary);
+                    color: var(--bs-primary-contrast,#fff);
+                }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
