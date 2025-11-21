@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BuergerPortal.Application.Interfaces.Repositories;
+using BuergerPortal.Domain.Antrag.Entity;
+using BuergerPortal.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace BuergerPortal.Infrastructure.Repositories
 {
-    using BuergerPortal.Application.Interfaces.Repositories;
-    using BuergerPortal.Domain.Antrag.Entity;
-    using BuergerPortal.Infrastructure.Persistence;
-    using Microsoft.EntityFrameworkCore;
-
+    
     public sealed class ReisepassRepository : IReisepassRepository
     {
         private readonly PortalDbContext _db;
