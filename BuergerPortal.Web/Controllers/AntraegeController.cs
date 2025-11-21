@@ -1,6 +1,9 @@
-﻿using BuergerPortal.Web.Features.Antraege.Reisepass;
+﻿
+using BuergerPortal.Web.Features.Antraege.Reisepass;
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
+using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
+using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -139,11 +142,7 @@ namespace BuergerPortal.Web.Controllers
             return RedirectToAction(nameof(ReisepassStep2), new { id });
         }
 
-        [HttpGet]
-        public IActionResult NeuerSperrmuell() 
-        { 
-            return View(); 
-        }
+        
         [HttpGet]
         public async Task<IActionResult> Status(CancellationToken ct)
         {
@@ -221,8 +220,93 @@ namespace BuergerPortal.Web.Controllers
 
             return View("AntragDetail", vm);
         }
+        // -----------Sperrmüll--------------
 
+        [HttpGet]
+        public IActionResult NeuerSperrmuell()
+        {
+            return View("SperrmuellStep1", new SperrmuellStep1Vm());
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SperrmuellStep1(SperrmuellStep1Vm vm, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+                return View("SperrmuellStep1", vm);
 
+            if (vm.Geburtsdatum is null)
+            {
+                ModelState.AddModelError(nameof(vm.Geburtsdatum), "Bitte ein gültiges Datum wählen.");
+                return View("SperrmuellStep1", vm);
+            }
+
+            var client = _cf.CreateClient("BuergerPortalApi");
+
+            var payload = new SperrmuellStep1Request
+            {
+                Vorname = vm.Vorname.Trim(),
+                Nachname = vm.Nachname.Trim(),
+                Geburtsdatum = DateOnly.FromDateTime(vm.Geburtsdatum.Value.Date),
+                Email = string.IsNullOrWhiteSpace(vm.Email) ? null : vm.Email.Trim(),
+                Telefon = string.IsNullOrWhiteSpace(vm.Telefon) ? null : vm.Telefon.Trim()
+            };
+
+            var res = await client.PostAsJsonAsync("api/antraege/sperrmuell/step1", payload, ct);
+
+            if (res.StatusCode == HttpStatusCode.Unauthorized)
+                return Challenge();
+
+            if (!res.IsSuccessStatusCode)
+                return View("SperrmuellStep1", await AddModelErrorsAndReturn(vm, res, ct));
+
+            var idObj = await res.Content.ReadFromJsonAsync<ApiIdResponse>(cancellationToken: ct);
+            if (idObj is null || idObj.Id == Guid.Empty)
+            {
+                ModelState.AddModelError(string.Empty, "Unerwartete Antwort der API.");
+                return View("SperrmuellStep1", vm);
+            }
+
+            return RedirectToAction(nameof(SperrmuellStep2), new { id = idObj.Id });
+        }
+        [HttpGet]
+        public async Task<IActionResult> SperrmuellStep2(Guid id, CancellationToken ct)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var res = await client.GetAsync($"api/antraege/sperrmuell/{id}", ct);
+
+            if (res.StatusCode == HttpStatusCode.Unauthorized)
+                return Challenge();
+
+            if (!res.IsSuccessStatusCode)
+                return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+
+            var detail = await res.Content.ReadFromJsonAsync<SperrmuellDetailResponse>(cancellationToken: ct);
+            if (detail is null)
+                return NotFound();
+
+            var vm = new SperrmuellStep2Vm
+            {
+                Id = detail.Id,
+                AntragstellerName = $"{detail.Vorname} {detail.Nachname}",
+                Geburtsdatum = detail.Geburtsdatum.ToDateTime(TimeOnly.MinValue),
+
+                Strasse = detail.Strasse,
+                PLZ = detail.PLZ,
+                Ort = detail.Ort,
+
+                HolzKubikmeter = detail.HolzKubikmeter,
+                SonstigesKubikmeter = detail.SonstigesKubikmeter,
+                Matratzen = detail.Matratzen,
+
+                Wunschzeit = detail.Wunschzeit.ToLocalTime(),
+                Hinweis = detail.Hinweis
+            };
+
+            return View("SperrmuellStep2", vm);
+        }
 
         //-------- Helpers ---------
         private async Task<TVm> AddModelErrorsAndReturn<TVm>(TVm vm, HttpResponseMessage res, CancellationToken ct)

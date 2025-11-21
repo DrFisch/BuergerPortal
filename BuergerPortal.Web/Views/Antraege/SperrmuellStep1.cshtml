@@ -1,0 +1,86 @@
+﻿@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellStep1Vm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = "Sperrmüll – Schritt 1";
+}
+
+<div class="container py-4">
+    <nav aria-label="Fortschritt" class="mb-4">
+        <ol class="progress-steps">
+            <li class="active">Persönliche Daten</li>
+            <li>Sperrmüll – Angaben</li>
+        </ol>
+        <div class="progress" role="progressbar">
+            <div class="progress-bar" style="width:50%">Schritt 1/2</div>
+        </div>
+    </nav>
+
+    <h1 class="h4 mb-3">Sperrmüll – Schritt 1</h1>
+
+    <form asp-action="SperrmuellStep1" method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="col-md-6">
+            <label asp-for="Vorname" class="form-label"></label>
+            <input asp-for="Vorname" class="form-control" />
+            <span asp-validation-for="Vorname" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Nachname" class="form-label"></label>
+            <input asp-for="Nachname" class="form-control" />
+            <span asp-validation-for="Nachname" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Geburtsdatum" class="form-label"></label>
+            <input asp-for="Geburtsdatum" class="form-control" type="date" />
+            <span asp-validation-for="Geburtsdatum" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Telefon" class="form-label"></label>
+            <input asp-for="Telefon" class="form-control" />
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Abbrechen</a>
+            <button type="submit" class="btn btn-primary">Weiter</button>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        .progress-steps {
+            list-style: none;
+            padding-left: 0;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: .5rem;
+        }
+
+            .progress-steps li {
+                padding: .25rem .75rem;
+                border-radius: 999px;
+                background: var(--bs-secondary-bg);
+                color: var(--bs-secondary-color);
+            }
+
+                .progress-steps li.active {
+                    background: var(--bs-primary);
+                    color: var(--bs-primary-contrast,#fff);
+                }
+    </style>
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
