@@ -26,6 +26,12 @@
         <div class="alert alert-info">@info</div>
     }
 
+    <div class="alert alert-info small">
+        Sie erhalten vorab eine Terminbestätigung. Der Sperrmüll wird in der Regel
+        zwischen 7:00 und 15:00 Uhr abgeholt; die genaue Uhrzeit wird in der
+        Terminbestätigung noch präzisiert.
+    </div>
+
     <div class="card mb-3">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
@@ -50,8 +56,12 @@
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <!-- Adresse -->
-        <div class="col-md-6">
+        <!-- Abholadresse -->
+        <div class="col-12">
+            <h2 class="h6">Abholadresse</h2>
+        </div>
+
+        <div class="col-12">
             <label asp-for="Strasse" class="form-label"></label>
             <input asp-for="Strasse" class="form-control" />
             <span asp-validation-for="Strasse" class="text-danger"></span>
@@ -63,10 +73,15 @@
             <span asp-validation-for="PLZ" class="text-danger"></span>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-9">
             <label asp-for="Ort" class="form-label"></label>
             <input asp-for="Ort" class="form-control" />
             <span asp-validation-for="Ort" class="text-danger"></span>
+        </div>
+
+        <!-- Daten zum Sperrmüll -->
+        <div class="col-12 mt-3">
+            <h2 class="h6">Daten zum Sperrmüll</h2>
         </div>
 
         <!-- Müllmengen -->
@@ -88,10 +103,10 @@
             <span asp-validation-for="Matratzen" class="text-danger"></span>
         </div>
 
-        <!-- Wunschzeit -->
+        <!-- Wunschdatum -->
         <div class="col-md-6">
             <label asp-for="Wunschzeit" class="form-label"></label>
-            <input asp-for="Wunschzeit" class="form-control" type="datetime-local" />
+            <input asp-for="Wunschzeit" class="form-control" type="date" />
             <span asp-validation-for="Wunschzeit" class="text-danger"></span>
         </div>
 

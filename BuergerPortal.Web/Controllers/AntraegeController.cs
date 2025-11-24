@@ -307,6 +307,59 @@ namespace BuergerPortal.Web.Controllers
 
             return View("SperrmuellStep2", vm);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SperrmuellStep2(Guid id, SperrmuellStep2Vm vm, string? submitAction, CancellationToken ct)
+        {
+            if (id == Guid.Empty || vm.Id == Guid.Empty || id != vm.Id)
+                return BadRequest();
+
+            var client = _cf.CreateClient("BuergerPortalApi");
+            if (vm.Wunschzeit is null)
+            {
+                ModelState.AddModelError(nameof(vm.Wunschzeit), "Bitte ein gültiges Datum wählen.");
+                return View("SperrmuellStep2", vm);
+            }
+            // 1) Step 2 speichern (PUT)
+            var payload = new SperrmuellStep2Request
+            {
+                Strasse = vm.Strasse.Trim(),
+                PLZ = vm.PLZ.Trim(),
+                Ort = vm.Ort.Trim(),
+                HolzKubikmeter = vm.HolzKubikmeter,
+                SonstigesKubikmeter = vm.SonstigesKubikmeter,
+                Matratzen = vm.Matratzen,
+                Wunschzeit = vm.Wunschzeit.Value,   // kommt aus type="date", also nur Datum
+                Hinweis = string.IsNullOrWhiteSpace(vm.Hinweis) ? null : vm.Hinweis.Trim()
+            };
+
+            var put = await client.PutAsJsonAsync($"api/antraege/sperrmuell/{id}/step2", payload, ct);
+
+            if (put.StatusCode == HttpStatusCode.Unauthorized)
+                return Challenge();
+
+            if (!put.IsSuccessStatusCode)
+                return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, put, ct));
+
+            // 2) Je nach Button: nur speichern oder direkt einreichen
+            if (string.Equals(submitAction, "submit", StringComparison.OrdinalIgnoreCase))
+            {
+                var submit = await client.PostAsync($"api/antraege/sperrmuell/{id}/submit", content: null, ct);
+
+                if (submit.StatusCode == HttpStatusCode.Unauthorized)
+                    return Challenge();
+
+                if (!submit.IsSuccessStatusCode)
+                    return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, submit, ct));
+
+                TempData["AntragSuccess"] = "Sperrmüllantrag eingereicht.";
+                return RedirectToAction(nameof(Status));
+            }
+
+            TempData["AntragInfo"] = "Angaben gespeichert. Du kannst jetzt einreichen.";
+            return RedirectToAction(nameof(SperrmuellStep2), new { id });
+        }
+
 
         //-------- Helpers ---------
         private async Task<TVm> AddModelErrorsAndReturn<TVm>(TVm vm, HttpResponseMessage res, CancellationToken ct)

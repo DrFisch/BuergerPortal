@@ -53,3 +53,7 @@ TODO 10.11.:
 
 Neu:
 - AUsloggen wenn jwt abgelaufen
+
+Neu:
+- Push notifications testen & implementieren
+- Unauthorized zugang zu antragsseiten verhindern
