@@ -60,11 +60,37 @@ builder.Services
     {
         o.ExpireTimeSpan = TimeSpan.FromHours(24);  // harte 24h
         o.SlidingExpiration = false;                // nicht verlängern
+
+        // >>> HIER: Pfade für nicht authentifiziert / Zugriff verweigert
+        o.LoginPath = "/Auth/LoginRequired";
+        o.AccessDeniedPath = "/Auth/LoginRequired";
+
         o.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
             {
-                if (ctx.Request.Path.StartsWithSegments("/api")) { ctx.Response.StatusCode = 401; return Task.CompletedTask; }
+                // Für API: kein Redirect, sondern echtes 401
+                if (ctx.Request.Path.StartsWithSegments("/api"))
+                {
+                    ctx.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                }
+
+                // Für normale MVC-Requests: auf unsere LoginRequired-Seite
+                // ctx.RedirectUri ist z.B. /Auth/LoginRequired?ReturnUrl=/Antraege/Status
+                ctx.Response.Redirect(ctx.RedirectUri);
+                return Task.CompletedTask;
+            },
+
+            OnRedirectToAccessDenied = ctx =>
+            {
+                // Gleiche Logik für 403
+                if (ctx.Request.Path.StartsWithSegments("/api"))
+                {
+                    ctx.Response.StatusCode = 403;
+                    return Task.CompletedTask;
+                }
+
                 ctx.Response.Redirect(ctx.RedirectUri);
                 return Task.CompletedTask;
             }
