@@ -1,0 +1,261 @@
+﻿@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellAntragDetailVm
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["ApplicationDetails_Title"];
+}
+
+<div class="container py-4">
+    @if (TempData["AntragTerminOk"] is string bookedMsg)
+    {
+        <div class="alert alert-success">@bookedMsg</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <h1 class="h4 mb-0">Sperrmüll-Antrag – @L["ApplicationDetails_Heading"]</h1>
+        <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+    </div>
+
+    <div class="progress mb-3"
+         role="progressbar"
+         aria-valuenow="@Model.ProgressPercent"
+         aria-valuemin="0"
+         aria-valuemax="100">
+        <div class="progress-bar" style="width:@Model.ProgressPercent%"></div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Linke Spalte: Daten + Timeline -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">@L["ApplicationDetails_DataCardTitle"]</div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <!-- Antragsteller -->
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_Applicant"]</dt>
+                        <dd class="col-sm-8">@Model.Antragsteller</dd>
+
+                        <dt class="col-sm-4">@L["ApplicationDetails_Field_BirthDate"]</dt>
+                        <dd class="col-sm-8">@Model.Geburtsdatum:dd.MM.yyyy</dd>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
+                        {
+                            <dt class="col-sm-4">@L["ApplicationDetails_Field_Note"]</dt>
+                            <dd class="col-sm-8">@Model.Hinweis</dd>
+                        }
+                    </dl>
+
+                    <hr />
+
+                    <!-- Abholadresse -->
+                    <h6 class="mt-2 mb-2">Abholadresse</h6>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Straße</dt>
+                        <dd class="col-sm-8">@Model.Strasse</dd>
+
+                        <dt class="col-sm-4">PLZ / Ort</dt>
+                        <dd class="col-sm-8">@Model.PLZ @Model.Ort</dd>
+                    </dl>
+
+                    <hr />
+
+                    <!-- Sperrmüll-Daten -->
+                    <h6 class="mt-2 mb-2">Daten zum Sperrmüll</h6>
+                    <dl class="row mb-0">
+                        @if (Model.HolzKubikmeter.HasValue)
+                        {
+                            <dt class="col-sm-4">Holz (m³)</dt>
+                            <dd class="col-sm-8">@Model.HolzKubikmeter</dd>
+                        }
+
+                        @if (Model.SonstigesKubikmeter.HasValue)
+                        {
+                            <dt class="col-sm-4">Sonstiges (m³)</dt>
+                            <dd class="col-sm-8">@Model.SonstigesKubikmeter</dd>
+                        }
+
+                        @if (Model.Matratzen.HasValue)
+                        {
+                            <dt class="col-sm-4">Matratzen</dt>
+                            <dd class="col-sm-8">@Model.Matratzen</dd>
+                        }
+
+                        @if (Model.Wunschzeit != default)
+                        {
+                            <dt class="col-sm-4">Wunschtermin</dt>
+                            <dd class="col-sm-8">@Model.Wunschzeit:dd.MM.yyyy</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card mt-3">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>@L["ApplicationDetails_Timeline_Title"]</span>
+                    <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+                </div>
+                <div class="card-body">
+                    <ol class="timeline-vertical list-unstyled mb-0">
+                        <li class="tl-item @(Model.CreatedUtc != default ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Created"]</div>
+                                <div class="tl-meta">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
+                            </div>
+                        </li>
+
+                        <li class="tl-item @(Model.SubmittedUtc.HasValue ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Submitted"]</div>
+                                @if (Model.SubmittedUtc.HasValue)
+                                {
+                                    <div class="tl-meta">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
+                                }
+                                else
+                                {
+                                    <div class="tl-meta text-secondary">
+                                        @L["ApplicationDetails_Timeline_Submitted_NotYet"]
+                                    </div>
+                                }
+                            </div>
+                        </li>
+
+                        <li class="tl-item @((Model.ProgressPercent >= 70) ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Review"]</div>
+                                <div class="tl-meta @(Model.ProgressPercent >= 70 ? "" : "text-secondary")">
+                                    @(Model.ProgressPercent >= 70
+                                                                        ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"]
+                                                                        : L["ApplicationDetails_Timeline_Pending"])
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="tl-item @((Model.ProgressPercent >= 100) ? "done" : "")">
+                            <div class="tl-dot"></div>
+                            <div class="tl-content">
+                                <div class="tl-title">@L["ApplicationDetails_Timeline_Completed"]</div>
+                                <div class="tl-meta @(Model.ProgressPercent >= 100 ? "" : "text-secondary")">
+                                    @(Model.ProgressPercent >= 100
+                                                                        ? L["ApplicationDetails_Timeline_Completed_Done"]
+                                                                        : L["ApplicationDetails_Timeline_Pending"])
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rechte Spalte: Kontakt / Termin -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">@L["ApplicationDetails_ContactCardTitle"]</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrWhiteSpace(Model.Email))
+                    {
+                        <div class="mb-2">
+                            <span class="text-secondary small d-block">@L["ApplicationDetails_Email_Label"]</span>
+                            @Model.Email
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Telefon))
+                    {
+                        <div class="mb-3">
+                            <span class="text-secondary small d-block">@L["ApplicationDetails_Phone_Label"]</span>
+                            @Model.Telefon
+                        </div>
+                    }
+
+                    <a class="btn btn-outline-primary w-100"
+                       asp-controller="Termine"
+                       asp-action="Buchen"
+                       asp-route-service="@(ServiceType.AntragRueckfrage)"
+                       asp-route-antragId="@Model.Id">
+                        @L["ApplicationDetails_Appointment_Button"]
+                    </a>
+
+                    <div class="text-secondary small mt-2">
+                        @L["ApplicationDetails_Appointment_Info"]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline li::marker {
+            content: "• "
+        }
+
+        /* --- Timeline --- */
+        .timeline-vertical {
+            position: relative;
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+            .timeline-vertical::before {
+                content: "";
+                position: absolute;
+                left: .5rem;
+                top: .25rem;
+                bottom: .25rem;
+                width: 2px;
+                background: var(--bs-border-color);
+                opacity: .7;
+            }
+
+        .tl-item {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: .75rem;
+        }
+
+            .tl-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .tl-dot {
+            position: absolute;
+            left: -.1rem;
+            top: .25rem;
+            width: .75rem;
+            height: .75rem;
+            border-radius: 50%;
+            background: var(--bs-secondary-bg);
+            border: 2px solid var(--bs-border-color);
+            box-shadow: 0 0 0 2px var(--bs-body-bg);
+        }
+
+        .tl-item.done .tl-dot {
+            background: var(--bs-success);
+            border-color: var(--bs-success);
+            box-shadow: 0 0 0 3px color-mix(in oklab, var(--bs-success) 20%, transparent);
+        }
+
+        .tl-content {
+            margin-left: .25rem;
+        }
+
+        .tl-title {
+            font-weight: 600;
+        }
+
+        .tl-meta {
+            font-size: .875rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .progress {
+            height: .6rem;
+        }
+    </style>
+}

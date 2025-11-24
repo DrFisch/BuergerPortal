@@ -4,6 +4,7 @@ using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -23,7 +24,7 @@ namespace BuergerPortal.Web.Controllers
         }
 
         // ---------------- STATUS: beide Antragstypen ----------------
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Status(CancellationToken ct)
         {
