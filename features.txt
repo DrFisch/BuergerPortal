@@ -57,3 +57,5 @@ Neu:
 Neu:
 - Push notifications testen & implementieren
 - Unauthorized zugang zu antragsseiten verhindern
+- Antrag abbrechen zurück zu status
+- Termine die in der Vergangenheit liegen sollen als solche gekennzeichnet werden

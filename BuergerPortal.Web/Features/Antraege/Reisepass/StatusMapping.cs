@@ -10,10 +10,11 @@
             Genehmigt = 4,
             Abgelehnt = 5
         }
-        public static (string text, string badge, int progress) Map(int statusInt)
+
+        // neue, eigentliche Logik
+        public static (string text, string badge, int progress) Map(AntragStatus status)
         {
-            var s = (AntragStatus)statusInt;
-            return s switch
+            return status switch
             {
                 AntragStatus.Entwurf => ("Entwurf", "text-bg-secondary", 25),
                 AntragStatus.Eingereicht => ("Eingereicht", "text-bg-info", 50),
@@ -23,5 +24,9 @@
                 _ => ("Unbekannt", "text-bg-secondary", 0)
             };
         }
+
+        // alte Signatur behalten für int-Caller (API-Models)
+        public static (string text, string badge, int progress) Map(int statusInt)
+            => Map((AntragStatus)statusInt);
     }
 }

@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Antraege\SperrmuellAntragDetail.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Features\Home\Contracts\" />
     <Folder Include="wwwroot\lib\daypilot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Antraege\SperrmuellAntragDetail.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

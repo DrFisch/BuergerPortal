@@ -1,5 +1,4 @@
-﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.StatusListeVm
-@using BuergerPortal.Web.Features.Termine.ViewModels
+﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.StatusGesamtVm
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer L
 
@@ -10,7 +9,12 @@
 <div class="container py-4 status-list">
     <h1 class="h4 mb-3">@L["StatusList_Heading"]</h1>
 
-    @if (Model.Items.Count == 0)
+    @{
+        var hasReisepass = Model.ReisepassItems.Any();
+        var hasSperrmuell = Model.SperrmuellItems.Any();
+    }
+
+    @if (!hasReisepass && !hasSperrmuell)
     {
         <div class="card border-0 bg-body-tertiary">
             <div class="card-body d-flex align-items-start gap-3">
@@ -24,83 +28,173 @@
     }
     else
     {
-        <div class="vstack gap-3">
-            @foreach (var a in Model.Items)
+        <div class="row g-4">
+            @* Reisepass-Anträge *@
+            @if (hasReisepass)
             {
-                if (a.Status != 1)
-                {
-                    var shortId = a.Id.ToString().Substring(0, 8);
+                <div class="col-12 col-lg-6">
+                    <section>
+                        <h2 class="h5 mb-3">Reisepass-Anträge</h2>
+                        <div class="vstack gap-3">
+                            @foreach (var a in Model.ReisepassItems)
+                            {
+                                if (a.Status != 1)
+                                {
+                                    var shortId = a.Id.ToString().Substring(0, 8);
 
-                    <div class="card shadow-sm border-0 status-item">
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
-                                <div class="d-flex align-items-start gap-3">
-                                    <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
+                                    <div class="card shadow-sm border-0 status-item">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
 
-                                    <div>
-                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
-                                            <span class="fw-semibold me-1">@a.Antragsteller</span>
+                                                    <div>
+                                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
+                                                            <span class="fw-semibold me-1">@a.Antragsteller</span>
 
-                                            <!-- Antragtyp (größer + deutlicher) -->
-                                            <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
-                                                @a.TypText
-                                            </span>
+                                                            <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
+                                                                @a.TypText
+                                                            </span>
 
-                                            <!-- Status (größer + deutlicher) -->
-                                            <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
-                                                @a.StatusText
-                                            </span>
-                                        </div>
+                                                            <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
+                                                                @a.StatusText
+                                                            </span>
+                                                        </div>
 
-                                        <div class="meta-info ms-2 mt-2">
-                                            @if (a.Eingereicht.HasValue)
-                                            {
-                                                <div>
-                                                    <strong>@L["StatusList_Field_SubmittedLabel"]</strong>
-                                                    @a.Eingereicht.Value.ToString("dd.MM.yyyy")
+                                                        <div class="meta-info ms-2 mt-2">
+                                                            @if (a.Eingereicht.HasValue)
+                                                            {
+                                                                <div>
+                                                                    <strong>@L["StatusList_Field_SubmittedLabel"]</strong>
+                                                                    @a.Eingereicht.Value.ToString("dd.MM.yyyy")
+                                                                </div>
+                                                            }
+
+                                                            <div class="text-secondary ">
+                                                                @L["StatusList_Field_IdLabel"]
+                                                                <code>@shortId</code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            }
 
-                                            <div class="text-secondary ">
-                                                @L["StatusList_Field_IdLabel"]
-                                                <code>@shortId</code>
+                                                <div class="d-flex gap-2">
+                                                    <a class="btn btn-outline-secondary"
+                                                       asp-action="Antrag" asp-route-id="@a.Id">
+                                                        @L["StatusList_Button_Details"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <div class="progress-steps small text-secondary mt-2">
+                                                    <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">
+                                                        @L["StatusList_Step_Draft"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">
+                                                        @L["StatusList_Step_Submitted"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 70 ? "done" : "")">
+                                                        @L["StatusList_Step_Review"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 100 ? "done" : "")">
+                                                        @L["StatusList_Step_Completed"]
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-
                                     </div>
-                                </div>
-
-                                <div class="d-flex gap-2">
-                                    <a class="btn btn-outline-secondary"
-                                       asp-action="Antrag" asp-route-id="@a.Id">
-                                        @L["StatusList_Button_Details"]
-                                    </a>
-                                </div>
-                            </div>
-
-                            <!-- Fortschritt -->
-                            <div class="mt-3">
-                                <div class="progress-steps small text-secondary mt-2">
-                                    <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">
-                                        @L["StatusList_Step_Draft"]
-                                    </span>
-                                    <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">
-                                        @L["StatusList_Step_Submitted"]
-                                    </span>
-                                    <span class="step @(a.ProgressPercent >= 70 ? "done" : "")">
-                                        @L["StatusList_Step_Review"]
-                                    </span>
-                                    <span class="step @(a.ProgressPercent >= 100 ? "done" : "")">
-                                        @L["StatusList_Step_Completed"]
-                                    </span>
-                                </div>
-                            </div>
+                                }
+                            }
                         </div>
-                    </div>
-                }
+                    </section>
+                </div>
+            }
+
+            @* Sperrmüll-Anträge *@
+            @if (hasSperrmuell)
+            {
+                <div class="col-12 col-lg-6">
+                    <section>
+                        <h2 class="h5 mb-3">Sperrmüll-Anträge</h2>
+                        <div class="vstack gap-3">
+                            @foreach (var a in Model.SperrmuellItems)
+                            {
+                                if (a.Status != 1)
+                                {
+                                    var shortId = a.Id.ToString().Substring(0, 8);
+
+                                    <div class="card shadow-sm border-0 status-item">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
+
+                                                    <div>
+                                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
+                                                            <span class="fw-semibold me-1">@a.Antragsteller</span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
+                                                                @a.TypText
+                                                            </span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
+                                                                @a.StatusText
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="meta-info ms-2 mt-2">
+                                                            @if (a.Eingereicht.HasValue)
+                                                            {
+                                                                <div>
+                                                                    <strong>@L["StatusList_Field_SubmittedLabel"]</strong>
+                                                                    @a.Eingereicht.Value.ToString("dd.MM.yyyy")
+                                                                </div>
+                                                            }
+
+                                                            <div class="text-secondary ">
+                                                                @L["StatusList_Field_IdLabel"]
+                                                                <code>@shortId</code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex gap-2">
+                                                    <a class="btn btn-outline-secondary"
+                                                       asp-action="SperrmuellAntrag" asp-route-id="@a.Id">
+                                                        @L["StatusList_Button_Details"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <div class="progress-steps small text-secondary mt-2">
+                                                    <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">
+                                                        @L["StatusList_Step_Draft"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">
+                                                        @L["StatusList_Step_Submitted"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 70 ? "done" : "")">
+                                                        @L["StatusList_Step_Review"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 100 ? "done" : "")">
+                                                        @L["StatusList_Step_Completed"]
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </section>
+                </div>
             }
         </div>
     }
+
 </div>
 
 @section Styles {

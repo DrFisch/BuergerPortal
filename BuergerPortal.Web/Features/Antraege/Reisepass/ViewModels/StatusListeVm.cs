@@ -22,8 +22,10 @@
         public DateTime? Eingereicht { get; set; }
     }
 
-    public sealed class StatusListeVm
+    // NEU: getrennte Listen für die beiden Antragstypen
+    public sealed class StatusGesamtVm
     {
-        public List<StatusListItemVm> Items { get; set; } = new();
+        public List<StatusListItemVm> ReisepassItems { get; set; } = new();
+        public List<StatusListItemVm> SperrmuellItems { get; set; } = new();
     }
 }
