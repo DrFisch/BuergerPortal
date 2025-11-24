@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<!-- Titel / Heading -->
+	<data name="ApplicationDetails_Title" xml:space="preserve">
+    <value>Antrag – Details</value>
+  </data>
+	<data name="ApplicationDetails_Heading" xml:space="preserve">
+    <value>Antragsdetails</value>
+  </data>
+
+	<!-- Datenteil -->
+	<data name="ApplicationDetails_DataCardTitle" xml:space="preserve">
+    <value>Antragsdaten</value>
+  </data>
+	<data name="ApplicationDetails_Field_Applicant" xml:space="preserve">
+    <value>Antragsteller</value>
+  </data>
+	<data name="ApplicationDetails_Field_BirthDate" xml:space="preserve">
+    <value>Geburtsdatum</value>
+  </data>
+	<data name="ApplicationDetails_Field_Note" xml:space="preserve">
+    <value>Hinweis</value>
+  </data>
+
+	<!-- Timeline -->
+	<data name="ApplicationDetails_Timeline_Title" xml:space="preserve">
+    <value>Verlauf</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Created" xml:space="preserve">
+    <value>Antrag erstellt</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Submitted" xml:space="preserve">
+    <value>Eingereicht</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Submitted_NotYet" xml:space="preserve">
+    <value>noch nicht eingereicht</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Review" xml:space="preserve">
+    <value>Prüfung</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Review_InProgressOrDone" xml:space="preserve">
+    <value>in Bearbeitung / abgeschlossen</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Pending" xml:space="preserve">
+    <value>ausstehend</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Completed" xml:space="preserve">
+    <value>Abschluss</value>
+  </data>
+	<data name="ApplicationDetails_Timeline_Completed_Done" xml:space="preserve">
+    <value>abgeschlossen</value>
+  </data>
+
+	<!-- Kontaktkarte -->
+	<data name="ApplicationDetails_ContactCardTitle" xml:space="preserve">
+    <value>Kontakt &amp; Aktionen</value>
+  </data>
+	<data name="ApplicationDetails_Email_Label" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+	<data name="ApplicationDetails_Phone_Label" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+
+	<!-- Termin -->
+	<data name="ApplicationDetails_Appointment_Button" xml:space="preserve">
+    <value>Rückfrage-Termin buchen</value>
+  </data>
+	<data name="ApplicationDetails_Appointment_Info" xml:space="preserve">
+    <value>Sie werden zur Terminbuchung weitergeleitet (Dienstleistung „Antragsrückfrage“ ist bereits ausgewählt).</value>
+  </data>
+
+	<!-- Sperrmüll-spezifische Texte -->
+	<data name="SperrmuellDetail_PickupAddress_Title" xml:space="preserve">
+    <value>Abholadresse</value>
+  </data>
+	<data name="SperrmuellDetail_PickupAddress_Street" xml:space="preserve">
+    <value>Straße</value>
+  </data>
+	<data name="SperrmuellDetail_PickupAddress_PostalCity" xml:space="preserve">
+    <value>PLZ / Ort</value>
+  </data>
+
+	<data name="SperrmuellDetail_Section_SperrmuellData" xml:space="preserve">
+    <value>Daten zum Sperrmüll</value>
+  </data>
+	<data name="SperrmuellDetail_Field_Wood" xml:space="preserve">
+    <value>Holz (m³)</value>
+  </data>
+	<data name="SperrmuellDetail_Field_Other" xml:space="preserve">
+    <value>Sonstiges (m³)</value>
+  </data>
+	<data name="SperrmuellDetail_Field_Mattresses" xml:space="preserve">
+    <value>Matratzen</value>
+  </data>
+	<data name="SperrmuellDetail_Field_DesiredDate" xml:space="preserve">
+    <value>Wunschtermin</value>
+  </data>
+</root>

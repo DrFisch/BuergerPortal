@@ -1,6 +1,7 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellAntragDetailVm
 @using BuergerPortal.Web.Features.Termine.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
 @inject IViewLocalizer L
 
 @{
@@ -33,59 +34,63 @@
                 <div class="card-header">@L["ApplicationDetails_DataCardTitle"]</div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <!-- Antragsteller -->
+
                         <dt class="col-sm-4">@L["ApplicationDetails_Field_Applicant"]</dt>
                         <dd class="col-sm-8">@Model.Antragsteller</dd>
 
                         <dt class="col-sm-4">@L["ApplicationDetails_Field_BirthDate"]</dt>
-                        <dd class="col-sm-8">@Model.Geburtsdatum:dd.MM.yyyy</dd>
-
+                        <dd class="col-sm-8">
+                            @(Model.Geburtsdatum?.ToString("dd.MM.yyyy"))
+                        </dd>
                         @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
                         {
                             <dt class="col-sm-4">@L["ApplicationDetails_Field_Note"]</dt>
                             <dd class="col-sm-8">@Model.Hinweis</dd>
                         }
+
                     </dl>
 
                     <hr />
 
                     <!-- Abholadresse -->
-                    <h6 class="mt-2 mb-2">Abholadresse</h6>
+                    <h6 class="mt-2 mb-2">@L["SperrmuellDetail_PickupAddress_Title"]</h6>
                     <dl class="row mb-0">
-                        <dt class="col-sm-4">Straße</dt>
+                        <dt class="col-sm-4">@L["SperrmuellDetail_PickupAddress_Street"]</dt>
                         <dd class="col-sm-8">@Model.Strasse</dd>
 
-                        <dt class="col-sm-4">PLZ / Ort</dt>
+                        <dt class="col-sm-4">@L["SperrmuellDetail_PickupAddress_PostalCity"]</dt>
                         <dd class="col-sm-8">@Model.PLZ @Model.Ort</dd>
                     </dl>
 
                     <hr />
 
                     <!-- Sperrmüll-Daten -->
-                    <h6 class="mt-2 mb-2">Daten zum Sperrmüll</h6>
+                    <h6 class="mt-2 mb-2">@L["SperrmuellDetail_Section_SperrmuellData"]</h6>
                     <dl class="row mb-0">
                         @if (Model.HolzKubikmeter.HasValue)
                         {
-                            <dt class="col-sm-4">Holz (m³)</dt>
+                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Wood"]</dt>
                             <dd class="col-sm-8">@Model.HolzKubikmeter</dd>
                         }
 
                         @if (Model.SonstigesKubikmeter.HasValue)
                         {
-                            <dt class="col-sm-4">Sonstiges (m³)</dt>
+                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Other"]</dt>
                             <dd class="col-sm-8">@Model.SonstigesKubikmeter</dd>
                         }
 
                         @if (Model.Matratzen.HasValue)
                         {
-                            <dt class="col-sm-4">Matratzen</dt>
+                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Mattresses"]</dt>
                             <dd class="col-sm-8">@Model.Matratzen</dd>
                         }
 
                         @if (Model.Wunschzeit != default)
                         {
-                            <dt class="col-sm-4">Wunschtermin</dt>
-                            <dd class="col-sm-8">@Model.Wunschzeit:dd.MM.yyyy</dd>
+                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_DesiredDate"]</dt>
+                            <dd class="col-sm-8">
+                                @(Model.Wunschzeit.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture))
+                            </dd>
                         }
                     </dl>
                 </div>
@@ -103,7 +108,9 @@
                             <div class="tl-dot"></div>
                             <div class="tl-content">
                                 <div class="tl-title">@L["ApplicationDetails_Timeline_Created"]</div>
-                                <div class="tl-meta">@Model.CreatedUtc:dd.MM.yyyy HH:mm</div>
+                                <div class="tl-meta">
+                                    @Model.CreatedUtc.ToString("dd.MM.yyyy HH:mm")
+                                </div>
                             </div>
                         </li>
 
@@ -111,9 +118,12 @@
                             <div class="tl-dot"></div>
                             <div class="tl-content">
                                 <div class="tl-title">@L["ApplicationDetails_Timeline_Submitted"]</div>
+
                                 @if (Model.SubmittedUtc.HasValue)
                                 {
-                                    <div class="tl-meta">@Model.SubmittedUtc:dd.MM.yyyy HH:mm</div>
+                                    <div class="tl-meta">
+                                        @Model.SubmittedUtc.Value.ToString("dd.MM.yyyy HH:mm")
+                                    </div>
                                 }
                                 else
                                 {
@@ -164,6 +174,7 @@
                             @Model.Email
                         </div>
                     }
+
                     @if (!string.IsNullOrWhiteSpace(Model.Telefon))
                     {
                         <div class="mb-3">
@@ -195,10 +206,8 @@
             content: "• "
         }
 
-        /* --- Timeline --- */
         .timeline-vertical {
             position: relative;
-            margin: 0;
             padding-left: 1.25rem;
         }
 
@@ -219,10 +228,6 @@
             margin-bottom: .75rem;
         }
 
-            .tl-item:last-child {
-                margin-bottom: 0;
-            }
-
         .tl-dot {
             position: absolute;
             left: -.1rem;
@@ -238,15 +243,7 @@
         .tl-item.done .tl-dot {
             background: var(--bs-success);
             border-color: var(--bs-success);
-            box-shadow: 0 0 0 3px color-mix(in oklab, var(--bs-success) 20%, transparent);
-        }
-
-        .tl-content {
-            margin-left: .25rem;
-        }
-
-        .tl-title {
-            font-weight: 600;
+            box-shadow: 0 0 0 3px #00000020;
         }
 
         .tl-meta {
