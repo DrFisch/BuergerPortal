@@ -224,6 +224,27 @@
                 </div>
             </div>
 
+            <!-- Mängelmelder -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-danger-subtle text-danger mb-3">
+                            <i class="bi bi-exclamation-octagon"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_ReportIssue"]</h5>
+                        <p class="card-text text-muted mb-0">
+                            @T["Card_ReportIssue_Text"]
+                        </p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Maengel" asp-action="Create" class="btn btn-outline-primary btn-sm">
+                                @T["Card_ReportIssue_Button"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Benachrichtigungen / PWA -->
             <div class="col">
                 <div class="card feature-card h-100 border-0 rounded-4">

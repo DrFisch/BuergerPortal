@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Home\Contracts\" />
+    <Folder Include="Features\Maengel\Contracts\" />
     <Folder Include="wwwroot\lib\daypilot\" />
   </ItemGroup>
 

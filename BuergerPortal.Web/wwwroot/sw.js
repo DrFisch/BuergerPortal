@@ -26,6 +26,12 @@ self.addEventListener('fetch', (e) => {
     const req = e.request;
     const url = new URL(req.url);
 
+    // Requests von Browser-Extensions komplett ignorieren
+    if (url.protocol === 'chrome-extension:') {
+        // Kein respondWith → der Request geht normal ans Netz durch
+        return;
+    }
+
     // Nicht-GET: immer Netzwerk
     if (req.method !== 'GET') { e.respondWith(fetch(req)); return; }
 
@@ -45,14 +51,17 @@ self.addEventListener('fetch', (e) => {
 
     // Statische Assets → cache-first
     const STATIC_EXT = /\.(?:css|js|png|jpg|jpeg|svg|webp|ico|woff2?)$/i;
-    if (STATIC_EXT.test(url.pathname)) {
+    if (STATIC_EXT.test(url.pathname) && url.protocol === 'https:') {
         e.respondWith(
             caches.match(req).then(hit => hit || fetch(req).then(res => {
-                const copy = res.clone(); caches.open('bp-v4').then(c => c.put(req, copy)); return res;
+                const copy = res.clone();
+                caches.open(CACHE).then(c => c.put(req, copy));
+                return res;
             }))
         );
         return;
     }
+
 
     // Default
     e.respondWith(fetch(req).catch(() => caches.match(req) || caches.match('/offline.html')));
