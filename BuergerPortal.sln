@@ -5,8 +5,6 @@ VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Web", "BuergerPortal.Web\BuergerPortal.Web.csproj", "{44B4E78B-F322-41F9-B4F9-2106105CFB95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Mobile", "BuergerPortal.Mobile\BuergerPortal.Mobile.csproj", "{82135A2B-3BA6-4F75-ABB1-9A1E442BD1AD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Api", "BuergerPortal.Api\BuergerPortal.Api.csproj", "{AF620C66-0548-4081-BCA8-10105BD09D0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuergerPortal.Application", "BuergerPortal.Application\BuergerPortal.Application.csproj", "{5A87392D-AA40-40C0-8A85-D49076BCCC0B}"
