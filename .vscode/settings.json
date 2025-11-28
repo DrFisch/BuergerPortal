@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "connectionTimeout": 15,
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true,
+                "trustServerCertificate": false
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "MSSQL",
+            "connectString": "Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;",
+            "name": "buergerportal"
+        }
+    ]
+}

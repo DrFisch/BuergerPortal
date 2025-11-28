@@ -8,3 +8,7 @@ dotnet ef migrations add sperrmuellrequired -c PortalDbContext -p .\BuergerPorta
 
 
 ---------------------- ef auf google cloud bauen ----------------
+
+"ConnectionStrings": {
+  "DefaultConnection": "Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;"
+}
