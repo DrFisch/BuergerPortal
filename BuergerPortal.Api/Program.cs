@@ -116,14 +116,15 @@
 // app.Run();
 
 using BuergerPortal.Application;
-using BuergerPortal.Application.Appointments.BusinessServices; // Ggf. anpassen, falls nicht benötigt
+using BuergerPortal.Application.Appointments.BusinessServices;
 using BuergerPortal.Infrastructure;
 using BuergerPortal.Infrastructure.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models; // Für Swagger Security Definition
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG FÜR NGINX
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -131,12 +132,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Swagger Konfiguration mit JWT Support (Damit du das Token im Swagger UI testen kannst)
+// Swagger Konfiguration
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "BürgerPortal API", Version = "v1" });
     
-    // Definition, dass wir Bearer Tokens nutzen
+    // JWT Support im Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -151,11 +152,7 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
@@ -171,20 +168,23 @@ builder.Services.AddApplicationServices();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // A) Woher bekommt die API die Public Keys?
-        // Bei Docker: Am besten die interne URL nutzen (z.B. http://auth-server:80), 
-        // aber hier nutzen wir die Public IP, damit es konsistent zum Token ist.
-        options.Authority = "http://34.89.247.235:7001";
+        // -------------------------------------------------------------
+        // A) Authority: Die URL deines Auth-Servers (jetzt HTTPS Domain)
+        // -------------------------------------------------------------
+        options.Authority = "https://auth.gortisbuergerportal.de";
         
-        // B) HTTP erlauben (WICHTIG für dein Setup)
+        // B) HTTP intern erlauben (Container läuft auf HTTP, Nginx macht HTTPS)
         options.RequireHttpsMetadata = false;
+        
+        // C) Claims nicht automatisch umbenennen (wichtig für 'sub')
         options.MapInboundClaims = false;
 
-        // C) Validierungsparameter
+        // D) Validierung
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = "http://34.89.247.235:7001/", 
+            // HIER DIE NEUE DOMAIN + SLASH AM ENDE
+            ValidIssuer = "https://auth.gortisbuergerportal.de/", 
             
             ValidateAudience = true,
             ValidAudience = "buergerportal_api",
@@ -192,13 +192,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
 
-            // Da wir das Mapping oben abgeschaltet haben, müssen wir definieren,
-            // welcher Claim für User.Identity.Name verwendet wird:
             NameClaimType = "name", 
             RoleClaimType = "role"
         };
 
-        // D) Events für besseres Debugging
+        // E) Events für Debugging (Optional, kann später raus)
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = ctx =>
@@ -209,7 +207,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnChallenge = ctx =>
             {
-                // Verhindert den Default-Redirect und gibt JSON zurück
                 ctx.HandleResponse();
                 ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 ctx.Response.ContentType = "application/json";
@@ -224,31 +221,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
-    // Dein Scope Policy
     options.AddPolicy("appointments.write", policy =>
         policy.RequireAuthenticatedUser()
-              .RequireClaim("scope", "buergerportal_api")); // Hinweis: "appointments.write" ist oft Teil des Scopes Strings, hier einfach "buergerportal_api" prüfen reicht oft für den Anfang
+              .RequireClaim("scope", "buergerportal_api"));
 });
 
 // --- 3. App Pipeline ---
 var app = builder.Build();
 
-// Swagger auch im Release-Modus anzeigen (hilfreich für dich jetzt zum Testen)
+// -------------------------------------------------------------
+// WICHTIG: Forwarded Headers für Nginx
+// Muss VOR Authentication stehen!
+// -------------------------------------------------------------
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+// Swagger auch in Production anzeigen (damit du testen kannst)
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Fehlerbehandlung
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/error");
 }
 
-// WICHTIG: Kein HttpsRedirection verwenden, wenn du auf HTTP (Port 80/8080) läufst!
+// Kein HttpsRedirection (macht Nginx)
 // app.UseHttpsRedirection(); 
 
 app.UseRouting();
 
-// Reihenfolge wichtig: Erst AuthN (Wer bist du?), dann AuthZ (Was darfst du?)
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -215,6 +215,16 @@
     <value>Ongoing applications</value>
   </data>
 
+  <data name="Card_ReportIssue" xml:space="preserve">
+    <value>Issue Reporter</value>
+  </data>
+  <data name="Card_ReportIssue_Text" xml:space="preserve">
+    <value>Here you can report an issue in the city</value>
+  </data>
+  <data name="Card_ReportIssue_Button" xml:space="preserve">
+    <value>Go to Issue Reporter</value>
+  </data>
+
 	<!-- Recent activity -->
 	<data name="Section_Recent" xml:space="preserve">
     <value>Recent activity</value>

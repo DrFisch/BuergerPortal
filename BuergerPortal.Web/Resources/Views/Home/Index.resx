@@ -144,6 +144,15 @@
   <data name="Card_Documents" xml:space="preserve">
     <value>Dokumente</value>
   </data>
+  <data name="Card_ReportIssue" xml:space="preserve">
+    <value>Mangelmelder</value>
+  </data>
+  <data name="Card_ReportIssue_Text" xml:space="preserve">
+    <value>Hier können sie einen Mangel in der Stadt melden</value>
+  </data>
+  <data name="Card_ReportIssue_Button" xml:space="preserve">
+    <value>Zum Mangelmelder</value>
+  </data>
   <data name="Card_Documents_Text" xml:space="preserve">
     <value>Benötigte Unterlagen je Dienst als Checkliste.</value>
   </data>

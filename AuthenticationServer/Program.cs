@@ -6,19 +6,19 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using OpenIddict.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
 using OpenIddict.Server.AspNetCore;
-
-
+using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DB
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
     options.UseOpenIddict();
-}
-    );
+});
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity
@@ -40,13 +40,15 @@ builder.Services.AddOpenIddict()
         options.SetAuthorizationEndpointUris("/connect/authorize")
                .SetTokenEndpointUris("/connect/token")
                .SetEndSessionEndpointUris("/connect/logout")
-               .SetUserInfoEndpointUris("/connect/userinfo").SetAccessTokenLifetime(TimeSpan.FromMinutes(60));
+               .SetUserInfoEndpointUris("/connect/userinfo")
+               .SetAccessTokenLifetime(TimeSpan.FromMinutes(60));
 
-        // Code-Flow + PKCE (f�r Web & MAUI)
+        // Code-Flow + PKCE
         options.AllowAuthorizationCodeFlow()
                .RequireProofKeyForCodeExchange();
 
         options.AllowRefreshTokenFlow();
+
         // Scopes
         options.RegisterScopes(
             OpenIddictConstants.Scopes.OpenId,
@@ -56,27 +58,28 @@ builder.Services.AddOpenIddict()
             "buergerportal_api"
         );
 
-        // DEV-Zertifikate (in PROD echte Zertifikate verwenden)
+        // DEV-Zertifikate
         options.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
 
-        // Optional: Issuer aus appsettings.json auslesen
         var issuer = builder.Configuration["OpenIddict:Issuer"];
         if (!string.IsNullOrWhiteSpace(issuer))
             options.SetIssuer(new Uri(issuer));
 
-        // ASP.NET Core-Integration + Passthrough f�r bessere Fehlersicht
-        options.UseAspNetCore().EnableAuthorizationEndpointPassthrough().EnableEndSessionEndpointPassthrough();
-        options.UseAspNetCore().DisableTransportSecurityRequirement();
-        // (Optional) Access Tokens nicht verschl�sseln � in DEV bequemer
+        // ASP.NET Core-Integration
+        options.UseAspNetCore()
+               .EnableAuthorizationEndpointPassthrough()
+               .EnableEndSessionEndpointPassthrough()
+               // WICHTIG: Token Passthrough ENTFERNT.
+               // OpenIddict soll den Token-Request selbst verarbeiten (Engine),
+               // da wir keinen eigenen Controller dafür haben.
+               // .EnableTokenEndpointPassthrough()  <--- AUSKOMMENTIERT
+               .DisableTransportSecurityRequirement();
+        
         options.DisableAccessTokenEncryption();
-
-        // Public Clients (MAUI) ohne ClientSecret erlauben
-        //options.AllowAnonymousClients();
     })
     .AddValidation(options =>
     {
-        // Falls der AuthServer selbst APIs validieren soll
         options.UseLocalServer();
         options.UseAspNetCore();
     });
@@ -85,12 +88,10 @@ builder.Services.ConfigureApplicationCookie(o =>
 {
     o.ExpireTimeSpan = TimeSpan.FromHours(24);
     o.SlidingExpiration = false;
+    // WICHTIG: Cookie-Sicherheit für HTTPS
+    o.Cookie.SameSite = SameSiteMode.Lax;
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
-
-// ---------- Auth/Cookies ----------
-//builder.Services.AddAuthentication()
-//    .AddIdentityCookies();
-
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -100,13 +101,28 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
+// -------------------------------------------------------------------------
+// WICHTIG: Forwarded Headers Konfiguration (Der Fix für ID2084)
+// Muss GANZ OBEN stehen, bevor irgendwas anderes passiert.
+// -------------------------------------------------------------------------
+var forwardedOptions = new ForwardedHeadersOptions
+{
+    // Wir nehmen ALLES an (Proto, Host, For), um sicherzugehen, dass HTTPS erkannt wird
+    ForwardedHeaders = ForwardedHeaders.All
+};
+// Dies ist entscheidend in Docker-Netzwerken, da die IP des Gateways sonst als "unbekannt" gilt
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+
+app.UseForwardedHeaders(forwardedOptions);
+// -------------------------------------------------------------------------
+
 using (var scope = app.Services.CreateScope())
 {
-    var config = app.Configuration; // oder scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var config = app.Configuration;
     await SeedOpenIddictAsync(scope.ServiceProvider, config);
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -114,11 +130,10 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    //app.UseHsts();
+    // app.UseHsts(); 
 }
 
-//app.UseHttpsRedirection();
+app.UseStaticFiles(); 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -133,19 +148,15 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-
-
 app.Run();
 
 
-
-
+// ---------------- SEEDING LOGIC (Unverändert) ----------------
 static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config)
 {
     var appMgr = sp.GetRequiredService<IOpenIddictApplicationManager>();
     var scopeMgr = sp.GetRequiredService<IOpenIddictScopeManager>();
 
-    // --- Scope für API ---
     if (await scopeMgr.FindByNameAsync("buergerportal_api") is null)
     {
         await scopeMgr.CreateAsync(new OpenIddictScopeDescriptor
@@ -155,43 +166,48 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
         });
     }
 
-    // ---- MVC Web-Client (mvc_web) ----
-    if (await appMgr.FindByClientIdAsync("mvc_web") is null)
-{
-        // Hier hart codieren:
-        var redirectUri = new Uri("http://34.89.247.235:5001/signin-oidc");
-        var postLogoutUri = new Uri("http://34.89.247.235:5001/signout-callback-oidc");
+    var mvcRedirectUri = new Uri("https://portal.gortisbuergerportal.de/signin-oidc");
+    var mvcLogoutUri = new Uri("https://portal.gortisbuergerportal.de/signout-callback-oidc");
 
+    var client = await appMgr.FindByClientIdAsync("mvc_web");
+
+    if (client is null)
+    {
         var descriptor = new OpenIddictApplicationDescriptor
         {
             ClientId = "mvc_web",
-            ClientSecret = "HalloGort123!", // oder production_secret – Hauptsache identisch mit MVC
+            ClientSecret = "HalloGort123!", 
             DisplayName = "BürgerPortal Web",
             ClientType = OpenIddictConstants.ClientTypes.Confidential,
             Permissions =
             {
-                // Endpoints
                 OpenIddictConstants.Permissions.Endpoints.Authorization,
                 OpenIddictConstants.Permissions.Endpoints.Token,
                 OpenIddictConstants.Permissions.Endpoints.EndSession,
-
-                // Grant types
                 OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                 OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-
-                // Response types
                 OpenIddictConstants.Permissions.ResponseTypes.Code,
-
-                // Scopes
                 OpenIddictConstants.Permissions.Scopes.Profile,
                 OpenIddictConstants.Permissions.Scopes.Email,
                 OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api"
             },
-
-            RedirectUris = { redirectUri },
-            PostLogoutRedirectUris = { postLogoutUri }
+            RedirectUris = { mvcRedirectUri },
+            PostLogoutRedirectUris = { mvcLogoutUri }
         };
-
         await appMgr.CreateAsync(descriptor);
+    }
+    else
+    {
+        var descriptor = new OpenIddictApplicationDescriptor();
+        await appMgr.PopulateAsync(descriptor, client);
+        
+        if (!descriptor.RedirectUris.Contains(mvcRedirectUri))
+        {
+            descriptor.RedirectUris.Clear();
+            descriptor.RedirectUris.Add(mvcRedirectUri);
+            descriptor.PostLogoutRedirectUris.Clear();
+            descriptor.PostLogoutRedirectUris.Add(mvcLogoutUri);
+            await appMgr.UpdateAsync(client, descriptor);
+        }
     }
 }

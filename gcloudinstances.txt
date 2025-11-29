@@ -1,3 +1,13 @@
+Docker:
+
+docker build -f Dockerfile.api -t buergerportal-api .
+docker rm -f buergerportal-api
+docker run ...
+
+docker network:
+
+docker network ls
+
 DB:
     => ext: 35.198.73.207, intern: 10.156.0.2
     => pw: 1234, user: sa
@@ -10,8 +20,51 @@ DB:
     -e "MSSQL_SA_PASSWORD=HalloGort123!" \
     -p 1433:1433 \
     --name buergerportal-sql \
+    --network buergerportal-net \
     -v bp-sql-data:/var/opt/mssql \
     --restart unless-stopped \
     -d mcr.microsoft.com/mssql/server:2022-latest
 
   docker exec -it buergerportal-sql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "HalloGort123!"
+
+
+Api:
+
+docker build -f Dockerfile.api -t buergerportal-api .
+docker rm -f buergerportal-api
+
+
+docker run -d \
+  --name buergerportal-api \
+  --network buergerportal-net \
+  -p 5000:8080 \
+  -e "ASPNETCORE_ENVIRONMENT=Production" \
+  --restart=always \
+  buergerportal-api
+  
+
+MVC:
+
+docker build -f Dockerfile.portal -t buergerportal-portal .
+docker rm -f buergerportal-portal
+
+docker run -d \
+  --name buergerportal-portal \
+  --network buergerportal-net \
+  -p 5001:8080 \
+  -e "ASPNETCORE_ENVIRONMENT=Production" \
+  --restart=always \
+  buergerportal-portal
+
+Auth Server (später mal):
+
+docker build -f Dockerfile.auth -t buergerportal-auth .
+docker rm -f buergerportal-auth
+
+docker run -d \
+  --name buergerportal-auth \
+  --network buergerportal-net \
+  -p 7001:8080 \
+  -e "ASPNETCORE_ENVIRONMENT=Production" \
+  --restart=always \
+  buergerportal-auth
