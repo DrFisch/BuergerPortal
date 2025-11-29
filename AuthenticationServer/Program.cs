@@ -42,7 +42,7 @@ builder.Services.AddOpenIddict()
                .SetEndSessionEndpointUris("/connect/logout")
                .SetUserInfoEndpointUris("/connect/userinfo").SetAccessTokenLifetime(TimeSpan.FromMinutes(60));
 
-        // Code-Flow + PKCE (für Web & MAUI)
+        // Code-Flow + PKCE (fï¿½r Web & MAUI)
         options.AllowAuthorizationCodeFlow()
                .RequireProofKeyForCodeExchange();
 
@@ -65,10 +65,10 @@ builder.Services.AddOpenIddict()
         if (!string.IsNullOrWhiteSpace(issuer))
             options.SetIssuer(new Uri(issuer));
 
-        // ASP.NET Core-Integration + Passthrough für bessere Fehlersicht
+        // ASP.NET Core-Integration + Passthrough fï¿½r bessere Fehlersicht
         options.UseAspNetCore().EnableAuthorizationEndpointPassthrough().EnableEndSessionEndpointPassthrough();
-
-        // (Optional) Access Tokens nicht verschlüsseln – in DEV bequemer
+        options.UseAspNetCore().DisableTransportSecurityRequirement();
+        // (Optional) Access Tokens nicht verschlï¿½sseln ï¿½ in DEV bequemer
         options.DisableAccessTokenEncryption();
 
         // Public Clients (MAUI) ohne ClientSecret erlauben
@@ -102,8 +102,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    await SeedOpenIddictAsync(scope.ServiceProvider); // <-- HIER aufrufen
-    // ggf. auch SeedDevUserAsync(scope.ServiceProvider);
+    var config = app.Configuration; // oder scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    await SeedOpenIddictAsync(scope.ServiceProvider, config);
 }
 
 // Configure the HTTP request pipeline.
@@ -115,10 +115,10 @@ else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    //app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -140,82 +140,58 @@ app.Run();
 
 
 
-static async Task SeedOpenIddictAsync(IServiceProvider sp)
+static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config)
 {
     var appMgr = sp.GetRequiredService<IOpenIddictApplicationManager>();
     var scopeMgr = sp.GetRequiredService<IOpenIddictScopeManager>();
 
-    // --- Scope anlegen (API) ---
+    // --- Scope fÃ¼r API ---
     if (await scopeMgr.FindByNameAsync("buergerportal_api") is null)
     {
         await scopeMgr.CreateAsync(new OpenIddictScopeDescriptor
         {
             Name = "buergerportal_api",
-            DisplayName = "BürgerPortal API scope"
+            DisplayName = "BÃ¼rgerPortal API scope"
         });
     }
 
-    // --- MVC Web-Client (confidential) ---
+    // ---- MVC Web-Client (mvc_web) ----
     if (await appMgr.FindByClientIdAsync("mvc_web") is null)
-    {
-        await appMgr.CreateAsync(new OpenIddictApplicationDescriptor
+{
+        // Hier hart codieren:
+        var redirectUri = new Uri("http://34.89.247.235:5001/signin-oidc");
+        var postLogoutUri = new Uri("http://34.89.247.235:5001/signout-callback-oidc");
+
+        var descriptor = new OpenIddictApplicationDescriptor
         {
             ClientId = "mvc_web",
-            ClientSecret = "dev_secret_very_long", // PROD: Secret Store
-            DisplayName = "BürgerPortal Web",
-            ClientType = OpenIddictConstants.ClientTypes.Confidential, // <- früher: Type
-            RedirectUris = { new Uri("https://localhost:7002/signin-oidc") },
-            PostLogoutRedirectUris = { new Uri("https://localhost:7002/signout-callback-oidc") },
+            ClientSecret = "HalloGort123!", // oder production_secret â€“ Hauptsache identisch mit MVC
+            DisplayName = "BÃ¼rgerPortal Web",
+            ClientType = OpenIddictConstants.ClientTypes.Confidential,
             Permissions =
             {
-                // Endpunkte
+                // Endpoints
                 OpenIddictConstants.Permissions.Endpoints.Authorization,
                 OpenIddictConstants.Permissions.Endpoints.Token,
-                OpenIddictConstants.Permissions.Endpoints.EndSession,   // <- statt "Logout"
+                OpenIddictConstants.Permissions.Endpoints.EndSession,
 
-                // Grants/Responses
+                // Grant types
                 OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                 OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+
+                // Response types
                 OpenIddictConstants.Permissions.ResponseTypes.Code,
 
-                // Scopes: "openid" und "offline_access" sind **special-cased**
-                // und brauchen keine explizite Permission.
+                // Scopes
                 OpenIddictConstants.Permissions.Scopes.Profile,
                 OpenIddictConstants.Permissions.Scopes.Email,
-                            //OpenIddictConstants.Permissions.Scopes.OfflineAccess, // <--- WICHTIG
-
                 OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api"
-            }
-        });
-    }
-
-    // --- (Optional) MAUI (public/native) ---
-    if (await appMgr.FindByClientIdAsync("maui_app") is null)
-    {
-        await appMgr.CreateAsync(new OpenIddictApplicationDescriptor
-        {
-            ClientId = "maui_app",
-            DisplayName = "BürgerPortal Mobile",
-            ClientType = OpenIddictConstants.ClientTypes.Public, // Public = kein Secret
-            // optional hilfreich für lokale Redirects: Native-App-Type
-            ApplicationType = OpenIddictConstants.ApplicationTypes.Native,
-            RedirectUris = { new Uri("buergerportal.maui://callback") },
-            Permissions =
-            {
-                OpenIddictConstants.Permissions.Endpoints.Authorization,
-                OpenIddictConstants.Permissions.Endpoints.Token,
-
-                OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
-                OpenIddictConstants.Permissions.ResponseTypes.Code,
-
-                OpenIddictConstants.Permissions.Scopes.Profile,
-                OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api"
-                // "openid" und "offline_access" -> keine explizite Permission nötig
             },
-            Requirements =
-            {
-                OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange
-            }
-        });
+
+            RedirectUris = { redirectUri },
+            PostLogoutRedirectUris = { postLogoutUri }
+        };
+
+        await appMgr.CreateAsync(descriptor);
     }
 }

@@ -44,11 +44,16 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<AccessTokenHandler>();
 
+var apiBaseUrl = builder.Configuration["Api:BaseUrl"]
+    ?? throw new InvalidOperationException("Api:BaseUrl not configured");
+
 builder.Services.AddHttpClient("BuergerPortalApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7003/"); 
+    client.BaseAddress = new Uri(apiBaseUrl);
 })
 .AddHttpMessageHandler<AccessTokenHandler>();
+
+var authConfig = builder.Configuration.GetSection("Authentication");
 
 builder.Services
     .AddAuthentication(options =>
@@ -98,14 +103,26 @@ builder.Services
     })
     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
-        options.Authority = "https://localhost:7001";
-        options.ClientId = "mvc_web";
-        options.ClientSecret = "dev_secret_very_long";
+        options.Authority = authConfig["Authority"];
+	   options.RequireHttpsMetadata = false;
+        options.ClientId = authConfig["ClientId"];
+        options.ClientSecret = authConfig["ClientSecret"];
         options.ResponseType = "code";
-        options.ResponseMode = "form_post";
-        options.SaveTokens = true;
         options.GetClaimsFromUserInfoEndpoint = true;
 
+
+
+        // WICHTIG für HTTP-Betrieb (z.B. Docker/IP ohne SSL):
+        // Browser blockieren SameSite=None ohne Secure. Daher auf Lax stellen.
+        options.RequireHttpsMetadata = false; 
+        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+        options.NonceCookie.SameSite = SameSiteMode.Lax;
+        
+        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.NonceCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        // Tokens für API-Zugriffe speichern
+        options.SaveTokens = true;
+        
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
@@ -195,10 +212,10 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    //app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 var locOptions = app.Services.GetRequiredService<
