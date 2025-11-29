@@ -89,7 +89,7 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.ExpireTimeSpan = TimeSpan.FromHours(24);
     o.SlidingExpiration = false;
     // WICHTIG: Cookie-Sicherheit für HTTPS
-    o.Cookie.SameSite = SameSiteMode.Lax;
+    o.Cookie.SameSite = SameSiteMode.None;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
