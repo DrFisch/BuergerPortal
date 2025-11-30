@@ -291,5 +291,13 @@
 	<data name="Hero_Stat_NextAppointment_Link" xml:space="preserve">
     <value>Go to “My appointments”</value>
   </data>
-
+<data name="Alert_LoginRequired_Title" xml:space="preserve">
+    <value>Login required</value>
+  </data>
+  <data name="Alert_LoginRequired_Text" xml:space="preserve">
+    <value>Please log in to access digital services and manage appointments.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
 </root>

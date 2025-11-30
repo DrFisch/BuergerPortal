@@ -6,6 +6,37 @@
 }
 
 <div class="container py-4 antraege-overview">
+
+    @if (User?.Identity?.IsAuthenticated != true)
+    {
+        <div class="alert alert-warning border-0 rounded-4 shadow-sm mb-4" role="alert">
+            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 p-1">
+                
+                <div class="d-flex align-items-center gap-3 text-center text-md-start flex-column flex-md-row">
+                    <div class="bg-warning bg-opacity-25 text-warning-emphasis rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading h6 fw-bold mb-1 text-warning-emphasis">
+                            @L["Alert_LoginRequired_Title"]
+                        </h5>
+                        <p class="mb-0 small text-muted">
+                            @L["Alert_LoginRequired_Text"]
+                        </p>
+                    </div>
+                </div>
+
+                <div class="w-100 w-md-auto">
+                    <a class="btn btn-primary d-block d-md-inline-block rounded-pill px-4 fw-semibold shadow-sm" 
+                       asp-controller="Account" 
+                       asp-action="Login">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> @L["Login"]
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    }
     <div class="row g-4">
 
         <!-- Row 1: Antragsstatus (volle Breite) -->
