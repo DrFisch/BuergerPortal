@@ -10,6 +10,12 @@ using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG
 
 var builder = WebApplication.CreateBuilder(args);
 
+var env = builder.Environment.EnvironmentName;
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine($"ENV: {env}");
+Console.WriteLine($"DefaultConnection: {cs}");
+
 // DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
