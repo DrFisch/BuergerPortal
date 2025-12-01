@@ -52,4 +52,34 @@
 	<data name="ThemeDark" xml:space="preserve">
     <value>Dark</value>
   </data>
+	<data name="InstallApp" xml:space="preserve">
+  <value>Install App</value>
+</data>
+
+	<data name="InstallAppDescription" xml:space="preserve">
+  <value>Install the BürgerPortal app on your device.</value>
+</data>
+	<data name="HelloUserShort" xml:space="preserve">
+  <value>You are logged in</value>
+</data>
+
+	<data name="InstallAppLink" xml:space="preserve">
+  <value>Install app</value>
+</data>
+	<data name="Services" xml:space="preserve">
+  <value>Services</value>
+</data>
+
+	<data name="Card_Appointments" xml:space="preserve">
+  <value>Appointments</value>
+</data>
+
+	<data name="Card_Applications" xml:space="preserve">
+  <value>Applications</value>
+</data>
+
+	<data name="Card_ReportIssue" xml:space="preserve">
+  <value>Report an Issue</value>
+</data>
+
 </root>

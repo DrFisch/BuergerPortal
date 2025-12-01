@@ -52,4 +52,33 @@
 	<data name="ThemeDark" xml:space="preserve">
     <value>Dark</value>
   </data>
+	<data name="InstallApp" xml:space="preserve">
+  <value>App installieren</value>
+</data>
+
+	<data name="InstallAppDescription" xml:space="preserve">
+  <value>Installiere die BürgerPortal App auf deinem Gerät.</value>
+</data>
+	<data name="HelloUserShort" xml:space="preserve">
+  <value>Sie sind eingeloggt</value>
+</data>
+
+	<data name="InstallAppLink" xml:space="preserve">
+  <value>App installieren</value>
+</data>
+	<data name="Services" xml:space="preserve">
+  <value>Leistungen</value>
+</data>
+
+	<data name="Card_Appointments" xml:space="preserve">
+  <value>Terminbuchung</value>
+</data>
+
+	<data name="Card_Applications" xml:space="preserve">
+  <value>Anträge</value>
+</data>
+
+	<data name="Card_ReportIssue" xml:space="preserve">
+  <value>Mängel melden</value>
+</data>
 </root>

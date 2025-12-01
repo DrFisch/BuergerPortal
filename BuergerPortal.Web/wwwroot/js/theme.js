@@ -2,14 +2,14 @@
     const root = document.documentElement;
 
     function updateToggle(theme) {
-        const btn = document.querySelector('.js-theme-toggle');
-        if (!btn) return;
         const isDark = theme === 'dark';
-        btn.setAttribute('aria-pressed', String(isDark));
-        const icon = btn.querySelector('i');
-        const text = btn.querySelector('.js-theme-text');
-        if (icon) icon.className = isDark ? 'bi bi-moon-stars me-1' : 'bi bi-brightness-high me-1';
-        if (text) text.textContent = isDark ? 'Dark' : 'Light';
+        document.querySelectorAll('.js-theme-toggle').forEach(btn => {
+            btn.setAttribute('aria-pressed', String(isDark));
+            const icon = btn.querySelector('i.js-theme-icon') || btn.querySelector('i');
+            const text = btn.querySelector('.js-theme-text');
+            if (icon) icon.className = isDark ? 'bi bi-moon-stars me-1 js-theme-icon' : 'bi bi-brightness-high me-1 js-theme-icon';
+            if (text) text.textContent = isDark ? 'Dark' : 'Light';
+        });
     }
 
     function setThemeDom(theme) {
@@ -37,24 +37,27 @@
         const initial = root.getAttribute('data-bs-theme') || 'light';
         updateToggle(initial);
 
-        document.querySelector('.js-theme-toggle')?.addEventListener('click', () => {
-            const current = root.getAttribute('data-bs-theme') || 'light';
-            const next = current === 'dark' ? 'light' : 'dark';
+        // Attach listeners to all toggles (desktop + mobile)
+        document.querySelectorAll('.js-theme-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const current = root.getAttribute('data-bs-theme') || 'light';
+                const next = current === 'dark' ? 'light' : 'dark';
 
-            // 1. UI sofort umschalten
-            setThemeDom(next);
+                // 1. UI sofort umschalten
+                setThemeDom(next);
 
-            // 2. Sofort lokal persistieren für ausgeloggte Nutzer (und als Fallback)
-            try {
-                localStorage.setItem('theme', next);
-            } catch (e) { /* ignore */ }
-            // zusätzlich Cookie setzen (wird vom Server beim eingeloggten Nutzer ebenfalls gesetzt)
-            try {
-                document.cookie = 'theme=' + next + '; path=/; max-age=' + (60*60*24*365) + '; SameSite=Lax';
-            } catch (e) { /* ignore */ }
+                // 2. Sofort lokal persistieren für ausgeloggte Nutzer (und als Fallback)
+                try {
+                    localStorage.setItem('theme', next);
+                } catch (e) { /* ignore */ }
+                // zusätzlich Cookie setzen (wird vom Server beim eingeloggten Nutzer ebenfalls gesetzt)
+                try {
+                    document.cookie = 'theme=' + next + '; path=/; max-age=' + (60*60*24*365) + '; SameSite=Lax';
+                } catch (e) { /* ignore */ }
 
-            // 3. Server/DB im Hintergrund anpassen (versuchen, aber kein Must-Have)
-            saveThemeToServer(next);
-         });
-     });
- })();
+                // 3. Server/DB im Hintergrund anpassen (versuchen, aber kein Must-Have)
+                saveThemeToServer(next);
+            });
+        });
+    });
+})();
