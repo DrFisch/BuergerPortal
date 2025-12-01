@@ -143,6 +143,57 @@ namespace BuergerPortal.Web.Controllers
         };
             return View("Index", vm);
         }
+        public sealed class ThemeToggleRequest
+        {
+            public string Theme { get; set; } = "light"; // "light" | "dark"
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken] // wichtig, da dein Fetch kein AntiForgery-Token mitschickt
+        [AllowAnonymous]
+        public async Task<IActionResult> ThemeToggle([FromBody] ThemeToggleRequest req, CancellationToken ct)
+        {
+            // Theme normalisieren: DB erwartet bei dir "Dark"/"Light"
+            var themeForDb = string.Equals(req.Theme, "dark", StringComparison.OrdinalIgnoreCase)
+                ? "Dark"
+                : "Light";
+
+            // Wenn der Nutzer nicht authentifiziert ist, speichern wir nur ein Client-Cookie
+            if (User?.Identity?.IsAuthenticated != true)
+            {
+                SetClientCookies(themeForDb, null);
+                return NoContent();
+            }
+
+            // Authentifizierte Nutzer: wie bisher in die API schreiben
+            var http = _httpClientFactory.CreateClient("BuergerPortalApi");
+
+            // 1. Aktuelle Settings holen
+            var dto = await TryGetSettingsOrDefault(http, "api/users/me/settings", ct);
+
+            // 2. Payload für API bauen – alle bisherigen Werte übernehmen, nur Theme ändern
+            var payload = new UserSettingsUpdateRequest
+            {
+                Theme = themeForDb,
+                Language = string.IsNullOrWhiteSpace(dto.Language) ? "de" : dto.Language,
+                PushEnabled = dto.PushEnabled,
+                ReduceDataUsage = dto.ReduceDataUsage,
+                AnalyticsOptIn = dto.AnalyticsOptIn,
+                AllowGeolocation = dto.AllowGeolocation
+                // Version lassen wir hier bewusst weg -> kein Concurrency-Check nötig für schnellen Toggle
+            };
+
+            var res = await http.PutAsJsonAsync("api/users/me/settings", payload, ct);
+
+            if (res.IsSuccessStatusCode)
+            {
+                // Cookie auf Client-Seite aktualisieren, damit das Theme auch ohne Reload passt
+                SetClientCookies(payload.Theme, payload.Language);
+                return NoContent();
+            }
+
+            return StatusCode((int)res.StatusCode);
+        }
 
         private void SetClientCookies(string? theme, string? lang)
         {

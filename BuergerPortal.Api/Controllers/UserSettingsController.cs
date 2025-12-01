@@ -102,5 +102,48 @@ namespace BuergerPortal.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("theme")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PatchTheme([FromBody] ThemeUpdateRequest req, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            // Aktuelle Settings holen, damit wir nicht alles verlieren
+            var current = await _bs.GetForUserAsync(userId, ct);
+
+            var expected = !string.IsNullOrWhiteSpace(current.Version)
+                ? Convert.FromBase64String(current.Version)
+                : null;
+
+            var dto = new UserSettingsUpdateDto
+            {
+                Theme = req.Theme,
+                Language = current.Language,
+                PushEnabled = current.PushEnabled,
+                ReduceDataUsage = current.ReduceDataUsage,
+                AnalyticsOptIn = current.AnalyticsOptIn,
+                AllowGeolocation = current.AllowGeolocation,
+                ExpectedVersion = expected
+            };
+
+            var result = await _bs.UpsertForUserAsync(userId, dto, ct);
+            if (!result.IsSuccess)
+            {
+                return result.ErrorCode switch
+                {
+                    ErrorCodes.Validation => ValidationProblem(detail: result.ErrorMessage),
+                    ErrorCodes.Concurrency => Problem(
+                                                  title: "Version conflict",
+                                                  statusCode: StatusCodes.Status412PreconditionFailed,
+                                                  detail: result.ErrorMessage),
+                    _ => Problem(statusCode: StatusCodes.Status400BadRequest, detail: result.ErrorMessage)
+                };
+            }
+
+            return NoContent();
+        }
+
     }
 }
