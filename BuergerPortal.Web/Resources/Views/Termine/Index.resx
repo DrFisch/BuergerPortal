@@ -76,4 +76,7 @@
 	<data name="Termine_Action_Cancel" xml:space="preserve">
     <value>Stornieren</value>
   </data>
+	<data name="Termine_Status_Past" xml:space="preserve">
+  <value>Vergangen</value>
+</data>
 </root>

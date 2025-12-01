@@ -43,10 +43,10 @@ else
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>@L["Termine_Table_Header_Service"]</th>
                     <th>@L["Termine_Table_Header_Date"]</th>
                     <th>@L["Termine_Table_Header_Time"]</th>
                     <th>@L["Termine_Table_Header_Location"]</th>
+                    <th>@L["Termine_Table_Header_Service"]</th>
                     <th>@L["Termine_Table_Header_Status"]</th>
                     <th class="text-end">@L["Termine_Table_Header_Actions"]</th>
                 </tr>
@@ -57,7 +57,25 @@ else
                     var hasAntrag = t.AntragId.HasValue;
                     var shortId = hasAntrag ? t.AntragId!.Value.ToString().Substring(0, 8) : null;
 
+                    // --- IsPast-Berechnung direkt in der View ---
+                    TimeSpan timeSpan;
+                    var parsed = TimeSpan.TryParse(t.Uhrzeit, out timeSpan);
+                    var appointmentDateTime = parsed
+                        ? t.Datum.Date.Add(timeSpan)
+                        : t.Datum; // Fallback: nur Datum vergleichen
+                    var isPast = !t.Storniert && appointmentDateTime < DateTime.Now;
+
                     <tr>
+                        <!-- Datum -->
+                        <td>@t.Datum.ToString("dd.MM.yyyy")</td>
+
+                        <!-- Uhrzeit -->
+                        <td>@t.Uhrzeit</td>
+
+                        <!-- Ort -->
+                        <td>@t.Location.ToDisplay()</td>
+
+                        <!-- Dienst + optional Antrag-Chip -->
                         <td>
                             <div class="fw-semibold">@t.Service.ToDisplayName()</div>
 
@@ -75,14 +93,15 @@ else
                             }
                         </td>
 
-                        <td>@t.Datum.ToString("dd.MM.yyyy")</td>
-                        <td>@t.Uhrzeit</td>
-                        <td>@t.Location.ToDisplay()</td>
-
+                        <!-- Status -->
                         <td>
                             @if (t.Storniert)
                             {
                                 <span class="badge bg-secondary">@L["Termine_Status_Cancelled"]</span>
+                            }
+                            else if (isPast)
+                            {
+                                <span class="badge bg-warning text-dark">@L["Termine_Status_Past"]</span>
                             }
                             else
                             {
@@ -90,8 +109,9 @@ else
                             }
                         </td>
 
+                        <!-- Aktionen -->
                         <td class="text-end">
-                            @if (!t.Storniert)
+                            @if (!t.Storniert && !isPast)
                             {
                                 <form method="post" asp-action="Stornieren" class="d-inline">
                                     @Html.AntiForgeryToken()
@@ -111,7 +131,6 @@ else
 
 @section Styles {
     <style>
-        /* dezente „Chip“-Optik für den Antrag-Link in der Dienst-Spalte */
         .antrag-chip {
             border: 1px dashed var(--bs-border-color);
             background: color-mix(in oklab, var(--bs-body-bg) 70%, var(--bs-tertiary-bg));

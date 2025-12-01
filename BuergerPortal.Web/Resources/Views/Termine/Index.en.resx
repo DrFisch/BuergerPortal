@@ -76,4 +76,8 @@
 	<data name="Termine_Action_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+	<data name="Termine_Status_Past" xml:space="preserve">
+  <value>Past</value>
+</data>
+
 </root>
