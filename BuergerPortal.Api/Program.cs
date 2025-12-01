@@ -164,37 +164,54 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMailJetEmailSender(builder.Configuration);
 builder.Services.AddApplicationServices();
 
-// --- 2. AUTHENTIFIZIERUNG (JWT) ---
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// -------------------------------------------------------
+// 2. Authentication / Authorization (JWT gegen Auth-Server)
+// -------------------------------------------------------
+var authSection = builder.Configuration.GetSection("Authentication");
+var authority = authSection["Authority"]
+    ?? throw new InvalidOperationException("Authentication:Authority is not configured.");
+var audience = authSection["Audience"]
+    ?? throw new InvalidOperationException("Authentication:Audience is not configured.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // -------------------------------------------------------------
-        // A) Authority: Die URL deines Auth-Servers (jetzt HTTPS Domain)
-        // -------------------------------------------------------------
-        options.Authority = "https://auth.gortisbuergerportal.de";
-        
-        // B) HTTP intern erlauben (Container läuft auf HTTP, Nginx macht HTTPS)
-        options.RequireHttpsMetadata = false;
-        
-        // C) Claims nicht automatisch umbenennen (wichtig für 'sub')
+        // OpenID Connect Authority (Discovery-Endpoint)
+        options.Authority = authority;
+
+        // In Produktion ist die Authority per HTTPS öffentlich,
+        // in Dev auch, aber evtl. mit self-signed Zertifikat
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+
+        // Claims nicht automatisch umbenennen (sub, name, role etc. bleiben wie im Token)
         options.MapInboundClaims = false;
 
-        // D) Validierung
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            // HIER DIE NEUE DOMAIN + SLASH AM ENDE
-            ValidIssuer = "https://auth.gortisbuergerportal.de/", 
-            
+            // Tokens haben typischerweise einen Slash am Ende beim iss
+            ValidIssuer = authority.TrimEnd('/') + "/",
+
             ValidateAudience = true,
-            ValidAudience = "buergerportal_api",
-            
+            ValidAudience = audience,
+
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
 
-            NameClaimType = "name", 
+            NameClaimType = "name",
             RoleClaimType = "role"
         };
+
+        // In Dev: Self-signed Zertifikate akzeptieren (nur lokal!)
+        if (builder.Environment.IsDevelopment())
+        {
+            options.BackchannelHttpHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+        }
 
         // E) Events für Debugging (Optional, kann später raus)
         options.Events = new JwtBearerEvents

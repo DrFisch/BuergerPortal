@@ -163,6 +163,7 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
     var appMgr = sp.GetRequiredService<IOpenIddictApplicationManager>();
     var scopeMgr = sp.GetRequiredService<IOpenIddictScopeManager>();
 
+    // ---- API Scope ----
     if (await scopeMgr.FindByNameAsync("buergerportal_api") is null)
     {
         await scopeMgr.CreateAsync(new OpenIddictScopeDescriptor
@@ -172,9 +173,19 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
         });
     }
 
-    var mvcRedirectUri = new Uri("https://portal.gortisbuergerportal.de/signin-oidc");
-    var mvcLogoutUri = new Uri("https://portal.gortisbuergerportal.de/signout-callback-oidc");
+    // ---- Client Config aus appsettings ----
+    var clientSection = config.GetSection("OpenIddict:Clients:mvc_web");
+    var clientSecret = clientSection["ClientSecret"];
+    var redirectUris = clientSection.GetSection("RedirectUris").Get<string[]>();
+    var postLogoutUris = clientSection.GetSection("PostLogoutRedirectUris").Get<string[]>();
 
+    if (redirectUris == null || postLogoutUris == null)
+        throw new InvalidOperationException("MVC redirect URIs not configured.");
+
+    var redirectUri = new Uri(redirectUris[0]);
+    var logoutUri = new Uri(postLogoutUris[0]);
+
+    // ---- Client exists? ----
     var client = await appMgr.FindByClientIdAsync("mvc_web");
 
     if (client is null)
@@ -182,7 +193,7 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
         var descriptor = new OpenIddictApplicationDescriptor
         {
             ClientId = "mvc_web",
-            ClientSecret = "HalloGort123!", 
+            ClientSecret = clientSecret,
             DisplayName = "BürgerPortal Web",
             ClientType = OpenIddictConstants.ClientTypes.Confidential,
             Permissions =
@@ -197,23 +208,41 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
                 OpenIddictConstants.Permissions.Scopes.Email,
                 OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api"
             },
-            RedirectUris = { mvcRedirectUri },
-            PostLogoutRedirectUris = { mvcLogoutUri }
+            RedirectUris = { redirectUri },
+            PostLogoutRedirectUris = { logoutUri }
         };
+
         await appMgr.CreateAsync(descriptor);
     }
     else
     {
+        // ---- Update bestehende Werte ----
         var descriptor = new OpenIddictApplicationDescriptor();
         await appMgr.PopulateAsync(descriptor, client);
-        
-        if (!descriptor.RedirectUris.Contains(mvcRedirectUri))
+
+        bool changed = false;
+
+        if (descriptor.ClientSecret != clientSecret)
+        {
+            descriptor.ClientSecret = clientSecret;
+            changed = true;
+        }
+
+        if (!descriptor.RedirectUris.Contains(redirectUri))
         {
             descriptor.RedirectUris.Clear();
-            descriptor.RedirectUris.Add(mvcRedirectUri);
-            descriptor.PostLogoutRedirectUris.Clear();
-            descriptor.PostLogoutRedirectUris.Add(mvcLogoutUri);
-            await appMgr.UpdateAsync(client, descriptor);
+            descriptor.RedirectUris.Add(redirectUri);
+            changed = true;
         }
+
+        if (!descriptor.PostLogoutRedirectUris.Contains(logoutUri))
+        {
+            descriptor.PostLogoutRedirectUris.Clear();
+            descriptor.PostLogoutRedirectUris.Add(logoutUri);
+            changed = true;
+        }
+
+        if (changed)
+            await appMgr.UpdateAsync(client, descriptor);
     }
 }
