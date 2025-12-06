@@ -1,0 +1,467 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@using BuergerPortal.Web.Features.Termine
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@model BuchenVm
+@{
+    ViewData["Title"] = T["Title"];
+}
+
+<h1 class="h4">@T["Title"]</h1>
+
+<form asp-action="Buchen" method="post" class="vstack gap-3">
+    @Html.AntiForgeryToken()
+
+    <input asp-for="RelatedAntragId" type="hidden" />
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="card border-danger mb-3">
+            <div class="card-body text-danger">
+                <div asp-validation-summary="All" class="mb-0"></div>
+            </div>
+        </div>
+    }
+
+    <span id="weekendNote" class="text-danger small d-block mt-1"></span>
+
+    <div class="alert alert-info d-flex align-items-start gap-2" role="alert">
+        <div>
+            <strong>@T["OpeningHoursLabel"]</strong>
+            @T["OpeningHoursDetail"]
+        </div>
+    </div>
+
+    <input asp-for="RelatedAntragId" type="hidden" />
+
+    @if (Model.RelatedAntragId.HasValue)
+    {
+        <div class="context-banner alert alert-primary d-flex align-items-center gap-3" role="status">
+            <div class="banner-icon" aria-hidden="true"></div>
+            <div>
+                <div class="fw-semibold">@T["LinkedToApplication"]</div>
+                <div class="small text-primary-emphasis">
+                    @T["ApplicationId"]: <code>@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="readonly-pill">
+                @T["RelatedService"]
+            </div>
+            <input asp-for="Service" type="hidden" />
+        </div>
+    }
+    else
+    {
+        <div>
+            <label class="form-label">@T["Service"]</label>
+            <select asp-for="Service" class="form-select" asp-items="Html.GetEnumSelectList<ServiceType>()">
+                <option value="">@T["SelectPlaceholder"]</option>
+            </select>
+            <span asp-validation-for="Service" class="text-danger"></span>
+        </div>
+    }
+
+    <div>
+        <label class="form-label">@T["Location"]</label>
+        <select asp-for="Location" class="form-select" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-sm-6">
+            <label class="form-label">@T["Date"]</label>
+            <input asp-for="LocalDate" type="date" class="form-control" id="dateInput" />
+            <span asp-validation-for="LocalDate" class="text-danger"></span>
+        </div>
+
+        <div class="col-sm-6">
+            <label class="form-label">@T["Time"]</label>
+            <div class="input-group">
+                <select asp-for="LocalTime" class="form-select" id="timeSelect"></select>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#kalenderModal">
+                    @T["Availability"]
+                </button>
+            </div>
+            <small class="text-muted">@T["CalendarHint"]</small>
+            <span asp-validation-for="LocalTime" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div>
+        <label class="form-label">@T["Duration"]</label>
+        <select asp-for="Duration" class="form-select" id="durationSelect" asp-items="Html.GetEnumSelectList<DurationOption>()"></select>
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-primary">@T["BookAppointment"]</button>
+    </div>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="kalenderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["ModalTitle"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <label class="form-label mb-0">@T["ModalDate"]</label>
+                    <input type="date" id="kalenderDate" class="form-control" style="max-width:220px">
+                    <button class="btn btn-sm btn-outline-primary" id="kalenderReload">@T["Reload"]</button>
+                </div>
+
+                <div class="mb-2">
+                    <span class="badge bg-danger ms-2">&nbsp;</span> @T["Busy"]
+                </div>
+
+                <div id="dpCalendar" style="height:480px"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">@T["Close"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Banner: weniger “grau”, mehr Fokus */
+        .context-banner {
+            border-left: 6px solid var(--bs-primary);
+            border-radius: .75rem;
+        }
+
+            .context-banner .banner-icon {
+                font-size: 1.25rem;
+                line-height: 1;
+            }
+
+        /* Readonly-Pill für den Dienst */
+        .readonly-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem .75rem;
+            border-radius: .75rem;
+            background: var(--bs-tertiary-bg);
+            border: 1px solid var(--bs-border-color);
+            font-weight: 600;
+        }
+
+            .readonly-pill .lock {
+                opacity: .7;
+            }
+
+        /* dezenter Label-Ton, damit der Inhalt (Pill) dominiert */
+        .muted-label {
+            color: var(--bs-secondary-color);
+        }
+
+        .modal-dialog.modal-lg {
+            display: flex;
+            align-items: center; /* vertikal zentrieren */
+        }
+
+        .modal-content {
+            display: inline-block; /* Inhalt bestimmt Höhe */
+            width: auto; /* kein Zwang auf volle Breite */
+            max-width: 95vw; /* etwas Luft lassen */
+        }
+
+        /* Der Kalender darf bei Bedarf wachsen, aber nie über den Viewport */
+        #dpCalendar {
+            width: 100%;
+            height: auto;
+            min-height: 400px; /* Mindesthöhe */
+            max-height: 80vh; /* Sicherheit für sehr kleine Bildschirme */
+        }
+
+        .modal-body {
+            overflow: visible !important; /* verhindert Scrollen im Modal */
+        }
+    </style>
+}
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Geschäftszeiten
+        const START_HOUR = 8;
+        const END_HOUR   = 12;   // <-- NUR bis 12!
+        const STEP_MIN   = 15;
+
+        const dateInput     = document.getElementById('dateInput');
+        const timeSelect    = document.getElementById('timeSelect');
+        const durationSelect = document.getElementById('durationSelect'); // NEU
+            const form          = document.querySelector('form[method="post"]');
+
+        function isWeekendDateStr(yyyyMmDd) {
+          const d = new Date(yyyyMmDd + "T00:00:00");
+          const dow = d.getDay(); // 0=So, 6=Sa
+          return dow === 0 || dow === 6;
+        }
+
+        // min=heute + Wochenenden verhindern (springe auf nächsten Werktag)
+        (function setMinToday() {
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          const today = `${yyyy}-${mm}-${dd}`;
+          dateInput.min = today;
+          if (!dateInput.value) dateInput.value = today;
+
+          if (isWeekendDateStr(dateInput.value)) {
+            // nächster Montag
+            const dt = new Date(dateInput.value + "T00:00:00");
+            const addDays = (8 - dt.getDay()) % 7 || 1; // 6=Sa(+2), 0=So(+1)
+            dt.setDate(dt.getDate() + addDays);
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d2 = String(dt.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d2}`;
+          }
+        })();
+
+        function toHHMM(v) {
+          const h = String(v.getHours()).padStart(2,'0');
+          const m = String(v.getMinutes()).padStart(2,'0');
+          return `${h}:${m}`;
+        }
+
+        // Dropdown NUR 08:00–12:00 befüllen (und keine Vergangenheit für "heute")
+        function buildOptions() {
+          const selected = timeSelect.value;
+          timeSelect.innerHTML = "";
+
+          const chosen = new Date(dateInput.value + "T00:00:00");
+          const now    = new Date();
+          const isToday = chosen.toDateString() === now.toDateString();
+
+          const start = new Date(chosen);
+          start.setHours(START_HOUR, 0, 0, 0);
+
+          const end = new Date(chosen);
+          end.setHours(END_HOUR, 0, 0, 0);
+
+          for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + STEP_MIN)) {
+            if (isToday && t <= now) continue; // Vergangenes ausblenden (heute)
+
+            const label = toHHMM(t);
+            const opt = document.createElement('option');
+            opt.value = label; // "HH:mm"
+            opt.textContent = label;
+            timeSelect.appendChild(opt);
+          }
+
+          if (selected && Array.from(timeSelect.options).some(o => o.value === selected)) {
+            timeSelect.value = selected;
+          }
+          if (!timeSelect.value && timeSelect.options.length > 0) {
+            timeSelect.selectedIndex = 0;
+          }
+        }
+
+        buildOptions();
+
+        // Bei Datumswechsel: Wochenenden blocken + Zeiten neu
+                dateInput.addEventListener('change', () => {
+          const weekendNote = document.getElementById('weekendNote');
+
+          if (isWeekendDateStr(dateInput.value)) {
+            // Hinweis statt Alert
+            if (weekendNote) {
+              weekendNote.textContent = "Am Wochenende sind keine Termine möglich. Das Datum wurde auf den nächsten Werktag verschoben.";
+            }
+
+            // nächster Werktag
+            const dt = new Date(dateInput.value + "T00:00:00");
+            const addDays = (8 - dt.getDay()) % 7 || 1;
+            dt.setDate(dt.getDate() + addDays);
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d2 = String(dt.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d2}`;
+          } else {
+            if (weekendNote) weekendNote.textContent = "";
+          }
+
+          buildOptions();
+        });
+
+            function violatesBusinessEnd() {
+          if (!timeSelect.value) return false;
+          const [hh, mm] = timeSelect.value.split(':').map(Number);
+          const dur = parseInt(durationSelect?.value ?? "15", 10) || 15; // NEU
+
+          const d = new Date(dateInput.value + "T00:00:00");
+          const start = new Date(d);
+          start.setHours(hh, mm, 0, 0);
+
+          const end = new Date(start);
+          end.setMinutes(end.getMinutes() + dur);
+
+          const cutoff = new Date(d);
+          cutoff.setHours(END_HOUR, 0, 0, 0);
+
+          return end > cutoff;
+        }
+
+        function showOrHideClientError() {
+          let msgEl = document.getElementById('clientErrorMsg');
+          if (!msgEl) {
+            msgEl = document.createElement('div');
+            msgEl.id = 'clientErrorMsg';
+            msgEl.className = 'text-danger mt-1';
+            durationSelect.closest('div').appendChild(msgEl); // NEU
+          }
+          msgEl.textContent = violatesBusinessEnd()
+            ? `Die gewählte Dauer überschreitet die Geschäftszeit bis ${END_HOUR}:00.`
+            : '';
+        }
+
+        timeSelect.addEventListener('change', showOrHideClientError);
+        durationSelect.addEventListener('change', showOrHideClientError); // NEU
+
+        form.addEventListener('submit', (e) => {
+          if (violatesBusinessEnd()) {
+            e.preventDefault();
+            showOrHideClientError();
+            alert("Der Termin überschreitet die Geschäftszeit (endet nach 12:00). Bitte Dauer oder Start ändern.");
+          }
+        });
+    </script>
+
+    <!-- DayPilot Kalender Script -->
+    <script src="~/lib/daypilot/daypilot-javascript.min.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+          const modalEl = document.getElementById('kalenderModal');
+          const dateEl  = document.getElementById('kalenderDate');
+          const reload  = document.getElementById('kalenderReload');
+          const hostEl  = document.getElementById('dpCalendar');
+
+          const dateInput  = document.getElementById('dateInput');
+          const timeSelect = document.getElementById('timeSelect');
+
+          if (!hostEl || !modalEl || !dateInput || !timeSelect) return;
+
+          function addMinutesToIso(isoString, minutes) {
+            const d = new Date(isoString);
+            d.setMinutes(d.getMinutes() + minutes);
+            const y  = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mi = String(d.getMinutes()).padStart(2, '0');
+            const ss = String(d.getSeconds()).padStart(2, '0');
+            return `${y}-${mo}-${da}T${hh}:${mi}:${ss}`;
+          }
+
+          // DayPilot init (nur BusinessHours sichtbar = 08–12)
+          const dp = new DayPilot.Calendar(hostEl);
+          dp.viewType = "Day";
+          dp.locale = "de-de";
+          dp.cellDuration = 15;
+
+          dp.businessBeginsHour = 8;
+          dp.businessEndsHour   = 12;
+          dp.showNonBusiness    = false;        // zeigt nur 08–12 Uhr
+          dp.heightSpec         = "BusinessHoursNoScroll";
+          dp.scrollLabelsVisible= false;
+          dp.allowEventOverlap  = true;
+
+          dp.timeRangeSelectedHandling = "Enabled";
+          dp.eventMoveHandling = "Disabled";
+          dp.eventResizeHandling = "Disabled";
+
+          // Auswahl außerhalb blocken (redundant, da nicht sichtbar, aber okay)
+          dp.onTimeRangeSelecting = (args) => {
+            const h = args.start.hour();
+            if (h < 8 || h >= 12) args.allowed = false;
+          };
+
+          dp.onTimeRangeSelected = (args) => {
+            const formDate = args.start.toString("yyyy-MM-dd");
+            const hhmm     = args.start.toString("HH:mm");
+
+            if (dateInput.value !== formDate) {
+              dateInput.value = formDate;
+              if (typeof buildOptions === "function") buildOptions();
+            }
+            if (!Array.from(timeSelect.options).some(o => o.value === hhmm)) {
+              if (typeof buildOptions === "function") buildOptions();
+            }
+            timeSelect.value = hhmm;
+
+            dp.clearSelection();
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+          };
+
+          dp.init();
+
+          async function loadBusy(dateStr) {
+            const res = await fetch(`/Termine/Busy?date=${dateStr}`, { credentials: 'same-origin' });
+            if (!res.ok) { dp.update({ events: [] }); return; }
+            const items = await res.json();
+
+            const events = items.map((x, i) => ({
+              id: `busy-${i}`,
+              text: "Belegt",
+              start: addMinutesToIso(x.startUtc ?? x.StartUtc, 0),
+              end:   addMinutesToIso(x.endUtc   ?? x.EndUtc,   0),
+              backColor: "#f8d7da",
+              borderColor: "#f5c2c7",
+              barHidden: true,
+              moveDisabled: true,
+              resizeDisabled: true
+            }));
+
+            dp.update({ events });
+          }
+
+          function syncDatePicker() {
+            if (!dateEl.value) dateEl.value = dateInput.value;
+            dp.startDate = dateEl.value;
+            dp.update();
+          }
+
+          modalEl.addEventListener('shown.bs.modal', async () => {
+            if (!dateEl.value) dateEl.value = dateInput.value;
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          reload?.addEventListener('click', async () => {
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          dateEl.addEventListener('change', async () => {
+            syncDatePicker();
+            await loadBusy(dateEl.value);
+          });
+
+          dateInput.addEventListener('change', async () => {
+            if (modalEl.classList.contains('show')) {
+              dateEl.value = dateInput.value;
+              syncDatePicker();
+              await loadBusy(dateEl.value);
+            }
+          });
+        })();
+
+
+
+    </script>
+
+}

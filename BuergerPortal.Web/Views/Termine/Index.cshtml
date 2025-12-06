@@ -1,0 +1,144 @@
+﻿@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@model TermineIndexVm
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["Termine_Title"];
+}
+
+<h1 class="h4 mb-3">@L["Termine_Heading"]</h1>
+
+@if (TempData["BookingSuccess"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>  <!-- optional später auch lokalisieren -->
+}
+@if (TempData["BookingError"] is string err)
+{
+    <div class="alert alert-danger">@err</div>  <!-- optional später auch lokalisieren -->
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">@L["Termine_IntroText"]</p>
+    <a asp-action="Buchen" class="btn btn-primary">
+        <i class="bi bi-calendar-plus me-1"></i> @L["Termine_NewAppointment_Button"]
+    </a>
+</div>
+
+@if (Model?.Termine is null || !Model.Termine.Any())
+{
+    <div class="card">
+        <div class="card-body">
+            <p class="text-muted mb-2">@L["Termine_Empty_Text"]</p>
+            <a asp-action="Buchen" class="btn btn-outline-primary">
+                @L["Termine_Empty_Button"]
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>@L["Termine_Table_Header_Date"]</th>
+                    <th>@L["Termine_Table_Header_Time"]</th>
+                    <th>@L["Termine_Table_Header_Location"]</th>
+                    <th>@L["Termine_Table_Header_Service"]</th>
+                    <th>@L["Termine_Table_Header_Status"]</th>
+                    <th class="text-end">@L["Termine_Table_Header_Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.Termine)
+                {
+                    var hasAntrag = t.AntragId.HasValue;
+                    var shortId = hasAntrag ? t.AntragId!.Value.ToString().Substring(0, 8) : null;
+
+                    // --- IsPast-Berechnung direkt in der View ---
+                    TimeSpan timeSpan;
+                    var parsed = TimeSpan.TryParse(t.Uhrzeit, out timeSpan);
+                    var appointmentDateTime = parsed
+                        ? t.Datum.Date.Add(timeSpan)
+                        : t.Datum; // Fallback: nur Datum vergleichen
+                    var isPast = !t.Storniert && appointmentDateTime < DateTime.Now;
+
+                    <tr>
+                        <!-- Datum -->
+                        <td>@t.Datum.ToString("dd.MM.yyyy")</td>
+
+                        <!-- Uhrzeit -->
+                        <td>@t.Uhrzeit</td>
+
+                        <!-- Ort -->
+                        <td>@t.Location.ToDisplay()</td>
+
+                        <!-- Dienst + optional Antrag-Chip -->
+                        <td>
+                            <div class="fw-semibold">@t.Service.ToDisplayName()</div>
+
+                            @if (hasAntrag)
+                            {
+                                <div class="small text-secondary mt-1">
+                                    @L["Termine_Antrag_Label"]
+                                    <a class="badge rounded-pill bg-secondary text-decoration-none antrag-chip"
+                                       asp-controller="Antraege"
+                                       asp-action="Antrag"
+                                       asp-route-id="@t.AntragId">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>@shortId
+                                    </a>
+                                </div>
+                            }
+                        </td>
+
+                        <!-- Status -->
+                        <td>
+                            @if (t.Storniert)
+                            {
+                                <span class="badge bg-secondary">@L["Termine_Status_Cancelled"]</span>
+                            }
+                            else if (isPast)
+                            {
+                                <span class="badge bg-warning text-dark">@L["Termine_Status_Past"]</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@L["Termine_Status_Active"]</span>
+                            }
+                        </td>
+
+                        <!-- Aktionen -->
+                        <td class="text-end">
+                            @if (!t.Storniert && !isPast)
+                            {
+                                <form method="post" asp-action="Stornieren" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@t.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle me-1"></i> @L["Termine_Action_Cancel"]
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Styles {
+    <style>
+        .antrag-chip {
+            border: 1px dashed var(--bs-border-color);
+            background: color-mix(in oklab, var(--bs-body-bg) 70%, var(--bs-tertiary-bg));
+        }
+
+        .antrag-chip:hover {
+            border-style: solid;
+            background: color-mix(in oklab, var(--bs-primary) 10%, var(--bs-body-bg));
+        }
+    </style>
+}

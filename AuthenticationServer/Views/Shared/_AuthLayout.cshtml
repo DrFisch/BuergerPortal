@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BürgerPortal Auth</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <style>
+        /* Zentriert alles absolut in der Mitte */
+        body {
+            background-color: #f0f2f5; /* Helles Grau wie bei modernen Apps */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 450px; /* Breite der Karte */
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .auth-header {
+            background-color: #fff;
+            padding: 20px 20px 0 20px;
+        }
+        .nav-pills .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+            border-radius: 0;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-pills .nav-link.active {
+            background-color: transparent;
+            color: #0d6efd; /* Primärfarbe */
+            border-bottom: 3px solid #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

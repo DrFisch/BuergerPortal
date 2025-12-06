@@ -1,0 +1,301 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppLead" xml:space="preserve">
+    <value>Termine buchen, Antragsstatus prüfen, Benachrichtigungen verwalten und mehr.</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Bürgerportal</value>
+  </data>
+  <data name="BookAppointment" xml:space="preserve">
+    <value>Termin buchen</value>
+  </data>
+  <data name="Card_Applications" xml:space="preserve">
+    <value>Anträge</value>
+  </data>
+  <data name="Card_Applications_Foot" xml:space="preserve">
+    <value>Zugriff auf alle Anträge &amp; Statusübersicht</value>
+  </data>
+  <data name="Card_Applications_Text" xml:space="preserve">
+    <value>Neue Anträge stellen und den Bearbeitungsstatus bestehenden Anträge verfolgen.</value>
+  </data>
+  <data name="Card_Appointments" xml:space="preserve">
+    <value>Beratungstermine</value>
+  </data>
+  <data name="Card_Appointments_Text" xml:space="preserve">
+    <value>Freie Zeitfenster finden, buchen, umbuchen oder absagen.</value>
+  </data>
+  <data name="Card_Documents" xml:space="preserve">
+    <value>Dokumente</value>
+  </data>
+  <data name="Card_ReportIssue" xml:space="preserve">
+    <value>Mangelmelder</value>
+  </data>
+  <data name="Card_ReportIssue_Text" xml:space="preserve">
+    <value>Hier können sie einen Mangel in der Stadt melden</value>
+  </data>
+  <data name="Card_ReportIssue_Button" xml:space="preserve">
+    <value>Zum Mangelmelder</value>
+  </data>
+  <data name="Card_Documents_Text" xml:space="preserve">
+    <value>Benötigte Unterlagen je Dienst als Checkliste.</value>
+  </data>
+  <data name="Card_Hints" xml:space="preserve">
+    <value>Hinweise</value>
+  </data>
+  <data name="Card_NotifyPwa" xml:space="preserve">
+    <value>Benachrichtigungen &amp; App</value>
+  </data>
+  <data name="Card_NotifyPwa_Foot" xml:space="preserve">
+    <value>Erinnert vor Terminen und bei Statusänderungen</value>
+  </data>
+  <data name="Card_NotifyPwa_Text" xml:space="preserve">
+    <value>Termin-Erinnerungen aktivieren oder App installieren.</value>
+  </data>
+  <data name="Card_Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Card_Settings_Text" xml:space="preserve">
+    <value>Sprache, Designmodus und Datenschutz verwalten.</value>
+  </data>
+  <data name="EnablePush" xml:space="preserve">
+    <value>Push-Benachrichtigungen aktivieren</value>
+  </data>
+  <data name="GoToMyApplications" xml:space="preserve">
+    <value>Zu meinen Anträgen</value>
+  </data>
+  <data name="GoToSettings" xml:space="preserve">
+    <value>Zur Settings-Seite</value>
+  </data>
+  <data name="Hint_Access" xml:space="preserve">
+    <value>• Barrierefreier Zugang vorhanden</value>
+  </data>
+  <data name="Hint_Documents" xml:space="preserve">
+    <value>• Bitte Ausweis und Unterlagen mitbringen</value>
+  </data>
+  <data name="Hint_Peak" xml:space="preserve">
+    <value>• Spitzenzeiten: 8–10 Uhr</value>
+  </data>
+  <data name="InstallApp" xml:space="preserve">
+    <value>App installieren</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="ShowChecklists" xml:space="preserve">
+    <value>Checklisten ansehen</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
+	<data name="CityNameShort" xml:space="preserve">
+    <value>Stadtverwaltung</value>
+  </data>
+	<data name="DigitalServices" xml:space="preserve">
+    <value>Digitale Dienste</value>
+  </data>
+	<data name="Hero_PrivacyShort" xml:space="preserve">
+    <value>Datenschutzkonform nach geltenden Standards.</value>
+  </data>
+	<data name="Hero_PwaShort" xml:space="preserve">
+    <value>Auch als App auf Smartphone und Tablet nutzbar.</value>
+  </data>
+	<data name="Hero_Stat_Appointments" xml:space="preserve">
+    <value>Aktuell gebuchte Termine</value>
+  </data>
+	<data name="Hero_Stat_Applications" xml:space="preserve">
+    <value>Laufende Anträge</value>
+  </data>
+
+	<!-- Letzte Aktivitäten -->
+	<data name="Section_Recent" xml:space="preserve">
+    <value>Letzte Aktivitäten</value>
+  </data>
+	<data name="ShowAll" xml:space="preserve">
+    <value>Alle anzeigen</value>
+  </data>
+	<data name="Recent_Item_Passport" xml:space="preserve">
+    <value>Reisepassantrag</value>
+  </data>
+	<data name="Recent_Item_Passport_Sub" xml:space="preserve">
+    <value>Vorprüfung läuft</value>
+  </data>
+	<data name="Recent_Item_BulkWaste" xml:space="preserve">
+    <value>Sperrmüll-Abholung</value>
+  </data>
+	<data name="Recent_Item_BulkWaste_Sub" xml:space="preserve">
+    <value>Termin bestätigt</value>
+  </data>
+	<data name="Recent_Item_Appointment" xml:space="preserve">
+    <value>Beratungstermin Bürgerbüro</value>
+  </data>
+	<data name="Recent_Item_Appointment_Sub" xml:space="preserve">
+    <value>Anstehender Termin</value>
+  </data>
+	<data name="Status_InProgress" xml:space="preserve">
+    <value>In Bearbeitung</value>
+  </data>
+	<data name="Status_Completed" xml:space="preserve">
+    <value>Abgeschlossen</value>
+  </data>
+	<data name="Status_Upcoming" xml:space="preserve">
+    <value>Bevorstehend</value>
+  </data>
+	<data name="Toggle" xml:space="preserve">
+    <value>Ein-/ausklappen</value>
+  </data>
+
+	<!-- Feature-Sektion -->
+	<data name="Section_Shortcuts" xml:space="preserve">
+    <value>Schnellzugriffe</value>
+  </data>
+	<data name="Section_Shortcuts_Lead" xml:space="preserve">
+    <value>Wichtige Funktionen im Überblick.</value>
+  </data>
+
+	<!-- Stadtplan-Karte -->
+	<data name="Cityplan" xml:space="preserve">
+    <value>Stadtplan</value>
+  </data>
+	<data name="Cityplan_Text" xml:space="preserve">
+    <value>Öffnungszeiten und Standorte wichtiger Dienststellen.</value>
+  </data>
+
+	<data name="Hero_Stat_NextAppointment" xml:space="preserve">
+    <value>Nächster Termin</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_None" xml:space="preserve">
+    <value>Aktuell ist kein Termin gebucht.</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_Hint" xml:space="preserve">
+    <value>Weitere Termine findest du in der Übersicht.</value>
+  </data>
+	<data name="Hero_Stat_NextAppointment_Link" xml:space="preserve">
+    <value>Zu „Meine Termine“</value>
+  </data>
+<data name="Alert_LoginRequired_Title" xml:space="preserve">
+    <value>Anmeldung erforderlich</value>
+  </data>
+  <data name="Alert_LoginRequired_Text" xml:space="preserve">
+    <value>Bitte melden Sie sich an, um digitale Services zu nutzen und Termine zu verwalten.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+</root>

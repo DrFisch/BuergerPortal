@@ -1,0 +1,61 @@
+- Terminverwaltung
+	Terminübersicht (freie Slots abrufen, nach Datum/Dienst filtern)
+	Terminbuchung mit Formular (Datum, Dienst, Standort, Kontaktdaten)
+	Terminabsage oder -änderung
+	Suche (z. B. „Führerschein“, „Reisepass“)
+	CRUD-Operationen
+- Erinnerungsfunktion per Push benachriuchtigung
+- Antragsstatus-Abfrage
+- Authentifizierung & Benutzerprofil
+- Einstellungen (Settings-Seite)
+	Sprache: Deutsch / Englisch (i18n)
+	Theme: Light / Dark Mode
+	Datenschutzeinstellungen: Einwilligungen, Speicherung, Benachrichtigungen
+- Suche (global)
+- Caching & Performance
+- Sicherheit & DSGVO
+
+Nächste Schritte:
+- Authentication (Done) -> AuthServer Login Page noch verschönern
+
+Wichtige Features der App:
+- Terminverwaltung
+- Anträge (Stellen + ANtragsstatus abfragen)
+- Mangelmelder
+
+
+ANtrag Features:
+
+- 2 Beispiel-Anträge: Sperrmüll & Reisepass (jeweils vollständiger CRUD).
+
+- Gemeinsame Basisklasse Antrag + typspezifische Detailobjekte.
+
+- Leichte, aber nützliche Verknüpfung zu Terminen:
+
+	- Nach Absenden eines Antrags: Terminvorschläge anbieten (Purpose-bezogen).
+
+	- Antrag kann optional eine AppointmentId referenzieren (z. B. Abholtermin für Sperrmüll, Behörden-Slot für Reisepass).
+
+	- Dashboard zeigt Anträge inkl. verknüpftem Termin und Status.
+
+TODO DO 06.11.:
+
+- Von einem Antrag auf Terminbuchung kommen
+
+TODO 10.11.:
+
+- AUTH cookie + jwt überarbeiten dass keine exception kommt (socket exception)
+
+- PWA ausfeilen (gibt es noch mehr pwa funktionen?)
+
+- Settings page 
+
+
+Neu:
+- AUsloggen wenn jwt abgelaufen
+
+Neu:
+- Push notifications testen & implementieren
+- Unauthorized zugang zu antragsseiten verhindern
+- Antrag abbrechen zurück zu status
+- Termine die in der Vergangenheit liegen sollen als solche gekennzeichnet werden

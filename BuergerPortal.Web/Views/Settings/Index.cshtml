@@ -1,0 +1,260 @@
+﻿@model BuergerPortal.Web.Features.Settings.ViewModels.SettingsVm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["Settings_Title"];
+}
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-12 col-md-3 mb-3 mb-md-0">
+            <div class="list-group" id="settingsNav" role="tablist">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-theme" role="tab">
+                    @L["Settings_Tab_Theme"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">
+                    @L["Settings_Tab_Language"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-push" role="tab">
+                    @L["Settings_Tab_Push"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">
+                    @L["Settings_Tab_Install"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">
+                    @L["Settings_Tab_Privacy"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-cache" role="tab">
+                    @L["Settings_Tab_Cache"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-sensors" role="tab">
+                    @L["Settings_Tab_Sensors"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-data" role="tab">
+                    @L["Settings_Tab_Data"]
+                </a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="col-12 col-md-9">
+            @if (TempData["Saved"] is string saved)
+            {
+                <div class="alert alert-success">@saved</div>
+            }
+
+            <form asp-action="Index" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="tab-content">
+
+                    <!-- THEME -->
+                    <div class="tab-pane fade show active" id="tab-theme" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Theme_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Theme_Description"]</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Theme" value="Light" id="themeLight" @(Model.Theme == "Light" ? "checked" : "") />
+                                    <label class="form-check-label" for="themeLight">@L["Settings_Theme_Light"]</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Theme" value="Dark" id="themeDark" @(Model.Theme == "Dark" ? "checked" : "") />
+                                    <label class="form-check-label" for="themeDark">@L["Settings_Theme_Dark"]</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LANGUAGE -->
+                    <div class="tab-pane fade" id="tab-language" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Language_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Language_Description"]</p>
+                                <label class="form-label" for="Language">@L["Settings_Language_SelectLabel"]</label>
+                                <select asp-for="Language" asp-items="Model.Languages" class="form-select" id="Language"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PUSH -->
+                    <div class="tab-pane fade" id="tab-push" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Push_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Push_Description"]</p>
+                                <input type="hidden" name="PushEnabled" id="PushEnabled" value="@(Model.PushEnabled.ToString().ToLower())" />
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="btn btn-primary" type="button" id="btnEnablePush">@L["Settings_Push_Enable"]</button>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnTestPush">@L["Settings_Push_Test"]</button>
+                                    <button class="btn btn-outline-danger" type="button" id="btnDisablePush">@L["Settings_Push_Disable"]</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PWA -->
+                    <div class="tab-pane fade" id="tab-install" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Install_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Install_Description"]</p>
+                                <button class="btn btn-success" type="button" id="btnInstall" onclick="installApp()">
+                                    @L["Settings_Install_Button"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PRIVACY -->
+                    <div class="tab-pane fade" id="tab-privacy" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Privacy_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Privacy_Description"]</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="AnalyticsOptIn" name="AnalyticsOptIn" @(Model.AnalyticsOptIn ? "checked" : "")>
+                                    <label class="form-check-label" for="AnalyticsOptIn">@L["Settings_Privacy_AnalyticsLabel"]</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CACHE -->
+                    <div class="tab-pane fade" id="tab-cache" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Cache_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Cache_Description"]</p>
+                                <button class="btn btn-outline-primary me-2" type="button" id="btnPrecache">
+                                    @L["Settings_Cache_Precache"]
+                                </button>
+                                <button class="btn btn-outline-danger" type="button" id="btnClearCache">
+                                    @L["Settings_Cache_Clear"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SENSORS -->
+                    <div class="tab-pane fade" id="tab-sensors" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Sensors_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Sensors_Description"]</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="AllowGeolocation" name="AllowGeolocation" @(Model.AllowGeolocation ? "checked" : "")>
+                                    <label class="form-check-label" for="AllowGeolocation">@L["Settings_Sensors_UseLocation"]</label>
+                                </div>
+                                <button class="btn btn-outline-secondary mt-2" type="button" id="btnRequestGeo">
+                                    @L["Settings_Sensors_RequestButton"]
+                                </button>
+                                <div id="geoStatus" class="mt-2 small text-muted"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DATA -->
+                    <div class="tab-pane fade" id="tab-data" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Data_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Data_Description"]</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="ReduceDataUsage" name="ReduceDataUsage" @(Model.ReduceDataUsage ? "checked" : "")>
+                                    <label class="form-check-label" for="ReduceDataUsage">@L["Settings_Data_ReduceLabel"]</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">@L["Settings_Save_Button"]</button>
+                    <a href="/" class="btn btn-outline-secondary">@L["Settings_Cancel_Button"]</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+              (function syncThemeRadiosWithEffectiveTheme(){
+          const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
+          const isDark = eff === 'dark';
+          const rLight = document.getElementById('themeLight');
+          const rDark  = document.getElementById('themeDark');
+          if (rLight && rDark) {
+            rLight.checked = !isDark;
+            rDark.checked  =  isDark;
+          }
+        })();
+
+        // Theme sofort umschalten
+        const html = document.documentElement;
+        function setTheme(mode) {
+            const theme = mode.toLowerCase() === 'dark' ? 'dark' : 'light';
+            html.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+        document.getElementById('themeLight')?.addEventListener('change', () => setTheme('Light'));
+        document.getElementById('themeDark')?.addEventListener('change', () => setTheme('Dark'));
+
+        // Init Theme aus localStorage
+        (function initTheme(){
+            const saved = localStorage.getItem('theme');
+            if (saved) setTheme(saved);
+        })();
+
+        // Push
+        async function registerSw() {
+            if (!('serviceWorker' in navigator)) return null;
+            try { return await navigator.serviceWorker.register('/service-worker.js'); } catch { return null; }
+        }
+        document.getElementById('btnEnablePush')?.addEventListener('click', async () => {
+            if (!('Notification' in window)) return alert('Push wird nicht unterstützt.');
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') return alert('Keine Berechtigung.');
+            const reg = await registerSw(); if (!reg) return alert('Kein Service Worker verfügbar.');
+            document.getElementById('PushEnabled').value = 'true';
+            alert('Push aktiviert (Demo). Jetzt speichern.');
+        });
+        document.getElementById('btnTestPush')?.addEventListener('click', async () => {
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (!reg) return alert('Kein Service Worker.');
+            reg.showNotification('Test', { body: 'So sieht eine Push-Mitteilung aus.', icon: '/icons/portal-128.png' });
+        });
+        document.getElementById('btnDisablePush')?.addEventListener('click', () => {
+            document.getElementById('PushEnabled').value = 'false';
+            alert('Push deaktiviert (Demo). Jetzt speichern.');
+        });
+
+        // Cache
+        document.getElementById('btnClearCache')?.addEventListener('click', async () => {
+            if (!('caches' in window)) return alert('Caches API nicht verfügbar.');
+            const keys = await caches.keys(); await Promise.all(keys.map(k => caches.delete(k)));
+            alert('Cache geleert.');
+        });
+        document.getElementById('btnPrecache')?.addEventListener('click', async () => {
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (!reg) return alert('Kein Service Worker.');
+            reg.active?.postMessage({ type: 'PRECACHE_NOW' });
+            alert('Offline-Assets werden aktualisiert.');
+        });
+
+        // Geolocation
+        const geoStatus = document.getElementById('geoStatus');
+        document.getElementById('btnRequestGeo')?.addEventListener('click', () => {
+            if (!navigator.geolocation) { geoStatus.textContent = 'Nicht unterstützt.'; return; }
+            navigator.geolocation.getCurrentPosition(
+                pos => geoStatus.textContent = `Position OK (~${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`,
+                err => geoStatus.textContent = 'Fehler: ' + err.message
+            );
+        });
+    </script>
+}

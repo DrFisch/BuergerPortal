@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY ["BuergerPortal.Api/BuergerPortal.Api.csproj", "BuergerPortal.Api/"]
+COPY ["BuergerPortal.Domain/BuergerPortal.Domain.csproj", "BuergerPortal.Domain/"]
+COPY ["BuergerPortal.Application/BuergerPortal.Application.csproj", "BuergerPortal.Application/"]
+COPY ["BuergerPortal.Infrastructure/BuergerPortal.Infrastructure.Database.csproj", "BuergerPortal.Infrastructure/"]
+COPY ["BuergerPortal.Infrastructure.Email/BuergerPortal.Infrastructure.Email.csproj", "BuergerPortal.Infrastructure.Email/"]
+
+RUN dotnet restore "BuergerPortal.Api/BuergerPortal.Api.csproj"
+
+COPY . .
+WORKDIR "/src/BuergerPortal.Api"
+RUN dotnet publish "BuergerPortal.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "BuergerPortal.Api.dll"]

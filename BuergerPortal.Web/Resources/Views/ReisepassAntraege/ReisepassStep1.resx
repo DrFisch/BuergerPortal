@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="PassportStep1_Title" xml:space="preserve">
+    <value>Reisepass – Schritt 1 von 2</value>
+  </data>
+
+	<data name="PassportStep1_Progress_Aria" xml:space="preserve">
+    <value>Fortschritt</value>
+  </data>
+
+	<data name="PassportStep1_Step1" xml:space="preserve">
+    <value>Persönliche Daten</value>
+  </data>
+	<data name="PassportStep1_Step2" xml:space="preserve">
+    <value>Optionen &amp; Einreichen</value>
+  </data>
+
+	<data name="PassportStep1_ProgressLabel" xml:space="preserve">
+    <value>Schritt 1/2</value>
+  </data>
+
+	<data name="PassportStep1_Heading" xml:space="preserve">
+    <value>Reisepassantrag – Persönliche Daten</value>
+  </data>
+
+	<data name="PassportStep1_Info" xml:space="preserve">
+    <value>Hinweis: Du kannst den Antrag später im zweiten Schritt prüfen und einreichen.</value>
+  </data>
+
+	<data name="PassportStep1_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+
+	<data name="PassportStep1_Next" xml:space="preserve">
+    <value>Weiter zu Schritt 2</value>
+  </data>
+</root>

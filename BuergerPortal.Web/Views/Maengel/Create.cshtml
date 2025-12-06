@@ -1,0 +1,334 @@
+﻿@model BuergerPortal.Web.Features.Maengel.ViewModels.CreateMangelVm
+
+@{
+    ViewData["Title"] = "Mängel melden";
+}
+
+<div class="container py-4">
+    <h1 class="h4 mb-3">Mängel melden</h1>
+    <p class="text-muted mb-4">
+        Beschreiben Sie den Mangel und wählen Sie bei Bedarf einen Standort.
+    </p>
+
+    @if (TempData["Meldung"] is string info)
+    {
+        <div class="alert alert-success">@info</div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" class="vstack gap-3">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="Titel" class="form-label">Titel</label>
+            <input asp-for="Titel" class="form-control" />
+            <span asp-validation-for="Titel" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Beschreibung" class="form-label">Beschreibung</label>
+            <textarea asp-for="Beschreibung" rows="3" class="form-control"></textarea>
+            <span asp-validation-for="Beschreibung" class="text-danger"></span>
+        </div>
+
+        <!-- Standort Card (ohne Karte, nur Zusammenfassung + Button) -->
+        <div class="mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-geo-alt"></i>
+                            <span class="fw-semibold">Standort</span>
+                        </div>
+                        <div class="small text-muted">
+                            <span id="coordSummary">Noch kein Standort ausgewählt.</span><br />
+                            <span id="locStatusSummary"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-2 mt-md-0">
+                        <!-- Hidden Fields für Koordinaten (werden von der Karte gesetzt) -->
+                        <input asp-for="Latitude" type="hidden" />
+                        <input asp-for="Longitude" type="hidden" />
+
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btnOpenMap"
+                                data-bs-toggle="modal" data-bs-target="#mapModal">
+                            <i class="bi bi-map"></i> Standort auf Karte wählen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Mangel melden
+        </button>
+    </form>
+</div>
+
+<!-- Bootstrap Modal mit Karte -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">
+                    <i class="bi bi-geo-alt"></i> Standort auswählen
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Suchleiste + GPS -->
+                <div class="row g-2 align-items-center mb-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" id="mapSearchInput" class="form-control"
+                                   placeholder="Ort, Straße oder Adresse suchen..." />
+                            <button class="btn btn-outline-secondary" type="button" id="mapSearchBtn">
+                                Suchen
+                            </button>
+                        </div>
+                        <div id="searchStatus" class="small text-muted mt-1"></div>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btnLocate">
+                            <i class="bi bi-crosshair"></i> aktuellen Standort verwenden
+                        </button>
+                        <div id="locStatusModal" class="small text-muted mt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Karte -->
+                <div id="map" class="mangel-map-modal mb-2"></div>
+                <div class="small text-muted">
+                    Tipp: mit der Maus zoomen, in die Karte klicken oder den Marker ziehen, um den exakten Standort festzulegen.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    Standort übernehmen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        .mangel-map-modal {
+            height: 500px;
+            max-height: 70vh;
+            border-radius: .75rem;
+            overflow: hidden;
+        }
+
+        .leaflet-control-zoom a {
+            background: #fff !important;
+            color: #333 !important;
+            border-radius: 6px !important;
+        }
+
+            .leaflet-control-zoom a:hover {
+                background: #e6e6e6 !important;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        (function () {
+            const latInput = document.querySelector('[name="Latitude"]');
+            const lngInput = document.querySelector('[name="Longitude"]');
+
+            const coordSummary = document.getElementById('coordSummary');
+            const locStatusSummary = document.getElementById('locStatusSummary');
+
+            const btnLocate = document.getElementById('btnLocate');
+            const mapModalEl = document.getElementById('mapModal');
+
+            const searchInput = document.getElementById('mapSearchInput');
+            const searchBtn = document.getElementById('mapSearchBtn');
+            const searchStatus = document.getElementById('searchStatus');
+            const locStatusModal = document.getElementById('locStatusModal');
+
+            const defaultLat = 49.0;
+            const defaultLng = 11.0;
+
+            let map;
+            let marker;
+            let mapInitialized = false;
+
+            function updateSummary(lat, lng) {
+                if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) {
+                    coordSummary.textContent = "Noch kein Standort ausgewählt.";
+                    locStatusSummary.textContent = "";
+                    return;
+                }
+
+                coordSummary.textContent = "Ausgewählter Standort: " + lat.toFixed(5) + ", " + lng.toFixed(5);
+                locStatusSummary.textContent = "Der Standort wird zusammen mit der Meldung gespeichert.";
+            }
+
+            function updateInputsAndSummary(lat, lng) {
+                latInput.value = lat;
+                lngInput.value = lng;
+                updateSummary(lat, lng);
+            }
+
+            function initMap() {
+                map = L.map('map', {
+                    zoomControl: true,
+                    scrollWheelZoom: true, // Mauszoom erlaubt
+                    dragging: true,
+                    tap: true
+                }).setView([defaultLat, defaultLng], 14);
+
+                // Carto Light Tiles
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap & CARTO'
+                }).addTo(map);
+
+                // Start-Position: vorhandene Koordinaten oder Default
+                let startLat = parseFloat(latInput.value);
+                let startLng = parseFloat(lngInput.value);
+                if (isNaN(startLat) || isNaN(startLng)) {
+                    startLat = defaultLat;
+                    startLng = defaultLng;
+                }
+
+                marker = L.marker([startLat, startLng], {
+                    draggable: true
+                }).addTo(map);
+
+                map.setView([startLat, startLng], 14);
+                updateInputsAndSummary(startLat, startLng);
+
+                // Marker Drag & Drop
+                marker.on('dragend', () => {
+                    const pos = marker.getLatLng();
+                    updateInputsAndSummary(pos.lat, pos.lng);
+                    locStatusModal.textContent = "Marker verschoben.";
+                });
+
+                // Klick auf die Karte
+                map.on('click', (e) => {
+                    marker.setLatLng(e.latlng);
+                    updateInputsAndSummary(e.latlng.lat, e.latlng.lng);
+                    locStatusModal.textContent = "Standort per Karte gesetzt.";
+                });
+            }
+
+            // Modal anzeigen → Map initialisieren / Größe aktualisieren
+            mapModalEl.addEventListener('shown.bs.modal', function () {
+                if (!mapInitialized) {
+                    initMap();
+                    mapInitialized = true;
+                } else {
+                    map.invalidateSize();
+                }
+            });
+
+            // GPS-Button im Modal
+            btnLocate.addEventListener('click', function () {
+                if (!navigator.geolocation) {
+                    locStatusModal.textContent = "Geolocation wird nicht unterstützt.";
+                    return;
+                }
+
+                locStatusModal.textContent = "Standort wird ermittelt...";
+
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+
+                    map.setView([lat, lng], 18);
+                    marker.setLatLng([lat, lng]);
+
+                    updateInputsAndSummary(lat, lng);
+                    locStatusModal.textContent = "Standort übernommen.";
+                }, function (err) {
+                    console.error(err);
+                    locStatusModal.textContent = "Standort konnte nicht ermittelt werden.";
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 8000
+                });
+            });
+
+            // Suche per Nominatim / OpenStreetMap
+            function searchLocation() {
+                const query = searchInput.value.trim();
+                if (!query) {
+                    searchStatus.textContent = "Bitte einen Suchbegriff eingeben.";
+                    return;
+                }
+
+                searchStatus.textContent = "Suche...";
+                const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(query);
+
+                fetch(url, {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(r => r.json())
+                    .then(results => {
+                        if (!results || results.length === 0) {
+                            searchStatus.textContent = "Kein Ergebnis gefunden.";
+                            return;
+                        }
+
+                        const place = results[0];
+                        const lat = parseFloat(place.lat);
+                        const lng = parseFloat(place.lon);
+
+                        if (map && marker && !isNaN(lat) && !isNaN(lng)) {
+                            map.setView([lat, lng], 16);
+                            marker.setLatLng([lat, lng]);
+                            updateInputsAndSummary(lat, lng);
+                            searchStatus.textContent = place.display_name || "Position aktualisiert.";
+                            locStatusModal.textContent = "Standort per Suche gesetzt.";
+                        } else {
+                            searchStatus.textContent = "Karte noch nicht bereit.";
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        searchStatus.textContent = "Fehler bei der Suche.";
+                    });
+            }
+
+            searchBtn.addEventListener('click', function () {
+                searchLocation();
+            });
+
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchLocation();
+                }
+            });
+
+            // Initiale Anzeige im Summary (falls Koordinaten schon gesetzt)
+            const initLat = parseFloat(latInput.value);
+            const initLng = parseFloat(lngInput.value);
+            if (!isNaN(initLat) && !isNaN(initLng)) {
+                updateSummary(initLat, initLng);
+            } else {
+                updateSummary(null, null);
+            }
+
+        })();
+    </script>
+}

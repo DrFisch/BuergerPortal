@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Applications_Title" xml:space="preserve">
+    <value>Anträge</value>
+  </data>
+
+	<data name="Applications_Status_Aria" xml:space="preserve">
+    <value>Zu meinen Antragsstatus</value>
+  </data>
+	<data name="Applications_Status_Title" xml:space="preserve">
+    <value>Meine Anträge</value>
+  </data>
+	<data name="Applications_Status_Text" xml:space="preserve">
+    <value>Übersicht aller laufenden und abgeschlossenen Anträge</value>
+  </data>
+
+	<data name="Applications_Pass_Aria" xml:space="preserve">
+    <value>Neuen Reisepass-Antrag starten</value>
+  </data>
+	<data name="Applications_Pass_Title" xml:space="preserve">
+    <value>Neuer Antrag: Reisepass</value>
+  </data>
+	<data name="Applications_Pass_Text" xml:space="preserve">
+    <value>Daten eingeben, Termin für Antragstellung optional direkt mitbuchen.</value>
+  </data>
+	<data name="Applications_Pass_Badge" xml:space="preserve">
+    <value>ca. 5–10 Min.</value>
+  </data>
+
+	<data name="Applications_Bulk_Aria" xml:space="preserve">
+    <value>Neuen Sperrmüll-Antrag starten</value>
+  </data>
+	<data name="Applications_Bulk_Title" xml:space="preserve">
+    <value>Neuer Antrag: Sperrmüll</value>
+  </data>
+	<data name="Applications_Bulk_Text" xml:space="preserve">
+    <value>Abholadresse und Gegenstände erfassen.</value>
+  </data>
+	<data name="Applications_Bulk_Badge" xml:space="preserve">
+    <value>max. 5 Min.</value>
+  </data>
+  <data name="Alert_LoginRequired_Title" xml:space="preserve">
+    <value>Anmeldung erforderlich</value>
+  </data>
+  <data name="Alert_LoginRequired_Text" xml:space="preserve">
+    <value>Bitte melden Sie sich an, um digitale Services zu nutzen und Termine zu verwalten.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+</root>

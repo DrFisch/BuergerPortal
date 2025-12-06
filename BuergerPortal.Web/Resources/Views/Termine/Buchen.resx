@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve"><value>Termin buchen</value></data>
+	<data name="OpeningHoursLabel" xml:space="preserve"><value>Geschäftszeiten:</value></data>
+	<data name="OpeningHoursDetail" xml:space="preserve">
+    <value>Termine sind nur Montag–Freitag von 08:00 bis 12:00 buchbar. Bei 15-Minuten-Slots ist der letzte Starttermin 11:45.</value>
+  </data>
+	<data name="LinkedToApplication" xml:space="preserve"><value>Dieser Termin wird einem Antrag zugeordnet</value></data>
+	<data name="ApplicationId" xml:space="preserve"><value>Antrag-ID</value></data>
+	<data name="RelatedService" xml:space="preserve"><value>Rückfrage zu Antrag</value></data>
+	<data name="Service" xml:space="preserve"><value>Dienst</value></data>
+	<data name="SelectPlaceholder" xml:space="preserve"><value>– Bitte auswählen –</value></data>
+	<data name="Location" xml:space="preserve"><value>Standort</value></data>
+	<data name="Date" xml:space="preserve"><value>Datum</value></data>
+	<data name="Time" xml:space="preserve"><value>Uhrzeit</value></data>
+	<data name="Availability" xml:space="preserve"><value>Verfügbarkeit</value></data>
+	<data name="CalendarHint" xml:space="preserve"><value>Kalender zeigt 08:00–12:00 im 15-Minuten-Raster.</value></data>
+	<data name="Duration" xml:space="preserve"><value>Dauer</value></data>
+	<data name="BookAppointment" xml:space="preserve"><value>Termin buchen</value></data>
+	<data name="ModalTitle" xml:space="preserve"><value>Verfügbarkeit (08:00–12:00)</value></data>
+	<data name="ModalDate" xml:space="preserve"><value>Datum:</value></data>
+	<data name="Reload" xml:space="preserve"><value>Aktualisieren</value></data>
+	<data name="Busy" xml:space="preserve"><value>belegt</value></data>
+	<data name="Close" xml:space="preserve"><value>Schließen</value></data>
+
+</root>

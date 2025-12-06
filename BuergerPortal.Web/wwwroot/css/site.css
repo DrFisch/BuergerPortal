@@ -1,22 +1,42 @@
-html {
-  font-size: 14px;
+/* ---------- Surfaces & Cards ---------- */
+.feature-card {
+    /* eigene Oberfläche, passt sich Light/Dark automatisch an */
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-color .18s ease;
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.04); /* Light default */
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+/* dunkler etwas kräftigerer Schatten für mehr Tiefe */
+:root[data-bs-theme="dark"] .feature-card {
+    box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.35);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Hover-Lift */
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.08);
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+:root[data-bs-theme="dark"] .feature-card:hover {
+    box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.45);
 }
 
-body {
-  margin-bottom: 60px;
+/* Card-Content-Abstände */
+.feature-card .card-body {
+    padding: 1.25rem 1.25rem 1rem;
+}
+
+.feature-card .card-footer {
+    padding: .75rem 1.25rem;
+    background-color: var(--bs-tertiary-bg);
+    border-top: 1px solid var(--bs-border-color);
+}
+
+/* Icons nicht zu blass: statt fester Opacity die Theme-Secondary-Farbe nutzen */
+.feature-card .fs-4 { /* nur für deine großen Icons */
+    color: var(--bs-secondary-color);
+    opacity: 1 !important; /* überschreibt evtl. .opacity-50 */
 }

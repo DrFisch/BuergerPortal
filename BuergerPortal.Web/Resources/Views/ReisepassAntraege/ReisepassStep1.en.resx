@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="PassportStep1_Title" xml:space="preserve">
+    <value>Passport – Step 1 of 2</value>
+  </data>
+
+	<data name="PassportStep1_Progress_Aria" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+
+	<data name="PassportStep1_Step1" xml:space="preserve">
+    <value>Personal data</value>
+  </data>
+	<data name="PassportStep1_Step2" xml:space="preserve">
+    <value>Options &amp; submission</value>
+  </data>
+
+	<data name="PassportStep1_ProgressLabel" xml:space="preserve">
+    <value>Step 1/2</value>
+  </data>
+
+	<data name="PassportStep1_Heading" xml:space="preserve">
+    <value>Passport application – personal data</value>
+  </data>
+
+	<data name="PassportStep1_Info" xml:space="preserve">
+    <value>Note: You can review and submit the application in the second step.</value>
+  </data>
+
+	<data name="PassportStep1_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+
+	<data name="PassportStep1_Next" xml:space="preserve">
+    <value>Continue to step 2</value>
+  </data>
+</root>

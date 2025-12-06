@@ -1,0 +1,389 @@
+﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.StatusGesamtVm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["StatusList_Title"];
+}
+
+<div class="container py-4 status-list">
+    <h1 class="h4 mb-3">@L["StatusList_Heading"]</h1>
+
+    @{
+        var hasReisepass = Model.ReisepassItems.Any();
+        var hasSperrmuell = Model.SperrmuellItems.Any();
+    }
+
+    @if (!hasReisepass && !hasSperrmuell)
+    {
+        <div class="card border-0 bg-body-tertiary">
+            <div class="card-body d-flex align-items-start gap-3">
+                <div class="empty-icon" aria-hidden="true">📄</div>
+                <div>
+                    <div class="fw-semibold">@L["StatusList_Empty_Title"]</div>
+                    <div class="text-secondary">@L["StatusList_Empty_Text"]</div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @* Reisepass-Anträge *@
+            @if (hasReisepass)
+            {
+                <div class="col-12 col-lg-6">
+                    <section>
+                        <h2 class="h5 mb-3">Reisepass-Anträge</h2>
+                        <div class="vstack gap-3">
+                            @foreach (var a in Model.ReisepassItems)
+                            {
+                                if (a.Status != 1)
+                                {
+                                    var shortId = a.Id.ToString().Substring(0, 8);
+
+                                    <div class="card shadow-sm border-0 status-item">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
+
+                                                    <div>
+                                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
+                                                            <span class="fw-semibold me-1">@a.Antragsteller</span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
+                                                                @a.TypText
+                                                            </span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
+                                                                @a.StatusText
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="meta-info ms-2 mt-2">
+                                                            @if (a.Eingereicht.HasValue)
+                                                            {
+                                                                <div>
+                                                                    <strong>@L["StatusList_Field_SubmittedLabel"]</strong>
+                                                                    @a.Eingereicht.Value.ToString("dd.MM.yyyy")
+                                                                </div>
+                                                            }
+
+                                                            <div class="text-secondary ">
+                                                                @L["StatusList_Field_IdLabel"]
+                                                                <code>@shortId</code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex gap-2">
+                                                    <a class="btn btn-outline-secondary"
+                                                       asp-action="Antrag" asp-route-id="@a.Id">
+                                                        @L["StatusList_Button_Details"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <div class="progress-steps small text-secondary mt-2">
+                                                    <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">
+                                                        @L["StatusList_Step_Draft"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">
+                                                        @L["StatusList_Step_Submitted"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 70 ? "done" : "")">
+                                                        @L["StatusList_Step_Review"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 100 ? "done" : "")">
+                                                        @L["StatusList_Step_Completed"]
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </section>
+                </div>
+            }
+
+            @* Sperrmüll-Anträge *@
+            @if (hasSperrmuell)
+            {
+                <div class="col-12 col-lg-6">
+                    <section>
+                        <h2 class="h5 mb-3">Sperrmüll-Anträge</h2>
+                        <div class="vstack gap-3">
+                            @foreach (var a in Model.SperrmuellItems)
+                            {
+                                if (a.Status != 1)
+                                {
+                                    var shortId = a.Id.ToString().Substring(0, 8);
+
+                                    <div class="card shadow-sm border-0 status-item">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                                <div class="d-flex align-items-start gap-3">
+                                                    <span class="status-dot @a.BadgeClass" aria-hidden="true"></span>
+
+                                                    <div>
+                                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 header-line">
+                                                            <span class="fw-semibold me-1">@a.Antragsteller</span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-type @a.TypBadgeClass">
+                                                                @a.TypText
+                                                            </span>
+
+                                                            <span class="badge rounded-pill badge-lg badge-status @a.BadgeClass">
+                                                                @a.StatusText
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="meta-info ms-2 mt-2">
+                                                            @if (a.Eingereicht.HasValue)
+                                                            {
+                                                                <div>
+                                                                    <strong>@L["StatusList_Field_SubmittedLabel"]</strong>
+                                                                    @a.Eingereicht.Value.ToString("dd.MM.yyyy")
+                                                                </div>
+                                                            }
+
+                                                            <div class="text-secondary ">
+                                                                @L["StatusList_Field_IdLabel"]
+                                                                <code>@shortId</code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex gap-2">
+                                                    <a class="btn btn-outline-secondary"
+                                                       asp-action="SperrmuellAntrag" asp-route-id="@a.Id">
+                                                        @L["StatusList_Button_Details"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <div class="progress-steps small text-secondary mt-2">
+                                                    <span class="step @(a.ProgressPercent >= 20 ? "done" : "")">
+                                                        @L["StatusList_Step_Draft"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 40 ? "done" : "")">
+                                                        @L["StatusList_Step_Submitted"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 70 ? "done" : "")">
+                                                        @L["StatusList_Step_Review"]
+                                                    </span>
+                                                    <span class="step @(a.ProgressPercent >= 100 ? "done" : "")">
+                                                        @L["StatusList_Step_Completed"]
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </section>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@section Styles {
+    <style>
+        /* === Karten-Rahmen & linke Statusleiste === */
+        .card.status-item {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid color-mix(in oklab, var(--bs-border-color) 80%, transparent) !important;
+            border-radius: .75rem;
+            background: var(--bs-body-bg);
+            transition: box-shadow .2s ease, border-color .2s ease;
+        }
+
+            .card.status-item:hover {
+                border-color: color-mix(in oklab, var(--bs-primary) 30%, var(--bs-border-color)) !important;
+                box-shadow: 0 0 10px rgba(0, 0, 0, .05);
+            }
+
+            .card.status-item::before {
+                content: "";
+                position: absolute;
+                inset-inline-start: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: color-mix(in oklab, var(--bs-primary) 40%, transparent);
+                border-top-left-radius: .75rem;
+                border-bottom-left-radius: .75rem;
+            }
+
+        /* === Leeres-Icon (Empty State) === */
+        .status-list .empty-icon {
+            font-size: 28px;
+            line-height: 1;
+            background: var(--bs-tertiary-bg);
+            width: 44px;
+            height: 44px;
+            border-radius: .75rem;
+            display: grid;
+            place-items: center;
+        }
+
+        /* === Status-Dot (kleiner Punkt links neben Header) === */
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            translate: 0 .35rem;
+            background: var(--bs-secondary);
+        }
+
+            .status-dot.text-bg-secondary {
+                background: var(--bs-secondary);
+            }
+
+            .status-dot.text-bg-info {
+                background: var(--bs-info);
+            }
+
+            .status-dot.text-bg-warning {
+                background: var(--bs-warning);
+            }
+
+            .status-dot.text-bg-success {
+                background: var(--bs-success);
+            }
+
+            .status-dot.text-bg-danger {
+                background: var(--bs-danger);
+            }
+
+        /* === Header-Badges (Typ/Status größer & deutlicher) === */
+        .header-line {
+            gap: .5rem .6rem;
+        }
+
+        .badge-lg {
+            font-size: .95rem;
+            padding: .45rem .8rem;
+            letter-spacing: .01em;
+            box-shadow: 0 2px 6px rgba(0,0,0,.06);
+        }
+
+        .badge-type {
+            border: 1px solid color-mix(in oklab, var(--bs-primary) 25%, var(--bs-border-color));
+            box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-primary) 12%, transparent), 0 2px 6px rgba(0,0,0,.06);
+        }
+
+        .badge-status {
+            border: 1px solid color-mix(in oklab, currentColor 25%, transparent);
+        }
+
+        .header-line .fw-semibold {
+            font-size: 1.05rem;
+        }
+
+        /* === Meta-Infos (untereinander, dezent) === */
+        .meta-info {
+            font-size: .9rem;
+            color: var(--bs-body-color);
+            border-top: 1px solid color-mix(in oklab, var(--bs-border-color) 80%, transparent);
+            margin-top: .5rem;
+            padding-top: .5rem;
+            line-height: 1.5;
+        }
+
+            .meta-info div + div {
+                margin-top: .15rem;
+            }
+
+            .meta-info code {
+                font-size: .8rem;
+                color: var(--bs-secondary-color);
+            }
+
+        /* === Fortschritt (Step-Chips mit Dot & ✓ bei done) === */
+        .progress-steps {
+            position: relative;
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+            padding: .25rem .5rem;
+            border-radius: .75rem;
+            background: color-mix(in oklab, var(--bs-body-bg) 70%, var(--bs-tertiary-bg));
+            border: 1px solid var(--bs-border-color);
+        }
+
+            .progress-steps .step {
+                position: relative;
+                padding: .25rem .6rem .25rem 1.75rem;
+                border-radius: 999px;
+                background: transparent;
+                border: 1px dashed transparent;
+                transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+                opacity: .6;
+            }
+
+                .progress-steps .step::before {
+                    content: "";
+                    position: absolute;
+                    left: .5rem;
+                    top: 50%;
+                    width: .65rem;
+                    height: .65rem;
+                    border-radius: 50%;
+                    border: 2px solid var(--bs-border-color);
+                    background: var(--bs-secondary-bg);
+                    transform: translateY(-50%);
+                }
+
+                .progress-steps .step.done {
+                    background: var(--bs-success-bg-subtle, #d1e7dd);
+                    border-color: color-mix(in oklab, var(--bs-success) 60%, var(--bs-success-bg-subtle));
+                    color: var(--bs-success-text-emphasis, #0f5132);
+                    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-success) 30%, transparent);
+                    font-weight: 600;
+                    opacity: 1;
+                }
+
+                    .progress-steps .step.done::before {
+                        border-color: var(--bs-success);
+                        background: var(--bs-success);
+                        box-shadow: 0 0 0 3px color-mix(in oklab, var(--bs-success) 20%, transparent);
+                    }
+
+                    .progress-steps .step.done::after {
+                        content: "✓";
+                        font-weight: 900;
+                        margin-left: .35rem;
+                        color: var(--bs-success);
+                    }
+
+                .progress-steps .step:not(.done):hover {
+                    background: color-mix(in oklab, var(--bs-primary) 8%, var(--bs-body-bg));
+                    border-color: color-mix(in oklab, var(--bs-primary) 30%, var(--bs-border-color));
+                    color: var(--bs-body-color);
+                }
+
+        /* === Mobile Feinschliff === */
+        @@media (max-width: 576px) {
+            .progress-steps {
+                padding: .25rem;
+            }
+
+                .progress-steps .step {
+                    padding-left: 1.5rem;
+                }
+        }
+    </style>
+}

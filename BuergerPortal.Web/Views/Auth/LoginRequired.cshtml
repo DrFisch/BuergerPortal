@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Anmeldung erforderlich";
+    var returnUrl = (string?)ViewData["ReturnUrl"] ?? Url.Content("~/");
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h4 mb-3">Anmeldung erforderlich</h1>
+                    <p>
+                        Um die Dienste des Bürgerportals zu nutzen (z.&nbsp;B. Anträge stellen oder den Bearbeitungsstatus einzusehen),
+                        ist eine Anmeldung mit Ihrem Bürgerkonto notwendig.
+                    </p>
+                    <p class="mb-4">
+                        Bitte melden Sie sich an, um fortzufahren.
+                    </p>
+
+                    <form asp-action="Login" asp-controller="Auth" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button type="submit" class="btn btn-primary">
+                            Jetzt anmelden
+                        </button>
+                        <a href="~/" class="btn btn-link ms-2">Zur Startseite</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
