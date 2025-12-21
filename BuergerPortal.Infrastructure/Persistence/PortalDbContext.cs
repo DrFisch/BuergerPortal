@@ -1,5 +1,6 @@
 ﻿using BuergerPortal.Domain.Antrag.Entity;
 using BuergerPortal.Domain.Appointments.Entity;
+using BuergerPortal.Domain.Maengel;
 using BuergerPortal.Domain.Settings.Entity;
 using BuergerPortal.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Antrag> Antraege => Set<Antrag>();
         public DbSet<ReisepassAntrag> ReisepassAntraege => Set<ReisepassAntrag>();
         public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
+        public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
 
 
@@ -41,10 +43,9 @@ namespace BuergerPortal.Infrastructure.Persistence
             appt.HasIndex(x => new { x.Service, x.StartUtc, x.EndUtc });
             appt.HasIndex(x => x.AntragId);
 
-            // FK: Appointment (0..1) -> Antrag (1)
-            // Löscht man den Antrag, bleibt der Termin erhalten (AntragId wird NULL)
+
             appt.HasOne<Antrag>()
-                .WithMany()                         // (kein Navigations-Property nötig)
+                .WithMany()                        
                 .HasForeignKey(x => x.AntragId)
                 .OnDelete(DeleteBehavior.SetNull);
 
@@ -54,13 +55,13 @@ namespace BuergerPortal.Infrastructure.Persistence
             baseAntrag.HasKey(x => x.Id);
             baseAntrag.Property(x => x.Typ).IsRequired();
             baseAntrag.Property(x => x.Status).IsRequired();
-            baseAntrag.Property(x => x.ApplicantUserId).IsRequired(); // Achtung: bei dir Guid
+            baseAntrag.Property(x => x.ApplicantUserId).IsRequired(); 
             baseAntrag.Property(x => x.RowVersion).IsRowVersion();
             baseAntrag.HasIndex(x => new { x.ApplicantUserId, x.Typ, x.Status });
 
-            // Abgeleitet (TPT): EF Core erstellt automatisch Shared-PK(FK) von ReisepassAntraege.Id -> Antraege.Id
+            
             var pass = b.Entity<ReisepassAntrag>();
-            pass.ToTable("ReisepassAntraege"); // <- das triggert TPT
+            pass.ToTable("ReisepassAntraege"); 
 
             pass.OwnsOne(x => x.Name, n =>
             {
@@ -85,7 +86,7 @@ namespace BuergerPortal.Infrastructure.Persistence
             // SPERRMÜLLANTRAG (TPT + Owned Types)
             // -------------------------------------------------
             var sperr = b.Entity<SperrmuellAntrag>();
-            sperr.ToTable("SperrmuellAntraege"); // eigene TPT-Tabelle
+            sperr.ToTable("SperrmuellAntraege"); 
 
             // PersonName
             sperr.OwnsOne(x => x.Name, n =>
@@ -152,10 +153,10 @@ namespace BuergerPortal.Infrastructure.Persistence
 
             settings.Property(x => x.UserId).IsRequired();
 
-            // Ein Benutzer -> genau ein Settings-Datensatz
+           
             settings.HasIndex(x => x.UserId).IsUnique();
 
-            // Theme als string speichern (lesbarer als int). Alternativ: int ohne Conversion.
+            
             settings.Property(x => x.Theme)
                     .HasConversion<string>()        // speichert "Light"/"Dark"
                     .IsRequired();
@@ -169,12 +170,42 @@ namespace BuergerPortal.Infrastructure.Persistence
             settings.Property(x => x.AnalyticsOptIn).IsRequired();
             settings.Property(x => x.AllowGeolocation).IsRequired();
 
-            // Concurrency-Token
             settings.Property(x => x.RowVersion).IsRowVersion();
 
-            // UpdatedUtc: optional DB-Default (SQL Server). Bei SQLite/PG entsprechend anpassen.
             settings.Property(x => x.UpdatedUtc)
                     .HasDefaultValueSql("GETUTCDATE()");
+
+            // -------------------------
+            // MAENGELMELDUNG
+            // -------------------------
+            var mangel = b.Entity<Maengelmeldung>();
+            mangel.ToTable("Maengelmeldungen");
+            mangel.HasKey(x => x.Id);
+
+            mangel.Property(x => x.CreatedUtc).IsRequired();
+
+            mangel.Property(x => x.ReporterUserId);
+
+            mangel.Property(x => x.Titel)
+                  .HasMaxLength(200)
+                  .IsRequired();
+
+            mangel.Property(x => x.Beschreibung)
+                  .HasMaxLength(4000)
+                  .IsRequired();
+
+            mangel.Property(x => x.Latitude);
+            mangel.Property(x => x.Longitude);
+
+            mangel.Property(x => x.AddressHint)
+                  .HasMaxLength(500);
+
+            mangel.Property(x => x.Status)
+                  .HasMaxLength(30)
+                  .IsRequired();
+
+            mangel.HasIndex(x => x.CreatedUtc);
+            mangel.HasIndex(x => x.Status);
         }
     }
 }
