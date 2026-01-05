@@ -22,7 +22,7 @@ namespace BuergerPortal.Web.Controllers
         {
             var http = _httpClientFactory.CreateClient("BuergerPortalApi");
 
-            // Pfad ggf. anpassen: "api/users/me/settings"
+            
             var dto = await TryGetSettingsOrDefault(http, "api/users/me/settings", ct);
 
             var vm = new SettingsVm
@@ -61,7 +61,7 @@ namespace BuergerPortal.Web.Controllers
             bool ReduceDataUsage = false,
             bool AnalyticsOptIn = false,
             bool AllowGeolocation = false,
-            bool __ApiFallbackUsed = false // Marker nur für UI
+            bool __ApiFallbackUsed = false 
         );
 
         private async Task<SafeUserSettingsDto> TryGetSettingsOrDefault(HttpClient http, string path, CancellationToken ct)
@@ -149,29 +149,27 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken] // wichtig, da dein Fetch kein AntiForgery-Token mitschickt
+        [IgnoreAntiforgeryToken] 
         [AllowAnonymous]
         public async Task<IActionResult> ThemeToggle([FromBody] ThemeToggleRequest req, CancellationToken ct)
         {
-            // Theme normalisieren: DB erwartet bei dir "Dark"/"Light"
             var themeForDb = string.Equals(req.Theme, "dark", StringComparison.OrdinalIgnoreCase)
                 ? "Dark"
                 : "Light";
 
-            // Wenn der Nutzer nicht authentifiziert ist, speichern wir nur ein Client-Cookie
+            // Wenn der Nutzer nicht authentifiziert ist
             if (User?.Identity?.IsAuthenticated != true)
             {
                 SetClientCookies(themeForDb, null);
                 return NoContent();
             }
 
-            // Authentifizierte Nutzer: wie bisher in die API schreiben
             var http = _httpClientFactory.CreateClient("BuergerPortalApi");
 
-            // 1. Aktuelle Settings holen
+            // Aktuelle Settings holen
             var dto = await TryGetSettingsOrDefault(http, "api/users/me/settings", ct);
 
-            // 2. Payload für API bauen – alle bisherigen Werte übernehmen, nur Theme ändern
+            // Payload für API bauen – alle bisherigen Werte übernehmen, nur Theme ändern
             var payload = new UserSettingsUpdateRequest
             {
                 Theme = themeForDb,
@@ -180,14 +178,12 @@ namespace BuergerPortal.Web.Controllers
                 ReduceDataUsage = dto.ReduceDataUsage,
                 AnalyticsOptIn = dto.AnalyticsOptIn,
                 AllowGeolocation = dto.AllowGeolocation
-                // Version lassen wir hier bewusst weg -> kein Concurrency-Check nötig für schnellen Toggle
             };
 
             var res = await http.PutAsJsonAsync("api/users/me/settings", payload, ct);
 
             if (res.IsSuccessStatusCode)
             {
-                // Cookie auf Client-Seite aktualisieren, damit das Theme auch ohne Reload passt
                 SetClientCookies(payload.Theme, payload.Language);
                 return NoContent();
             }
@@ -197,7 +193,6 @@ namespace BuergerPortal.Web.Controllers
 
         private void SetClientCookies(string? theme, string? lang)
         {
-            // 🔹 DEINE ZEILE
             var t = string.Equals(theme, "Dark", StringComparison.OrdinalIgnoreCase) ? "dark" : "light";
             Response.Cookies.Append("theme", t,
                 new CookieOptions

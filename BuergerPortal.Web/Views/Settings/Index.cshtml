@@ -17,18 +17,14 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">
                     @L["Settings_Tab_Language"]
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-push" role="tab">
-                    @L["Settings_Tab_Push"]
-                </a>
+                
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">
                     @L["Settings_Tab_Install"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">
                     @L["Settings_Tab_Privacy"]
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-cache" role="tab">
-                    @L["Settings_Tab_Cache"]
-                </a>
+                
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-sensors" role="tab">
                     @L["Settings_Tab_Sensors"]
                 </a>
@@ -79,21 +75,7 @@
                         </div>
                     </div>
 
-                    <!-- PUSH -->
-                    <div class="tab-pane fade" id="tab-push" role="tabpanel">
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">@L["Settings_Push_Title"]</h5>
-                                <p class="text-muted">@L["Settings_Push_Description"]</p>
-                                <input type="hidden" name="PushEnabled" id="PushEnabled" value="@(Model.PushEnabled.ToString().ToLower())" />
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button class="btn btn-primary" type="button" id="btnEnablePush">@L["Settings_Push_Enable"]</button>
-                                    <button class="btn btn-outline-secondary" type="button" id="btnTestPush">@L["Settings_Push_Test"]</button>
-                                    <button class="btn btn-outline-danger" type="button" id="btnDisablePush">@L["Settings_Push_Disable"]</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <!-- PWA -->
                     <div class="tab-pane fade" id="tab-install" role="tabpanel">
@@ -115,28 +97,14 @@
                                 <h5 class="card-title">@L["Settings_Privacy_Title"]</h5>
                                 <p class="text-muted">@L["Settings_Privacy_Description"]</p>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="AnalyticsOptIn" name="AnalyticsOptIn" @(Model.AnalyticsOptIn ? "checked" : "")>
-                                    <label class="form-check-label" for="AnalyticsOptIn">@L["Settings_Privacy_AnalyticsLabel"]</label>
+                                    <input class="form-check-input" asp-for="AnalyticsOptIn">
+                                    <label class="form-check-label" asp-for="AnalyticsOptIn">@L["Settings_Privacy_AnalyticsLabel"]</label>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- CACHE -->
-                    <div class="tab-pane fade" id="tab-cache" role="tabpanel">
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">@L["Settings_Cache_Title"]</h5>
-                                <p class="text-muted">@L["Settings_Cache_Description"]</p>
-                                <button class="btn btn-outline-primary me-2" type="button" id="btnPrecache">
-                                    @L["Settings_Cache_Precache"]
-                                </button>
-                                <button class="btn btn-outline-danger" type="button" id="btnClearCache">
-                                    @L["Settings_Cache_Clear"]
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <!-- SENSORS -->
                     <div class="tab-pane fade" id="tab-sensors" role="tabpanel">
@@ -145,8 +113,8 @@
                                 <h5 class="card-title">@L["Settings_Sensors_Title"]</h5>
                                 <p class="text-muted">@L["Settings_Sensors_Description"]</p>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="AllowGeolocation" name="AllowGeolocation" @(Model.AllowGeolocation ? "checked" : "")>
-                                    <label class="form-check-label" for="AllowGeolocation">@L["Settings_Sensors_UseLocation"]</label>
+                                    <input class="form-check-input" asp-for="AllowGeolocation">
+                                    <label class="form-check-label" asp-for="AllowGeolocation">@L["Settings_Sensors_UseLocation"]</label>
                                 </div>
                                 <button class="btn btn-outline-secondary mt-2" type="button" id="btnRequestGeo">
                                     @L["Settings_Sensors_RequestButton"]
@@ -163,8 +131,8 @@
                                 <h5 class="card-title">@L["Settings_Data_Title"]</h5>
                                 <p class="text-muted">@L["Settings_Data_Description"]</p>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="ReduceDataUsage" name="ReduceDataUsage" @(Model.ReduceDataUsage ? "checked" : "")>
-                                    <label class="form-check-label" for="ReduceDataUsage">@L["Settings_Data_ReduceLabel"]</label>
+                                    <input class="form-check-input" asp-for="ReduceDataUsage">
+                                    <label class="form-check-label" asp-for="ReduceDataUsage">@L["Settings_Data_ReduceLabel"]</label>
                                 </div>
                             </div>
                         </div>

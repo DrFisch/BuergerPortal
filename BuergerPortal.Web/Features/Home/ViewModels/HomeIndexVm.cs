@@ -6,6 +6,7 @@ namespace BuergerPortal.Web.Features.Home.ViewModels
     public sealed class HomeIndexVm
     {
         public NextAppointmentVm? NextAppointment { get; set; }
+        public WeatherVm? Weather { get; set; }
     }
 
     public sealed class NextAppointmentVm
@@ -19,5 +20,11 @@ namespace BuergerPortal.Web.Features.Home.ViewModels
 
         public Guid? AntragId { get; set; }
 
+    }
+    public class WeatherVm
+    {
+        public double Temperature { get; set; }
+        public string? Condition { get; set; }
+        public string? IconClass { get; set; }
     }
 }

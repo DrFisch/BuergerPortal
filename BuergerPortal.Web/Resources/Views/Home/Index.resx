@@ -298,4 +298,52 @@
   <data name="Login" xml:space="preserve">
     <value>Anmelden</value>
   </data>
+	<data name="Card_Locations_Title" xml:space="preserve">
+    <value>Standorte &amp; Öffnungszeiten</value>
+  </data>
+	<data name="Card_Locations_Text" xml:space="preserve">
+    <value>Finden Sie das nächste Bürgeramt und informieren Sie sich über die Erreichbarkeit.</value>
+  </data>
+	<data name="Show_Opening_Hours" xml:space="preserve">
+    <value>Öffnungszeiten anzeigen</value>
+  </data>
+	<data name="Card_Install_Title" xml:space="preserve">
+    <value>App installieren</value>
+  </data>
+	<data name="Card_Install_Description" xml:space="preserve">
+    <value>Nutzen Sie das BürgerPortal bequem als App auf Ihrem Startbildschirm.</value>
+  </data>
+	<data name="Locations_Consultation_Title" xml:space="preserve">
+    <value>Beratungstermine</value>
+  </data>
+	<data name="Locations_Consultation_Note" xml:space="preserve">
+    <value>(Nur mit Voranmeldung)</value>
+  </data>
+	<data name="Locations_Gate_Title" xml:space="preserve">
+    <value>Pforte &amp; Infopoint</value>
+  </data>
+	<data name="Locations_Book_Appointment" xml:space="preserve">
+    <value>Jetzt Termin buchen</value>
+  </data>
+	<data name="Cityplan" xml:space="preserve">
+    <value>Stadtplan</value>
+  </data>
+	<data name="Cityplan_Text" xml:space="preserve">
+    <value>Finden Sie wichtige Ämter, Sehenswürdigkeiten und Parkmöglichkeiten in Ihrer Nähe.</value>
+  </data>
+	<data name="Show_Cityplan" xml:space="preserve">
+    <value>Karte öffnen</value>
+  </data>
+	<data name="Weather_Title" xml:space="preserve">
+  <value>Aktuelles Wetter</value>
+</data>
+	<data name="Card_News_Title" xml:space="preserve">
+    <value>Aktuelles &amp; News</value>
+  </data>
+	<data name="Card_News_Text" xml:space="preserve">
+    <value>Wichtige Bekanntmachungen, Baustellen-Infos und Events in Bürgerstadt.</value>
+  </data>
+	<data name="Show_News" xml:space="preserve">
+    <value>News lesen</value>
+  </data>
 </root>

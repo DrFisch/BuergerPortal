@@ -23,7 +23,7 @@ namespace BuergerPortal.Web.Controllers
             return View();
         }
 
-        // ---------------- STATUS: beide Antragstypen ----------------
+        //  STATUS: beide Antragstypen 
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Status(CancellationToken ct)
@@ -108,7 +108,7 @@ namespace BuergerPortal.Web.Controllers
             return View("Status", vm);
         }
 
-        // -------- Reisepass-Detail (wie gehabt) ---------------------
+        // -------- Reisepass-Detail 
 
         [HttpGet]
         public async Task<IActionResult> Antrag(Guid id, CancellationToken ct)
@@ -145,7 +145,7 @@ namespace BuergerPortal.Web.Controllers
             return View("AntragDetail", vm);
         }
 
-        // -------- Sperrmüll-Detail ----------------------------------
+        //Sperrmüll-Detail 
 
         [HttpGet]
         public async Task<IActionResult> SperrmuellAntrag(Guid id, CancellationToken ct)

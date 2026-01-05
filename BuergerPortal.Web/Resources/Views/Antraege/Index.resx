@@ -61,4 +61,10 @@
   <data name="Login" xml:space="preserve">
     <value>Anmelden</value>
   </data>
+	<data name="Start_Application" xml:space="preserve">
+    <value>Jetzt beantragen</value>
+  </data>
+	<data name="Schedule_Pickup" xml:space="preserve">
+    <value>Termin vereinbaren</value>
+  </data>
 </root>

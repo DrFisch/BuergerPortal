@@ -31,7 +31,7 @@ namespace BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels
         public int? Matratzen { get; set; }
 
         [Required]
-        [Display(Name = "Wunschzeit")]
+        [Display(Name = "Wunschdatum")]
         [DataType(DataType.DateTime)]
         public DateTime? Wunschzeit { get; set; }
 

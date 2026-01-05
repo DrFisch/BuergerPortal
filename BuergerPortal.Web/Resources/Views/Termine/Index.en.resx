@@ -79,5 +79,7 @@
 	<data name="Termine_Status_Past" xml:space="preserve">
   <value>Past</value>
 </data>
-
+	<data name="Termine_ShowCancelled_Label" xml:space="preserve">
+  <value>Show cancelled</value>
+</data>
 </root>

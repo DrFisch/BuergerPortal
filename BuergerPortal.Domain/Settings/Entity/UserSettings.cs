@@ -10,7 +10,7 @@ namespace BuergerPortal.Domain.Settings.Entity
     public class UserSettings
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public Guid UserId { get; set; }             // FK auf deinen User (OIDC-Sub als Guid)
+        public Guid UserId { get; set; }             
         public ThemeMode Theme { get; set; } = ThemeMode.Light;
         public string Language { get; set; } = "de";
         public bool PushEnabled { get; set; }
