@@ -26,6 +26,14 @@ namespace BuergerPortal.Web.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
+            // Explizite Backend-Validierung für Koordinaten
+            if (vm.Latitude is null || vm.Longitude is null)
+            {
+                ModelState.AddModelError(nameof(vm.Latitude), "Bitte markieren Sie den Standort auf der Karte.");
+                ModelState.AddModelError(nameof(vm.Longitude), "Bitte markieren Sie den Standort auf der Karte.");
+                return View(vm);
+            }
+
             var client = _cf.CreateClient("BuergerPortalApi");
 
             // Request DTO passend zur API

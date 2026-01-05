@@ -20,12 +20,18 @@ namespace BuergerPortal.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize] // <— entfernen, falls wirklich anonym möglich
+        [Authorize] 
         public async Task<ActionResult<CreateMaengelmeldungResponse>> Create(
             [FromBody] CreateMaengelmeldungRequest req,
             CancellationToken ct)
         {
-            // ModelState wird bei [ApiController] automatisch geprüft -> 400 bei invalid
+            
+            if (req.Latitude == null || req.Longitude == null)
+            {
+                ModelState.AddModelError(nameof(req.Latitude), "Latitude darf nicht null sein.");
+                ModelState.AddModelError(nameof(req.Longitude), "Longitude darf nicht null sein.");
+                return ValidationProblem(ModelState);
+            }
 
             Guid? reporterUserId = null;
 
@@ -41,8 +47,8 @@ namespace BuergerPortal.Api.Controllers
                 CreatedUtc = DateTime.UtcNow,
                 Titel = req.Titel.Trim(),
                 Beschreibung = req.Beschreibung.Trim(),
-                Latitude = req.Latitude,
-                Longitude = req.Longitude,
+                Latitude = req.Latitude.Value,
+                Longitude = req.Longitude.Value,
                 AddressHint = string.IsNullOrWhiteSpace(req.AddressHint) ? null : req.AddressHint.Trim(),
                 Status = "Offen"
             };

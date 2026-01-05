@@ -32,10 +32,10 @@
                 <div class="row g-4">
                     <div class="col-12">
                         <label asp-for="Titel" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Was ist passiert?</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-pencil-square"></i></span>
-                            <input asp-for="Titel" class="form-control border-start-0 ps-0" placeholder="z.B. Defekte Straßenlaterne, Schlagloch..." />
-                        </div>
+                        
+                            
+                            <input asp-for="Titel" class="form-control " placeholder="  z.B. Defekte Straßenlaterne, Schlagloch..." />
+                        
                         <span asp-validation-for="Titel" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -48,10 +48,10 @@
 
                     <div class="col-12">
                         <label asp-for="AddressHint" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Adress-Hinweis (optional)</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-info-circle"></i></span>
-                            <input asp-for="AddressHint" class="form-control border-start-0 ps-0" placeholder="z.B. Gegenüber der Bäckerei, im Hinterhof..." />
-                        </div>
+                        
+                            
+                            <input asp-for="AddressHint" class="form-control  " placeholder="  z.B. Gegenüber der Bäckerei, im Hinterhof..." />
+                        
                         <div class="form-text x-small mt-1 text-muted">Zusatzinfos helfen uns, den Ort leichter zu finden, falls GPS ungenau ist.</div>
                     </div>
 
