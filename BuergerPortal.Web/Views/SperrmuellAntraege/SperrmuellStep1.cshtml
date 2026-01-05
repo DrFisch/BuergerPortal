@@ -3,84 +3,169 @@
 @inject IViewLocalizer L
 
 @{
-    ViewData["Title"] = "Sperrmüll – Schritt 1";
+    ViewData["Title"] = L["SperrmuellStep1_Title"];
+
+    // Auto-Fill E-Mail aus Login
+    if (string.IsNullOrEmpty(Model.Email) && User.Identity?.IsAuthenticated == true)
+    {
+        Model.Email = User.Identity.Name;
+    }
 }
 
-<div class="container py-4">
-    <nav aria-label="Fortschritt" class="mb-4">
-        <ol class="progress-steps">
-            <li class="active">Persönliche Daten</li>
-            <li>Sperrmüll – Angaben</li>
-        </ol>
-        <div class="progress" role="progressbar">
-            <div class="progress-bar" style="width:50%">Schritt 1/2</div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="wizard-steps mb-5">
+                <div class="step active">
+                    <div class="step-icon">1</div>
+                    <div class="step-label">@L["Sperrmuell_Step1_Label"]</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">@L["Sperrmuell_Step2_Label"]</div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-success bg-opacity-10 border-0 p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success text-white rounded-3 p-2 d-flex shadow-sm">
+                            <i class="bi bi-truck fs-4"></i>
+                        </div>
+                        <div>
+                            <h1 class="h4 fw-bold mb-0">@L["SperrmuellStep1_Heading"]</h1>
+                            <p class="text-muted small mb-0">@L["SperrmuellStep1_SubHeading"]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="SperrmuellStep1" method="post" class="row g-4">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Vorname" class="form-control shadow-none border-secondary-subtle" placeholder="@L["Vorname"]" />
+                                <label asp-for="Vorname"></label>
+                                <span asp-validation-for="Vorname" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Nachname" class="form-control shadow-none border-secondary-subtle" placeholder="@L["Nachname"]" />
+                                <label asp-for="Nachname"></label>
+                                <span asp-validation-for="Nachname" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="Geburtsdatum" class="form-control shadow-none border-secondary-subtle" type="date" placeholder="DD.MM.YYYY" />
+                                <label asp-for="Geburtsdatum"></label>
+                                <span asp-validation-for="Geburtsdatum" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="form-floating">
+                                <input asp-for="Email" class="form-control shadow-none border-secondary-subtle" placeholder="name@example.com" />
+                                <label asp-for="Email"></label>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-floating">
+                                <input asp-for="Telefon" class="form-control shadow-none border-secondary-subtle" placeholder="+49..." />
+                                <label asp-for="Telefon"></label>
+                                <span asp-validation-for="Telefon" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-5 d-flex flex-column flex-md-row justify-content-between gap-3">
+                            <a asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold order-2 order-md-1">
+                                <i class="bi bi-x-lg me-1"></i> @L["Cancel"]
+                            </a>
+                            <button type="submit" class="btn btn-success rounded-pill px-5 shadow-sm py-2 fw-bold order-1 order-md-2">
+                                @L["Next"] <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </nav>
-
-    <h1 class="h4 mb-3">Sperrmüll – Schritt 1</h1>
-
-    <form asp-action="SperrmuellStep1" method="post" class="row g-3">
-        @Html.AntiForgeryToken()
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="col-md-6">
-            <label asp-for="Vorname" class="form-label"></label>
-            <input asp-for="Vorname" class="form-control" />
-            <span asp-validation-for="Vorname" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Nachname" class="form-label"></label>
-            <input asp-for="Nachname" class="form-control" />
-            <span asp-validation-for="Nachname" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Geburtsdatum" class="form-label"></label>
-            <input asp-for="Geburtsdatum" class="form-control" type="date" />
-            <span asp-validation-for="Geburtsdatum" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" />
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Telefon" class="form-label"></label>
-            <input asp-for="Telefon" class="form-control" />
-        </div>
-
-        <div class="col-12 d-flex gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary">Abbrechen</a>
-            <button type="submit" class="btn btn-primary">Weiter</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 @section Styles {
     <style>
-        .progress-steps {
-            list-style: none;
-            padding-left: 0;
+        .wizard-steps {
             display: flex;
-            gap: 1rem;
-            margin-bottom: .5rem;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-            .progress-steps li {
-                padding: .25rem .75rem;
-                border-radius: 999px;
-                background: var(--bs-secondary-bg);
-                color: var(--bs-secondary-color);
-            }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
 
-                .progress-steps li.active {
-                    background: var(--bs-primary);
-                    color: var(--bs-primary-contrast,#fff);
-                }
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--bs-secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--bs-secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Sperrmüll nutzt Grün-Thema */
+        .step.active .step-icon {
+            background: var(--bs-success);
+            color: white;
+            box-shadow: 0 0 0 5px var(--bs-success-bg-subtle);
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+        }
+
+        .step.active .step-label {
+            color: var(--bs-success);
+        }
+
+        .step-line {
+            flex: 0 1 100px;
+            height: 2px;
+            background: var(--bs-secondary-bg);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--bs-success);
+            box-shadow: 0 0 0 0.25rem var(--bs-success-bg-subtle);
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: var(--bs-tertiary-bg);
+        }
     </style>
 }
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

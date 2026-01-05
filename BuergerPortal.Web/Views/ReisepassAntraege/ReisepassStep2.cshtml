@@ -6,105 +6,166 @@
     ViewData["Title"] = L["PassportStep2_Title"];
 }
 
-<div class="container py-4">
-    <nav aria-label="@L["PassportStep2_Progress_Aria"]" class="mb-4">
-        <ol class="progress-steps">
-            <li>@L["PassportStep2_Step1"]</li>
-            <li class="active">@L["PassportStep2_Step2"]</li>
-        </ol>
-        <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar" style="width:100%">
-                @L["PassportStep2_ProgressLabel"]
-            </div>
-        </div>
-    </nav>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-    <h1 class="h4 mb-3">@L["PassportStep2_Heading"]</h1>
-
-    @if (TempData["AntragInfo"] is string info)
-    {
-        <div class="alert alert-info">@info</div>
-    }
-
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                <div>
-                    <strong>@L["PassportStep2_Applicant"]</strong>
-                    <div>@Model.AntragstellerName</div>
-                    @if (Model.Geburtsdatum.HasValue)
-                    {
-                        <div>
-                            <small>@L["PassportStep2_Birthdate"]: @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</small>
-                        </div>
-                    }
+            <div class="wizard-steps mb-5">
+                <div class="step done">
+                    <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                    <div class="step-label">@L["PassportStep2_Step1"]</div>
                 </div>
-                <span class="badge text-bg-secondary">@L["PassportStep2_Id"]: @Model.Id</span>
+                <div class="step-line active"></div>
+                <div class="step active">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">@L["PassportStep2_Step2"]</div>
+                </div>
             </div>
+
+            @if (TempData["AntragInfo"] is string info)
+            {
+                <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i> @info
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-body p-4 bg-body-tertiary border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-person-check fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted small text-uppercase fw-bold mb-0" style="font-size: 0.65rem; letter-spacing: 0.05rem;">@L["PassportStep2_Applicant"]</h6>
+                            <div class="h5 mb-0 fw-bold">@Model.AntragstellerName</div>
+                            @if (Model.Geburtsdatum.HasValue)
+                            {
+                                <span class="text-secondary small">Geboren am @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</span>
+                            }
+                        </div>
+                        <div class="ms-auto d-none d-sm-block">
+                            <span class="badge text-bg-secondary opacity-75 fw-normal">ID: #@Model.Id.ToString().Substring(0, 8)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="ReisepassStep2" method="post" class="vstack gap-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">Zusätzliche Optionen</h5>
+
+                        <div class="form-check form-switch p-3 border rounded-4 mb-3 transition-all option-box">
+                            <input class="form-check-input float-end shadow-none" asp-for="Express" />
+                            <label class="form-check-label fw-bold d-block mb-1" asp-for="Express">Express-Herstellung</label>
+                            <p class="text-muted small mb-0 pe-5">Die Bearbeitungszeit verkürzt sich auf ca. 3-5 Werktage (zzgl. Gebühr).</p>
+                        </div>
+
+                        <div class="form-check form-switch p-3 border rounded-4 mb-4 transition-all option-box">
+                            <input class="form-check-input float-end shadow-none" asp-for="AltpassVorhanden" />
+                            <label class="form-check-label fw-bold d-block mb-1" asp-for="AltpassVorhanden">Alten Reisepass vorhanden</label>
+                            <p class="text-muted small mb-0 pe-5">Sie müssen Ihren alten Pass zur Entwertung bei der Abholung mitbringen.</p>
+                        </div>
+
+                        <div class="mt-2">
+                            <label asp-for="Hinweis" class="form-label fw-bold small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Zusatzhinweise für das Amt</label>
+                            <textarea asp-for="Hinweis" rows="3" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="Haben Sie weitere Anmerkungen zu Ihrem Antrag?"></textarea>
+                            <span asp-validation-for="Hinweis" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <a asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold order-2 order-md-1">
+                        <i class="bi bi-arrow-left me-1"></i> @L["PassportStep2_Cancel"]
+                    </a>
+
+                    <button type="submit" name="submitAction" value="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-sm fw-bold order-1 order-md-2">
+                        <i class="bi bi-send-check-fill me-2"></i> @L["PassportStep2_Submit"]
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <form asp-action="ReisepassStep2" method="post" class="row g-3">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="col-12">
-            <div class="form-check form-switch">
-                <input class="form-check-input" asp-for="Express" />
-                <label class="form-check-label" asp-for="Express"></label>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="form-check form-switch">
-                <input class="form-check-input" asp-for="AltpassVorhanden" />
-                <label class="form-check-label" asp-for="AltpassVorhanden"></label>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <label asp-for="Hinweis" class="form-label"></label>
-            <textarea asp-for="Hinweis" rows="4" class="form-control"></textarea>
-            <span asp-validation-for="Hinweis" class="text-danger"></span>
-        </div>
-
-        <div class="col-12 d-flex gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                @L["PassportStep2_Cancel"]
-            </a>
-
-            <button type="submit" name="submitAction" value="submit" class="btn btn-primary">
-                @L["PassportStep2_Submit"]
-            </button>
-        </div>
-    </form>
 </div>
 
 @section Styles {
     <style>
-        .progress-steps {
-            list-style: none;
-            padding-left: 0;
+        .wizard-steps {
             display: flex;
-            gap: 1rem;
-            margin-bottom: .5rem
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-            .progress-steps li {
-                padding: .25rem .75rem;
-                border-radius: 999px;
-                background: var(--bs-secondary-bg);
-                color: var(--bs-secondary-color);
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--bs-secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--bs-secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .step.active .step-icon {
+            background: var(--bs-primary);
+            color: white;
+            box-shadow: 0 0 0 5px var(--bs-primary-bg-subtle);
+        }
+
+        .step.done .step-icon {
+            background: var(--bs-success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+        }
+
+        .step-line {
+            flex: 0 1 100px;
+            height: 2px;
+            background: var(--bs-secondary-bg);
+            margin-bottom: 1.5rem;
+        }
+
+            .step-line.active {
+                background: var(--bs-success);
             }
 
-                .progress-steps li.active {
-                    background: var(--bs-primary);
-                    color: var(--bs-primary-contrast,#fff);
-                }
+        .option-box:hover {
+            background-color: var(--bs-tertiary-bg);
+            border-color: var(--bs-primary-border-subtle) !important;
+        }
+
+        .transition-all {
+            transition: all 0.2s ease-in-out;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: var(--bs-tertiary-bg);
+        }
     </style>
 }
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
