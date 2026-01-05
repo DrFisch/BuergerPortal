@@ -140,6 +140,13 @@ namespace BuergerPortal.Web.Controllers
         {
             return View();
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult News()
+        {
+ 
+            return View();
+        }
 
         public IActionResult Privacy()
         {

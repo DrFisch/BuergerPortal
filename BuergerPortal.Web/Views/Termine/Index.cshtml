@@ -12,11 +12,11 @@
 
 @if (TempData["BookingSuccess"] is string ok)
 {
-    <div class="alert alert-success">@ok</div>  <!-- optional später auch lokalisieren -->
+    <div class="alert alert-success">@ok</div>  
 }
 @if (TempData["BookingError"] is string err)
 {
-    <div class="alert alert-danger">@err</div>  <!-- optional später auch lokalisieren -->
+    <div class="alert alert-danger">@err</div>  
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -62,7 +62,7 @@ else
                     var parsed = TimeSpan.TryParse(t.Uhrzeit, out timeSpan);
                     var appointmentDateTime = parsed
                         ? t.Datum.Date.Add(timeSpan)
-                        : t.Datum; // Fallback: nur Datum vergleichen
+                        : t.Datum; 
                     var isPast = !t.Storniert && appointmentDateTime < DateTime.Now;
 
                     <tr>

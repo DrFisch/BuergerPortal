@@ -337,4 +337,13 @@
 	<data name="Weather_Title" xml:space="preserve">
   <value>Aktuelles Wetter</value>
 </data>
+	<data name="Card_News_Title" xml:space="preserve">
+    <value>Aktuelles &amp; News</value>
+  </data>
+	<data name="Card_News_Text" xml:space="preserve">
+    <value>Wichtige Bekanntmachungen, Baustellen-Infos und Events in Bürgerstadt.</value>
+  </data>
+	<data name="Show_News" xml:space="preserve">
+    <value>News lesen</value>
+  </data>
 </root>
