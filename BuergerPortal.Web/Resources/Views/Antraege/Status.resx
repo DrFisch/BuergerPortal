@@ -50,4 +50,7 @@
 	<data name="StatusList_Step_Completed" xml:space="preserve">
     <value>Abschluss</value>
   </data>
+	<data name="StatusList_IntroText" xml:space="preserve">
+    <value>Hier finden Sie eine Übersicht Ihrer aktuellen Anträge und deren Bearbeitungsstand.</value>
+  </data>
 </root>

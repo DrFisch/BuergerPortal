@@ -50,4 +50,7 @@
 	<data name="StatusList_Step_Completed" xml:space="preserve">
     <value>Completed</value>
   </data>
+	<data name="StatusList_IntroText" xml:space="preserve">
+    <value>View and track the current status of your submitted applications.</value>
+  </data>
 </root>

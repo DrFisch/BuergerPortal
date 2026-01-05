@@ -106,7 +106,7 @@
         <!-- Wunschdatum -->
         <div class="col-md-6">
             <label asp-for="Wunschzeit" class="form-label"></label>
-            <input asp-for="Wunschzeit" class="form-control" type="date" />
+            <input asp-for="Wunschzeit" class="form-control" type="date" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
             <span asp-validation-for="Wunschzeit" class="text-danger"></span>
         </div>
 
@@ -121,10 +121,6 @@
             <a asp-action="Index" class="btn btn-outline-secondary">
                 Abbrechen
             </a>
-
-            <button type="submit" name="submitAction" value="save" class="btn btn-secondary">
-                Speichern
-            </button>
 
             <button type="submit" name="submitAction" value="submit" class="btn btn-primary">
                 Jetzt einreichen
@@ -159,4 +155,68 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        (function() {
+            const wunschzeitInput = document.querySelector('input[name="Wunschzeit"]');
+            const weekendNote = document.createElement('div');
+            weekendNote.className = 'text-danger small mt-1';
+            weekendNote.style.display = 'none';
+            
+            if (wunschzeitInput) {
+                wunschzeitInput.parentElement.appendChild(weekendNote);
+                
+                // Funktion zum Prüfen, ob Datum ein Wochenende ist
+                function isWeekend(dateString) {
+                    if (!dateString) return false;
+                    const date = new Date(dateString + 'T00:00:00');
+                    const dayOfWeek = date.getDay();
+                    return dayOfWeek === 0 || dayOfWeek === 6; // 0 = Sonntag, 6 = Samstag
+                }
+                
+                // Funktion zum Finden des nächsten Werktags
+                function getNextWeekday(dateString) {
+                    const date = new Date(dateString + 'T00:00:00');
+                    const dayOfWeek = date.getDay();
+                    
+                    if (dayOfWeek === 6) { // Samstag -> Montag
+                        date.setDate(date.getDate() + 2);
+                    } else if (dayOfWeek === 0) { // Sonntag -> Montag
+                        date.setDate(date.getDate() + 1);
+                    }
+                    
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                }
+                
+                // Event-Listener für Änderungen
+                wunschzeitInput.addEventListener('change', function() {
+                    const selectedDate = this.value;
+                    
+                    if (isWeekend(selectedDate)) {
+                        weekendNote.textContent = 'Am Wochenende ist keine Abholung möglich. Das Datum wurde auf den nächsten Werktag verschoben.';
+                        weekendNote.style.display = 'block';
+                        
+                        // Automatisch auf nächsten Werktag verschieben
+                        const nextWeekday = getNextWeekday(selectedDate);
+                        this.value = nextWeekday;
+                        
+                        // Hinweis nach 3 Sekunden ausblenden
+                        setTimeout(() => {
+                            weekendNote.style.display = 'none';
+                        }, 3000);
+                    } else {
+                        weekendNote.style.display = 'none';
+                    }
+                });
+                
+                // Initial-Check beim Laden der Seite
+                if (wunschzeitInput.value && isWeekend(wunschzeitInput.value)) {
+                    wunschzeitInput.value = getNextWeekday(wunschzeitInput.value);
+                }
+            }
+        })();
+    </script>
 }

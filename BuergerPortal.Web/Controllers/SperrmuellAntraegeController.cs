@@ -80,6 +80,14 @@ namespace BuergerPortal.Web.Controllers
             if (detail is null)
                 return NotFound();
 
+            DateTime defaultDate = DateTime.Today.AddDays(1);
+            
+            // Wenn das Standard-Datum ein Wochenende ist, auf nächsten Werktag verschieben
+            while (defaultDate.DayOfWeek == DayOfWeek.Saturday || defaultDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                defaultDate = defaultDate.AddDays(1);
+            }
+
             var vm = new SperrmuellStep2Vm
             {
                 Id = detail.Id,
@@ -94,7 +102,9 @@ namespace BuergerPortal.Web.Controllers
                 SonstigesKubikmeter = detail.SonstigesKubikmeter,
                 Matratzen = detail.Matratzen,
 
-                Wunschzeit = detail.Wunschzeit.ToLocalTime(),
+                Wunschzeit = detail.Wunschzeit == default 
+                    ? defaultDate
+                    : detail.Wunschzeit.ToLocalTime(),
                 Hinweis = detail.Hinweis
             };
 
@@ -111,6 +121,14 @@ namespace BuergerPortal.Web.Controllers
             if (vm.Wunschzeit is null)
             {
                 ModelState.AddModelError(nameof(vm.Wunschzeit), "Bitte ein gültiges Datum wählen.");
+                return View("SperrmuellStep2", vm);
+            }
+
+            // Wochenend-Validierung
+            var dayOfWeek = vm.Wunschzeit.Value.DayOfWeek;
+            if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
+            {
+                ModelState.AddModelError(nameof(vm.Wunschzeit), "Am Wochenende ist keine Abholung möglich. Bitte wählen Sie einen Werktag.");
                 return View("SperrmuellStep2", vm);
             }
 
@@ -136,22 +154,16 @@ namespace BuergerPortal.Web.Controllers
             if (!put.IsSuccessStatusCode)
                 return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, put, ct));
 
-            if (string.Equals(submitAction, "submit", StringComparison.OrdinalIgnoreCase))
-            {
-                var submit = await client.PostAsync($"api/antraege/sperrmuell/{id}/submit", content: null, ct);
+            var submit = await client.PostAsync($"api/antraege/sperrmuell/{id}/submit", content: null, ct);
 
-                if (submit.StatusCode == HttpStatusCode.Unauthorized)
-                    return Challenge();
+            if (submit.StatusCode == HttpStatusCode.Unauthorized)
+                return Challenge();
 
-                if (!submit.IsSuccessStatusCode)
-                    return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, submit, ct));
+            if (!submit.IsSuccessStatusCode)
+                return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
-                TempData["AntragSuccess"] = "Sperrmüllantrag eingereicht.";
-                return RedirectToAction("Status", "Antraege");
-            }
-
-            TempData["AntragInfo"] = "Angaben gespeichert. Du kannst jetzt einreichen.";
-            return RedirectToAction(nameof(SperrmuellStep2), new { id });
+            TempData["AntragSuccess"] = "Sperrmüllantrag eingereicht.";
+            return RedirectToAction("Status", "Antraege");
         }
 
         // -------- Helpers ----------

@@ -111,21 +111,15 @@ namespace BuergerPortal.Web.Controllers
             if (!put.IsSuccessStatusCode)
                 return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, put, ct));
 
-            if (string.Equals(submitAction, "submit", StringComparison.OrdinalIgnoreCase))
-            {
-                var submit = await client.PostAsync($"api/antraege/reisepass/{id}/submit", content: null, ct);
+            var submit = await client.PostAsync($"api/antraege/reisepass/{id}/submit", content: null, ct);
 
-                if (submit.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            if (submit.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
 
-                if (!submit.IsSuccessStatusCode)
-                    return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, submit, ct));
+            if (!submit.IsSuccessStatusCode)
+                return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
-                TempData["AntragSuccess"] = "Reisepassantrag eingereicht.";
-                return RedirectToAction("Status", "Antraege");
-            }
-
-            TempData["AntragInfo"] = "Angaben gespeichert. Du kannst jetzt einreichen.";
-            return RedirectToAction(nameof(ReisepassStep2), new { id });
+            TempData["AntragSuccess"] = "Reisepassantrag eingereicht.";
+            return RedirectToAction("Status", "Antraege");
         }
 
         // -------- Helpers ----------
