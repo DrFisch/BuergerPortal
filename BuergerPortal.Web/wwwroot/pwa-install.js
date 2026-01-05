@@ -1,4 +1,34 @@
 ﻿let deferredPrompt;
+let newWorker;
+
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+            newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    showUpdateNotification();
+                }
+            });
+        });
+    });
+
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
+    });
+}
+
+function showUpdateNotification() {
+
+    const updateNow = confirm("Eine neue Version der App ist verfügbar. Möchtest du jetzt aktualisieren?");
+    if (updateNow && newWorker) {
+        newWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+}
 
 function showAppInstallMenuItem() {
     const li = document.getElementById('appInstallMenuItem');
@@ -18,11 +48,18 @@ function hideAppInstallMenuItem() {
     if (btn) btn.classList.add('d-none');
 }
 
+function isStandalone() {
+    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Chrome: prevent automatic prompt and store event for later
     e.preventDefault();
     deferredPrompt = e;
-    showAppInstallMenuItem();
+
+    if (!isStandalone()) {
+        showAppInstallMenuItem();
+    }
 });
 
 async function installApp() {
@@ -30,8 +67,8 @@ async function installApp() {
     try {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Installations-Ergebnis: ${outcome}`);
         deferredPrompt = null;
-        // hide irrespective of user choice; once used we don't show again
         hideAppInstallMenuItem();
     } catch (err) {
         console.error('installApp error', err);
@@ -40,21 +77,21 @@ async function installApp() {
 
 window.installApp = installApp;
 
-// If the app is installed (or running in standalone), hide install item
-function isStandalone() {
-    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     if (isStandalone()) {
         hideAppInstallMenuItem();
     }
-    // Also, if beforeinstallprompt already fired earlier, show it
-    // (rare in SPA-less setups, but safe)
-    if (deferredPrompt) showAppInstallMenuItem();
+
+    if (deferredPrompt && !isStandalone()) {
+        showAppInstallMenuItem();
+    }
+
+    window.addEventListener('online', () => document.body.classList.remove('is-offline'));
+    window.addEventListener('offline', () => document.body.classList.add('is-offline'));
 });
 
 window.addEventListener('appinstalled', () => {
     hideAppInstallMenuItem();
+    deferredPrompt = null;
 });

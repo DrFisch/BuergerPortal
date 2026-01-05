@@ -8,182 +8,193 @@
     ViewData["Title"] = L["ApplicationDetails_Title"];
 }
 
-<div class="container py-4">
+<div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h1 class="h3 fw-bold mb-0">Sperrmüll-Antrag – @L["ApplicationDetails_Heading"]</h1>
+    </div>
+
     @if (TempData["AntragTerminOk"] is string bookedMsg)
     {
-        <div class="alert alert-success">@bookedMsg</div>
+        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-check-circle-fill fs-4"></i>
+            <div>@bookedMsg</div>
+        </div>
     }
 
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-        <h1 class="h4 mb-0">Sperrmüll-Antrag – @L["ApplicationDetails_Heading"]</h1>
-        <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-uppercase tracking-wider small fw-bold text-secondary">@L["CurrentStatus"]</span>
+                <span class="badge badge-modern @Model.BadgeClass">@Model.StatusText</span>
+            </div>
+            <div class="progress rounded-pill mb-2" style="height: 12px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar"
+                     style="width:@Model.ProgressPercent%"
+                     aria-valuenow="@Model.ProgressPercent"
+                     aria-valuemin="0"
+                     aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex justify-content-between small text-muted">
+                <span>@L["Started"]</span>
+                <span>@Model.ProgressPercent% @L["Completed"]</span>
+            </div>
+        </div>
     </div>
 
-    <div class="progress mb-3"
-         role="progressbar"
-         aria-valuenow="@Model.ProgressPercent"
-         aria-valuemin="0"
-         aria-valuemax="100">
-        <div class="progress-bar" style="width:@Model.ProgressPercent%"></div>
-    </div>
-
-    <div class="row g-3">
-        <!-- Linke Spalte: Daten + Timeline -->
+    <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">@L["ApplicationDetails_DataCardTitle"]</div>
-                <div class="card-body">
-                    <dl class="row mb-0">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">@L["ApplicationDetails_DataCardTitle"]</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-6">
+                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_Applicant"]</label>
+                            <p class="fs-5 mb-0 fw-medium">@Model.Antragsteller</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_BirthDate"]</label>
+                            <p class="fs-5 mb-0 fw-medium">@(Model.Geburtsdatum?.ToString("dd.MM.yyyy") ?? "-")</p>
+                        </div>
+                    </div>
 
-                        <dt class="col-sm-4">@L["ApplicationDetails_Field_Applicant"]</dt>
-                        <dd class="col-sm-8">@Model.Antragsteller</dd>
+                    <hr class="opacity-10 my-4">
 
-                        <dt class="col-sm-4">@L["ApplicationDetails_Field_BirthDate"]</dt>
-                        <dd class="col-sm-8">
-                            @(Model.Geburtsdatum?.ToString("dd.MM.yyyy"))
-                        </dd>
-                        @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
-                        {
-                            <dt class="col-sm-4">@L["ApplicationDetails_Field_Note"]</dt>
-                            <dd class="col-sm-8">@Model.Hinweis</dd>
-                        }
+                    <h6 class="fw-bold text-primary mb-3">@L["SperrmuellDetail_PickupAddress_Title"]</h6>
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-12">
+                            <div class="d-flex align-items-center gap-2 p-3 bg-body-tertiary rounded-3">
+                                <i class="bi bi-geo-alt-fill text-primary"></i>
+                                <div class="fw-medium">
+                                    @Model.Strasse<br>
+                                    @Model.PLZ @Model.Ort
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    </dl>
+                    <hr class="opacity-10 my-4">
 
-                    <hr />
-
-                    <!-- Abholadresse -->
-                    <h6 class="mt-2 mb-2">@L["SperrmuellDetail_PickupAddress_Title"]</h6>
-                    <dl class="row mb-0">
-                        <dt class="col-sm-4">@L["SperrmuellDetail_PickupAddress_Street"]</dt>
-                        <dd class="col-sm-8">@Model.Strasse</dd>
-
-                        <dt class="col-sm-4">@L["SperrmuellDetail_PickupAddress_PostalCity"]</dt>
-                        <dd class="col-sm-8">@Model.PLZ @Model.Ort</dd>
-                    </dl>
-
-                    <hr />
-
-                    <!-- Sperrmüll-Daten -->
-                    <h6 class="mt-2 mb-2">@L["SperrmuellDetail_Section_SperrmuellData"]</h6>
-                    <dl class="row mb-0">
+                    <h6 class="fw-bold text-primary mb-3">@L["SperrmuellDetail_Section_SperrmuellData"]</h6>
+                    <div class="row g-4">
                         @if (Model.HolzKubikmeter.HasValue)
                         {
-                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Wood"]</dt>
-                            <dd class="col-sm-8">@Model.HolzKubikmeter</dd>
+                            <div class="col-sm-4 text-center border-end border-opacity-10">
+                                <label class="text-secondary x-small fw-bold text-uppercase d-block">@L["SperrmuellDetail_Field_Wood"]</label>
+                                <span class="fs-4 fw-bold">@Model.HolzKubikmeter</span> <span class="text-muted">m³</span>
+                            </div>
                         }
-
                         @if (Model.SonstigesKubikmeter.HasValue)
                         {
-                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Other"]</dt>
-                            <dd class="col-sm-8">@Model.SonstigesKubikmeter</dd>
+                            <div class="col-sm-4 text-center border-end border-opacity-10">
+                                <label class="text-secondary x-small fw-bold text-uppercase d-block">@L["SperrmuellDetail_Field_Other"]</label>
+                                <span class="fs-4 fw-bold">@Model.SonstigesKubikmeter</span> <span class="text-muted">m³</span>
+                            </div>
                         }
-
                         @if (Model.Matratzen.HasValue)
                         {
-                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_Mattresses"]</dt>
-                            <dd class="col-sm-8">@Model.Matratzen</dd>
+                            <div class="col-sm-4 text-center">
+                                <label class="text-secondary x-small fw-bold text-uppercase d-block">@L["SperrmuellDetail_Field_Mattresses"]</label>
+                                <span class="fs-4 fw-bold">@Model.Matratzen</span> <span class="text-muted">Stk.</span>
+                            </div>
                         }
-
                         @if (Model.Wunschzeit != default)
                         {
-                            <dt class="col-sm-4">@L["SperrmuellDetail_Field_DesiredDate"]</dt>
-                            <dd class="col-sm-8">
-                                @(Model.Wunschzeit.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture))
-                            </dd>
+                            <div class="col-12">
+                                <div class="p-3 bg-primary-subtle text-primary-emphasis rounded-3 d-flex align-items-center gap-3">
+                                    <i class="bi bi-calendar-check fs-4"></i>
+                                    <div>
+                                        <label class="x-small fw-bold text-uppercase d-block">@L["SperrmuellDetail_Field_DesiredDate"]</label>
+                                        <span class="fw-bold">@Model.Wunschzeit.ToString("dd.MM.yyyy")</span>
+                                    </div>
+                                </div>
+                            </div>
                         }
-                    </dl>
+                    </div>
                 </div>
             </div>
 
-            <!-- Timeline -->
-            <div class="card mt-3">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <span>@L["ApplicationDetails_Timeline_Title"]</span>
-                    <span class="badge @Model.BadgeClass">@Model.StatusText</span>
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">@L["ApplicationDetails_Timeline_Title"]</h5>
                 </div>
-                <div class="card-body">
-                    <ol class="timeline-vertical list-unstyled mb-0">
-                        <li class="tl-item @(Model.CreatedUtc != default ? "done" : "")">
-                            <div class="tl-dot"></div>
+                <div class="card-body p-4">
+                    <div class="modern-timeline">
+                        <div class="tl-item @(Model.CreatedUtc != default ? "active" : "")">
+                            <div class="tl-icon"><i class="bi bi-file-earmark-plus"></i></div>
                             <div class="tl-content">
-                                <div class="tl-title">@L["ApplicationDetails_Timeline_Created"]</div>
-                                <div class="tl-meta">
-                                    @Model.CreatedUtc.ToString("dd.MM.yyyy HH:mm")
+                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Created"]</div>
+                                <div class="small text-muted">@Model.CreatedUtc.ToString("dd.MM.yyyy HH:mm")</div>
+                            </div>
+                        </div>
+
+                        <div class="tl-item @(Model.SubmittedUtc.HasValue ? "active" : "")">
+                            <div class="tl-icon"><i class="bi bi-send"></i></div>
+                            <div class="tl-content">
+                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Submitted"]</div>
+                                <div class="small text-muted">
+                                    @(Model.SubmittedUtc.HasValue? Model.SubmittedUtc.Value.ToString("dd.MM.yyyy HH:mm") : L["ApplicationDetails_Timeline_Submitted_NotYet"])
                                 </div>
                             </div>
-                        </li>
+                        </div>
 
-                        <li class="tl-item @(Model.SubmittedUtc.HasValue ? "done" : "")">
-                            <div class="tl-dot"></div>
+                        <div class="tl-item @((Model.ProgressPercent >= 70) ? "active" : "")">
+                            <div class="tl-icon"><i class="bi bi-search"></i></div>
                             <div class="tl-content">
-                                <div class="tl-title">@L["ApplicationDetails_Timeline_Submitted"]</div>
-
-                                @if (Model.SubmittedUtc.HasValue)
-                                {
-                                    <div class="tl-meta">
-                                        @Model.SubmittedUtc.Value.ToString("dd.MM.yyyy HH:mm")
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="tl-meta text-secondary">
-                                        @L["ApplicationDetails_Timeline_Submitted_NotYet"]
-                                    </div>
-                                }
-                            </div>
-                        </li>
-
-                        <li class="tl-item @((Model.ProgressPercent >= 70) ? "done" : "")">
-                            <div class="tl-dot"></div>
-                            <div class="tl-content">
-                                <div class="tl-title">@L["ApplicationDetails_Timeline_Review"]</div>
-                                <div class="tl-meta @(Model.ProgressPercent >= 70 ? "" : "text-secondary")">
-                                    @(Model.ProgressPercent >= 70
-                                                                        ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"]
-                                                                        : L["ApplicationDetails_Timeline_Pending"])
+                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Review"]</div>
+                                <div class="small text-muted">
+                                    @(Model.ProgressPercent >= 70 ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"] : L["ApplicationDetails_Timeline_Pending"])
                                 </div>
                             </div>
-                        </li>
+                        </div>
 
-                        <li class="tl-item @((Model.ProgressPercent >= 100) ? "done" : "")">
-                            <div class="tl-dot"></div>
+                        <div class="tl-item @((Model.ProgressPercent >= 100) ? "active" : "")">
+                            <div class="tl-icon"><i class="bi bi-truck"></i></div>
                             <div class="tl-content">
-                                <div class="tl-title">@L["ApplicationDetails_Timeline_Completed"]</div>
-                                <div class="tl-meta @(Model.ProgressPercent >= 100 ? "" : "text-secondary")">
-                                    @(Model.ProgressPercent >= 100
-                                                                        ? L["ApplicationDetails_Timeline_Completed_Done"]
-                                                                        : L["ApplicationDetails_Timeline_Pending"])
+                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Completed"]</div>
+                                <div class="small text-muted">
+                                    @(Model.ProgressPercent >= 100 ? L["ApplicationDetails_Timeline_Completed_Done"] : L["ApplicationDetails_Timeline_Pending"])
                                 </div>
                             </div>
-                        </li>
-                    </ol>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Rechte Spalte: Kontakt / Termin -->
         <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">@L["ApplicationDetails_ContactCardTitle"]</div>
-                <div class="card-body">
-                    @if (!string.IsNullOrWhiteSpace(Model.Email))
-                    {
-                        <div class="mb-2">
-                            <span class="text-secondary small d-block">@L["ApplicationDetails_Email_Label"]</span>
-                            @Model.Email
-                        </div>
-                    }
+            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 2rem;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">@L["ApplicationDetails_ContactCardTitle"]</h5>
 
-                    @if (!string.IsNullOrWhiteSpace(Model.Telefon))
-                    {
-                        <div class="mb-3">
-                            <span class="text-secondary small d-block">@L["ApplicationDetails_Phone_Label"]</span>
-                            @Model.Telefon
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="icon-circle bg-primary-subtle text-primary">
+                            <i class="bi bi-envelope"></i>
                         </div>
-                    }
+                        <div class="overflow-hidden">
+                            <span class="text-secondary x-small d-block fw-bold text-uppercase">@L["ApplicationDetails_Email_Label"]</span>
+                            <span class="text-truncate d-block">@Model.Email</span>
+                        </div>
+                    </div>
 
-                    <a class="btn btn-outline-primary w-100"
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="icon-circle bg-success-subtle text-success">
+                            <i class="bi bi-telephone"></i>
+                        </div>
+                        <div>
+                            <span class="text-secondary x-small d-block fw-bold text-uppercase">@L["ApplicationDetails_Phone_Label"]</span>
+                            <span>@Model.Telefon</span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 opacity-50">
+
+                    <a class="btn btn-primary btn-sm rounded-pill w-100 fw-bold shadow-sm mb-3 text-nowrap"
                        asp-controller="Termine"
                        asp-action="Buchen"
                        asp-route-service="@(ServiceType.AntragRueckfrage)"
@@ -191,9 +202,9 @@
                         @L["ApplicationDetails_Appointment_Button"]
                     </a>
 
-                    <div class="text-secondary small mt-2">
+                    <p class="text-secondary x-small text-center mb-0 px-2">
                         @L["ApplicationDetails_Appointment_Info"]
-                    </div>
+                    </p>
                 </div>
             </div>
         </div>
@@ -202,57 +213,91 @@
 
 @section Styles {
     <style>
-        .timeline li::marker {
-            content: "• "
+        body {
+            background-color: var(--bs-tertiary-bg);
         }
 
-        .timeline-vertical {
+        .badge-modern {
+            padding: 0.6em 1.2em;
+            border-radius: 50rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .icon-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .modern-timeline {
             position: relative;
-            padding-left: 1.25rem;
+            padding-left: 20px;
         }
 
-            .timeline-vertical::before {
-                content: "";
+            .modern-timeline::before {
+                content: '';
                 position: absolute;
-                left: .5rem;
-                top: .25rem;
-                bottom: .25rem;
+                left: 39px;
+                top: 0;
+                bottom: 0;
                 width: 2px;
                 background: var(--bs-border-color);
-                opacity: .7;
+                opacity: 0.5;
             }
 
         .tl-item {
             position: relative;
-            padding-left: 1.25rem;
-            margin-bottom: .75rem;
+            display: flex;
+            gap: 25px;
+            padding-bottom: 30px;
+            z-index: 1;
         }
 
-        .tl-dot {
-            position: absolute;
-            left: -.1rem;
-            top: .25rem;
-            width: .75rem;
-            height: .75rem;
-            border-radius: 50%;
-            background: var(--bs-secondary-bg);
+            .tl-item:last-child {
+                padding-bottom: 0;
+            }
+
+        .tl-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bs-body-bg);
             border: 2px solid var(--bs-border-color);
-            box-shadow: 0 0 0 2px var(--bs-body-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bs-secondary-color);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .tl-item.done .tl-dot {
+        .tl-item.active .tl-icon {
             background: var(--bs-success);
             border-color: var(--bs-success);
-            box-shadow: 0 0 0 3px #00000020;
+            color: white;
+            box-shadow: 0 0 0 5px var(--bs-success-bg-subtle);
         }
 
-        .tl-meta {
-            font-size: .875rem;
-            color: var(--bs-secondary-color);
+        .x-small {
+            font-size: 0.7rem;
         }
 
-        .progress {
-            height: .6rem;
+        .tracking-wider {
+            letter-spacing: 0.08em;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: var(--bs-body-bg);
+        }
+
+        [data-bs-theme="dark"] .bg-body-tertiary {
+            background-color: #2b3035 !important;
         }
     </style>
 }
