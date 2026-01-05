@@ -4,6 +4,11 @@
 
 @{
     ViewData["Title"] = L["PassportStep1_Title"];
+
+    if (string.IsNullOrEmpty(Model.Email) && User.Identity?.IsAuthenticated == true)
+    {
+        Model.Email = User.Identity.Name;
+    }
 }
 
 <div class="container py-5">
@@ -74,7 +79,7 @@
                         </div>
 
                         <div class="col-12 mt-5 d-flex flex-column flex-md-row justify-content-between gap-3">
-                            <a asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold order-2 order-md-1">
+                            <a asp-controller="Antraege" asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold order-2 order-md-1">
                                 <i class="bi bi-x-lg me-1"></i> @L["PassportStep1_Cancel"]
                             </a>
                             <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm py-2 fw-bold order-1 order-md-2">
