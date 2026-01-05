@@ -1,4 +1,5 @@
 ﻿using BuergerPortal.Api.Contracts.Appointments;
+using BuergerPortal.Api.Extensions;
 using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
@@ -48,7 +49,7 @@ namespace BuergerPortal.Api.Controllers
 
             var result = await _svc.BookAsync(dto, userId, ct);
 
-            // 📧 E-Mail-Versand nach erfolgreicher Buchung
+            // E-Mail-Versand nach erfolgreicher Buchung
             try
             {
                 var userEmail = User.FindFirst("email")?.Value;
@@ -56,14 +57,17 @@ namespace BuergerPortal.Api.Controllers
 
                 if (!string.IsNullOrWhiteSpace(userEmail))
                 {
-                    var subject = $"Termin bestätigt: {req.Service} am {req.StartUtc.ToLocalTime():dd.MM.yyyy HH:mm}";
+                    var serviceName = req.Service.GetDisplayName();
+                    var locationName = req.Location.GetDisplayName();
+                    
+                    var subject = $"Termin bestätigt: {serviceName} am {req.StartUtc.ToLocalTime():dd.MM.yyyy HH:mm}";
                     var html = $"""
                         <p>Hallo {userName},</p>
-                        <p>Ihr Termin für den Service <b>{req.Service}</b> wurde erfolgreich gebucht.</p>
+                        <p>Ihr Termin für den Service <b>{serviceName}</b> wurde erfolgreich gebucht.</p>
                         <p><b>Datum:</b> {req.StartUtc.ToLocalTime():dddd, dd.MM.yyyy HH:mm}<br/>
-                           <b>Ort:</b> {req.Location}</p>
+                           <b>Ort:</b> {locationName}</p>
                         <p>Sie können den Termin im Bürgerportal unter 
-                           <a href="https://localhost:7017/termine">„Meine Termine“</a> einsehen.</p>
+                           <a href="https://localhost:7017/termine">„Meine Termine"</a> einsehen.</p>
                         <p>Viele Grüße,<br/>Ihr Bürgerportal-Team</p>
                     """;
 

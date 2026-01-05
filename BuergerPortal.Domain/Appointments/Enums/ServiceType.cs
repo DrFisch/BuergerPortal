@@ -7,16 +7,21 @@ using System.Threading.Tasks;
 
 namespace BuergerPortal.Domain.Appointments.Enums
 {
-    public enum ServiceType 
+    public enum ServiceType
     {
+        [Display(Name = "Allgemeine Beratung")]
         AllgemeineBeratung = 1,
 
+        [Display(Name = "Dokumente und Ausweise")]
         DokumenteUndAusweise = 2,
 
+        [Display(Name = "Meldeangelegenheiten")]
         Meldeangelegenheiten = 3,
 
-        AntragRueckfrage=4,
+        [Display(Name = "Rückfrage zum Antrag")]
+        AntragRueckfrage = 4,
 
+        [Display(Name = "Sonstiges")]
         Sonstiges = 5
     }
 }

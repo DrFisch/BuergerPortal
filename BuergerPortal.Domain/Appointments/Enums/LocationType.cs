@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,8 +9,13 @@ namespace BuergerPortal.Domain.Appointments.Enums
 {
     public enum LocationType
     {
-        BuergermtMitte = 1,   // „Bürgeramt Mitte“
-        BuergermtNord = 2,   // „Bürgeramt Nord“
-        BuergermtSued = 3    // „Bürgeramt Süd“
+        [Display(Name = "Bürgeramt Mitte")]
+        BuergermtMitte = 1,
+
+        [Display(Name = "Bürgeramt Nord")]
+        BuergermtNord = 2,
+
+        [Display(Name = "Bürgeramt Süd")]
+        BuergermtSued = 3
     }
 }
