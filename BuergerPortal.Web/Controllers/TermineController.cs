@@ -89,7 +89,7 @@ namespace BuergerPortal.Web.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
-            // 15-Minuten-Check
+            // 15 Minuten Check
             bool aligned = vm.LocalTime.TotalMinutes % 15 == 0 && vm.DurationMinutes % 15 == 0;
             if (!aligned)
             {
@@ -99,13 +99,13 @@ namespace BuergerPortal.Web.Controllers
 
             // Lokal (Europe/Berlin) -> UTC
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
-            var localStart = vm.LocalDate.Date + vm.LocalTime; // Unspecified
+            var localStart = vm.LocalDate.Date + vm.LocalTime; 
             var startUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localStart, DateTimeKind.Unspecified), tz);
             var endUtc = startUtc.AddMinutes(vm.DurationMinutes);
 
             var client = _cf.CreateClient("BuergerPortalApi");
 
-            // NEU: antragId mitgeben (Guid? ist okay)
+            
             var payload = new
             {
                 service = vm.Service,
@@ -121,21 +121,20 @@ namespace BuergerPortal.Web.Controllers
             {
                 var id = await res.Content.ReadFromJsonAsync<Guid>(cancellationToken: ct);
 
-                // Allgemeine Success-TempData (für Termin-Übersicht)
+                // Allgemeine Success-TempData 
                 TempData["BookingSuccess"] = $"Termin gebucht ({id}).";
 
-                // Wenn Termin einem Antrag zugeordnet ist: spezielle Meldung setzen und zurück zum Antrag
                 if (vm.RelatedAntragId.HasValue)
                 {
                     TempData["AntragTerminOk"] = "Termin zum Antrag gebucht.";
                     return RedirectToAction("Antrag", "Antraege", new { id = vm.RelatedAntragId.Value });
                 }
 
-                // sonst zur Termin-Übersicht (oder wohin du willst)
+                // sonst zur Termin-Übersicht 
                 return RedirectToAction(nameof(Index));
             }
 
-            // Fehlerbehandlung (unverändert)
+            // Fehlerbehandlung 
             ProblemDetails? problem = null;
             try
             {
@@ -147,7 +146,7 @@ namespace BuergerPortal.Web.Controllers
                     problem = await res.Content.ReadFromJsonAsync<ProblemDetails>(cancellationToken: ct);
                 }
             }
-            catch (System.Text.Json.JsonException) { /* fallback unten */ }
+            catch (System.Text.Json.JsonException) {  }
 
             if (problem is null)
             {
@@ -168,17 +167,17 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize] // falls nicht auf Controller gesetzt
+        [Authorize] 
         public async Task<IActionResult> Busy([FromQuery] string date, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(date))
                 return BadRequest("date (YYYY-MM-DD) fehlt.");
 
-            var client = _cf.CreateClient("BuergerPortalApi"); // <-- wichtiger named client mit AccessTokenHandler
+            var client = _cf.CreateClient("BuergerPortalApi"); 
             var res = await client.GetAsync($"api/appointments/busy?date={date}", ct);
 
             if (res.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(); // an den Browser durchreichen
+                return Unauthorized(); 
 
             if (!res.IsSuccessStatusCode)
                 return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
@@ -192,7 +191,7 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize] // falls nicht auf dem Controller
+        [Authorize] 
         public async Task<IActionResult> Stornieren(Guid id, CancellationToken ct)
         {
             if (id == Guid.Empty)
@@ -203,13 +202,11 @@ namespace BuergerPortal.Web.Controllers
 
             try
             {
-                var client = _cf.CreateClient("BuergerPortalApi"); // named client mit Auth-Handler
-                                                                   // Variante A: Soft-Cancel
+                var client = _cf.CreateClient("BuergerPortalApi"); 
+                                                                   
                 var res = await client.PostAsync($"api/appointments/{id}/cancel", content: null, ct);
 
-                // Variante B (Hard-Delete): 
-                // var res = await client.DeleteAsync($"api/appointments/{id}", ct);
-
+                
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     TempData["BookingError"] = "Nicht autorisiert. Bitte erneut anmelden.";

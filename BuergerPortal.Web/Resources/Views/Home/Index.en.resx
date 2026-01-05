@@ -300,4 +300,43 @@
   <data name="Login" xml:space="preserve">
     <value>Login</value>
   </data>
+	<data name="Card_Locations_Title" xml:space="preserve">
+    <value>Locations &amp; Opening Hours</value>
+  </data>
+	<data name="Card_Locations_Text" xml:space="preserve">
+    <value>Find your nearest citizen office and check current accessibility.</value>
+  </data>
+	<data name="Show_Opening_Hours" xml:space="preserve">
+    <value>Show opening hours</value>
+  </data>
+	<data name="Card_Install_Title" xml:space="preserve">
+    <value>Install App</value>
+  </data>
+	<data name="Card_Install_Description" xml:space="preserve">
+    <value>Use the Citizen Portal conveniently as an app on your home screen.</value>
+  </data>
+	<data name="Locations_Consultation_Title" xml:space="preserve">
+    <value>Consultation appointments</value>
+  </data>
+	<data name="Locations_Consultation_Note" xml:space="preserve">
+    <value>(By appointment only)</value>
+  </data>
+	<data name="Locations_Gate_Title" xml:space="preserve">
+    <value>Gate &amp; Info Point</value>
+  </data>
+	<data name="Locations_Book_Appointment" xml:space="preserve">
+    <value>Book appointment now</value>
+  </data>
+	<data name="Cityplan" xml:space="preserve">
+    <value>City Map</value>
+  </data>
+	<data name="Cityplan_Text" xml:space="preserve">
+    <value>Find important offices, sights, and parking facilities near you.</value>
+  </data>
+	<data name="Show_Cityplan" xml:space="preserve">
+    <value>Open map</value>
+  </data>
+	<data name="Weather_Title" xml:space="preserve">
+  <value>Current Weather</value>
+</data>
 </root>

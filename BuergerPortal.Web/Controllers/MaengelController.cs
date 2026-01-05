@@ -45,11 +45,9 @@ namespace BuergerPortal.Web.Controllers
 
             if (!res.IsSuccessStatusCode)
             {
-                // 401 -> Login
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                     return Challenge();
 
-                // 400 -> Validierungsfehler aus API
                 if (res.StatusCode == HttpStatusCode.BadRequest)
                 {
                     try
@@ -63,7 +61,6 @@ namespace BuergerPortal.Web.Controllers
                                 var field = kv.Key;
                                 foreach (var error in kv.Value)
                                 {
-                                    // Feldfehler direkt ins ModelState
                                     ModelState.AddModelError(field, error);
                                 }
                             }
@@ -73,11 +70,10 @@ namespace BuergerPortal.Web.Controllers
                     }
                     catch
                     {
-                        // Fallback falls kein ValidationProblemDetails
                     }
                 }
 
-                // alle anderen Fehler (500, 403, etc.)
+                // alle anderen Fehler (500, 403)
                 var message = await res.Content.ReadAsStringAsync(ct);
                 ModelState.AddModelError(string.Empty,
                     $"Fehler beim Senden der Mängelmeldung ({(int)res.StatusCode}). Bitte später erneut versuchen.");
@@ -86,7 +82,7 @@ namespace BuergerPortal.Web.Controllers
             }
 
 
-            // optional: Response lesen
+            //Response lesen
             var created = await res.Content.ReadFromJsonAsync<CreateMaengelmeldungResponse>(cancellationToken: ct);
 
             TempData["Meldung"] = created is null

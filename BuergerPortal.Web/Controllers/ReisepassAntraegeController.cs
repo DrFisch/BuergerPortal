@@ -6,7 +6,7 @@ using System.Net;
 
 namespace BuergerPortal.Web.Controllers
 {
-    [Authorize] // gesamte Antragstellung nur für eingeloggte Nutzer
+    [Authorize] 
     public class ReisepassAntraegeController : Controller
     {
         private readonly IHttpClientFactory _cf;

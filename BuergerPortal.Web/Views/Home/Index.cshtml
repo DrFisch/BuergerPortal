@@ -277,24 +277,22 @@
             </div>
 
             <!-- Benachrichtigungen / PWA -->
-            <div class="col">
+            <div class="col" id="pwaInstallCard" style="display: none;">
                 <div class="card feature-card h-100 border-0 rounded-4">
                     <div class="card-body d-flex flex-column">
-                        <div class="feature-icon bg-warning-subtle text-warning mb-3">
-                            <i class="bi bi-bell"></i>
+                        <div class="feature-icon bg-success-subtle text-success mb-3">
+                            <i class="bi bi-download"></i>
                         </div>
-                        <h5 class="card-title mb-1">@T["Card_NotifyPwa"]</h5>
-                        <p class="card-text text-muted mb-0">@T["Card_NotifyPwa_Text"]</p>
+                        <h5 class="card-title mb-1">@T["Card_Install_Title"]</h5>
+                        <p class="card-text text-muted mb-3">@T["Card_Install_Description"]</p>
 
-                        <div class="mt-3 d-flex flex-column gap-2">
-                            <button id="enablePush" class="btn btn-outline-primary btn-sm w-100">
-                                @T["EnablePush"]
+                        <div class="mt-auto">
+                            <button class="btn btn-success btn-sm w-100 rounded-pill fw-semibold shadow-sm"
+                                    type="button"
+                                    id="btnInstallHome"
+                                    onclick="installApp()">
+                                <i class="bi bi-plus-circle me-1"></i> @T["Settings_Install_Button"]
                             </button>
-                            <div id="pushStatus" class="small text-muted"></div>
-                            <button id="btnInstall" class="btn btn-outline-primary btn-sm w-100 d-none" onclick="installApp()">
-                                @T["InstallApp"]
-                            </button>
-                            <div id="installStatus" class="small text-muted"></div>
                         </div>
                     </div>
                 </div>
@@ -317,6 +315,74 @@
                 </div>
             </div> *@
 
+            
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-warning-subtle text-warning mb-3">
+                            <i class="bi bi-cloud-sun"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Weather_Title"]</h5>
+
+                        @if (Model.Weather != null)
+                        {
+                            <div class="d-flex align-items-center gap-3 my-2">
+                                <i class="bi @Model.Weather.IconClass fs-1 text-primary"></i>
+                                <div>
+                                    <span class="display-6 fw-bold">@Model.Weather.Temperature°C</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="card-text text-muted mb-0">Wetterdaten derzeit nicht verfügbar.</p>
+                        }
+
+                        <div class="mt-auto pt-3">
+                            <span class="small text-muted">
+                                <i class="bi bi-info-circle me-1"></i> Live-Daten von Open-Meteo
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadtplan -->
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-primary-subtle text-primary mb-3">
+                            <i class="bi bi-compass"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Cityplan"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Cityplan_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Home" asp-action="Stadtplan" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-map me-1"></i> @T["Show_Cityplan"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-info-subtle text-info mb-3">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Locations_Title"]</h5>
+                        <p class="card-text text-muted mb-0">@T["Card_Locations_Text"]</p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Home" asp-action="Standorte" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-clock me-1"></i> @T["Show_Opening_Hours"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Einstellungen -->
             <div class="col">
                 <div class="card feature-card h-100 border-0 rounded-4">
@@ -335,39 +401,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Stadtplan -->
-            <div class="col">
-                <div class="card feature-card h-100 border-0 rounded-4">
-                    <div class="card-body d-flex flex-column">
-                        <div class="feature-icon bg-primary-subtle text-primary mb-3">
-                            <i class="bi bi-compass"></i>
-                        </div>
-                        <h5 class="card-title mb-1">@T["Cityplan"]</h5>
-                        <p class="card-text text-muted mb-0">
-                            @T["Cityplan_Text"]
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hinweise -->
-            <div class="col">
-                <div class="card feature-card h-100 border-0 rounded-4">
-                    <div class="card-body d-flex flex-column">
-                        <div class="feature-icon bg-light-subtle text-muted mb-3">
-                            <i class="bi bi-info-circle"></i>
-                        </div>
-                        <h5 class="card-title mb-1">@T["Card_Hints"]</h5>
-                        <ul class="list-unstyled mb-0 small text-muted">
-                            <li>@T["Hint_Peak"]</li>
-                            <li>@T["Hint_Documents"]</li>
-                            <li>@T["Hint_Access"]</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 
@@ -446,3 +479,51 @@
         }
 
         </style>}
+
+@section Scripts {
+    <script>
+        let deferredPrompt;
+        const installCard = document.getElementById('pwaInstallCard');
+
+        // Event abfangen, wenn die App installierbar ist
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Verhindern, dass der Standard-Banner des Browsers erscheint
+            e.preventDefault();
+            // Event speichern
+            deferredPrompt = e;
+            // Die Karte auf der Homepage einblenden
+            if (installCard) {
+                installCard.style.display = 'block';
+            }
+        });
+
+        async function installApp() {
+            if (!deferredPrompt) return;
+            try {
+                // Den Installations-Dialog anzeigen
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to install prompt: ${outcome}`);
+
+                // Prompt löschen, da er nur einmal verwendet werden kann
+                deferredPrompt = null;
+
+                // Karte wieder ausblenden
+                if (installCard) {
+                    installCard.style.display = 'none';
+                }
+            } catch (err) {
+                console.error('installApp error', err);
+            }
+        }
+
+        // Optional: Verstecken, wenn die App bereits installiert wurde
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            if (installCard) {
+                installCard.style.display = 'none';
+            }
+            console.log('PWA wurde erfolgreich installiert');
+        });
+    </script>
+}
