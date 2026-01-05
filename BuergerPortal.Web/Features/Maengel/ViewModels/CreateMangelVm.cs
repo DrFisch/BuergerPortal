@@ -12,7 +12,10 @@ namespace BuergerPortal.Web.Features.Maengel.ViewModels
         [MaxLength(4000, ErrorMessage = "Die Beschreibung darf maximal 4000 Zeichen lang sein.")]
         public string Beschreibung { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Bitte markieren Sie den Standort auf der Karte.")]
         public double? Latitude { get; set; }
+
+        [Required(ErrorMessage = "Bitte markieren Sie den Standort auf der Karte.")]
         public double? Longitude { get; set; }
 
         [MaxLength(500, ErrorMessage = "Der Adresshinweis darf maximal 500 Zeichen lang sein.")]

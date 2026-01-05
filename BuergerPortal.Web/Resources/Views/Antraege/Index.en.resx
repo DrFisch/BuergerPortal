@@ -61,4 +61,10 @@
   <data name="Login" xml:space="preserve">
     <value>Login</value>
   </data>
+	<data name="Start_Application" xml:space="preserve">
+    <value>Apply now</value>
+  </data>
+	<data name="Schedule_Pickup" xml:space="preserve">
+    <value>Schedule pickup</value>
+  </data>
 </root>
