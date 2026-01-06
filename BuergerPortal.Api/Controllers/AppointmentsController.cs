@@ -113,13 +113,28 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
-        // ---------- Placeholder GetById (200/404 später) ----------
+        // ---------- GetById (200/404) ----------
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult GetById(Guid id)
+        public async Task<ActionResult<AppointmentListItemResponse>> GetById(Guid id, CancellationToken ct)
         {
-            return Ok(new { id }); // TODO: echten Read-UseCase einbauen
+            if (!TryGetUserId(out var userId))
+                return Unauthorized();
+
+            var appt = await _svc.GetByIdAsync(id, userId, ct);
+            if (appt is null) return NotFound();
+
+            return Ok(new AppointmentListItemResponse
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = DateTime.SpecifyKind(appt.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(appt.EndUtc, DateTimeKind.Utc),
+                Cancelled = appt.Cancelled,
+                AntragId = appt.AntragId
+            });
         }
 
         // ---------- Busy-Slots (200) ----------
@@ -175,30 +190,6 @@ namespace BuergerPortal.Api.Controllers
             return FromResult(result, () => NoContent());
         }
 
-        // ---------- GetById (200/404) ----------
-        [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AppointmentListItemResponse>> GetById(Guid id, CancellationToken ct)
-        {
-            if (!TryGetUserId(out var userId))
-                return Unauthorized();
-
-            var appt = await _svc.GetByIdAsync(id, userId, ct);
-            if (appt is null) return NotFound();
-
-            return Ok(new AppointmentListItemResponse
-            {
-                Id = appt.Id,
-                Service = appt.Service,
-                Location = appt.Location,
-                StartUtc = DateTime.SpecifyKind(appt.StartUtc, DateTimeKind.Utc),
-                EndUtc = DateTime.SpecifyKind(appt.EndUtc, DateTimeKind.Utc),
-                Cancelled = appt.Cancelled,
-                AntragId = appt.AntragId
-            });
-        }
-
         // ---------- Update Location (Patch) ----------
         [HttpPatch("{id:guid}/location")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -231,11 +222,7 @@ namespace BuergerPortal.Api.Controllers
         // Hilfs-Klasse für den Request
         public record UpdateLocationRequest(LocationType NewLocation);
 
-        // ============================================================
-        // Einheitliches Mapping: Result<T> -> HTTP
-        // ============================================================
-
-        // Für Endpoints mit Rückgabewert (z. B. Create -> Guid)
+      
         private ActionResult<T> FromResult<T>(Result<T> r, Func<T, ActionResult<T>> onOk)
         {
             if (r.IsSuccess)

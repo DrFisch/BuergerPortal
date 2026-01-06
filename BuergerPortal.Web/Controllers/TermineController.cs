@@ -267,9 +267,15 @@ namespace BuergerPortal.Web.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateLocation(TerminDetailsVm vm, CancellationToken ct)
         {
+            if (vm.Id == Guid.Empty)
+            {
+                TempData["BookingError"] = "Ungültige Termin-ID.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var client = _cf.CreateClient("BuergerPortalApi");
 
-            var payload = new { location = vm.Location };
+            var payload = new { newLocation = vm.Location };
 
             var res = await client.PatchAsJsonAsync($"api/appointments/{vm.Id}/location", payload, ct);
 
