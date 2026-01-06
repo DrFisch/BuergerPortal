@@ -4,7 +4,7 @@ dotnet ef migrations add <Migration_Name> -c PortalDbContext -p .\BuergerPortal.
 
 dotnet ef database update -c PortalDbContext -p .\BuergerPortal.Infrastructure\ -s .\BuergerPortal.Api\
 
-dotnet ef migrations add Mangelmelder -c PortalDbContext -p .\BuergerPortal.Infrastructure\ -s .\BuergerPortal.Api\
+dotnet ef migrations add AddPoiTable -c PortalDbContext -p .\BuergerPortal.Infrastructure\ -s .\BuergerPortal.Api\
 
 
 ---------------------- ef auf google cloud bauen ----------------

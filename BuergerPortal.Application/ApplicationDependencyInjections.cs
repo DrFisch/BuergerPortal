@@ -9,6 +9,7 @@ using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Appointments.Validation;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.UserEinstellungen;
+using BuergerPortal.Application.Poi.BusinessService;
 using BuergerPortal.Application.UserEinstellungen.DTOs;
 using BuergerPortal.Application.UserEinstellungen.Validations;
 using BuergerPortal.Application.UserEInstellungen.BusinessServices;
@@ -31,6 +32,7 @@ namespace BuergerPortal.Application
             services.AddScoped<IAppointmentBusinessService, AppointmentBusinessService>();
             services.AddScoped<IUserSettingsBusinessService, UserSettingsBusinessService>();
             services.AddScoped<ISperrmuellAntragBusinessService, SperrmuellAntragBusinessService>();
+            services.AddScoped<IPoiBusinessService, PoiBusinessService>();
 
             //----------Validations---------
             services.AddScoped<IValidator<AppointmentCreateDto>, AppointmentCreateDtoValidator>();

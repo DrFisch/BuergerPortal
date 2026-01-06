@@ -28,6 +28,7 @@ namespace BuergerPortal.Infrastructure
             services.AddScoped<IReisepassRepository, ReisepassRepository>();
             services.AddScoped<ISperrmuellRepository, SperrmuellRepository>();
             services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
+            services.AddScoped<IPoiRepository, PoiRepository>();
 
             return services;
         }

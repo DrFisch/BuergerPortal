@@ -1,12 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BuergerPortal.Web.Features.Entdecken;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BuergerPortal.Web.Controllers
 {
     public class EntdeckenController : Controller
     {
-        public IActionResult Index()
+        private readonly IHttpClientFactory _cf;
+
+        public EntdeckenController(IHttpClientFactory cf)
         {
-            return View();
+            _cf = cf;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(CancellationToken ct)
+        {
+            var client = _cf.CreateClient("BuergerPortalApi");
+
+            // API Abruf
+            var res = await client.GetAsync("api/pois", ct);
+            res.EnsureSuccessStatusCode();
+
+            var apiItems = await res.Content.ReadFromJsonAsync<List<PoiListItemVm>>(cancellationToken: ct)
+                           ?? new();
+
+            var vm = new EntdeckenIndexVm
+            {
+                Orte = apiItems // Hier könntest du noch serverseitig sortieren falls gewünscht
+            };
+
+            return View(vm);
         }
     }
 }
