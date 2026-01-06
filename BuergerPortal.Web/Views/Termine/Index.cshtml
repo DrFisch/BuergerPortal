@@ -15,37 +15,42 @@
             <p class="text-secondary mb-0 small opacity-75">@L["Termine_IntroText"]</p>
         </div>
 
-        <div class="d-flex align-items-center gap-4 flex-wrap">
-            <div class="form-check form-switch custom-switch d-flex align-items-center gap-2 m-0 p-0">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            @* Toggle: Storniert *@
+            <div class="form-check form-switch custom-switch d-flex align-items-center gap-2 m-0 p-0 me-3">
                 <input class="form-check-input ms-0" type="checkbox" id="showCancelledToggle" style="cursor:pointer;">
                 <label class="form-check-label small fw-semibold text-secondary" for="showCancelledToggle" style="cursor:pointer;">
                     @L["Termine_ShowCancelled_Label"]
                 </label>
             </div>
 
-            <a asp-action="Buchen" class="btn btn-primary rounded-pill px-3 py-2 fw-semibold shadow-sm d-inline-flex align-items-center justify-content-center">
+            @* Toggle: Vergangen *@
+            <div class="form-check form-switch custom-switch d-flex align-items-center gap-2 m-0 p-0 me-3">
+                <input class="form-check-input ms-0" type="checkbox" id="showPastToggle" style="cursor:pointer;">
+                <label class="form-check-label small fw-semibold text-secondary" for="showPastToggle" style="cursor:pointer;">
+                    @L["Termine_ShowPast_Label"]
+                </label>
+            </div>
+
+            <a asp-action="Buchen" class="btn btn-primary rounded-pill px-3 py-2 fw-semibold shadow-sm d-inline-flex align-items-center">
                 <i class="bi bi-calendar-plus me-2 fs-6"></i>
                 <span class="small">@L["Termine_NewAppointment_Button"]</span>
             </a>
         </div>
     </div>
 
-    @if (Model?.Termine is null || !Model.Termine.Any())
-    {
-    }
-    else
+    @if (Model?.Termine != null && Model.Termine.Any())
     {
         <div class="row g-4" id="appointmentGrid">
             @foreach (var t in Model.Termine.OrderByDescending(x => x.Datum))
             {
-                // IsPast Logik
                 TimeSpan timeSpan;
                 var parsed = TimeSpan.TryParse(t.Uhrzeit, out timeSpan);
                 var appointmentDateTime = parsed ? t.Datum.Date.Add(timeSpan) : t.Datum;
                 var isPast = !t.Storniert && appointmentDateTime < DateTime.Now;
 
-                @* Daten-Attribute für JS-Filterung hinzufügen *@
-                <div class="col-12 col-xl-6 appointment-container @(t.Storniert ? "is-cancelled d-none" : "")">
+                @* Container mit Klassen für JS-Filterung *@
+                <div class="col-12 col-xl-6 appointment-container @(t.Storniert ? "is-cancelled d-none" : "") @(isPast ? "is-past d-none" : "")">
                     <div class="card h-100 border-0 shadow-sm rounded-4 appointment-card @(t.Storniert ? "cancelled-style" : "")">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -57,7 +62,6 @@
                                 <div>
                                     @if (t.Storniert)
                                     {
-                                        @* NEU: Offensichtlicheres Storniert-Badge *@
                                         <span class="badge rounded-pill bg-danger text-white px-3 shadow-sm">
                                             <i class="bi bi-x-octagon-fill me-1"></i> @L["Termine_Status_Cancelled"]
                                         </span>
@@ -85,20 +89,10 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-light-subtle">
-                                @if (t.AntragId.HasValue)
-                                {
-                                    <a asp-controller="Antraege" asp-action="Antrag" asp-route-id="@t.AntragId"
-                                       class="text-decoration-none small fw-semibold text-secondary">
-                                        <i class="bi bi-file-earmark-text me-1"></i>
-                                        Antrag #@t.AntragId.Value.ToString().Substring(0, 8)
-                                    </a>
-                                }
-                                else
-                                {
-
-                                    <span></span>
-                                }
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    @L["Termine_Action_ViewDetails"]
+                                </a>
 
                                 @if (!t.Storniert && !isPast)
                                 {
@@ -121,19 +115,21 @@
 
 @section Scripts {
     <script>
-        document.getElementById('showCancelledToggle').addEventListener('change', function() {
-            const cancelledItems = document.querySelectorAll('.is-cancelled');
-            cancelledItems.forEach(item => {
-                if (this.checked) {
-                    item.classList.remove('d-none');
-                    // Kleiner Fade-In Effekt
-                    item.style.opacity = 0;
-                    setTimeout(() => item.style.opacity = 1, 10);
-                } else {
-                    item.classList.add('d-none');
-                }
+        function applyFilters() {
+            const showCancelled = document.getElementById('showCancelledToggle').checked;
+            const showPast = document.getElementById('showPastToggle').checked;
+
+            document.querySelectorAll('.is-cancelled').forEach(el => {
+                el.classList.toggle('d-none', !showCancelled);
             });
-        });
+
+            document.querySelectorAll('.is-past').forEach(el => {
+                el.classList.toggle('d-none', !showPast);
+            });
+        }
+
+        document.getElementById('showCancelledToggle').addEventListener('change', applyFilters);
+        document.getElementById('showPastToggle').addEventListener('change', applyFilters);
     </script>
 }
 
@@ -143,15 +139,10 @@
             transition: all 0.3s ease;
         }
 
-        .appointment-container {
-            transition: opacity 0.3s ease;
-        }
-
-        /* NEU: Spezieller Style für stornierte Karten */
         .cancelled-style {
             background-color: var(--bs-tertiary-bg) !important;
-            border: 1px dashed var(--bs-border-color) !important;
             filter: grayscale(0.5);
+            border: 1px dashed var(--bs-border-color) !important;
         }
 
         .pulsate-dot i {
@@ -172,9 +163,10 @@
             }
         }
 
-        [data-bs-theme="dark"] .appointment-card {
-            background-color: var(--bs-tertiary-bg);
-            border: 1px solid var(--bs-border-color);
+        .text-gradient {
+            background: linear-gradient(90deg, var(--bs-primary), #6f42c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 }

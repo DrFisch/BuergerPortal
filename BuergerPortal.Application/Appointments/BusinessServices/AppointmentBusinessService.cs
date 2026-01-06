@@ -127,5 +127,44 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             await _repo.DeleteAsync(appt, ct);
             return Result<Guid>.Success(id);
         }
+
+        public async Task<AppointmentListItemDto?> GetByIdAsync(Guid id, Guid currentUserId, CancellationToken ct)
+        {
+            var appt = await _repo.GetByIdAsync(id, ct);
+            if (appt is null || appt.UserId != currentUserId) return null;
+
+            return new AppointmentListItemDto
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = appt.StartUtc,
+                EndUtc = appt.EndUtc,
+                Cancelled = appt.Status == AppointmentStatus.Cancelled,
+                AntragId = appt.AntragId
+            };
+        }
+
+        public async Task<Result<Guid>> UpdateLocationAsync(Guid id, Guid currentUserId, LocationType newLocation, CancellationToken ct)
+        {
+            var appt = await _repo.GetByIdAsync(id, ct);
+
+            if (appt is null)
+                return Result<Guid>.Fail(ErrorCodes.NotFound, "Termin nicht gefunden.");
+
+            if (appt.UserId != currentUserId)
+                return Result<Guid>.Fail(ErrorCodes.Forbidden, "Keine Berechtigung.");
+
+            if (appt.Status == AppointmentStatus.Cancelled)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Stornierte Termine können nicht geändert werden.");
+
+            if (appt.StartUtc < DateTime.UtcNow)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Vergangene Termine können nicht geändert werden.");
+
+            appt.Location = newLocation;
+            await _repo.UpdateAsync(appt, ct);
+
+            return Result<Guid>.Success(appt.Id);
+        }
     }
 }

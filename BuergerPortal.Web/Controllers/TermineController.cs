@@ -1,4 +1,5 @@
-﻿using BuergerPortal.Web.Features.Termine;
+﻿using BuergerPortal.Web.Extensions;
+using BuergerPortal.Web.Features.Termine;
 using BuergerPortal.Web.Features.Termine.Contracts;
 using BuergerPortal.Web.Features.Termine.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -228,6 +229,62 @@ namespace BuergerPortal.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Details(Guid id, CancellationToken ct)
+        {
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var res = await client.GetAsync($"api/appointments/{id}", ct);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["BookingError"] = "Termin konnte nicht geladen werden.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var x = await res.Content.ReadFromJsonAsync<AppointmentListItemResponse>(cancellationToken: ct);
+            if (x == null) return NotFound();
+
+            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(x.StartUtc, BerlinTz);
+
+            var vm = new TerminDetailsVm
+            {
+                Id = x.Id,
+                Service = x.Service, // Jetzt direkt als Enum
+                Datum = startLocal.Date,
+                Uhrzeit = $"{startLocal:HH\\:mm}",
+                Location = x.Location,
+                Storniert = x.Cancelled,
+                AntragId = x.AntragId
+            };
+
+            return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> UpdateLocation(TerminDetailsVm vm, CancellationToken ct)
+        {
+            var client = _cf.CreateClient("BuergerPortalApi");
+
+            var payload = new { location = vm.Location };
+
+            var res = await client.PatchAsJsonAsync($"api/appointments/{vm.Id}/location", payload, ct);
+
+            if (res.IsSuccessStatusCode)
+            {
+                TempData["BookingSuccess"] = "Standort wurde erfolgreich geändert.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var errorMsg = await res.Content.ReadAsStringAsync(ct);
+            ModelState.AddModelError(string.Empty, string.IsNullOrWhiteSpace(errorMsg)
+                ? "Der Standort konnte nicht geändert werden."
+                : errorMsg);
+
+            return View("Details", vm);
         }
     }
 }

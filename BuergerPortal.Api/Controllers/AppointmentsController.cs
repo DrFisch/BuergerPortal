@@ -4,6 +4,7 @@ using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Mail;
+using BuergerPortal.Domain.Appointments.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -173,6 +174,62 @@ namespace BuergerPortal.Api.Controllers
             var result = await _svc.DeleteAsync(id, userId, ct);
             return FromResult(result, () => NoContent());
         }
+
+        // ---------- GetById (200/404) ----------
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentListItemResponse>> GetById(Guid id, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId))
+                return Unauthorized();
+
+            var appt = await _svc.GetByIdAsync(id, userId, ct);
+            if (appt is null) return NotFound();
+
+            return Ok(new AppointmentListItemResponse
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = DateTime.SpecifyKind(appt.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(appt.EndUtc, DateTimeKind.Utc),
+                Cancelled = appt.Cancelled,
+                AntragId = appt.AntragId
+            });
+        }
+
+        // ---------- Update Location (Patch) ----------
+        [HttpPatch("{id:guid}/location")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateLocation(Guid id, [FromBody] UpdateLocationRequest req, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
+            var result = await _svc.UpdateLocationAsync(id, userId, req.NewLocation, ct);
+
+            if (result.IsSuccess)
+            {
+                // Optionaler E-Mail-Versand bei Änderung
+                _ = Task.Run(async () => {
+                    var userEmail = User.FindFirst("email")?.Value;
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        var subject = "Standortänderung für Ihren Termin";
+                        var body = $"Der Standort für Ihren Termin wurde erfolgreich auf <b>{req.NewLocation.GetDisplayName()}</b> geändert.";
+                        await _email.SendAsync(userEmail, subject, body, default);
+                    }
+                }, ct);
+
+                return NoContent();
+            }
+
+            return FromResult(result, () => NoContent());
+        }
+
+        // Hilfs-Klasse für den Request
+        public record UpdateLocationRequest(LocationType NewLocation);
 
         // ============================================================
         // Einheitliches Mapping: Result<T> -> HTTP
