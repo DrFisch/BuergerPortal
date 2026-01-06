@@ -144,18 +144,25 @@ namespace BuergerPortal.Api.Controllers
         {
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
-            var localStart = new DateTime(date.Year, date.Month, date.Day, 8, 0, 0, DateTimeKind.Unspecified);
-            var localEnd = new DateTime(date.Year, date.Month, date.Day, 12, 0, 0, DateTimeKind.Unspecified);
+            var localStart = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified);
+            var localEnd = localStart.AddDays(1);
 
             var fromUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
             var toUtc = TimeZoneInfo.ConvertTimeToUtc(localEnd, tz);
 
             var dtos = await _svc.GetBusyAsync(fromUtc, toUtc, ct);
 
-            var resp = dtos.Select(x => new BusySlotResponse
+            var resp = dtos.Select(x =>
             {
-                StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
-                EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc)
+                
+                var startBerlin = TimeZoneInfo.ConvertTimeFromUtc(x.StartUtc, tz);
+                var endBerlin = TimeZoneInfo.ConvertTimeFromUtc(x.EndUtc, tz);
+
+                return new BusySlotResponse
+                {
+                    StartUtc = DateTime.SpecifyKind(startBerlin, DateTimeKind.Unspecified),
+                    EndUtc = DateTime.SpecifyKind(endBerlin, DateTimeKind.Unspecified)
+                };
             });
 
             return Ok(resp);
