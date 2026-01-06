@@ -12,3 +12,25 @@ dotnet ef migrations add AddPoiTable -c PortalDbContext -p .\BuergerPortal.Infra
 "ConnectionStrings": {
   "DefaultConnection": "Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;"
 }
+
+------------Oder stattdessen--------------
+Lokal Db Änderung
+
+Migration durchführen
+
+Update db lokal
+
+Push
+
+Server: Pull
+
+Update db mit dem Befehl:
+
+docker run -d \
+  --name buergerportal-api \
+  --network buergerportal-net \
+  -p 5000:8080 \
+  -e "ASPNETCORE_ENVIRONMENT=Production" \
+  -e "ConnectionStrings__DefaultConnection=Server=buergerportal-sql;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;" \
+  --restart=always \
+  buergerportal-api

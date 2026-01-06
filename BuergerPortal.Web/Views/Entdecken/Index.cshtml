@@ -17,7 +17,10 @@
         </div>
     </div>
 
-    <div class="sticky-top py-3 bg-view-header shadow-sm-bottom" style="z-index: 1020; margin-top: -1rem;">
+    @* WICHTIG: z-index auf 1010 reduziert (Navbar hat standardmäßig 1020/1030).
+       top: 56px (oder die Höhe deiner Navbar) sorgt dafür, dass die Suchbar UNTER der Navbar klebt.
+    *@
+    <div class="sticky-top py-3 bg-view-header shadow-sm-bottom" style="z-index: 1010; margin-top: -1rem; top: 56px;">
         <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden border border-secondary-subtle">
             <span class="input-group-text bg-search-input border-0 ps-3">
                 <i class="bi bi-search text-secondary"></i>
@@ -87,6 +90,7 @@
     </div>
 </div>
 
+@* Modals bleiben unverändert *@
 <div class="modal fade" id="poiModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
@@ -124,6 +128,7 @@
 @section Styles {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        /* Der View-Header muss einen Hintergrund haben, damit der Text darunter beim Scrollen verschwindet */
         .bg-view-header {
             background-color: var(--bs-body-bg);
             transition: background-color 0.3s ease;
@@ -140,7 +145,7 @@
             transition: all 0.2s ease;
         }
 
-            .btn-filter-chip.active {
+            .btn-filter-chip.active, .btn-primary.active {
                 background-color: var(--bs-primary) !important;
                 color: #fff !important;
                 border-color: var(--bs-primary) !important;
@@ -191,13 +196,6 @@
             padding: 0.1rem 0.5rem;
             font-size: 0.75rem;
         }
-        #filterContainer {
-            display: flex;
-            flex-wrap: nowrap; 
-            overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; 
-            padding-bottom: 8px;
-        }
     </style>
 }
 
@@ -212,11 +210,19 @@
             const poiModalElement = document.getElementById('poiModal');
             const poiModal = new bootstrap.Modal(poiModalElement);
             const globalMapModal = new bootstrap.Modal(document.getElementById('globalMapModal'));
+            const filterContainer = document.getElementById('filterContainer');
+
+            // Desktop Wheel Scroll Support
+            filterContainer.addEventListener('wheel', (evt) => {
+                evt.preventDefault();
+                filterContainer.scrollLeft += evt.deltaY;
+            });
 
             // 1. Filter-Logik
             function filterPois() {
                 const term = document.getElementById('poiSearch').value.toLowerCase().trim();
-                const activeFilter = document.querySelector('#filterContainer .active').dataset.filter;
+                const activeBtn = document.querySelector('#filterContainer .active');
+                const activeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
                 let count = 0;
 
                 document.querySelectorAll('.poi-item-wrapper').forEach(item => {
@@ -236,7 +242,7 @@
 
             // 2. Detail Modal Logik
             window.openPoiDetails = function(id) {
-                const poi = allPois.find(p => p.Id === id || p.id === id);
+                const poi = allPois.find(p => (p.Id || p.id) === id);
                 if (!poi) return;
 
                 document.getElementById('poiModalBody').innerHTML = `
@@ -259,7 +265,7 @@
                     </div>`;
 
                 const mapQuery = encodeURIComponent(`${poi.Name || poi.name} Hof`);
-                document.getElementById('poiMapBtn').href = `http://maps.google.com/?q=${mapQuery}`;
+                document.getElementById('poiMapBtn').href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
                 poiModalElement.dataset.currentLat = poi.Lat || poi.lat || 50.312;
                 poiModalElement.dataset.currentLon = poi.Lon || poi.lon || 11.912;
@@ -290,13 +296,15 @@
 
                 const markerGroup = [];
                 allPois.forEach(poi => {
-                    if (poi.Lat && poi.Lon) {
-                        const m = L.marker([poi.Lat, poi.Lon]).addTo(globalMap)
+                    const lat = poi.Lat || poi.lat;
+                    const lon = poi.Lon || poi.lon;
+                    if (lat && lon) {
+                        const m = L.marker([lat, lon]).addTo(globalMap)
                             .bindPopup(`
                                 <div class="text-center">
-                                    <h6 class="fw-bold mb-1">${poi.Name}</h6>
+                                    <h6 class="fw-bold mb-1">${poi.Name || poi.name}</h6>
                                     <button class="btn btn-xs btn-primary rounded-pill mt-1"
-                                            onclick="bootstrap.Modal.getInstance(document.getElementById('globalMapModal')).hide(); openPoiDetails('${poi.Id}')">
+                                            onclick="bootstrap.Modal.getInstance(document.getElementById('globalMapModal')).hide(); openPoiDetails('${poi.Id || poi.id}')">
                                         Details
                                     </button>
                                 </div>`);
@@ -311,15 +319,20 @@
                 globalMap.invalidateSize();
             });
 
-            // Events
-            document.getElementById('poiSearch').addEventListener('input', filterPois);
+            // Filter Click Handler
             document.querySelectorAll('#filterContainer button').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    document.querySelectorAll('#filterContainer button').forEach(b => b.classList.replace('btn-primary', 'btn-filter-chip'));
-                    this.classList.replace('btn-filter-chip', 'btn-primary');
+                    document.querySelectorAll('#filterContainer button').forEach(b => {
+                        b.classList.remove('active', 'btn-primary');
+                        b.classList.add('btn-filter-chip');
+                    });
+                    this.classList.add('active', 'btn-primary');
+                    this.classList.remove('btn-filter-chip');
                     filterPois();
                 });
             });
+
+            document.getElementById('poiSearch').addEventListener('input', filterPois);
             document.getElementById('clearSearch').addEventListener('click', () => {
                 document.getElementById('poiSearch').value = '';
                 filterPois();
