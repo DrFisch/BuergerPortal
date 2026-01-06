@@ -13,11 +13,23 @@
 
 <div class="container py-4">
 
-@if (User?.Identity?.IsAuthenticated != true)
+    <div id="pwaInlineInstallAlert" class="d-none alert alert-info border-0 rounded-4 shadow-sm mb-3 py-2 px-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2 small">
+                <i class="bi bi-phone-vibrate text-primary"></i>
+                <span class="fw-medium">@T["PWA_Inline_Hint"]</span>
+            </div>
+            <button class="btn btn-sm btn-link p-0 text-primary fw-bold text-decoration-none" onclick="installApp()">
+                @T["PWA_Install_Now"] <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </div>
+
+    @if (User?.Identity?.IsAuthenticated != true)
     {
         <div class="alert alert-warning border-0 rounded-4 shadow-sm mb-4" role="alert">
             <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 p-1">
-                
+
                 <div class="d-flex align-items-center gap-3 text-center text-md-start flex-column flex-md-row">
                     <div class="bg-warning bg-opacity-25 text-warning-emphasis rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-exclamation-triangle-fill fs-4"></i>
@@ -33,8 +45,8 @@
                 </div>
 
                 <div class="w-100 w-md-auto">
-                    <a class="btn btn-primary d-block d-md-inline-block rounded-pill px-4 fw-semibold shadow-sm" 
-                       asp-controller="Account" 
+                    <a class="btn btn-primary d-block d-md-inline-block rounded-pill px-4 fw-semibold shadow-sm"
+                       asp-controller="Account"
                        asp-action="Login">
                         <i class="bi bi-box-arrow-in-right me-2"></i> @T["Login"]
                     </a>
@@ -99,7 +111,6 @@
                                 @if (!string.IsNullOrEmpty(Model.NextAppointment.Uhrzeit))
                                 {
                                     <div class="small">
-                                        
                                     </div>
                                 }
                                 <div class="small text-muted">
@@ -275,6 +286,25 @@
                     </div>
                 </div>
             </div>
+            <div class="col">
+                <div class="card feature-card h-100 border-0 rounded-4 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="feature-icon bg-info-subtle text-info mb-3">
+                            <i class="bi bi-compass"></i>
+                        </div>
+                        <h5 class="card-title mb-1">@T["Card_Explore_Title"]</h5>
+                        <p class="card-text text-muted mb-0">
+                            @T["Card_Explore_Description"]
+                        </p>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <a asp-controller="Entdecken" asp-action="Index" class="btn btn-outline-info btn-sm">
+                                @T["Card_Explore_Button"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Benachrichtigungen / PWA -->
             <div class="col" id="pwaInstallCard" style="display: none;">
@@ -315,7 +345,7 @@
                 </div>
             </div> *@
 
-            
+
             <div class="col">
                 <div class="card feature-card h-100 border-0 rounded-4">
                     <div class="card-body d-flex flex-column">
@@ -377,7 +407,7 @@
 
                         <div class="mt-3 d-flex flex-wrap gap-2">
                             <a asp-controller="Home" asp-action="Standorte" class="btn btn-outline-primary btn-sm">
-                                 @T["Show_Opening_Hours"]
+                                @T["Show_Opening_Hours"]
                             </a>
                         </div>
                     </div>
@@ -394,7 +424,7 @@
 
                         <div class="mt-3 d-flex flex-wrap gap-2">
                             <a asp-controller="Home" asp-action="News" class="btn btn-outline-primary btn-sm">
-                                 @T["Show_News"]
+                                @T["Show_News"]
                             </a>
                         </div>
                     </div>
@@ -421,53 +451,53 @@
         </div>
     </section>
 
-    
+
 
 </div>
 
 @section Styles {
-        <style>
-    .hero {
-        background: radial-gradient(circle at top left, rgba(13,110,253,0.16), transparent 55%), radial-gradient(circle at bottom right, rgba(32,201,151,0.18), transparent 55%);
-        background-color: var(--bs-body-bg);
-        border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .hero-stats {
-        background: rgba(255,255,255,0.9);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0,0,0,0.04);
-    }
-
-    [data-bs-theme="dark"] .hero-stats {
-        background: rgba(15,23,42,0.85);
-        border-color: rgba(148,163,184,0.25);
-    }
-
-    /* Feature Cards */
-    .feature-card {
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
-        transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out, background-color .15s ease-out;
-        border-top: 3px solid transparent;
-    }
-
-        .feature-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 40px rgba(15,23,42,0.14);
+    <style>
+        .hero {
+            background: radial-gradient(circle at top left, rgba(13,110,253,0.16), transparent 55%), radial-gradient(circle at bottom right, rgba(32,201,151,0.18), transparent 55%);
+            background-color: var(--bs-body-bg);
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
-    /* kleiner Icon-Container oben */
-    .feature-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 999px;
-        font-size: 1.25rem;
-    }
+        .hero-stats {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        [data-bs-theme="dark"] .hero-stats {
+            background: rgba(15,23,42,0.85);
+            border-color: rgba(148,163,184,0.25);
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+            transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out, background-color .15s ease-out;
+            border-top: 3px solid transparent;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 18px 40px rgba(15,23,42,0.14);
+            }
+
+        /* kleiner Icon-Container oben */
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 999px;
+            font-size: 1.25rem;
+        }
         /* Pfeil beim Aufklappen drehen */
         .card-header [data-bs-toggle="collapse"] .bi-chevron-down {
             transition: transform .2s ease;
@@ -477,7 +507,7 @@
             transform: rotate(180deg);
         }
 
-    /* Letzte Aktivitäten Card */
+        /* Letzte Aktivitäten Card */
         .recent-card {
             background: rgba(var(--bs-primary-rgb), 0.03); /* sehr zarter Farbakzent */
             border: 1px solid rgba(0,0,0,0.04);
@@ -495,7 +525,8 @@
             border-color: rgba(var(--bs-primary-rgb), 0.25);
         }
 
-        </style>}
+    </style>
+}
 
 @section Scripts {
     <script>
@@ -534,7 +565,6 @@
             }
         }
 
-        // Optional: Verstecken, wenn die App bereits installiert wurde
         window.addEventListener('appinstalled', () => {
             deferredPrompt = null;
             if (installCard) {

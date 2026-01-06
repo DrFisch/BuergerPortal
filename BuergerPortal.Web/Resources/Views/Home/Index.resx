@@ -346,4 +346,9 @@
 	<data name="Show_News" xml:space="preserve">
     <value>News lesen</value>
   </data>
+	<data name="Card_Explore_Title" xml:space="preserve"><value>Interessante Orte</value></data>
+	<data name="Card_Explore_Description" xml:space="preserve"><value>Entdecken Sie Services, Spielplätze und Sehenswürdigkeiten in Ihrer Stadt.</value></data>
+	<data name="Card_Explore_Button" xml:space="preserve"><value>Entdecken &amp; Suchen</value></data>
+	<data name="PWA_Inline_Hint" xml:space="preserve"><value>Installieren Sie das Bürgerportal als App für einen schnelleren Zugriff.</value></data>
+	<data name="PWA_Install_Now" xml:space="preserve"><value>Jetzt installieren</value></data>
 </root>

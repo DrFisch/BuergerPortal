@@ -1,7 +1,9 @@
 ﻿let deferredPrompt;
 let newWorker;
 
-
+/**
+ * SERVICE WORKER REGISTRIERUNG & UPDATE-LOGIK
+ */
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(reg => {
         reg.addEventListener('updatefound', () => {
@@ -23,29 +25,41 @@ if ('serviceWorker' in navigator) {
 }
 
 function showUpdateNotification() {
-
     const updateNow = confirm("Eine neue Version der App ist verfügbar. Möchtest du jetzt aktualisieren?");
     if (updateNow && newWorker) {
         newWorker.postMessage({ type: 'SKIP_WAITING' });
     }
 }
 
-function showAppInstallMenuItem() {
-    const li = document.getElementById('appInstallMenuItem');
-    if (li) {
-        li.classList.remove('d-none');
+/**
+ * PWA INSTALLATIONS-LOGIK & UI-STEUERUNG
+ */
+function showInstallPrompts() {
+    // Falls wir im Standalone-Modus sind, nichts anzeigen
+    if (isStandalone()) return;
+
+    // 1. Die Feature-Card auf dem Home-Bildschirm (falls vorhanden)
+    const card = document.getElementById('pwaInstallCard');
+    if (card) card.style.display = 'block';
+
+    // 2. Der dezente Alert über dem Login-Hinweis
+    const inlineAlert = document.getElementById('pwaInlineInstallAlert');
+    if (inlineAlert) inlineAlert.classList.remove('d-none');
+
+    // 3. Optional: Einmaliger Toast oder Browser-Alert (nur bei erstem Laden)
+    if (!sessionStorage.getItem('pwa_alert_shown')) {
+        // Hier ein dezenter Toast oder einfacher Alert
+        console.log("Hinweis: Installieren Sie diese App für eine bessere Erfahrung.");
+        sessionStorage.setItem('pwa_alert_shown', 'true');
     }
-    const btn = document.getElementById('btnInstall');
-    if (btn) btn.classList.remove('d-none');
 }
 
-function hideAppInstallMenuItem() {
-    const li = document.getElementById('appInstallMenuItem');
-    if (li) {
-        li.classList.add('d-none');
-    }
-    const btn = document.getElementById('btnInstall');
-    if (btn) btn.classList.add('d-none');
+function hideInstallPrompts() {
+    const card = document.getElementById('pwaInstallCard');
+    if (card) card.style.display = 'none';
+
+    const inlineAlert = document.getElementById('pwaInlineInstallAlert');
+    if (inlineAlert) inlineAlert.classList.add('d-none');
 }
 
 function isStandalone() {
@@ -56,10 +70,7 @@ function isStandalone() {
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-
-    if (!isStandalone()) {
-        showAppInstallMenuItem();
-    }
+    showInstallPrompts();
 });
 
 async function installApp() {
@@ -69,7 +80,7 @@ async function installApp() {
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`Installations-Ergebnis: ${outcome}`);
         deferredPrompt = null;
-        hideAppInstallMenuItem();
+        hideInstallPrompts();
     } catch (err) {
         console.error('installApp error', err);
     }
@@ -77,21 +88,19 @@ async function installApp() {
 
 window.installApp = installApp;
 
-
 document.addEventListener('DOMContentLoaded', () => {
     if (isStandalone()) {
-        hideAppInstallMenuItem();
+        hideInstallPrompts();
     }
 
-    if (deferredPrompt && !isStandalone()) {
-        showAppInstallMenuItem();
-    }
+    // Falls das Event schon gefeuert wurde
+    if (deferredPrompt) showInstallPrompts();
 
     window.addEventListener('online', () => document.body.classList.remove('is-offline'));
     window.addEventListener('offline', () => document.body.classList.add('is-offline'));
 });
 
 window.addEventListener('appinstalled', () => {
-    hideAppInstallMenuItem();
+    hideInstallPrompts();
     deferredPrompt = null;
 });
