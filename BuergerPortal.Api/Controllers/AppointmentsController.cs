@@ -50,7 +50,6 @@ namespace BuergerPortal.Api.Controllers
 
             var result = await _svc.BookAsync(dto, userId, ct);
 
-            // E-Mail-Versand nach erfolgreicher Buchung
             try
             {
                 var userEmail = User.FindFirst("email")?.Value;
@@ -77,17 +76,14 @@ namespace BuergerPortal.Api.Controllers
             }
             catch (Exception ex)
             {
-                // Fehler beim E-Mail-Versand dürfen die Terminbuchung NICHT verhindern
-                // => optional in dein Logging-System schreiben
+
                 Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
             }
 
-            // Erfolg -> 201 Created; Fehler -> ProblemDetails gemäß ErrorCodes
             return FromResult(result, id =>
                 new CreatedAtActionResult(nameof(GetById), null, new { id }, id));
         }
 
-        // ---------- Eigene Termine (200) ----------
         [HttpGet("mine")]
         [ProducesResponseType(typeof(IEnumerable<AppointmentListItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AppointmentListItemResponse>>> GetMine(CancellationToken ct)
@@ -113,7 +109,6 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
-        // ---------- GetById (200/404) ----------
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -137,7 +132,6 @@ namespace BuergerPortal.Api.Controllers
             });
         }
 
-        // ---------- Busy-Slots (200) ----------
         [HttpGet("busy")]
         [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date, CancellationToken ct)
@@ -168,7 +162,6 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
-        // ---------- Cancel (204/400/403/404) ----------
         [HttpPost("{id:guid}/cancel")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -197,7 +190,6 @@ namespace BuergerPortal.Api.Controllers
             return FromResult(result, () => NoContent());
         }
 
-        // ---------- Update Location (Patch) ----------
         [HttpPatch("{id:guid}/location")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -209,7 +201,6 @@ namespace BuergerPortal.Api.Controllers
 
             if (result.IsSuccess)
             {
-                // Optionaler E-Mail-Versand bei Änderung
                 _ = Task.Run(async () => {
                     var userEmail = User.FindFirst("email")?.Value;
                     if (!string.IsNullOrEmpty(userEmail))
@@ -226,7 +217,6 @@ namespace BuergerPortal.Api.Controllers
             return FromResult(result, () => NoContent());
         }
 
-        // Hilfs-Klasse für den Request
         public record UpdateLocationRequest(LocationType NewLocation);
 
       
@@ -236,10 +226,9 @@ namespace BuergerPortal.Api.Controllers
                 return onOk(r.Value!);
 
             var problem = MapProblem(r.ErrorCode, r.ErrorMessage);
-            return problem; // ObjectResult ist kompatibel mit ActionResult<T>
+            return problem;
         }
 
-        // Für Endpoints ohne Rückgabewert (z. B. Cancel/Delete -> NoContent)
         private IActionResult FromResult<T>(Result<T> r, Func<IActionResult> onOk)
         {
             if (r.IsSuccess)

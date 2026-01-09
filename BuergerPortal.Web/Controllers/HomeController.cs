@@ -33,7 +33,7 @@ namespace BuergerPortal.Web.Controllers
             
             try
             {
-                var weatherClient = _cf.CreateClient(); // Standard Client für externe API
+                var weatherClient = _cf.CreateClient(); 
                 var weatherRes = await weatherClient.GetFromJsonAsync<JsonElement>(
                     "https://api.open-meteo.com/v1/forecast?latitude=50.31&longitude=11.91&current_weather=true", ct);
 
@@ -94,7 +94,6 @@ namespace BuergerPortal.Web.Controllers
                     }
                     else
                     {
-                        // Log useful debugging info so the UI can be diagnosed
                         var content = await res.Content.ReadAsStringAsync(ct);
                         if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                         {
@@ -106,7 +105,6 @@ namespace BuergerPortal.Web.Controllers
                             _logger.LogWarning("Appointments API returned {Status} when fetching /api/appointments/mine. Response: {Content}", res.StatusCode, content);
                         }
                     }
-                    // 401 -> einfach nichts anzeigen, kein Redirect auf Startseite
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
@@ -114,7 +112,6 @@ namespace BuergerPortal.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Fehler auf der Startseite lieber verschlucken, statt den Nutzer mit Fehlerseiten zu nerven
                     _logger.LogError(ex, "Fehler beim Laden der nächsten Termine (Index).");
                 }
             }

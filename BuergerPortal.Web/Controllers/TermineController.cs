@@ -30,13 +30,12 @@ namespace BuergerPortal.Web.Controllers
             var res = await client.GetAsync("api/appointments/mine", ct);
             if (res.StatusCode == HttpStatusCode.Unauthorized)
             {
-                // Hinweis für die View
                 ViewBag.AuthNotice = "Bitte melde dich an, um deine Termine zu sehen und zu buchen.";
                 apiItems = new();
             }
             else
             {
-                res.EnsureSuccessStatusCode(); // andere Fehler sauber hochwerfen
+                res.EnsureSuccessStatusCode(); 
                 apiItems = await res.Content.ReadFromJsonAsync<List<AppointmentListItemResponse>>(cancellationToken: ct)
                            ?? new();
             }
@@ -74,7 +73,7 @@ namespace BuergerPortal.Web.Controllers
         {
             var vm = new BuchenVm
             {
-                // Wenn vom Link gekommen: Dienst vorbesetzen
+                // Wenn vom Link gekommen, Dienst vorbesetzen
                 Service = service ,
                 RelatedAntragId = antragId
             };
@@ -252,7 +251,7 @@ namespace BuergerPortal.Web.Controllers
             var vm = new TerminDetailsVm
             {
                 Id = x.Id,
-                Service = x.Service, // Jetzt direkt als Enum
+                Service = x.Service, 
                 Datum = startLocal.Date,
                 Uhrzeit = $"{startLocal:HH\\:mm}",
                 Location = x.Location,

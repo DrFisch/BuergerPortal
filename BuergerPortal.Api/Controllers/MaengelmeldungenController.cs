@@ -63,7 +63,6 @@ namespace BuergerPortal.Api.Controllers
                 Status = entity.Status
             };
 
-            // optional: CreatedAtAction, wenn du später GET by id implementierst
             return Created($"/api/maengelmeldungen/{entity.Id}", resp);
         }
 

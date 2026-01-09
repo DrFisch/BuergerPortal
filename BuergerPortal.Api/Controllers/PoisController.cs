@@ -6,7 +6,7 @@ namespace BuergerPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [AllowAnonymous] // Jeder darf Orte entdecken
+    [AllowAnonymous] 
     public sealed class PoisController : ControllerBase
     {
         private readonly IPoiBusinessService _svc;
@@ -39,7 +39,6 @@ namespace BuergerPortal.Api.Controllers
         }
     }
 
-    // Response Model für das Frontend
     public class PoiResponse
     {
         public Guid Id { get; set; }

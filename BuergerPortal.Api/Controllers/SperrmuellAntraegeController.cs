@@ -18,7 +18,6 @@ namespace BuergerPortal.Api.Controllers
         public SperrmuellAntraegeController(ISperrmuellAntragBusinessService service)
             => _service = service;
 
-        /// <summary>Step 1: legt einen Sperrmüll-Entwurf an und gibt die Id zurück.</summary>
         [HttpPost("step1")]
         [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -29,7 +28,6 @@ namespace BuergerPortal.Api.Controllers
 
             if (!result.IsSuccess) return ToProblem(result);
 
-            // 201 Created + Location Header auf GET /{id}
             return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
         }
 
@@ -90,7 +88,7 @@ namespace BuergerPortal.Api.Controllers
             return Ok(list);
         }
 
-        // --- Helpers -------------------------------------------------------------
+        // Helpers
 
         private Guid GetUserIdOrThrow()
         {

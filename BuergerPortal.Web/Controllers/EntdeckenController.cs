@@ -28,7 +28,7 @@ namespace BuergerPortal.Web.Controllers
 
             var vm = new EntdeckenIndexVm
             {
-                Orte = apiItems // Hier könntest du noch serverseitig sortieren falls gewünscht
+                Orte = apiItems 
             };
 
             return View(vm);
