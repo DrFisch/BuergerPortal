@@ -348,4 +348,9 @@
 	<data name="Show_News" xml:space="preserve">
     <value>Read news</value>
   </data>
+	<data name="Card_Explore_Title" xml:space="preserve"><value>Points of Interest</value></data>
+	<data name="Card_Explore_Description" xml:space="preserve"><value>Discover services, playgrounds, and sights in your city.</value></data>
+	<data name="Card_Explore_Button" xml:space="preserve"><value>Explore &amp; Search</value></data>
+	<data name="PWA_Inline_Hint" xml:space="preserve"><value>Install the citizen portal as an app for faster access.</value></data>
+	<data name="PWA_Install_Now" xml:space="preserve"><value>Install now</value></data>
 </root>

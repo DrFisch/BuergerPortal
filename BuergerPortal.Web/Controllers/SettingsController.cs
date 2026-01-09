@@ -169,7 +169,6 @@ namespace BuergerPortal.Web.Controllers
             // Aktuelle Settings holen
             var dto = await TryGetSettingsOrDefault(http, "api/users/me/settings", ct);
 
-            // Payload für API bauen – alle bisherigen Werte übernehmen, nur Theme ändern
             var payload = new UserSettingsUpdateRequest
             {
                 Theme = themeForDb,

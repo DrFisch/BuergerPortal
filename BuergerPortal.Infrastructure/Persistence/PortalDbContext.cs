@@ -1,6 +1,7 @@
 ﻿using BuergerPortal.Domain.Antrag.Entity;
 using BuergerPortal.Domain.Appointments.Entity;
 using BuergerPortal.Domain.Maengel;
+using BuergerPortal.Domain.Poi.Entity;
 using BuergerPortal.Domain.Settings.Entity;
 using BuergerPortal.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
         public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
+        public DbSet<PoiEntity> Pois => Set<PoiEntity>();
 
 
         protected override void OnModelCreating(ModelBuilder b)
@@ -206,6 +208,25 @@ namespace BuergerPortal.Infrastructure.Persistence
 
             mangel.HasIndex(x => x.CreatedUtc);
             mangel.HasIndex(x => x.Status);
+
+            // -------------------------
+            // POI (INTERESSANTE ORTE)
+            // -------------------------
+            var poi = b.Entity<PoiEntity>();
+            poi.ToTable("Pois");
+            poi.HasKey(x => x.Id);
+
+            poi.Property(x => x.Name).HasMaxLength(150).IsRequired();
+            poi.Property(x => x.Description).HasMaxLength(1000).IsRequired();
+            poi.Property(x => x.Tags).HasMaxLength(500);
+            poi.Property(x => x.Icon).HasMaxLength(50).IsRequired();
+            poi.Property(x => x.Category).HasConversion<string>().IsRequired(); // Speichert Enum als String (Verwaltung, Kultur...)
+
+            poi.Property(x => x.RowVersion).IsRowVersion();
+
+            // Indizes für die Suche
+            poi.HasIndex(x => x.Name);
+            poi.HasIndex(x => x.Category);
         }
     }
 }

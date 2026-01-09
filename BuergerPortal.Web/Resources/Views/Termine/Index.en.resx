@@ -82,4 +82,10 @@
 	<data name="Termine_ShowCancelled_Label" xml:space="preserve">
   <value>Show cancelled</value>
 </data>
+	<data name="Termine_ShowPast_Label" xml:space="preserve">
+    <value>Show past appointments</value>
+  </data>
+	<data name="Termine_Action_ViewDetails" xml:space="preserve">
+    <value>View details</value>
+  </data>
 </root>

@@ -1,0 +1,124 @@
+﻿@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Features.Termine
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@model TerminDetailsVm
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["Details_Title"];
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            @* Zurück-Link *@
+            <a asp-action="Index" class="btn btn-link text-secondary text-decoration-none mb-4 p-0">
+                <i class="bi bi-arrow-left me-1"></i> @L["Back_To_List"]
+            </a>
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                @* Header-Bereich mit Status-Farbe *@
+                <div class="card-header @(Model.Storniert ? "bg-secondary" : "bg-primary") py-4 text-center border-0">
+                    <div class="bg-white bg-opacity-25 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                        @if (Model.Storniert)
+                        {
+                            <i class="bi bi-calendar-x text-white fs-2"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-calendar-check text-white fs-2"></i>
+                        }
+                    </div>
+                    <h2 class="h4 text-white fw-bold mb-0">@L["Details_Title"]</h2>
+                    @if (Model.Storniert)
+                    {
+                        <span class="badge rounded-pill bg-danger mt-2">@L["Termine_Status_Cancelled"]</span>
+                    }
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    @* Anzeige-Bereich (Read-Only) *@
+                    <div class="mb-5 text-center">
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 mb-2">@L["Appointment_Info"]</span>
+                        <h3 class="fw-bold display-6 mb-2">@Model.Service.ToDisplayName()</h3>
+                        <div class="d-flex justify-content-center gap-3 text-muted">
+                            <span><i class="bi bi-calendar3 me-1"></i> @Model.Datum.ToLongDateString()</span>
+                            <span><i class="bi bi-clock me-1"></i> @Model.Uhrzeit @L["Clock"]</span>
+                        </div>
+                    </div>
+
+                    @* Formular zur Standort-Änderung (Update) *@
+                    @if (!Model.Storniert)
+                    {
+                        <form asp-action="UpdateLocation" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="p-4 bg-light rounded-4 border mb-4 dark-bg-subtle">
+                                <label class="form-label fw-bold text-primary small text-uppercase mb-3 d-flex align-items-center">
+                                    <i class="bi bi-geo-alt-fill me-2"></i> @L["Field_Location_Change"]
+                                </label>
+
+                                <select asp-for="Location" class="form-select form-select-lg rounded-3 shadow-sm border-secondary-subtle"
+                                        asp-items="Html.GetEnumSelectList<LocationType>()">
+                                </select>
+
+                                <div class="form-text mt-3 d-flex align-items-start gap-2">
+                                    <i class="bi bi-info-circle text-primary mt-1"></i>
+                                    <span>@L["Location_Change_Hint"]</span>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow">
+                                    <i class="bi bi-save me-2"></i> @L["Action_Save_Location"]
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        @* Ansicht für stornierte Termine *@
+                        <div class="alert alert-secondary border-0 rounded-4 p-4 text-center">
+                            <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                            <p class="mb-0">@L["Details_Cancelled_Notice"]</p>
+                        </div>
+                    }
+
+                    @* verknüpfter Antrag) *@
+                    @if (Model.AntragId.HasValue)
+                    {
+                        <div class="mt-5 pt-4 border-top text-center">
+                            <p class="small text-muted mb-2">@L["Details_Linked_Application"]</p>
+                            <a asp-controller="Antraege" asp-action="Antrag" asp-route-id="@Model.AntragId"
+                               class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                                <i class="bi bi-file-earmark-text me-1"></i> #@Model.AntragId.Value.ToString().Substring(0, 8)
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .dark-bg-subtle {
+            [data-bs-theme="dark"] & {
+                background-color: var(--bs-tertiary-bg) !important;
+                border-color: var(--bs-border-color) !important;
+            }
+        }
+
+        .form-select-lg {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .card-header {
+            transition: background-color 0.3s ease;
+        }
+    </style>
+}

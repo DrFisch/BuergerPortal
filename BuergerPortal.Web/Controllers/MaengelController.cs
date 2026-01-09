@@ -26,7 +26,6 @@ namespace BuergerPortal.Web.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // Explizite Backend-Validierung für Koordinaten
             if (vm.Latitude is null || vm.Longitude is null)
             {
                 ModelState.AddModelError(nameof(vm.Latitude), "Bitte markieren Sie den Standort auf der Karte.");
@@ -36,7 +35,6 @@ namespace BuergerPortal.Web.Controllers
 
             var client = _cf.CreateClient("BuergerPortalApi");
 
-            // Request DTO passend zur API
             var req = new
             {
                 Titel = vm.Titel,
@@ -81,7 +79,6 @@ namespace BuergerPortal.Web.Controllers
                     }
                 }
 
-                // alle anderen Fehler (500, 403)
                 var message = await res.Content.ReadAsStringAsync(ct);
                 ModelState.AddModelError(string.Empty,
                     $"Fehler beim Senden der Mängelmeldung ({(int)res.StatusCode}). Bitte später erneut versuchen.");
@@ -90,7 +87,6 @@ namespace BuergerPortal.Web.Controllers
             }
 
 
-            //Response lesen
             var created = await res.Content.ReadFromJsonAsync<CreateMaengelmeldungResponse>(cancellationToken: ct);
 
             TempData["Meldung"] = created is null

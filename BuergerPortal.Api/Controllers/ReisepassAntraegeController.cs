@@ -18,7 +18,6 @@ namespace BuergerPortal.Api.Controllers
         public ReisepassAntraegeController(IReisepassAntragBusinessService service)
             => _service = service;
 
-        /// <summary>Step 1: legt einen Entwurf an und gibt die Id zurück.</summary>
         [HttpPost("step1")]
         [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -29,11 +28,9 @@ namespace BuergerPortal.Api.Controllers
 
             if (!result.IsSuccess) return ToProblem(result);
 
-            // 201 Created + Location Header auf GET /{id}
             return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
         }
 
-        /// <summary>Step 2: ergänzt Optionen zum bestehenden Entwurf.</summary>
         [HttpPut("{id:guid}/step2")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -49,7 +46,6 @@ namespace BuergerPortal.Api.Controllers
             return NoContent();
         }
 
-        /// <summary>Reicht den Antrag ein (Status: Eingereicht).</summary>
         [HttpPost("{id:guid}/submit")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -65,7 +61,6 @@ namespace BuergerPortal.Api.Controllers
             return NoContent();
         }
 
-        /// <summary>Detail eines Antrags (nur eigener Antrag).</summary>
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(ReisepassDetailDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -80,7 +75,6 @@ namespace BuergerPortal.Api.Controllers
             return Ok(result.Value);
         }
 
-        /// <summary>Liste aller eigenen Reisepassanträge (Summary).</summary>
         [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<ReisepassSummaryDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMine(CancellationToken ct)
@@ -90,26 +84,22 @@ namespace BuergerPortal.Api.Controllers
             return Ok(list);
         }
 
-        // --- Helpers -------------------------------------------------------------
 
         private Guid GetUserIdOrThrow()
         {
-            // Versuch 1: NameIdentifier (typisch bei ASP.NET/JWT)
             var val = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                      ?? User.FindFirstValue("sub"); // OIDC-Standard-Claim
+                      ?? User.FindFirstValue("sub"); 
             if (string.IsNullOrWhiteSpace(val))
             { 
                 
                 throw new UnauthorizedAccessException("Kein Benutzerkontext vorhanden."); 
             }
 
-            // Dein Modell nutzt Guid als ApplicantUserId
             return Guid.Parse(val);
         }
 
         private IActionResult ToProblem<T>(Result<T> result)
         {
-            // Mapped deine ErrorCodes -> HTTP
             var (status, title) = result.ErrorCode switch
             {
                 ErrorCodes.Validation => (StatusCodes.Status400BadRequest, "Validierungsfehler"),

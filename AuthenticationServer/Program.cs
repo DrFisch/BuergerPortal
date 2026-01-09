@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using OpenIddict.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
 using OpenIddict.Server.AspNetCore;
-using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG
-
+using Microsoft.AspNetCore.HttpOverrides; 
 var builder = WebApplication.CreateBuilder(args);
 
 var env = builder.Environment.EnvironmentName;
@@ -76,10 +75,7 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore()
                .EnableAuthorizationEndpointPassthrough()
                .EnableEndSessionEndpointPassthrough()
-               // WICHTIG: Token Passthrough ENTFERNT.
-               // OpenIddict soll den Token-Request selbst verarbeiten (Engine),
-               // da wir keinen eigenen Controller dafür haben.
-               // .EnableTokenEndpointPassthrough()  <--- AUSKOMMENTIERT
+
                .DisableTransportSecurityRequirement();
         
         options.DisableAccessTokenEncryption();
@@ -94,7 +90,6 @@ builder.Services.ConfigureApplicationCookie(o =>
 {
     o.ExpireTimeSpan = TimeSpan.FromHours(24);
     o.SlidingExpiration = false;
-    // WICHTIG: Cookie-Sicherheit für HTTPS
     o.Cookie.SameSite = SameSiteMode.None;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
@@ -107,21 +102,15 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
-// -------------------------------------------------------------------------
-// WICHTIG: Forwarded Headers Konfiguration (Der Fix für ID2084)
-// Muss GANZ OBEN stehen, bevor irgendwas anderes passiert.
-// -------------------------------------------------------------------------
+
 var forwardedOptions = new ForwardedHeadersOptions
 {
-    // Wir nehmen ALLES an (Proto, Host, For), um sicherzugehen, dass HTTPS erkannt wird
     ForwardedHeaders = ForwardedHeaders.All
 };
-// Dies ist entscheidend in Docker-Netzwerken, da die IP des Gateways sonst als "unbekannt" gilt
 forwardedOptions.KnownNetworks.Clear();
 forwardedOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedOptions);
-// -------------------------------------------------------------------------
 
 using (var scope = app.Services.CreateScope())
 {
@@ -157,13 +146,11 @@ app.MapRazorPages()
 app.Run();
 
 
-// ---------------- SEEDING LOGIC (Unverändert) ----------------
 static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config)
 {
     var appMgr = sp.GetRequiredService<IOpenIddictApplicationManager>();
     var scopeMgr = sp.GetRequiredService<IOpenIddictScopeManager>();
 
-    // ---- API Scope ----
     if (await scopeMgr.FindByNameAsync("buergerportal_api") is null)
     {
         await scopeMgr.CreateAsync(new OpenIddictScopeDescriptor
@@ -173,7 +160,6 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
         });
     }
 
-    // ---- Client Config aus appsettings ----
     var clientSection = config.GetSection("OpenIddict:Clients:mvc_web");
     var clientSecret = clientSection["ClientSecret"];
     var redirectUris = clientSection.GetSection("RedirectUris").Get<string[]>();
@@ -185,7 +171,6 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
     var redirectUri = new Uri(redirectUris[0]);
     var logoutUri = new Uri(postLogoutUris[0]);
 
-    // ---- Client exists? ----
     var client = await appMgr.FindByClientIdAsync("mvc_web");
 
     if (client is null)
@@ -216,7 +201,6 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
     }
     else
     {
-        // ---- Update bestehende Werte ----
         var descriptor = new OpenIddictApplicationDescriptor();
         await appMgr.PopulateAsync(descriptor, client);
 

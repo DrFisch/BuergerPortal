@@ -161,7 +161,7 @@ namespace BuergerPortal.Web.Controllers
             var d = await res.Content.ReadFromJsonAsync<SperrmuellDetailResponse>(cancellationToken: ct);
             if (d is null) return NotFound();
 
-            var map = AntragStatusUi.Map(d.Status); // gleicher Status-Mapper
+            var map = AntragStatusUi.Map(d.Status); 
 
             var vm = new SperrmuellAntragDetailVm
             {

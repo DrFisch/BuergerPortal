@@ -4,6 +4,7 @@ using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Mail;
+using BuergerPortal.Domain.Appointments.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,6 @@ namespace BuergerPortal.Api.Controllers
 
             var result = await _svc.BookAsync(dto, userId, ct);
 
-            // E-Mail-Versand nach erfolgreicher Buchung
             try
             {
                 var userEmail = User.FindFirst("email")?.Value;
@@ -76,17 +76,14 @@ namespace BuergerPortal.Api.Controllers
             }
             catch (Exception ex)
             {
-                // Fehler beim E-Mail-Versand dürfen die Terminbuchung NICHT verhindern
-                // => optional in dein Logging-System schreiben
+
                 Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
             }
 
-            // Erfolg -> 201 Created; Fehler -> ProblemDetails gemäß ErrorCodes
             return FromResult(result, id =>
                 new CreatedAtActionResult(nameof(GetById), null, new { id }, id));
         }
 
-        // ---------- Eigene Termine (200) ----------
         [HttpGet("mine")]
         [ProducesResponseType(typeof(IEnumerable<AppointmentListItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AppointmentListItemResponse>>> GetMine(CancellationToken ct)
@@ -112,40 +109,59 @@ namespace BuergerPortal.Api.Controllers
             return Ok(resp);
         }
 
-        // ---------- Placeholder GetById (200/404 später) ----------
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult GetById(Guid id)
+        public async Task<ActionResult<AppointmentListItemResponse>> GetById(Guid id, CancellationToken ct)
         {
-            return Ok(new { id }); // TODO: echten Read-UseCase einbauen
+            if (!TryGetUserId(out var userId))
+                return Unauthorized();
+
+            var appt = await _svc.GetByIdAsync(id, userId, ct);
+            if (appt is null) return NotFound();
+
+            return Ok(new AppointmentListItemResponse
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = DateTime.SpecifyKind(appt.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(appt.EndUtc, DateTimeKind.Utc),
+                Cancelled = appt.Cancelled,
+                AntragId = appt.AntragId
+            });
         }
 
-        // ---------- Busy-Slots (200) ----------
         [HttpGet("busy")]
         [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date, CancellationToken ct)
         {
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
-            var localStart = new DateTime(date.Year, date.Month, date.Day, 8, 0, 0, DateTimeKind.Unspecified);
-            var localEnd = new DateTime(date.Year, date.Month, date.Day, 12, 0, 0, DateTimeKind.Unspecified);
+            var localStart = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified);
+            var localEnd = localStart.AddDays(1);
 
             var fromUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
             var toUtc = TimeZoneInfo.ConvertTimeToUtc(localEnd, tz);
 
             var dtos = await _svc.GetBusyAsync(fromUtc, toUtc, ct);
 
-            var resp = dtos.Select(x => new BusySlotResponse
+            var resp = dtos.Select(x =>
             {
-                StartUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc),
-                EndUtc = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc)
+                
+                var startBerlin = TimeZoneInfo.ConvertTimeFromUtc(x.StartUtc, tz);
+                var endBerlin = TimeZoneInfo.ConvertTimeFromUtc(x.EndUtc, tz);
+
+                return new BusySlotResponse
+                {
+                    StartUtc = DateTime.SpecifyKind(startBerlin, DateTimeKind.Unspecified),
+                    EndUtc = DateTime.SpecifyKind(endBerlin, DateTimeKind.Unspecified)
+                };
             });
 
             return Ok(resp);
         }
 
-        // ---------- Cancel (204/400/403/404) ----------
         [HttpPost("{id:guid}/cancel")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -174,21 +190,45 @@ namespace BuergerPortal.Api.Controllers
             return FromResult(result, () => NoContent());
         }
 
-        // ============================================================
-        // Einheitliches Mapping: Result<T> -> HTTP
-        // ============================================================
+        [HttpPatch("{id:guid}/location")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateLocation(Guid id, [FromBody] UpdateLocationRequest req, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-        // Für Endpoints mit Rückgabewert (z. B. Create -> Guid)
+            var result = await _svc.UpdateLocationAsync(id, userId, req.NewLocation, ct);
+
+            if (result.IsSuccess)
+            {
+                _ = Task.Run(async () => {
+                    var userEmail = User.FindFirst("email")?.Value;
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        var subject = "Standortänderung für Ihren Termin";
+                        var body = $"Der Standort für Ihren Termin wurde erfolgreich auf <b>{req.NewLocation.GetDisplayName()}</b> geändert.";
+                        await _email.SendAsync(userEmail, subject, body, default);
+                    }
+                }, ct);
+
+                return NoContent();
+            }
+
+            return FromResult(result, () => NoContent());
+        }
+
+        public record UpdateLocationRequest(LocationType NewLocation);
+
+      
         private ActionResult<T> FromResult<T>(Result<T> r, Func<T, ActionResult<T>> onOk)
         {
             if (r.IsSuccess)
                 return onOk(r.Value!);
 
             var problem = MapProblem(r.ErrorCode, r.ErrorMessage);
-            return problem; // ObjectResult ist kompatibel mit ActionResult<T>
+            return problem;
         }
 
-        // Für Endpoints ohne Rückgabewert (z. B. Cancel/Delete -> NoContent)
         private IActionResult FromResult<T>(Result<T> r, Func<IActionResult> onOk)
         {
             if (r.IsSuccess)
