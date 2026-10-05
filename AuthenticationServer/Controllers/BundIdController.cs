@@ -62,8 +62,24 @@ namespace AuthenticationServer.Controllers
             var httpRequest = Request.ToGenericHttpRequest(validate: true);
             var authnResponse = new Saml2AuthnResponse(config);
 
-            // Zuerst nur den Status lesen: Abbruch oder Fehler bei der BundID enthalten keine Assertion.
+            // Gemerkten Anmeldezustand holen und sofort verbrauchen: jede Anfrage nur einmal beantwortbar.
+            var loginState = loginStateStore.Read(Request);
+            loginStateStore.Delete(Response);
+
+            // Zuerst nur Status und InResponseTo lesen: Abbruch oder Fehler enthalten keine Assertion.
             httpRequest.Binding.ReadSamlResponse(httpRequest, authnResponse);
+
+            // Die Antwort muss zu genau der Anfrage gehören, die dieser Browser gestartet hat.
+            // ITfoxtec prüft das nicht selbst; ohne diese Prüfung würden auch fremde oder alte Antworten akzeptiert.
+            if (loginState == null || authnResponse.InResponseToAsString != loginState.RequestId)
+            {
+                return View("Result", new BundIdResultViewModel
+                {
+                    Status = "InResponseTo",
+                    Message = "Die Antwort gehört zu keiner offenen Anmeldung dieses Browsers (abgelaufen, bereits verwendet oder fremd).",
+                });
+            }
+
             if (authnResponse.Status != Saml2StatusCodes.Success)
             {
                 return View("Result", new BundIdResultViewModel
