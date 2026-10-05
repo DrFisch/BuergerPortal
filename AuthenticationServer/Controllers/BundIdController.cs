@@ -123,6 +123,7 @@ namespace AuthenticationServer.Controllers
 
                 // Konto über die bPK2 wiedererkennen oder beim ersten Login anlegen.
                 var (user, created) = await userService.FindOrCreateAsync(attributes, ct);
+                await userService.UpdateLoginDataAsync(user, attributes);
 
                 return View("Result", new BundIdResultViewModel
                 {

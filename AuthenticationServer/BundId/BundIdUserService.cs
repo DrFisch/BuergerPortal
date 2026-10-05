@@ -38,5 +38,23 @@ namespace AuthenticationServer.BundId
             logger.LogInformation("Neues Konto {UserId} beim ersten BundID-Login angelegt", user.Id);
             return (user, true);
         }
+
+        /// <summary>
+        /// Übernimmt bei jedem Login die Angaben, die sich ändern können: Postkorb-Handle, erreichtes
+        /// Vertrauensniveau und Zeitpunkt der Anmeldung.
+        /// </summary>
+        public async Task UpdateLoginDataAsync(ApplicationUser user, BundIdAttributes attributes)
+        {
+            user.PostkorbHandle = attributes.PostkorbHandle;
+            user.TrustLevel = attributes.TrustLevel;
+            user.LastLoginUtc = DateTime.UtcNow;
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                logger.LogError("BundID-Daten für Konto {UserId} nicht gespeichert: {Errors}", user.Id,
+                    string.Join("; ", result.Errors.Select(e => e.Description)));
+                throw new BundIdException("Die Anmeldung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.");
+            }
+        }
     }
 }
