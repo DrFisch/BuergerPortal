@@ -1,0 +1,31 @@
+# Lokale Entwicklung: BundID-Simulator als Identity Provider für den Auth-Server.
+# Image aus dem Fork https://github.com/DrFisch/bundid-simulator (Branch bpsim/standardkonform) des
+# BundID-Simulators der Bundesagentur für Arbeit: signierte Assertions, IdP-Metadaten, eigene IdP-EntityID.
+#
+# 1. Image bauen (einmalig bzw. nach Änderungen am Fork):
+#    docker build -t buergerportal/bundid-simulator:dev https://github.com/DrFisch/bundid-simulator.git#bpsim/standardkonform
+#    (Kein "build:" in dieser Datei: docker compose/buildx bake scheitert unter Windows an Git-URLs als Build-Kontext.)
+# 2. Starten: docker compose -f compose.bundid-dev.yml up -d
+# 3. Prüfen:  http://localhost:8090/saml/metadata
+name: buergerportal-dev
+
+services:
+  bundid-simulator:
+    image: buergerportal/bundid-simulator:dev
+    ports:
+      - "8090:8080"
+    environment:
+      APP_SAML_IDPENTITYID: http://localhost:8090/saml/metadata
+      APP_SAML_SSOURL: http://localhost:8090/saml
+      APP_SAML_LOAFORMAT: eidas
+      APP_SAML_POSTKORBHANDLE_ENABLED: "true"
+      APP_SAML_SIGNING_ENABLED: "true"
+      APP_SAML_SIGNING_KEYSTORE: /app/data/idp-signing.p12
+      # Test-Keystore wird beim ersten Start erzeugt; Passwort nur für die lokale Entwicklung.
+      APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:-nur-lokal-dev}
+    volumes:
+      - bundid-simulator-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  bundid-simulator-data:
