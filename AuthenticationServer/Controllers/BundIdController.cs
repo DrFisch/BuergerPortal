@@ -15,8 +15,32 @@ namespace AuthenticationServer.Controllers
     /// </summary>
     [AllowAnonymous]
     [Route("bundid")]
-    public class BundIdController(IOptions<BundIdOptions> options) : Controller
+    public class BundIdController(IOptions<BundIdOptions> options,
+        BundIdSamlConfigurationProvider samlConfiguration) : Controller
     {
+        // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
+        // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4).
+        [HttpGet("login")]
+        public async Task<IActionResult> Login(int? level, CancellationToken ct)
+        {
+            var bundId = options.Value;
+            var config = await samlConfiguration.GetConfigurationAsync(ct);
+            var requestedLevel = level is 1 or 3 or 4 ? level.Value : bundId.DefaultTrustLevel;
+
+            var authnRequest = new Saml2AuthnRequest(config)
+            {
+                AssertionConsumerServiceUrl = new Uri(bundId.AssertionConsumerServiceUrl),
+                ProtocolBinding = ProtocolBindings.HttpPost,
+                // Die BundID erwartet das Niveau als STORK-Bezeichner, Vergleich "minimum".
+                RequestedAuthnContext = new RequestedAuthnContext
+                {
+                    Comparison = AuthnContextComparisonTypes.Minimum,
+                    AuthnContextClassRef = [$"STORK-QAA-Level-{requestedLevel}"],
+                },
+            };
+            return new Saml2PostBinding().Bind(authnRequest).ToActionResult();
+        }
+
         // SP-Metadaten: Damit kann die BundID den Auth-Server als Service Provider einrichten
         // (EntityID, Adresse des Assertion Consumer Service, Binding, NameID-Format).
         [HttpGet("metadata")]
