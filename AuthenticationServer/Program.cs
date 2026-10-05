@@ -93,6 +93,8 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.SlidingExpiration = false;
     o.Cookie.SameSite = SameSiteMode.None;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // Ohne Sitzung geht es zur Anmeldung über die BundID (statt zur Passwort-Seite von Identity).
+    o.LoginPath = "/bundid/login";
 });
 
 // ---------- BundID (SAML) ----------
