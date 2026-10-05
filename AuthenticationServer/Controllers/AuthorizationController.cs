@@ -72,8 +72,10 @@ namespace AuthenticationServer.Controllers
                     .Where(c => BundIdClaimTypes.All.Contains(c.Type) && c.Type != BundIdClaimTypes.Email)
                     .Select(c => new Claim(c.Type, c.Value,
                         c.Type == BundIdClaimTypes.Address ? JsonClaimValueTypes.Json : ClaimValueTypes.String)));
+                // EF liest datetime2 ohne Zeitzone; der Wert ist UTC und wird als solcher gekennzeichnet.
                 if (user.LastLoginUtc is { } lastLogin)
-                    claims.Add(new Claim(BundIdClaimTypes.LastLogin, lastLogin.ToString("O")));
+                    claims.Add(new Claim(BundIdClaimTypes.LastLogin,
+                        DateTime.SpecifyKind(lastLogin, DateTimeKind.Utc).ToString("O")));
             }
 
             var identity = new ClaimsIdentity(
