@@ -35,6 +35,7 @@ namespace AuthenticationServer.BundId
         public const string PostkorbHandle = "postkorb_handle";
         public const string TrustLevel = "acr";                 // STORK-QAA-Level-n
         public const string IdentificationMethod = "amr";       // z. B. eID, Elster, Benutzername
+        public const string LastLogin = "bundid_last_login";    // aus der DB (Zeitpunkt der Anmeldung)
 
         public static readonly IReadOnlySet<string> All = new HashSet<string>
         {

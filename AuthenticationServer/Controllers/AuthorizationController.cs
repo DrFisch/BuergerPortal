@@ -1,4 +1,6 @@
-﻿using AuthenticationServer.Data;
+﻿using AuthenticationServer.BundId;
+using AuthenticationServer.Data;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +15,9 @@ namespace AuthenticationServer.Controllers
     public class AuthorizationController(UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager) : Controller
     {
+        // Scope, mit dem ein Client die BundID-Daten der Person anfordert.
+        public const string BundIdScope = "bundid";
+
         // Passt zu options.SetAuthorizationEndpointUris("/connect/authorize")
         [HttpGet("~/connect/authorize")]
         [HttpPost("~/connect/authorize")]
@@ -40,16 +45,36 @@ namespace AuthenticationServer.Controllers
             var user = await userManager.GetUserAsync(authResult.Principal)
                        ?? throw new InvalidOperationException("User not found.");
 
+            // BundID-Daten stehen in der Sitzung (Identity-Cookie), nicht in der Datenbank.
+            var session = authResult.Principal;
+            var bundIdName = string.Join(' ', new[]
+            {
+                session.FindFirstValue(BundIdClaimTypes.GivenName),
+                session.FindFirstValue(BundIdClaimTypes.FamilyName),
+            }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
             var claims = new List<Claim>
         {
             new Claim(Claims.Subject, await userManager.GetUserIdAsync(user)),
-            new Claim(Claims.Name, await userManager.GetUserNameAsync(user))
+            // Anzeigename: nach BundID-Login Vor- und Nachname, sonst der Benutzername
+            new Claim(Claims.Name, bundIdName.Length > 0 ? bundIdName : await userManager.GetUserNameAsync(user) ?? string.Empty)
         };
 
-            // Optional: Email-Claim, falls vorhanden
-            var email = await userManager.GetEmailAsync(user);
+            // E-Mail: aus der BundID-Sitzung, sonst aus dem Konto (alte lokale Konten)
+            var email = session.FindFirstValue(BundIdClaimTypes.Email) ?? await userManager.GetEmailAsync(user);
             if (!string.IsNullOrEmpty(email))
                 claims.Add(new Claim(Claims.Email, email));
+
+            // Weitere BundID-Daten nur, wenn der Client sie mit dem Scope "bundid" anfordert (Datensparsamkeit).
+            if (oidcRequest.HasScope(BundIdScope))
+            {
+                claims.AddRange(session.Claims
+                    .Where(c => BundIdClaimTypes.All.Contains(c.Type) && c.Type != BundIdClaimTypes.Email)
+                    .Select(c => new Claim(c.Type, c.Value,
+                        c.Type == BundIdClaimTypes.Address ? JsonClaimValueTypes.Json : ClaimValueTypes.String)));
+                if (user.LastLoginUtc is { } lastLogin)
+                    claims.Add(new Claim(BundIdClaimTypes.LastLogin, lastLogin.ToString("O")));
+            }
 
             var identity = new ClaimsIdentity(
                 authenticationType: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
@@ -72,6 +97,12 @@ namespace AuthenticationServer.Controllers
                 {
                     Claims.Name => new[] { Destinations.AccessToken, Destinations.IdentityToken },
                     Claims.Email => new[] { Destinations.AccessToken, Destinations.IdentityToken },
+                    // Die API braucht Niveau (Step-up) und Postkorb-Handle (Nachrichten).
+                    BundIdClaimTypes.TrustLevel or BundIdClaimTypes.PostkorbHandle
+                        => new[] { Destinations.AccessToken, Destinations.IdentityToken },
+                    // Persönliche Angaben nur ins ID-Token (Anzeige im Portal), nicht in jeden API-Aufruf.
+                    _ when BundIdClaimTypes.All.Contains(claim.Type) || claim.Type == BundIdClaimTypes.LastLogin
+                        => new[] { Destinations.IdentityToken },
                     _ => new[] { Destinations.AccessToken }
                 });
             }
