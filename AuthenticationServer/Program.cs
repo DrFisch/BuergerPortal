@@ -1,4 +1,5 @@
 using AuthenticationServer.BundId;
+using AuthenticationServer.Controllers;
 using AuthenticationServer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +62,9 @@ builder.Services.AddOpenIddict()
             OpenIddictConstants.Scopes.Profile,
             OpenIddictConstants.Scopes.Email,
             OpenIddictConstants.Scopes.OfflineAccess,
-            "buergerportal_api"
+            "buergerportal_api",
+            // BundID-Daten der Person (Name, Geburtsdatum, Adresse, Niveau, Postkorb-Handle …)
+            AuthorizationController.BundIdScope
         );
 
         // DEV-Zertifikate
@@ -211,7 +214,8 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
                 OpenIddictConstants.Permissions.ResponseTypes.Code,
                 OpenIddictConstants.Permissions.Scopes.Profile,
                 OpenIddictConstants.Permissions.Scopes.Email,
-                OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api"
+                OpenIddictConstants.Permissions.Prefixes.Scope + "buergerportal_api",
+                OpenIddictConstants.Permissions.Prefixes.Scope + AuthorizationController.BundIdScope
             },
             RedirectUris = { redirectUri },
             PostLogoutRedirectUris = { logoutUri }
@@ -243,6 +247,14 @@ static async Task SeedOpenIddictAsync(IServiceProvider sp, IConfiguration config
         {
             descriptor.PostLogoutRedirectUris.Clear();
             descriptor.PostLogoutRedirectUris.Add(logoutUri);
+            changed = true;
+        }
+
+        // Bestehende Clients bekommen die Berechtigung für den Scope "bundid" nachträglich.
+        var bundIdScopePermission = OpenIddictConstants.Permissions.Prefixes.Scope + AuthorizationController.BundIdScope;
+        if (!descriptor.Permissions.Contains(bundIdScopePermission))
+        {
+            descriptor.Permissions.Add(bundIdScopePermission);
             changed = true;
         }
 
