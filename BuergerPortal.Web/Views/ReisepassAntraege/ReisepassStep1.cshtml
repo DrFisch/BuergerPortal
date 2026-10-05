@@ -7,7 +7,8 @@
 
     if (string.IsNullOrEmpty(Model.Email) && User.Identity?.IsAuthenticated == true)
     {
-        Model.Email = User.Identity.Name;
+        // E-Mail aus der Anmeldung (BundID); der Name ist seit der BundID-Anmeldung der Klarname, nicht mehr die E-Mail.
+        Model.Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
     }
 }
 
