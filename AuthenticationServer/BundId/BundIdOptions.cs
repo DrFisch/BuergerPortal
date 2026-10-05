@@ -23,6 +23,10 @@ namespace AuthenticationServer.BundId
         // Attribute, die im AuthnRequest angefordert werden (AKDB-Extension). Nur was das Portal braucht.
         public List<BundIdRequestedAttribute> RequestedAttributes { get; set; } = [];
 
+        // SAML-Attribut mit dem Postkorb-Handle. Bei der echten BundID nicht öffentlich dokumentiert;
+        // urn:oid:2.5.4.18 (postOfficeBox) ist eine Annahme und kommt so vom Simulator-Fork.
+        public string PostkorbHandleAttribute { get; set; } = "urn:oid:2.5.4.18";
+
         // Anzeige auf der BundID-Seite: Name der Organisation und Kennung des Online-Dienstes.
         public string OrganizationDisplayName { get; set; } = string.Empty;
         public string OnlineServiceId { get; set; } = string.Empty;

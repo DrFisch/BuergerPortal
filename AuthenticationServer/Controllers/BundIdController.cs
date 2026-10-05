@@ -90,11 +90,14 @@ namespace AuthenticationServer.Controllers
             }
 
             httpRequest.Binding.Unbind(httpRequest, authnResponse);
+
+            // SAML-Attribute (OIDs) in verständliche Werte und Claims übersetzen.
+            var attributes = BundIdAttributes.FromSaml(authnResponse.ClaimsIdentity, options.Value.PostkorbHandleAttribute);
             return View("Result", new BundIdResultViewModel
             {
                 Success = true,
                 Status = authnResponse.Status.ToString(),
-                Claims = authnResponse.ClaimsIdentity.Claims
+                Claims = attributes.ToClaims()
                     .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToList(),
             });
         }
