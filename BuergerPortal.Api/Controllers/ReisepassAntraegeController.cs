@@ -1,4 +1,5 @@
-﻿using BuergerPortal.Application.Antraege.AntragReisepass.DTOs;
+﻿using BuergerPortal.Api.Extensions;
+using BuergerPortal.Application.Antraege.AntragReisepass.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,9 @@ namespace BuergerPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/antraege/reisepass")]
-    [AllowAnonymous]
+    // Vorher [AllowAnonymous]: Das hätte auch eine Policy an einzelnen Aktionen ausgehebelt.
+    // Ohne Token gab es ohnehin keinen Benutzerkontext (GetUserIdOrThrow).
+    [Authorize]
     [Produces("application/json")]
     public sealed class ReisepassAntraegeController : ControllerBase
     {
@@ -47,6 +50,8 @@ namespace BuergerPortal.Api.Controllers
         }
 
         [HttpPost("{id:guid}/submit")]
+        // Einreichen eines Reisepassantrags (hoheitliches Dokument) erst ab BundID-Niveau "substanziell".
+        [Authorize(Policy = TrustLevelPolicies.Substantial)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
