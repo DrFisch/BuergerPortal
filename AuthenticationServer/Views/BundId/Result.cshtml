@@ -10,27 +10,14 @@
 </div>
 
 <div class="p-4 pt-2">
-    @if (Model.Success)
-    {
-        <div class="alert alert-success">Die Antwort der BundID ist gültig (Signatur, Absender, Empfänger und Zeitfenster geprüft).</div>
-        <table class="table table-sm small">
-            <thead><tr><th>Angabe</th><th>Wert</th></tr></thead>
-            <tbody>
-                @foreach (var claim in Model.Claims)
-                {
-                    <tr><td class="text-break">@claim.Key</td><td class="text-break">@claim.Value</td></tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="alert alert-warning">
-            Die BundID hat die Anmeldung nicht bestätigt (Status: @Model.Status).
-            @if (!string.IsNullOrEmpty(Model.Message))
+    <div class="alert alert-success">Die Antwort der BundID ist gültig (Signatur, Absender, Empfänger und Zeitfenster geprüft).</div>
+    <table class="table table-sm small">
+        <thead><tr><th>Angabe</th><th>Wert</th></tr></thead>
+        <tbody>
+            @foreach (var claim in Model.Claims)
             {
-                <br /><span class="small">@Model.Message</span>
+                <tr><td class="text-break">@claim.Key</td><td class="text-break">@claim.Value</td></tr>
             }
-        </div>
-    }
+        </tbody>
+    </table>
 </div>

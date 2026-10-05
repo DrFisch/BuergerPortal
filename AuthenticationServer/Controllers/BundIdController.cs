@@ -17,7 +17,8 @@ namespace AuthenticationServer.Controllers
     [AllowAnonymous]
     [Route("bundid")]
     public class BundIdController(IOptions<BundIdOptions> options,
-        BundIdSamlConfigurationProvider samlConfiguration, BundIdLoginStateStore loginStateStore) : Controller
+        BundIdSamlConfigurationProvider samlConfiguration, BundIdLoginStateStore loginStateStore,
+        ILogger<BundIdController> logger) : Controller
     {
         // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
         // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4),
@@ -26,10 +27,22 @@ namespace AuthenticationServer.Controllers
         public async Task<IActionResult> Login(int? level, string? returnUrl, CancellationToken ct)
         {
             var bundId = options.Value;
-            var config = await samlConfiguration.GetConfigurationAsync(ct);
             var requestedLevel = level is 1 or 3 or 4 ? level.Value : bundId.DefaultTrustLevel;
             // Schutz vor Open Redirect: externe Ziele werden durch die Startseite ersetzt.
             var safeReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
+
+            Saml2Configuration config;
+            try
+            {
+                config = await samlConfiguration.GetConfigurationAsync(ct);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or TaskCanceledException)
+            {
+                logger.LogError(ex, "BundID-Metadaten nicht abrufbar");
+                return LoginError("BundID nicht erreichbar",
+                    "Die Anmeldung über die BundID ist gerade nicht möglich. Bitte versuchen Sie es später erneut.",
+                    requestedLevel, safeReturnUrl);
+            }
 
             var authnRequest = new Saml2AuthnRequest(config)
             {
@@ -58,61 +71,84 @@ namespace AuthenticationServer.Controllers
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> AssertionConsumerService(CancellationToken ct)
         {
-            var config = await samlConfiguration.GetConfigurationAsync(ct);
-            var httpRequest = Request.ToGenericHttpRequest(validate: true);
-            var authnResponse = new Saml2AuthnResponse(config);
-
             // Gemerkten Anmeldezustand holen und sofort verbrauchen: jede Anfrage nur einmal beantwortbar.
             var loginState = loginStateStore.Read(Request);
             loginStateStore.Delete(Response);
+            var retryLevel = loginState?.RequestedLevel ?? options.Value.DefaultTrustLevel;
+            var returnUrl = loginState?.ReturnUrl ?? "/";
 
-            // Zuerst nur Status und InResponseTo lesen: Abbruch oder Fehler enthalten keine Assertion.
-            httpRequest.Binding.ReadSamlResponse(httpRequest, authnResponse);
-
-            // Die Antwort muss zu genau der Anfrage gehören, die dieser Browser gestartet hat.
-            // ITfoxtec prüft das nicht selbst; ohne diese Prüfung würden auch fremde oder alte Antworten akzeptiert.
-            if (loginState == null || authnResponse.InResponseToAsString != loginState.RequestId)
+            try
             {
+                var config = await samlConfiguration.GetConfigurationAsync(ct);
+                var httpRequest = Request.ToGenericHttpRequest(validate: true);
+                var authnResponse = new Saml2AuthnResponse(config);
+
+                // Zuerst nur Status und InResponseTo lesen: Abbruch oder Fehler enthalten keine Assertion.
+                httpRequest.Binding.ReadSamlResponse(httpRequest, authnResponse);
+
+                // Die Antwort muss zu genau der Anfrage gehören, die dieser Browser gestartet hat.
+                // ITfoxtec prüft das nicht selbst; ohne diese Prüfung würden auch fremde oder alte Antworten akzeptiert.
+                if (loginState == null || authnResponse.InResponseToAsString != loginState.RequestId)
+                {
+                    logger.LogWarning("BundID-Response ohne passende offene Anfrage (InResponseTo {InResponseTo})",
+                        authnResponse.InResponseToAsString);
+                    return LoginError("Anmeldung abgelaufen",
+                        "Diese Anmeldung ist abgelaufen oder wurde bereits verwendet. Bitte melden Sie sich erneut an.",
+                        retryLevel, returnUrl);
+                }
+
+                if (authnResponse.Status != Saml2StatusCodes.Success)
+                {
+                    logger.LogInformation("BundID-Anmeldung nicht abgeschlossen: {Status} {Message}",
+                        authnResponse.Status, authnResponse.StatusMessage);
+                    return LoginError("Anmeldung nicht abgeschlossen",
+                        "Die Anmeldung bei der BundID wurde abgebrochen oder konnte nicht abgeschlossen werden.",
+                        retryLevel, returnUrl);
+                }
+
+                httpRequest.Binding.Unbind(httpRequest, authnResponse);
+
+                // SAML-Attribute (OIDs) in verständliche Werte und Claims übersetzen.
+                var attributes = BundIdAttributes.FromSaml(authnResponse.ClaimsIdentity, options.Value.PostkorbHandleAttribute);
+
+                // Die BundID (bzw. der Simulator) erzwingt das geforderte Niveau nicht zuverlässig – selbst prüfen.
+                if (attributes.TrustLevel < loginState.RequestedLevel)
+                {
+                    return LoginError("Vertrauensniveau zu niedrig",
+                        $"Für diese Funktion ist das Vertrauensniveau „{TrustLevel.Describe(loginState.RequestedLevel)}“ nötig, " +
+                        $"angemeldet wurde mit „{TrustLevel.Describe(attributes.TrustLevel)}“. Bitte melden Sie sich mit einem " +
+                        "passenden Identifizierungsmittel an (z. B. ELSTER-Zertifikat oder Online-Ausweis).",
+                        loginState.RequestedLevel, returnUrl);
+                }
+
                 return View("Result", new BundIdResultViewModel
                 {
-                    Status = "InResponseTo",
-                    Message = "Die Antwort gehört zu keiner offenen Anmeldung dieses Browsers (abgelaufen, bereits verwendet oder fremd).",
+                    Claims = attributes.ToClaims()
+                        .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToList(),
                 });
             }
-
-            if (authnResponse.Status != Saml2StatusCodes.Success)
+            catch (BundIdException ex)
             {
-                return View("Result", new BundIdResultViewModel
-                {
-                    Status = authnResponse.Status.ToString(),
-                    Message = authnResponse.StatusMessage,
-                });
+                logger.LogWarning(ex, "BundID-Anmeldung abgelehnt");
+                return LoginError("Anmeldung nicht möglich", ex.Message, retryLevel, returnUrl);
             }
-
-            httpRequest.Binding.Unbind(httpRequest, authnResponse);
-
-            // SAML-Attribute (OIDs) in verständliche Werte und Claims übersetzen.
-            var attributes = BundIdAttributes.FromSaml(authnResponse.ClaimsIdentity, options.Value.PostkorbHandleAttribute);
-
-            // Die BundID (bzw. der Simulator) erzwingt das geforderte Niveau nicht zuverlässig – selbst prüfen.
-            if (attributes.TrustLevel < loginState.RequestedLevel)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                return View("Result", new BundIdResultViewModel
-                {
-                    Status = "TrustLevel",
-                    Message = $"Vertrauensniveau zu niedrig: erreicht {TrustLevel.Describe(attributes.TrustLevel)}, " +
-                              $"gefordert {TrustLevel.Describe(loginState.RequestedLevel)}.",
-                });
+                // Signatur ungültig, falscher Issuer/Audience, abgelaufen, bereits verwendet (Replay) usw.
+                logger.LogWarning(ex, "Ungültige SAML-Response der BundID");
+                return LoginError("Antwort der BundID ungültig",
+                    "Die Antwort der BundID konnte nicht bestätigt werden. Bitte melden Sie sich erneut an.",
+                    retryLevel, returnUrl);
             }
-
-            return View("Result", new BundIdResultViewModel
-            {
-                Success = true,
-                Status = authnResponse.Status.ToString(),
-                Claims = attributes.ToClaims()
-                    .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToList(),
-            });
         }
+
+        private ViewResult LoginError(string title, string message, int retryLevel, string returnUrl) =>
+            View("Error", new BundIdErrorViewModel
+            {
+                Title = title,
+                Message = message,
+                RetryUrl = Url.Action(nameof(Login), new { level = retryLevel, returnUrl }) ?? "/bundid/login",
+            });
 
         // SP-Metadaten: Damit kann die BundID den Auth-Server als Service Provider einrichten
         // (EntityID, Adresse des Assertion Consumer Service, Binding, NameID-Format).
