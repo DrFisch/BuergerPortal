@@ -151,7 +151,23 @@ else
     // app.UseHsts(); 
 }
 
-app.UseStaticFiles(); 
+app.UseStaticFiles();
+
+// Anmeldung nur über die BundID: Von der Identity-Oberfläche bleiben nur Login (Hinweis + BundID-Button),
+// Logout und AccessDenied. Registrierung, Passwort-Funktionen und Kontoverwaltung führen zur Anmeldeseite.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/Identity/Account", out var page)
+        && !page.StartsWithSegments("/Login")
+        && !page.StartsWithSegments("/Logout")
+        && !page.StartsWithSegments("/AccessDenied"))
+    {
+        context.Response.Redirect("/Identity/Account/Login");
+        return;
+    }
+    await next();
+});
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

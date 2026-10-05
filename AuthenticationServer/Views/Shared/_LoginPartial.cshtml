@@ -6,8 +6,11 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+    @* Konto-Verwaltung gibt es nicht mehr (Anmeldung nur über BundID); Name aus der BundID-Sitzung *@
+    var displayName = string.Join(" ", new[] { User.FindFirst("given_name")?.Value, User.FindFirst("family_name")?.Value }
+        .Where(s => !string.IsNullOrEmpty(s)));
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        <span class="nav-link text-dark">Angemeldet: @(displayName.Length > 0 ? displayName : User.Identity?.Name)</span>
     </li>
     <li class="nav-item">
         <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -18,10 +21,7 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Mit BundID anmelden</a>
     </li>
 }
 </ul>
