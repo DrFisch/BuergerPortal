@@ -101,6 +101,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<BundIdTokenReplayCache>();
 builder.Services.AddSingleton<BundIdSamlConfigurationProvider>();
 builder.Services.AddSingleton<BundIdLoginStateStore>();
+builder.Services.AddScoped<BundIdUserService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

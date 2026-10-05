@@ -18,7 +18,7 @@ namespace AuthenticationServer.Controllers
     [Route("bundid")]
     public class BundIdController(IOptions<BundIdOptions> options,
         BundIdSamlConfigurationProvider samlConfiguration, BundIdLoginStateStore loginStateStore,
-        ILogger<BundIdController> logger) : Controller
+        BundIdUserService userService, ILogger<BundIdController> logger) : Controller
     {
         // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
         // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4),
@@ -121,10 +121,15 @@ namespace AuthenticationServer.Controllers
                         loginState.RequestedLevel, returnUrl);
                 }
 
+                // Konto über die bPK2 wiedererkennen oder beim ersten Login anlegen.
+                var (user, created) = await userService.FindOrCreateAsync(attributes, ct);
+
                 return View("Result", new BundIdResultViewModel
                 {
                     Claims = attributes.ToClaims()
-                        .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToList(),
+                        .Select(c => new KeyValuePair<string, string>(c.Type, c.Value))
+                        .Prepend(new("Benutzerkonto", $"{user.Id} ({(created ? "neu angelegt" : "wiedererkannt")})"))
+                        .ToList(),
                 });
             }
             catch (BundIdException ex)
