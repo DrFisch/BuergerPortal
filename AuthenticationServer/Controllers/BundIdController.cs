@@ -37,6 +37,8 @@ namespace AuthenticationServer.Controllers
                     Comparison = AuthnContextComparisonTypes.Minimum,
                     AuthnContextClassRef = [$"STORK-QAA-Level-{requestedLevel}"],
                 },
+                // Angeforderte Attribute und Anzeigename für die BundID-Seite.
+                Extensions = AkdbExtension.Create(bundId),
             };
             return new Saml2PostBinding().Bind(authnRequest).ToActionResult();
         }

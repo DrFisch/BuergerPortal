@@ -19,5 +19,19 @@ namespace AuthenticationServer.BundId
 
         // Vertrauensniveau für einen normalen Login (STORK-QAA-Level 1, 3 oder 4).
         public int DefaultTrustLevel { get; set; } = 1;
+
+        // Attribute, die im AuthnRequest angefordert werden (AKDB-Extension). Nur was das Portal braucht.
+        public List<BundIdRequestedAttribute> RequestedAttributes { get; set; } = [];
+
+        // Anzeige auf der BundID-Seite: Name der Organisation und Kennung des Online-Dienstes.
+        public string OrganizationDisplayName { get; set; } = string.Empty;
+        public string OnlineServiceId { get; set; } = string.Empty;
+    }
+
+    /// <summary>Ein angefordertes BundID-Attribut: Name = OID (urn:oid:...), Required = Pflichtattribut.</summary>
+    public sealed class BundIdRequestedAttribute
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool Required { get; set; }
     }
 }
