@@ -153,6 +153,14 @@ builder.Services
                 {
                     ctx.HandleResponse();
                     ctx.Response.Redirect("/auth-down");
+                    return;
+                }
+
+                // Step-up: Verlangt eine Funktion ein höheres Vertrauensniveau, steht es in den
+                // AuthenticationProperties ("acr_values", z. B. "STORK-QAA-Level-3") und geht an den Auth-Server.
+                if (ctx.Properties.Items.TryGetValue("acr_values", out var acrValues) && !string.IsNullOrEmpty(acrValues))
+                {
+                    ctx.ProtocolMessage.AcrValues = acrValues;
                 }
             },
             OnRemoteFailure = ctx =>
