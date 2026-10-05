@@ -13,7 +13,8 @@ namespace AuthenticationServer.BundId
     /// wird es beim nächsten Login erneut versucht.
     /// </summary>
     public sealed class BundIdSamlConfigurationProvider(IOptions<BundIdOptions> options,
-        IHttpClientFactory httpClientFactory, ILogger<BundIdSamlConfigurationProvider> logger)
+        IHttpClientFactory httpClientFactory, BundIdTokenReplayCache replayCache,
+        ILogger<BundIdSamlConfigurationProvider> logger)
     {
         private readonly SemaphoreSlim loadLock = new(1, 1);
         private Saml2Configuration? configuration;
@@ -47,6 +48,9 @@ namespace AuthenticationServer.BundId
                 // Zertifikat aus den Metadaten; eine Prüfung der Zertifikatskette ist daher nicht möglich.
                 CertificateValidationMode = X509CertificateValidationMode.None,
                 RevocationMode = X509RevocationMode.NoCheck,
+                // Replay-Schutz: bei ITfoxtec standardmäßig aus und nur mit gesetztem Cache wirksam.
+                DetectReplayedTokens = true,
+                TokenReplayCache = replayCache,
             };
             // Die Assertion muss an genau diesen Service Provider gerichtet sein (Audience).
             config.AllowedAudienceUris.Add(bundId.SpEntityId);

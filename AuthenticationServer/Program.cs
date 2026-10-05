@@ -98,6 +98,7 @@ builder.Services.ConfigureApplicationCookie(o =>
 // ---------- BundID (SAML) ----------
 builder.Services.Configure<BundIdOptions>(builder.Configuration.GetSection(BundIdOptions.SectionName));
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<BundIdTokenReplayCache>();
 builder.Services.AddSingleton<BundIdSamlConfigurationProvider>();
 builder.Services.AddSingleton<BundIdLoginStateStore>();
 
