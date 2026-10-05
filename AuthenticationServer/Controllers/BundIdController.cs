@@ -1,4 +1,5 @@
 using AuthenticationServer.BundId;
+using AuthenticationServer.Models;
 using ITfoxtec.Identity.Saml2;
 using ITfoxtec.Identity.Saml2.MvcCore;
 using ITfoxtec.Identity.Saml2.Schemas;
@@ -48,6 +49,38 @@ namespace AuthenticationServer.Controllers
             // Für die Prüfung der Response merken: Nur eine Antwort auf genau diesen Request wird akzeptiert.
             loginStateStore.Save(Response, new BundIdLoginState(authnRequest.IdAsString, requestedLevel, safeReturnUrl));
             return binding.ToActionResult();
+        }
+
+        // Assertion Consumer Service: Hier kommt die SAML-Response der BundID an (HTTP-POST vom Browser).
+        // ITfoxtec prüft beim Unbind die Signatur (Zertifikat aus den IdP-Metadaten), den Issuer,
+        // die Audience (= eigene EntityID) und das Zeitfenster der Assertion.
+        [HttpPost("acs")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> AssertionConsumerService(CancellationToken ct)
+        {
+            var config = await samlConfiguration.GetConfigurationAsync(ct);
+            var httpRequest = Request.ToGenericHttpRequest(validate: true);
+            var authnResponse = new Saml2AuthnResponse(config);
+
+            // Zuerst nur den Status lesen: Abbruch oder Fehler bei der BundID enthalten keine Assertion.
+            httpRequest.Binding.ReadSamlResponse(httpRequest, authnResponse);
+            if (authnResponse.Status != Saml2StatusCodes.Success)
+            {
+                return View("Result", new BundIdResultViewModel
+                {
+                    Status = authnResponse.Status.ToString(),
+                    Message = authnResponse.StatusMessage,
+                });
+            }
+
+            httpRequest.Binding.Unbind(httpRequest, authnResponse);
+            return View("Result", new BundIdResultViewModel
+            {
+                Success = true,
+                Status = authnResponse.Status.ToString(),
+                Claims = authnResponse.ClaimsIdentity.Claims
+                    .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToList(),
+            });
         }
 
         // SP-Metadaten: Damit kann die BundID den Auth-Server als Service Provider einrichten

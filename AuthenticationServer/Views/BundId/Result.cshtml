@@ -1,0 +1,36 @@
+@model BundIdResultViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "BundID-Anmeldung";
+}
+
+<div class="auth-header">
+    <h3 class="text-center mb-2">BundID-Anmeldung</h3>
+    <p class="text-center text-muted small mb-0">Technische Prüfseite</p>
+</div>
+
+<div class="p-4 pt-2">
+    @if (Model.Success)
+    {
+        <div class="alert alert-success">Die Antwort der BundID ist gültig (Signatur, Absender, Empfänger und Zeitfenster geprüft).</div>
+        <table class="table table-sm small">
+            <thead><tr><th>Angabe</th><th>Wert</th></tr></thead>
+            <tbody>
+                @foreach (var claim in Model.Claims)
+                {
+                    <tr><td class="text-break">@claim.Key</td><td class="text-break">@claim.Value</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Die BundID hat die Anmeldung nicht bestätigt (Status: @Model.Status).
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <br /><span class="small">@Model.Message</span>
+            }
+        </div>
+    }
+</div>
