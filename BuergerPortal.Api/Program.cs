@@ -1,3 +1,4 @@
+using BuergerPortal.Api.Extensions;
 using BuergerPortal.Application;
 using BuergerPortal.Application.Appointments.BusinessServices;
 using BuergerPortal.Infrastructure;
@@ -126,6 +127,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("appointments.write", policy =>
         policy.RequireAuthenticatedUser()
               .RequireClaim("scope", "buergerportal_api"));
+
+    // Step-up: Funktionen mit erhöhtem Schutzbedarf verlangen mindestens das BundID-Vertrauensniveau
+    // "substanziell" (STORK-QAA-Level-3); sonst 403.
+    options.AddPolicy(TrustLevelPolicies.Substantial, policy =>
+        policy.RequireAuthenticatedUser()
+              .RequireAssertion(ctx => TrustLevelPolicies.LevelOf(ctx.User) >= TrustLevelPolicies.SubstantialLevel));
 });
 
 // --- 3. App Pipeline ---
