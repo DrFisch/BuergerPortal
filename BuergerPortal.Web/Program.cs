@@ -126,6 +126,8 @@ builder.Services
         options.Scope.Add("profile");
         options.Scope.Add("email");
         options.Scope.Add("buergerportal_api");
+        // BundID-Daten der Person (Name, Geburtsdatum, Adresse, Vertrauensniveau, Postkorb-Handle …)
+        options.Scope.Add("bundid");
 
         options.MaxAge = TimeSpan.FromHours(24);
         options.BackchannelTimeout = TimeSpan.FromSeconds(3);
@@ -133,6 +135,8 @@ builder.Services
         options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
         options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
         options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+        // "acr" (erreichtes Vertrauensniveau) verwirft ASP.NET Core standardmäßig – für Step-up und Anzeige behalten.
+        options.ClaimActions.Remove("acr");
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
