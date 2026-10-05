@@ -16,16 +16,19 @@ namespace AuthenticationServer.Controllers
     [AllowAnonymous]
     [Route("bundid")]
     public class BundIdController(IOptions<BundIdOptions> options,
-        BundIdSamlConfigurationProvider samlConfiguration) : Controller
+        BundIdSamlConfigurationProvider samlConfiguration, BundIdLoginStateStore loginStateStore) : Controller
     {
         // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
-        // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4).
+        // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4),
+        // returnUrl = wohin es nach erfolgreicher Anmeldung weitergeht (nur lokale Adressen).
         [HttpGet("login")]
-        public async Task<IActionResult> Login(int? level, CancellationToken ct)
+        public async Task<IActionResult> Login(int? level, string? returnUrl, CancellationToken ct)
         {
             var bundId = options.Value;
             var config = await samlConfiguration.GetConfigurationAsync(ct);
             var requestedLevel = level is 1 or 3 or 4 ? level.Value : bundId.DefaultTrustLevel;
+            // Schutz vor Open Redirect: externe Ziele werden durch die Startseite ersetzt.
+            var safeReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
 
             var authnRequest = new Saml2AuthnRequest(config)
             {
@@ -40,7 +43,11 @@ namespace AuthenticationServer.Controllers
                 // Angeforderte Attribute und Anzeigename für die BundID-Seite.
                 Extensions = AkdbExtension.Create(bundId),
             };
-            return new Saml2PostBinding().Bind(authnRequest).ToActionResult();
+            var binding = new Saml2PostBinding().Bind(authnRequest);
+
+            // Für die Prüfung der Response merken: Nur eine Antwort auf genau diesen Request wird akzeptiert.
+            loginStateStore.Save(Response, new BundIdLoginState(authnRequest.IdAsString, requestedLevel, safeReturnUrl));
+            return binding.ToActionResult();
         }
 
         // SP-Metadaten: Damit kann die BundID den Auth-Server als Service Provider einrichten
