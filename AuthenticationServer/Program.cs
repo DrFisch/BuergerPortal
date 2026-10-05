@@ -97,6 +97,8 @@ builder.Services.ConfigureApplicationCookie(o =>
 
 // ---------- BundID (SAML) ----------
 builder.Services.Configure<BundIdOptions>(builder.Configuration.GetSection(BundIdOptions.SectionName));
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<BundIdSamlConfigurationProvider>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
