@@ -54,6 +54,7 @@ namespace AuthenticationServer.BundId
         public string? PostkorbHandle { get; init; }
         public string? QaaLevelAttribute { get; init; }         // Attribut EID-CITIZEN-QAA-LEVEL
         public string? IdentificationMethod { get; init; }      // Attribut AssertionProvedBy
+        public required int TrustLevel { get; init; }           // erreichtes Vertrauensniveau (1, 3, 4)
 
         /// <summary>
         /// Liest die Attribute aus der geprüften Assertion. OID-Namen werden ohne Leerzeichen verglichen
@@ -65,6 +66,18 @@ namespace AuthenticationServer.BundId
                 .GroupBy(c => Normalize(c.Type))
                 .ToDictionary(g => g.Key, g => g.First().Value);
             string? Get(string oid) => values.TryGetValue(Normalize(oid), out var v) && !string.IsNullOrWhiteSpace(v) ? v : null;
+
+            // Erreichtes Niveau: aus dem AuthnContextClassRef (ITfoxtec legt ihn als Claim "authenticationmethod"
+            // ab) und dem Attribut EID-CITIZEN-QAA-LEVEL. Weichen beide ab, gilt vorsichtshalber das niedrigere.
+            var levels = samlIdentity.FindAll(ClaimTypes.AuthenticationMethod).Select(c => c.Value)
+                .Append(Get(BundIdOids.EidCitizenQaaLevel))
+                .Select(BundId.TrustLevel.Parse)
+                .OfType<int>()
+                .ToList();
+            if (levels.Count == 0)
+            {
+                throw new BundIdException("Die BundID hat kein Vertrauensniveau übermittelt.");
+            }
 
             return new BundIdAttributes
             {
@@ -82,6 +95,7 @@ namespace AuthenticationServer.BundId
                 PostkorbHandle = Get(postkorbHandleAttribute),
                 QaaLevelAttribute = Get(BundIdOids.EidCitizenQaaLevel),
                 IdentificationMethod = Get(BundIdOids.AssertionProvedBy),
+                TrustLevel = levels.Min(),
             };
         }
 
@@ -92,7 +106,11 @@ namespace AuthenticationServer.BundId
         /// <summary>Claims für die Sitzung und die Tokens (ohne leere Werte).</summary>
         public IEnumerable<Claim> ToClaims()
         {
-            var claims = new List<Claim> { new(BundIdClaimTypes.Bpk2, Bpk2) };
+            var claims = new List<Claim>
+            {
+                new(BundIdClaimTypes.Bpk2, Bpk2),
+                new(BundIdClaimTypes.TrustLevel, BundId.TrustLevel.ToStork(TrustLevel)),
+            };
             void Add(string type, string? value)
             {
                 if (!string.IsNullOrWhiteSpace(value)) claims.Add(new Claim(type, value));

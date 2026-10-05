@@ -93,6 +93,18 @@ namespace AuthenticationServer.Controllers
 
             // SAML-Attribute (OIDs) in verständliche Werte und Claims übersetzen.
             var attributes = BundIdAttributes.FromSaml(authnResponse.ClaimsIdentity, options.Value.PostkorbHandleAttribute);
+
+            // Die BundID (bzw. der Simulator) erzwingt das geforderte Niveau nicht zuverlässig – selbst prüfen.
+            if (attributes.TrustLevel < loginState.RequestedLevel)
+            {
+                return View("Result", new BundIdResultViewModel
+                {
+                    Status = "TrustLevel",
+                    Message = $"Vertrauensniveau zu niedrig: erreicht {TrustLevel.Describe(attributes.TrustLevel)}, " +
+                              $"gefordert {TrustLevel.Describe(loginState.RequestedLevel)}.",
+                });
+            }
+
             return View("Result", new BundIdResultViewModel
             {
                 Success = true,
