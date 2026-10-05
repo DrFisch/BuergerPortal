@@ -1,3 +1,4 @@
+using AuthenticationServer.BundId;
 using AuthenticationServer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -93,6 +94,9 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.Cookie.SameSite = SameSiteMode.None;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
+// ---------- BundID (SAML) ----------
+builder.Services.Configure<BundIdOptions>(builder.Configuration.GetSection(BundIdOptions.SectionName));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
