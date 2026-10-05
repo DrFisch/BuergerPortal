@@ -28,8 +28,26 @@ namespace AuthenticationServer.Controllers
             var oidcRequest = HttpContext.GetOpenIddictServerRequest()
                                ?? throw new InvalidOperationException("OIDC request not found.");
 
-            // 1) Benutzer nicht angemeldet? -> zur Identity-Loginseite
+            // Gefordertes Vertrauensniveau (OIDC-Parameter acr_values, z. B. "STORK-QAA-Level-3"); 0 = keine Vorgabe
+            var requestedLevel = (oidcRequest.AcrValues ?? string.Empty)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(TrustLevel.Parse).OfType<int>().DefaultIfEmpty(0).Max();
+
             var authResult = await HttpContext.AuthenticateAsync(IdentityConstants.ApplicationScheme);
+            var sessionLevel = authResult.Succeeded
+                ? TrustLevel.Parse(authResult.Principal.FindFirstValue(BundIdClaimTypes.TrustLevel)) ?? 0
+                : 0;
+
+            // Step-up: Niveau gefordert, das die Sitzung nicht hat (oder keine Sitzung) → erneuter BundID-Login
+            // mit diesem Niveau; danach geht es mit derselben Authorize-Anfrage weiter.
+            if (requestedLevel > sessionLevel)
+            {
+                var authorizeUrl = Request.PathBase + Request.Path +
+                    QueryString.Create(Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
+                return Redirect($"/bundid/login?level={requestedLevel}&returnUrl={Uri.EscapeDataString(authorizeUrl)}");
+            }
+
+            // 1) Benutzer nicht angemeldet? -> zur Anmeldung (LoginPath = BundID-Login)
             if (!authResult.Succeeded)
             {
                 // nach Login soll’s automatisch hierher zurückkehren
