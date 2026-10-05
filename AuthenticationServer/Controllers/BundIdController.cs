@@ -1,10 +1,12 @@
 using AuthenticationServer.BundId;
+using AuthenticationServer.Data;
 using AuthenticationServer.Models;
 using ITfoxtec.Identity.Saml2;
 using ITfoxtec.Identity.Saml2.MvcCore;
 using ITfoxtec.Identity.Saml2.Schemas;
 using ITfoxtec.Identity.Saml2.Schemas.Metadata;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -18,7 +20,8 @@ namespace AuthenticationServer.Controllers
     [Route("bundid")]
     public class BundIdController(IOptions<BundIdOptions> options,
         BundIdSamlConfigurationProvider samlConfiguration, BundIdLoginStateStore loginStateStore,
-        BundIdUserService userService, ILogger<BundIdController> logger) : Controller
+        BundIdUserService userService, SignInManager<ApplicationUser> signInManager,
+        ILogger<BundIdController> logger) : Controller
     {
         // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
         // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4),
@@ -125,13 +128,11 @@ namespace AuthenticationServer.Controllers
                 var (user, created) = await userService.FindOrCreateAsync(attributes, ct);
                 await userService.UpdateLoginDataAsync(user, attributes);
 
-                return View("Result", new BundIdResultViewModel
-                {
-                    Claims = attributes.ToClaims()
-                        .Select(c => new KeyValuePair<string, string>(c.Type, c.Value))
-                        .Prepend(new("Benutzerkonto", $"{user.Id} ({(created ? "neu angelegt" : "wiedererkannt")})"))
-                        .ToList(),
-                });
+                // Anmeldung am Auth-Server: Identity-Sitzung mit den BundID-Daten als Claims (nur für diese Sitzung).
+                await signInManager.SignInWithClaimsAsync(user, isPersistent: false, attributes.ToClaims());
+                logger.LogInformation("BundID-Login: Konto {UserId} ({Status}), Niveau {Level}", user.Id,
+                    created ? "neu" : "bekannt", attributes.TrustLevel);
+                return LocalRedirect(loginState.ReturnUrl);
             }
             catch (BundIdException ex)
             {

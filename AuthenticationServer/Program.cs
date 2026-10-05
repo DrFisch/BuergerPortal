@@ -102,6 +102,15 @@ builder.Services.AddSingleton<BundIdTokenReplayCache>();
 builder.Services.AddSingleton<BundIdSamlConfigurationProvider>();
 builder.Services.AddSingleton<BundIdLoginStateStore>();
 builder.Services.AddScoped<BundIdUserService>();
+// Die BundID-Claims stecken nur in der Sitzung (nicht in der DB). Bei der regelmäßigen Prüfung des
+// Security-Stamps baut Identity die Sitzung neu auf – dabei die BundID-Claims übernehmen.
+builder.Services.Configure<SecurityStampValidatorOptions>(o => o.OnRefreshingPrincipal = context =>
+{
+    var newIdentity = context.NewPrincipal?.Identities.FirstOrDefault();
+    var bundIdClaims = context.CurrentPrincipal?.Claims.Where(c => BundIdClaimTypes.All.Contains(c.Type)) ?? [];
+    newIdentity?.AddClaims(bundIdClaims.Where(c => !newIdentity.HasClaim(c.Type, c.Value)));
+    return Task.CompletedTask;
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

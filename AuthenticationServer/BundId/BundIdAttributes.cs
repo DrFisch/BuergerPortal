@@ -35,6 +35,12 @@ namespace AuthenticationServer.BundId
         public const string PostkorbHandle = "postkorb_handle";
         public const string TrustLevel = "acr";                 // STORK-QAA-Level-n
         public const string IdentificationMethod = "amr";       // z. B. eID, Elster, Benutzername
+
+        public static readonly IReadOnlySet<string> All = new HashSet<string>
+        {
+            GivenName, FamilyName, Email, Birthdate, Address, PlaceOfBirth, BirthName, Bpk2, PostkorbHandle,
+            TrustLevel, IdentificationMethod,
+        };
     }
 
     /// <summary>Die übermittelten BundID-Daten einer Anmeldung, aus den SAML-Attributen gelesen.</summary>
