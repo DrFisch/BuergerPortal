@@ -1,7 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>
     /// Merkt sich bereits verarbeitete Assertions bis zu ihrem Ablauf. Wird dieselbe Assertion ein zweites Mal

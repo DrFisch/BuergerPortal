@@ -1,7 +1,7 @@
 using System.Xml.Linq;
 using SamlExtensions = ITfoxtec.Identity.Saml2.Schemas.Extensions;
 
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>
     /// AKDB-Erweiterung des AuthnRequest (Namespace https://www.akdb.de/request/2018/09), wie sie die BundID

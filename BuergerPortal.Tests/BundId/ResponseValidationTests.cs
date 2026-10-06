@@ -1,4 +1,4 @@
-using AuthenticationServer.BundId;
+using BuergerPortal.BundId;
 using ITfoxtec.Identity.Saml2;
 using ITfoxtec.Identity.Saml2.Cryptography;
 using ITfoxtec.Identity.Saml2.Schemas;

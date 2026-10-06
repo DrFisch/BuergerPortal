@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>Was sich der Auth-Server zwischen AuthnRequest und Response merken muss.</summary>
     public sealed record BundIdLoginState(string RequestId, int RequestedLevel, string ReturnUrl);

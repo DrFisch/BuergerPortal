@@ -1,11 +1,12 @@
 using ITfoxtec.Identity.Saml2;
 using ITfoxtec.Identity.Saml2.Schemas.Metadata;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel.Security;
 
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>
     /// Liefert die SAML-Konfiguration des Auth-Servers als Service Provider der BundID.

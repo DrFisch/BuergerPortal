@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Bausteine für die Anmeldung über die BundID (SAML 2.0) – genutzt von Auth-Server und Postkorb-Simulation. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ITfoxtec.Identity.Saml2.MvcCore" Version="4.21.0" />
+  </ItemGroup>
+
+</Project>

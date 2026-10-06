@@ -1,4 +1,4 @@
-﻿using AuthenticationServer.BundId;
+﻿using BuergerPortal.BundId;
 using AuthenticationServer.Data;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore;

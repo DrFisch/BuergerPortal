@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>SAML-Attributnamen (OIDs) der BundID, wie sie in der Assertion stehen.</summary>
     public static class BundIdOids

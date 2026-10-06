@@ -1,4 +1,4 @@
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>
     /// Vertrauensniveaus der BundID (STORK-QAA-Level): 1 = normal (Benutzername/Passwort),

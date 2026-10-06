@@ -1,4 +1,4 @@
-using AuthenticationServer.BundId;
+using BuergerPortal.BundId;
 
 namespace BuergerPortal.Tests.BundId
 {

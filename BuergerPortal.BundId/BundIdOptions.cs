@@ -1,4 +1,4 @@
-namespace AuthenticationServer.BundId
+namespace BuergerPortal.BundId
 {
     /// <summary>
     /// Einstellungen für die Anmeldung über die BundID (Abschnitt "BundId" in appsettings,
