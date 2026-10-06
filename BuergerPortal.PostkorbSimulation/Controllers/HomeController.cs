@@ -6,6 +6,8 @@ namespace BuergerPortal.PostkorbSimulation.Controllers
     {
         public IActionResult Index() => View();
 
+        public IActionResult Hinweise() => View();
+
         // Ziel von UseExceptionHandler außerhalb von Development: allgemeiner Text, keine technischen Details.
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() => View();

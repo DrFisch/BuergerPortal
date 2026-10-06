@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @* Simulation für ein Studienprojekt: nicht in Suchmaschinen aufnehmen. *@
+    <meta name="robots" content="noindex, nofollow" />
     <title>@ViewData["Title"] – Mein BundID-Postfach (Simulation)</title>
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
 </head>
@@ -26,5 +28,10 @@
     <main class="container pb-5">
         @RenderBody()
     </main>
+    <footer class="container border-top py-3 small text-muted">
+        Simulation für ein Studienprojekt – kein echtes Postfach der BundID. Alle Personen sind fiktive Testpersonen
+        des BundID-Simulators; bitte keine echten Daten verwenden.
+        <a asp-controller="Home" asp-action="Hinweise">Hinweise zu Simulation und Datenschutz</a>
+    </footer>
 </body>
 </html>

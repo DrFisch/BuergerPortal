@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "Hinweise";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h4">Hinweise zu Simulation und Datenschutz</h1>
+
+        <h2 class="h6 mt-4">Was ist das?</h2>
+        <p>
+            Eine Nachbildung des Postfachs der BundID (Zentrales Bürgerpostfach, ZBP) für das Studienprojekt
+            „BürgerPortal mit BundID-Anmeldung“. Die Anmeldung läuft über einen <strong>BundID-Simulator</strong>
+            mit fiktiven Testpersonen – nicht über die echte BundID. Nachrichten stammen aus dem BürgerPortal dieses
+            Projekts (z. B. Terminbestätigungen).
+        </p>
+
+        <h2 class="h6 mt-4">Welche Daten werden gespeichert?</h2>
+        <ul>
+            <li>
+                <strong>Nachrichten:</strong> Titel, Text, absendende Stelle, Leistung, optionale Antwortadresse,
+                erforderliches Vertrauensniveau, Eingangs- und Lesezeitpunkt sowie das Postkorb-Handle, an das sie
+                gerichtet sind. Keine Namen, keine bPK2.
+            </li>
+            <li>
+                <strong>Anmeldung:</strong> Während der Sitzung (höchstens 30 Minuten ohne Aktivität) speichert ein
+                Cookie Anzeigename, Postkorb-Handle und Vertrauensniveau. Weitere Angaben aus der BundID werden
+                geprüft, aber nicht gespeichert.
+            </li>
+            <li>
+                <strong>Löschung:</strong> Es handelt sich um Testdaten; die Datenbank kann jederzeit ohne Ankündigung
+                zurückgesetzt werden.
+            </li>
+        </ul>
+
+        <h2 class="h6 mt-4">Unterschiede zum echten Postfach</h2>
+        <ul>
+            <li>
+                Absender melden sich mit einem API-Schlüssel an – das echte ZBP verlangt ein BPKI-Zertifikat und
+                eine Signatur über den Inhalt.
+            </li>
+            <li>Keine Anhänge, keine Abrufbestätigung, keine Antworten aus dem Postfach.</li>
+            <li>
+                Das Postkorb-Handle liefert der erweiterte Simulator als SAML-Attribut
+                <code>urn:oid:2.5.4.18</code>; wie die echte BundID es übermittelt, ist nicht öffentlich dokumentiert.
+            </li>
+            <li>
+                Annahme: Eine Nachricht mit Vertrauensniveau „substanziell“ oder „hoch“ ist erst nach einer
+                Anmeldung mit mindestens diesem Niveau lesbar.
+            </li>
+        </ul>
+
+        <p class="small text-muted mb-0">
+            Grundlage der Schnittstelle: FITKO, „FIT-Connect – Zentrales Bürgerpostfach (ZBP)“,
+            <a href="https://docs.fitko.de/fit-connect/docs/zbp/" rel="noopener">docs.fitko.de/fit-connect/docs/zbp</a>.
+        </p>
+    </div>
+</div>
