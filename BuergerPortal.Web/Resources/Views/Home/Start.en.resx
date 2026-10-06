@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Start_Title" xml:space="preserve">
+		<value>Welcome</value>
+	</data>
+	<data name="Start_SimulationBadge" xml:space="preserve">
+		<value>Student project · BundID simulation</value>
+	</data>
+	<data name="Start_Heading" xml:space="preserve">
+		<value>Citizen Portal</value>
+	</data>
+	<data name="Start_Lead" xml:space="preserve">
+		<value>Handle your city's administrative services online – appointments, applications and reports in one place. You sign in securely with BundID.</value>
+	</data>
+	<data name="Start_LoginTitle" xml:space="preserve">
+		<value>Sign in</value>
+	</data>
+	<data name="Start_LoginText" xml:space="preserve">
+		<value>Sign in with your BundID. Your Citizen Portal account is created automatically the first time.</value>
+	</data>
+	<data name="Start_LoginButton" xml:space="preserve">
+		<value>Sign in with BundID</value>
+	</data>
+	<data name="Start_WhatIsBundId" xml:space="preserve">
+		<value>BundID is the central user account for online administrative services in Germany. Here, a BundID simulator with fictitious test persons takes its place. More about the real BundID:</value>
+	</data>
+	<data name="Start_SignedOut" xml:space="preserve">
+		<value>You have been signed out.</value>
+	</data>
+	<data name="Start_ServicesHeading" xml:space="preserve">
+		<value>Our services</value>
+	</data>
+	<data name="Start_ServicesNote" xml:space="preserve">
+		<value>All services are available after signing in with BundID.</value>
+	</data>
+	<data name="Service_Appointments_Title" xml:space="preserve">
+		<value>Book appointments</value>
+	</data>
+	<data name="Service_Appointments_Text" xml:space="preserve">
+		<value>Book consultation appointments at the citizens' office, change the location or cancel them.</value>
+	</data>
+	<data name="Service_Passport_Title" xml:space="preserve">
+		<value>Apply for a passport</value>
+	</data>
+	<data name="Service_Passport_Text" xml:space="preserve">
+		<value>Prepare and submit your application online – this requires the level “substantial”, e.g. with an ELSTER certificate or the online ID.</value>
+	</data>
+	<data name="Service_BulkyWaste_Title" xml:space="preserve">
+		<value>Register bulky waste</value>
+	</data>
+	<data name="Service_BulkyWaste_Text" xml:space="preserve">
+		<value>Register a bulky waste collection on a preferred day.</value>
+	</data>
+	<data name="Service_Issues_Title" xml:space="preserve">
+		<value>Report issues</value>
+	</data>
+	<data name="Service_Issues_Text" xml:space="preserve">
+		<value>Report damage in the city, such as potholes or broken street lights.</value>
+	</data>
+	<data name="Service_Discover_Title" xml:space="preserve">
+		<value>Discover the city</value>
+	</data>
+	<data name="Service_Discover_Text" xml:space="preserve">
+		<value>City map, locations of the citizens' offices and city news.</value>
+	</data>
+	<data name="Service_Mailbox_Title" xml:space="preserve">
+		<value>Confirmations in your BundID mailbox</value>
+	</data>
+	<data name="Service_Mailbox_Text" xml:space="preserve">
+		<value>You receive confirmations for appointments and applications in your BundID mailbox.</value>
+	</data>
+	<data name="Service_MyData_Title" xml:space="preserve">
+		<value>My data</value>
+	</data>
+	<data name="Service_MyData_Text" xml:space="preserve">
+		<value>See at any time which details BundID transmitted and what the portal stores.</value>
+	</data>
+</root>

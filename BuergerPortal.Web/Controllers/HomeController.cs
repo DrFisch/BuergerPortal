@@ -22,8 +22,16 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Index(CancellationToken ct)
+        public async Task<IActionResult> Index(string? returnUrl, CancellationToken ct)
         {
+            // Ohne Anmeldung gibt es nur die Einstiegsseite: LeistungsÃ¼bersicht und "Mit BundID anmelden".
+            // returnUrl: Ziel nach dem Login, wenn die Person eine geschÃ¼tzte Seite aufrufen wollte.
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                ViewData["ReturnUrl"] = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
+                return View("Start");
+            }
+
             var client = _cf.CreateClient("BuergerPortalApi");
 
             NextAppointmentVm? nextAppointment = null;
@@ -112,7 +120,7 @@ namespace BuergerPortal.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Fehler beim Laden der nächsten Termine (Index).");
+                    _logger.LogError(ex, "Fehler beim Laden der nï¿½chsten Termine (Index).");
                 }
             }
 
@@ -167,11 +175,11 @@ namespace BuergerPortal.Web.Controllers
             return Content(string.Join("\n", lines));
         }
 
-        // Hilfsmethodne für wetter
+        // Hilfsmethodne fï¿½r wetter
         private string GetWeatherDescription(int code) => code switch
         {
             0 => "Sonnig",
-            1 or 2 or 3 => "Leicht bewölkt",
+            1 or 2 or 3 => "Leicht bewï¿½lkt",
             45 or 48 => "Nebel",
             51 or 53 or 55 => "Nieselregen",
             61 or 63 or 65 => "Regen",

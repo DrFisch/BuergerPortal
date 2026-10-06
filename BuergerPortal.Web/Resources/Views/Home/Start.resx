@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Start_Title" xml:space="preserve">
+		<value>Willkommen</value>
+	</data>
+	<data name="Start_SimulationBadge" xml:space="preserve">
+		<value>Studienprojekt · BundID-Simulation</value>
+	</data>
+	<data name="Start_Heading" xml:space="preserve">
+		<value>BürgerPortal</value>
+	</data>
+	<data name="Start_Lead" xml:space="preserve">
+		<value>Verwaltungsleistungen Ihrer Stadt online erledigen – Termine, Anträge und Meldungen an einem Ort. Die Anmeldung erfolgt sicher über die BundID.</value>
+	</data>
+	<data name="Start_LoginTitle" xml:space="preserve">
+		<value>Anmelden</value>
+	</data>
+	<data name="Start_LoginText" xml:space="preserve">
+		<value>Melden Sie sich mit Ihrer BundID an. Beim ersten Mal wird Ihr Konto im BürgerPortal automatisch angelegt.</value>
+	</data>
+	<data name="Start_LoginButton" xml:space="preserve">
+		<value>Mit BundID anmelden</value>
+	</data>
+	<data name="Start_WhatIsBundId" xml:space="preserve">
+		<value>Die BundID ist das zentrale Nutzerkonto für Online-Verwaltungsleistungen in Deutschland. Hier übernimmt ein BundID-Simulator mit fiktiven Testpersonen ihre Rolle. Mehr zur echten BundID:</value>
+	</data>
+	<data name="Start_SignedOut" xml:space="preserve">
+		<value>Sie wurden abgemeldet.</value>
+	</data>
+	<data name="Start_ServicesHeading" xml:space="preserve">
+		<value>Unsere Leistungen</value>
+	</data>
+	<data name="Start_ServicesNote" xml:space="preserve">
+		<value>Alle Leistungen stehen nach der Anmeldung mit der BundID zur Verfügung.</value>
+	</data>
+	<data name="Service_Appointments_Title" xml:space="preserve">
+		<value>Termine buchen</value>
+	</data>
+	<data name="Service_Appointments_Text" xml:space="preserve">
+		<value>Beratungstermine im Bürgeramt buchen, den Ort ändern oder stornieren.</value>
+	</data>
+	<data name="Service_Passport_Title" xml:space="preserve">
+		<value>Reisepass beantragen</value>
+	</data>
+	<data name="Service_Passport_Text" xml:space="preserve">
+		<value>Antrag online vorbereiten und einreichen – dafür ist das Vertrauensniveau „substanziell“ nötig, z. B. mit ELSTER-Zertifikat oder Online-Ausweis.</value>
+	</data>
+	<data name="Service_BulkyWaste_Title" xml:space="preserve">
+		<value>Sperrmüll anmelden</value>
+	</data>
+	<data name="Service_BulkyWaste_Text" xml:space="preserve">
+		<value>Abholung von Sperrmüll mit Wunschtag anmelden.</value>
+	</data>
+	<data name="Service_Issues_Title" xml:space="preserve">
+		<value>Mängel melden</value>
+	</data>
+	<data name="Service_Issues_Text" xml:space="preserve">
+		<value>Schäden im Stadtgebiet melden, etwa Schlaglöcher oder defekte Straßenlaternen.</value>
+	</data>
+	<data name="Service_Discover_Title" xml:space="preserve">
+		<value>Stadt entdecken</value>
+	</data>
+	<data name="Service_Discover_Text" xml:space="preserve">
+		<value>Stadtplan, Standorte der Bürgerämter und Neuigkeiten aus der Stadt.</value>
+	</data>
+	<data name="Service_Mailbox_Title" xml:space="preserve">
+		<value>Bestätigungen im BundID-Postfach</value>
+	</data>
+	<data name="Service_Mailbox_Text" xml:space="preserve">
+		<value>Bestätigungen zu Terminen und Anträgen erhalten Sie in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="Service_MyData_Title" xml:space="preserve">
+		<value>Meine Daten</value>
+	</data>
+	<data name="Service_MyData_Text" xml:space="preserve">
+		<value>Jederzeit einsehen, welche Angaben die BundID übermittelt hat und was das Portal davon speichert.</value>
+	</data>
+</root>

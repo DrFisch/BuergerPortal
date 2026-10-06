@@ -1,0 +1,76 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@{
+    // Einstiegsseite ohne Anmeldung – die einzige Seite des Portals, die ohne BundID-Login erreichbar ist.
+    ViewData["Title"] = L["Start_Title"];
+    var returnUrl = ViewData["ReturnUrl"] as string ?? "/";
+
+    var leistungen = new[]
+    {
+        ("bi-calendar3-range", "Service_Appointments"),
+        ("bi-passport", "Service_Passport"),
+        ("bi-truck", "Service_BulkyWaste"),
+        ("bi-exclamation-octagon", "Service_Issues"),
+        ("bi-map", "Service_Discover"),
+        ("bi-envelope-paper", "Service_Mailbox"),
+        ("bi-person-vcard", "Service_MyData"),
+    };
+}
+
+@section Styles {
+    <style>
+        .bundid-login-btn { background: #0b4f8a; border-color: #0b4f8a; color: #fff; }
+        .bundid-login-btn:hover, .bundid-login-btn:focus { background: #083c69; border-color: #083c69; color: #fff; }
+    </style>
+}
+
+@if (Context.Request.Query.ContainsKey("signedout"))
+{
+    <div class="alert alert-success" role="status">@L["Start_SignedOut"]</div>
+}
+
+<section class="row g-4 align-items-center mb-5" aria-labelledby="start-heading">
+    <div class="col-12 col-lg-7">
+        <span class="badge text-bg-warning mb-2">@L["Start_SimulationBadge"]</span>
+        <h1 id="start-heading" class="display-6 fw-bold">@L["Start_Heading"]</h1>
+        <p class="lead">@L["Start_Lead"]</p>
+    </div>
+    <div class="col-12 col-lg-5">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-semibold">@L["Start_LoginTitle"]</h2>
+                <p class="small text-muted">@L["Start_LoginText"]</p>
+                <a class="btn btn-lg bundid-login-btn w-100 d-flex align-items-center justify-content-center gap-2"
+                   asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">
+                    @await Html.PartialAsync("_BundIdSymbol", new ViewDataDictionary(ViewData) { ["Size"] = 32 })
+                    <span>@L["Start_LoginButton"]</span>
+                </a>
+                <p class="small text-muted mt-3 mb-0">
+                    @L["Start_WhatIsBundId"]
+                    <a href="https://id.bund.de" rel="noopener" target="_blank">id.bund.de</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section aria-labelledby="services-heading">
+    <h2 id="services-heading" class="h4 mb-3">@L["Start_ServicesHeading"]</h2>
+    <div class="row g-3">
+        @foreach (var (icon, key) in leistungen)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex gap-3">
+                        <i class="bi @icon fs-3 text-primary" aria-hidden="true"></i>
+                        <div>
+                            <h3 class="h6 fw-semibold mb-1">@L[$"{key}_Title"]</h3>
+                            <p class="small text-muted mb-0">@L[$"{key}_Text"]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <p class="small text-muted mt-3">@L["Start_ServicesNote"]</p>
+</section>
