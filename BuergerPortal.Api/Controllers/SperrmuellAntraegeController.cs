@@ -11,7 +11,8 @@ namespace BuergerPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/antraege/sperrmuell")]
-    [AllowAnonymous]
+    // Vorher [AllowAnonymous]: Ohne Token warf GetUserIdOrThrow eine Ausnahme (HTTP 500 statt 401).
+    [Authorize]
     [Produces("application/json")]
     public sealed class SperrmuellAntraegeController : ControllerBase
     {
