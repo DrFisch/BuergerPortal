@@ -1,24 +1,31 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-WORKDIR /app
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+# API des BürgerPortals (Fachlogik, prüft Access-Tokens, sendet Postkorb-Nachrichten).
+# Bauen aus der Repo-Wurzel:  docker build -f Dockerfile.api -t bpsim-api .
 
+# ---------- Build ----------
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+# Erst nur die Projektdateien: Die Restore-Schicht bleibt im Cache, solange sich keine Abhängigkeit ändert.
+COPY BuergerPortal.Api/BuergerPortal.Api.csproj BuergerPortal.Api/
+COPY BuergerPortal.Application/BuergerPortal.Application.csproj BuergerPortal.Application/
+COPY BuergerPortal.Domain/BuergerPortal.Domain.csproj BuergerPortal.Domain/
+COPY BuergerPortal.Infrastructure/BuergerPortal.Infrastructure.Database.csproj BuergerPortal.Infrastructure/
+COPY BuergerPortal.Infrastructure.Email/BuergerPortal.Infrastructure.Email.csproj BuergerPortal.Infrastructure.Email/
+COPY BuergerPortal.Infrastructure.Postkorb/BuergerPortal.Infrastructure.Postkorb.csproj BuergerPortal.Infrastructure.Postkorb/
+RUN dotnet restore BuergerPortal.Api/BuergerPortal.Api.csproj
+COPY BuergerPortal.Api/ BuergerPortal.Api/
+COPY BuergerPortal.Application/ BuergerPortal.Application/
+COPY BuergerPortal.Domain/ BuergerPortal.Domain/
+COPY BuergerPortal.Infrastructure/ BuergerPortal.Infrastructure/
+COPY BuergerPortal.Infrastructure.Email/ BuergerPortal.Infrastructure.Email/
+COPY BuergerPortal.Infrastructure.Postkorb/ BuergerPortal.Infrastructure.Postkorb/
+RUN dotnet publish BuergerPortal.Api/BuergerPortal.Api.csproj -c Release -o /app/publish \
+    --no-restore /p:UseAppHost=false
 
-COPY ["BuergerPortal.Api/BuergerPortal.Api.csproj", "BuergerPortal.Api/"]
-COPY ["BuergerPortal.Domain/BuergerPortal.Domain.csproj", "BuergerPortal.Domain/"]
-COPY ["BuergerPortal.Application/BuergerPortal.Application.csproj", "BuergerPortal.Application/"]
-COPY ["BuergerPortal.Infrastructure/BuergerPortal.Infrastructure.Database.csproj", "BuergerPortal.Infrastructure/"]
-COPY ["BuergerPortal.Infrastructure.Email/BuergerPortal.Infrastructure.Email.csproj", "BuergerPortal.Infrastructure.Email/"]
-
-RUN dotnet restore "BuergerPortal.Api/BuergerPortal.Api.csproj"
-
-COPY . .
-WORKDIR "/src/BuergerPortal.Api"
-RUN dotnet publish "BuergerPortal.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+# ---------- Laufzeit ----------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Port 8080 (Standard der .NET-Images); läuft als Benutzer "app" (UID 1654) statt root.
+EXPOSE 8080
+USER $APP_UID
 ENTRYPOINT ["dotnet", "BuergerPortal.Api.dll"]

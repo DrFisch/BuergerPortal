@@ -1,19 +1,23 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-WORKDIR /app
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+# Weboberfläche des BürgerPortals (meldet Personen per OIDC am Auth-Server an).
+# Bauen aus der Repo-Wurzel:  docker build -f Dockerfile.portal -t bpsim-web .
 
+# ---------- Build ----------
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+# Erst nur die Projektdateien: Die Restore-Schicht bleibt im Cache, solange sich keine Abhängigkeit ändert.
+COPY BuergerPortal.Web/BuergerPortal.Web.csproj BuergerPortal.Web/
+COPY BuergerPortal.BundId.Core/BuergerPortal.BundId.Core.csproj BuergerPortal.BundId.Core/
+RUN dotnet restore BuergerPortal.Web/BuergerPortal.Web.csproj
+COPY BuergerPortal.Web/ BuergerPortal.Web/
+COPY BuergerPortal.BundId.Core/ BuergerPortal.BundId.Core/
+RUN dotnet publish BuergerPortal.Web/BuergerPortal.Web.csproj -c Release -o /app/publish \
+    --no-restore /p:UseAppHost=false
 
-COPY . .
-
-RUN dotnet restore "BuergerPortal.Web/BuergerPortal.Web.csproj"
-
-WORKDIR "/src/BuergerPortal.Web"
-RUN dotnet publish "BuergerPortal.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+# ---------- Laufzeit ----------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Port 8080 (Standard der .NET-Images); läuft als Benutzer "app" (UID 1654) statt root.
+EXPOSE 8080
+USER $APP_UID
 ENTRYPOINT ["dotnet", "BuergerPortal.Web.dll"]

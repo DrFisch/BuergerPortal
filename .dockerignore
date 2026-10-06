@@ -1,0 +1,32 @@
+# Build-Kontext der Dockerfiles ist die Repo-Wurzel. Ins Image kommt nur Quellcode – keine Build-Ausgaben
+# (bin/obj vom Windows-Host würden das Restore im Linux-Container stören) und keine lokalen Einstellungen.
+
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/node_modules/
+.git/
+.github/
+
+# Nicht für den Betrieb gebraucht
+BuergerPortal.Mobile/
+BuergerPortal.Tests/
+deploy/
+*.md
+Dockerfile*
+compose*.yml
+
+# Lokale bzw. alte Einstellungen mit Geheimnissen: Im Container kommt die Konfiguration aus Umgebungsvariablen.
+**/appsettings.Development.json
+**/appsettings.Lokal.json
+**/appsettings.Production.json
+gcloudinstances.txt
+efcommands.txt
+**/keys/
+**/*.pfx
+**/*.p12
+**/*.pem
+**/*.key

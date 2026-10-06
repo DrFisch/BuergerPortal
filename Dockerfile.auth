@@ -1,25 +1,25 @@
-# ========= Runtime (final) =========
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-WORKDIR /app
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+# Auth-Server (ASP.NET Identity + OpenIddict, SAML-Service-Provider der BundID).
+# Bauen aus der Repo-Wurzel:  docker build -f Dockerfile.auth -t bpsim-auth .
 
-# ========= Build =========
+# ---------- Build ----------
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+# Erst nur die Projektdateien: Die Restore-Schicht bleibt im Cache, solange sich keine Abhängigkeit ändert.
+COPY AuthenticationServer/AuthenticationServer.csproj AuthenticationServer/
+COPY BuergerPortal.BundId/BuergerPortal.BundId.csproj BuergerPortal.BundId/
+COPY BuergerPortal.BundId.Core/BuergerPortal.BundId.Core.csproj BuergerPortal.BundId.Core/
+RUN dotnet restore AuthenticationServer/AuthenticationServer.csproj
+COPY AuthenticationServer/ AuthenticationServer/
+COPY BuergerPortal.BundId/ BuergerPortal.BundId/
+COPY BuergerPortal.BundId.Core/ BuergerPortal.BundId.Core/
+RUN dotnet publish AuthenticationServer/AuthenticationServer.csproj -c Release -o /app/publish \
+    --no-restore /p:UseAppHost=false
 
-# ganzen Code in den Build-Container kopieren
-COPY . .
-
-# Auth-Server Projekt RESTOREN (Pfad/Name anpassen falls nötig)
-RUN dotnet restore "AuthenticationServer/AuthenticationServer.csproj"
-
-# Publish
-WORKDIR "/src/AuthenticationServer"
-RUN dotnet publish "AuthenticationServer.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-# ========= Final Image =========
-FROM base AS final
+# ---------- Laufzeit ----------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Port 8080 (Standard der .NET-Images); läuft als Benutzer "app" (UID 1654) statt root.
+EXPOSE 8080
+USER $APP_UID
 ENTRYPOINT ["dotnet", "AuthenticationServer.dll"]
