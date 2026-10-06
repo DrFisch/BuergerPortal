@@ -2,6 +2,7 @@
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
+using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -12,12 +13,28 @@ namespace BuergerPortal.Web.Controllers
     public class SperrmuellAntraegeController : Controller
     {
         private readonly IHttpClientFactory _cf;
-        public SperrmuellAntraegeController(IHttpClientFactory cf) => _cf = cf;
+        private readonly HttpCurrentUserService _currentUser;
+
+        public SperrmuellAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser)
+        {
+            _cf = cf;
+            _currentUser = currentUser;
+        }
 
         [HttpGet]
         public IActionResult NeuerSperrmuell()
         {
-            return View("SperrmuellStep1", new SperrmuellStep1Vm());
+            var vm = new SperrmuellStep1Vm();
+            // Vorbefüllen aus der BundID-Anmeldung; alle Felder bleiben änderbar.
+            if (_currentUser.GetBundIdUser() is { IsBundIdLogin: true } user)
+            {
+                vm.Vorname = user.GivenName ?? string.Empty;
+                vm.Nachname = user.FamilyName ?? string.Empty;
+                vm.Geburtsdatum = user.Birthdate?.ToDateTime(TimeOnly.MinValue);
+                vm.Email = user.Email;
+                ViewData["AusBundId"] = true;
+            }
+            return View("SperrmuellStep1", vm);
         }
 
         [HttpPost]
@@ -103,11 +120,21 @@ namespace BuergerPortal.Web.Controllers
                 SonstigesKubikmeter = detail.SonstigesKubikmeter,
                 Matratzen = detail.Matratzen,
 
-                Wunschzeit = detail.Wunschzeit == default 
+                Wunschzeit = detail.Wunschzeit == default
                     ? defaultDate
                     : detail.Wunschzeit.ToLocalTime(),
                 Hinweis = detail.Hinweis
             };
+
+            // Noch keine Abholadresse eingetragen: Anschrift aus der BundID vorschlagen (änderbar).
+            if (string.IsNullOrWhiteSpace(vm.Strasse)
+                && _currentUser.GetBundIdUser()?.Address is { StreetAddress: not null } address)
+            {
+                vm.Strasse = address.StreetAddress;
+                vm.PLZ = address.PostalCode ?? string.Empty;
+                vm.Ort = address.Locality ?? string.Empty;
+                ViewData["AusBundId"] = true;
+            }
 
             return View("SperrmuellStep2", vm);
         }

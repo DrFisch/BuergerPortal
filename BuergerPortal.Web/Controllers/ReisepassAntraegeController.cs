@@ -15,12 +15,28 @@ namespace BuergerPortal.Web.Controllers
     public class ReisepassAntraegeController : Controller
     {
         private readonly IHttpClientFactory _cf;
-        public ReisepassAntraegeController(IHttpClientFactory cf) => _cf = cf;
+        private readonly HttpCurrentUserService _currentUser;
+
+        public ReisepassAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser)
+        {
+            _cf = cf;
+            _currentUser = currentUser;
+        }
 
         [HttpGet]
         public IActionResult NeuerReisepass()
         {
-            return View("ReisepassStep1", new ReisepassStep1Vm());
+            var vm = new ReisepassStep1Vm();
+            // Vorbefüllen aus der BundID-Anmeldung; alle Felder bleiben änderbar.
+            if (_currentUser.GetBundIdUser() is { IsBundIdLogin: true } user)
+            {
+                vm.Vorname = user.GivenName ?? string.Empty;
+                vm.Nachname = user.FamilyName ?? string.Empty;
+                vm.Geburtsdatum = user.Birthdate?.ToDateTime(TimeOnly.MinValue);
+                vm.Email = user.Email;
+                ViewData["AusBundId"] = true;
+            }
+            return View("ReisepassStep1", vm);
         }
 
         [HttpPost]

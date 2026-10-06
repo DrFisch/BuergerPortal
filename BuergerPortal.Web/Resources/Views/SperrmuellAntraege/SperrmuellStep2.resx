@@ -148,4 +148,7 @@
 	<data name="Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
+  <data name="AddressFromBundId" xml:space="preserve">
+    <value>Als Abholadresse haben wir Ihre Anschrift aus der BundID vorgeschlagen. Bitte prüfen und bei Bedarf ändern.</value>
+  </data>
 </root>

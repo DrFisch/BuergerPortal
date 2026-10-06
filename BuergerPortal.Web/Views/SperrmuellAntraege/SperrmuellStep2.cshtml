@@ -44,6 +44,14 @@
                 </div>
             </div>
 
+            @if (ViewData["AusBundId"] is true)
+            {
+                <div class="alert alert-info d-flex gap-2 small" role="status">
+                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                    <div>@L["AddressFromBundId"]</div>
+                </div>
+            }
+
             <form asp-action="SperrmuellStep2" method="post" class="vstack gap-4">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />

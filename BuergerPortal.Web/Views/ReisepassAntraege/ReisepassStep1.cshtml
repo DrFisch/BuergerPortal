@@ -4,12 +4,7 @@
 
 @{
     ViewData["Title"] = L["PassportStep1_Title"];
-
-    if (string.IsNullOrEmpty(Model.Email) && User.Identity?.IsAuthenticated == true)
-    {
-        // E-Mail aus der Anmeldung (BundID); der Name ist seit der BundID-Anmeldung der Klarname, nicht mehr die E-Mail.
-        Model.Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
-    }
+    // Vorbefüllt wird im Controller aus der BundID-Anmeldung (Name, Geburtsdatum, E-Mail).
 }
 
 <div class="container py-5">
@@ -35,6 +30,13 @@
                 </div>
 
                 <div class="card-body p-4 p-md-5">
+                    @if (ViewData["AusBundId"] is true)
+                    {
+                        <div class="alert alert-info d-flex gap-2 small" role="status">
+                            <i class="bi bi-shield-check" aria-hidden="true"></i>
+                            <div>@L["PrefilledFromBundId"]</div>
+                        </div>
+                    }
                     <form asp-action="ReisepassStep1" method="post" class="row g-4">
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger small"></div>

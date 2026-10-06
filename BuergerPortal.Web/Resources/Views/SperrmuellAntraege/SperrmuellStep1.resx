@@ -148,4 +148,7 @@
 	<data name="Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
+  <data name="PrefilledFromBundId" xml:space="preserve">
+    <value>Name, Geburtsdatum und E-Mail-Adresse haben wir aus Ihrer BundID-Anmeldung übernommen. Bitte prüfen Sie die Angaben; Sie können sie hier ändern.</value>
+  </data>
 </root>

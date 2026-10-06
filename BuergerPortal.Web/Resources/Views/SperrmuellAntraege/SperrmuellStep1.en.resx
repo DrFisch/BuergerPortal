@@ -148,4 +148,7 @@
 	<data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="PrefilledFromBundId" xml:space="preserve">
+    <value>We have taken your name, date of birth and email address from your BundID sign-in. Please check them; you can change them here.</value>
+  </data>
 </root>
