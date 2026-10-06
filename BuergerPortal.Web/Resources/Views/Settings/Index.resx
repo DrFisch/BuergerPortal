@@ -244,4 +244,10 @@
   <data name="Level_4_Name" xml:space="preserve">
     <value>hoch</value>
   </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>Profil &amp; Einstellungen</value>
+  </data>
+  <data name="Settings_Subheading" xml:space="preserve">
+    <value>Ihre Angaben aus der BundID und Ihre persönlichen Einstellungen für das BürgerPortal.</value>
+  </data>
 </root>

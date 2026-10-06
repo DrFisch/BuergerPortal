@@ -8,33 +8,52 @@
     var bundIdUser = CurrentUser.GetBundIdUser();
 }
 
-<div class="container py-4">
-    <div class="row">
+<div>
+    <!-- Kopfbereich: Titel und angemeldete Person -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1"><i class="bi bi-person-gear me-2" aria-hidden="true"></i>@L["Settings_Heading"]</h1>
+            <p class="text-muted mb-0">@L["Settings_Subheading"]</p>
+        </div>
+        @if (bundIdUser is { IsBundIdLogin: true })
+        {
+            var initials = string.Concat(new[] { bundIdUser.GivenName, bundIdUser.FamilyName }
+                .Where(s => !string.IsNullOrEmpty(s)).Select(s => char.ToUpperInvariant(s![0])));
+            <div class="d-flex align-items-center gap-2 border rounded-pill ps-1 pe-3 py-1 bg-body-tertiary">
+                <span class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center fw-semibold"
+                      style="width:2.25rem;height:2.25rem;" aria-hidden="true">@initials</span>
+                <span class="small">
+                    <span class="d-block fw-semibold">@bundIdUser.DisplayName</span>
+                    <span class="d-block text-muted">BundID · @L[$"Level_{bundIdUser.TrustLevel}_Name"]</span>
+                </span>
+            </div>
+        }
+    </div>
+
+    <div class="row g-4">
         <!-- Sidebar -->
-        <nav class="col-12 col-md-3 mb-3 mb-md-0">
-            <div class="list-group" id="settingsNav" role="tablist">
+        <nav class="col-12 col-md-3" aria-label="@L["Settings_Heading"]">
+            <div class="list-group sticky-md-top" style="top: 5rem;" id="settingsNav" role="tablist">
                 <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-profile" role="tab">
-                    @L["Settings_Tab_Profile"]
+                    <i class="bi bi-person me-2" aria-hidden="true"></i>@L["Settings_Tab_Profile"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-theme" role="tab">
-                    @L["Settings_Tab_Theme"]
+                    <i class="bi bi-palette me-2" aria-hidden="true"></i>@L["Settings_Tab_Theme"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">
-                    @L["Settings_Tab_Language"]
+                    <i class="bi bi-translate me-2" aria-hidden="true"></i>@L["Settings_Tab_Language"]
                 </a>
-                
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">
-                    @L["Settings_Tab_Install"]
+                    <i class="bi bi-download me-2" aria-hidden="true"></i>@L["Settings_Tab_Install"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">
-                    @L["Settings_Tab_Privacy"]
+                    <i class="bi bi-shield-check me-2" aria-hidden="true"></i>@L["Settings_Tab_Privacy"]
                 </a>
-                
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-sensors" role="tab">
-                    @L["Settings_Tab_Sensors"]
+                    <i class="bi bi-geo-alt me-2" aria-hidden="true"></i>@L["Settings_Tab_Sensors"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-data" role="tab">
-                    @L["Settings_Tab_Data"]
+                    <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>@L["Settings_Tab_Data"]
                 </a>
             </div>
         </nav>

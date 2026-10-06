@@ -244,4 +244,10 @@
   <data name="Level_4_Name" xml:space="preserve">
     <value>high</value>
   </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>Profile &amp; settings</value>
+  </data>
+  <data name="Settings_Subheading" xml:space="preserve">
+    <value>Your details from BundID and your personal settings for the Citizen Portal.</value>
+  </data>
 </root>
