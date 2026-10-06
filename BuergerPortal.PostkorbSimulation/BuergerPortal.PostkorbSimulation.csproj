@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Simulation des Zentralen Bürgerpostfachs (ZBP) der BundID: nimmt Nachrichten an ein Postkorb-Handle an
+       und zeigt sie nach BundID-Anmeldung in "Mein BundID-Postfach (Simulation)" an. -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
