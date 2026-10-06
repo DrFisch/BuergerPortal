@@ -28,7 +28,8 @@ namespace BuergerPortal.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(string? returnUrl = null)
         {
-            var redirectUrl = string.IsNullOrEmpty(returnUrl) ? Url.Content("~/") : returnUrl;
+            // Schutz vor Open Redirect: Nach dem Login nur zu Adressen dieses Portals zurück.
+            var redirectUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Content("~/");
 
             return Challenge(
                 new AuthenticationProperties { RedirectUri = redirectUrl },

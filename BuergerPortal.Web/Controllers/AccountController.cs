@@ -9,10 +9,12 @@ namespace BuergerPortal.Web.Controllers
     public class AccountController : Controller
     {
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = "/")
+        public IActionResult Login(string? returnUrl = "/")
         {
+            // Schutz vor Open Redirect: Nach dem Login nur zu Adressen dieses Portals zurück.
+            var redirectUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
             return Challenge(
-                    new AuthenticationProperties { RedirectUri = returnUrl },
+                    new AuthenticationProperties { RedirectUri = redirectUrl },
                     OpenIdConnectDefaults.AuthenticationScheme);
         }
 
