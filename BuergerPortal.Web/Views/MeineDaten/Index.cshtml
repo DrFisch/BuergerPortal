@@ -1,0 +1,89 @@
+@model BuergerPortal.Web.Services.BundIdUser
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["MeineDaten_Title"];
+
+    // Eine Zeile der Datenliste; fehlende Angaben werden als "nicht übermittelt" gekennzeichnet.
+    void Feld(LocalizedHtmlString label, string? value)
+    {
+        <dt class="col-sm-5 text-muted fw-normal">@label</dt>
+        <dd class="col-sm-7">
+            @if (string.IsNullOrWhiteSpace(value))
+            {
+                <span class="text-muted fst-italic">@L["MeineDaten_NotProvided"]</span>
+            }
+            else
+            {
+                @value
+            }
+        </dd>
+    }
+
+    // Ländername aus den Ressourcen (RegionInfo.DisplayName folgt der Sprache des Betriebssystems, nicht der
+    // gewählten Portalsprache); unbekannte Länder mit englischem Namen.
+    string? Land(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code)) return null;
+        var name = L[$"Country_{code.ToUpperInvariant()}"];
+        if (!name.IsResourceNotFound) return $"{name.Value} ({code})";
+        try { return $"{new RegionInfo(code).EnglishName} ({code})"; }
+        catch (ArgumentException) { return code; }
+    }
+
+    var address = Model.Address;
+    var postalCodeLocality = string.Join(' ', new[] { address?.PostalCode, address?.Locality }.Where(s => !string.IsNullOrWhiteSpace(s)));
+}
+
+<div class="mb-4">
+    <h1 class="h3"><i class="bi bi-person-vcard me-2" aria-hidden="true"></i>@L["MeineDaten_Heading"]</h1>
+    <p class="text-muted mb-0">@L["MeineDaten_Intro"]</p>
+</div>
+
+@if (!Model.IsBundIdLogin)
+{
+    <div class="alert alert-info" role="status">@L["MeineDaten_NoBundId"]</div>
+}
+
+<div class="row g-3">
+    <div class="col-12 col-lg-6">
+        <section class="card h-100 shadow-sm" aria-labelledby="md-person">
+            <h2 class="card-header h6 fw-semibold" id="md-person">@L["MeineDaten_Person"]</h2>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    @{ Feld(L["MeineDaten_GivenName"], Model.GivenName); }
+                    @{ Feld(L["MeineDaten_FamilyName"], Model.FamilyName); }
+                    @{ Feld(L["MeineDaten_BirthName"], Model.BirthName); }
+                    @{ Feld(L["MeineDaten_Birthdate"], Model.Birthdate?.ToString("d", CultureInfo.CurrentCulture)); }
+                    @{ Feld(L["MeineDaten_PlaceOfBirth"], Model.PlaceOfBirth); }
+                </dl>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="card h-100 shadow-sm" aria-labelledby="md-address">
+            <h2 class="card-header h6 fw-semibold" id="md-address">@L["MeineDaten_Address"]</h2>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    @{ Feld(L["MeineDaten_Street"], address?.StreetAddress); }
+                    @{ Feld(L["MeineDaten_PostalCodeLocality"], postalCodeLocality); }
+                    @{ Feld(L["MeineDaten_Country"], Land(address?.Country)); }
+                </dl>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="card h-100 shadow-sm" aria-labelledby="md-contact">
+            <h2 class="card-header h6 fw-semibold" id="md-contact">@L["MeineDaten_Contact"]</h2>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    @{ Feld(L["MeineDaten_Email"], Model.Email); }
+                </dl>
+            </div>
+        </section>
+    </div>
+</div>

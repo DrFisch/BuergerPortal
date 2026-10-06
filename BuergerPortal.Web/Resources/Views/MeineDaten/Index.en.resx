@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="MeineDaten_Title" xml:space="preserve">
+		<value>My data</value>
+	</data>
+	<data name="MeineDaten_Heading" xml:space="preserve">
+		<value>My data</value>
+	</data>
+	<data name="MeineDaten_Intro" xml:space="preserve">
+		<value>These details were transmitted by BundID when you signed in to the Citizen Portal.</value>
+	</data>
+	<data name="MeineDaten_NoBundId" xml:space="preserve">
+		<value>You are signed in with an older account without BundID. Sign out and sign in again with BundID to see your details here.</value>
+	</data>
+	<data name="MeineDaten_Person" xml:space="preserve">
+		<value>Personal details</value>
+	</data>
+	<data name="MeineDaten_GivenName" xml:space="preserve">
+		<value>First name(s)</value>
+	</data>
+	<data name="MeineDaten_FamilyName" xml:space="preserve">
+		<value>Last name</value>
+	</data>
+	<data name="MeineDaten_BirthName" xml:space="preserve">
+		<value>Birth name</value>
+	</data>
+	<data name="MeineDaten_Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="MeineDaten_PlaceOfBirth" xml:space="preserve">
+		<value>Place of birth</value>
+	</data>
+	<data name="MeineDaten_Address" xml:space="preserve">
+		<value>Address</value>
+	</data>
+	<data name="MeineDaten_Street" xml:space="preserve">
+		<value>Street and number</value>
+	</data>
+	<data name="MeineDaten_PostalCodeLocality" xml:space="preserve">
+		<value>Postcode and town</value>
+	</data>
+	<data name="MeineDaten_Country" xml:space="preserve">
+		<value>Country</value>
+	</data>
+	<data name="MeineDaten_Contact" xml:space="preserve">
+		<value>Contact</value>
+	</data>
+	<data name="MeineDaten_Email" xml:space="preserve">
+		<value>Email address</value>
+	</data>
+	<data name="MeineDaten_NotProvided" xml:space="preserve">
+		<value>not provided</value>
+	</data>
+	<data name="Country_DE" xml:space="preserve">
+		<value>Germany</value>
+	</data>
+	<data name="Country_AT" xml:space="preserve">
+		<value>Austria</value>
+	</data>
+	<data name="Country_CH" xml:space="preserve">
+		<value>Switzerland</value>
+	</data>
+	<data name="Country_FR" xml:space="preserve">
+		<value>France</value>
+	</data>
+	<data name="Country_NL" xml:space="preserve">
+		<value>Netherlands</value>
+	</data>
+	<data name="Country_PL" xml:space="preserve">
+		<value>Poland</value>
+	</data>
+	<data name="Country_IT" xml:space="preserve">
+		<value>Italy</value>
+	</data>
+	<data name="Country_ES" xml:space="preserve">
+		<value>Spain</value>
+	</data>
+	<data name="Country_BE" xml:space="preserve">
+		<value>Belgium</value>
+	</data>
+	<data name="Country_CZ" xml:space="preserve">
+		<value>Czechia</value>
+	</data>
+	<data name="Country_DK" xml:space="preserve">
+		<value>Denmark</value>
+	</data>
+	<data name="Country_LU" xml:space="preserve">
+		<value>Luxembourg</value>
+	</data>
+</root>
