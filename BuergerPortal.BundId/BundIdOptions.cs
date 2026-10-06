@@ -20,6 +20,11 @@ namespace BuergerPortal.BundId
         // Vertrauensniveau für einen normalen Login (STORK-QAA-Level 1, 3 oder 4).
         public int DefaultTrustLevel { get; set; } = 1;
 
+        // ForceAuthn im AuthnRequest: Die BundID soll die Person neu identifizieren, auch wenn dort noch eine
+        // Anmeldesitzung (Single Sign-on) besteht. Das Portal setzt es, damit man beim Anmelden die Person wählt;
+        // das Postfach nicht – es übernimmt die bestehende BundID-Sitzung.
+        public bool ForceAuthn { get; set; }
+
         // Attribute, die im AuthnRequest angefordert werden (AKDB-Extension). Nur was das Portal braucht.
         public List<BundIdRequestedAttribute> RequestedAttributes { get; set; } = [];
 

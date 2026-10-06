@@ -87,6 +87,8 @@ namespace BuergerPortal.BundId
                 },
                 // Angeforderte Attribute und Anzeigename für die BundID-Seite.
                 Extensions = AkdbExtension.Create(bundId),
+                // Neue Identifizierung erzwingen statt eine bestehende BundID-Sitzung zu nutzen (konfigurierbar).
+                ForceAuthn = bundId.ForceAuthn ? true : null,
             };
             var binding = new Saml2PostBinding().Bind(authnRequest);
 
