@@ -108,6 +108,10 @@ builder.Services
         options.ClientSecret = authConfig["ClientSecret"];
         options.ResponseType = "code";
         options.GetClaimsFromUserInfoEndpoint = true;
+        // Claim-Typen so lassen, wie sie im Token stehen ("given_name" statt
+        // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"): Mit den BundID-Claims wurde das
+        // Sitzungscookie sonst so groß, dass Proxys mit 8-KB-Grenze je Header-Zeile es abweisen könnten.
+        options.MapInboundClaims = false;
 
         // WICHTIG:
         // 1. RequireHttpsMetadata = false lassen, da der Container intern HTTP spricht
