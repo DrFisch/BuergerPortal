@@ -3,6 +3,7 @@ using BuergerPortal.PostkorbSimulation.Api;
 using BuergerPortal.PostkorbSimulation.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +55,16 @@ if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<PostkorbDbContext>().Database.MigrateAsync();
 }
+
+// Hinter dem Reverse Proxy (Caddy) kommt HTTP an; Schema und Client-Adresse stehen in X-Forwarded-*.
+// Dem Container-Netz wird vertraut, weil der Dienst nur über den Proxy bzw. intern erreichbar ist.
+var forwardedOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedOptions);
 
 if (!app.Environment.IsDevelopment())
 {

@@ -166,10 +166,15 @@ using (var scope = app.Services.CreateScope())
 // WICHTIG: Forwarded Headers für Nginx
 // Muss VOR Authentication stehen!
 // -------------------------------------------------------------
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+// Dem Container-Netz vertrauen (wie Auth und Web): Ohne Clear() gelten nur Proxys auf localhost, die Header des
+// Reverse-Proxy-Containers würden ignoriert. Zulässig, weil die Dienste nur über den Proxy erreichbar sind.
+var forwardedOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+};
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedOptions);
 
 // Swagger auch in Production anzeigen (damit du testen kannst)
 app.UseSwagger();
