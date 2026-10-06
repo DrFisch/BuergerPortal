@@ -1,0 +1,5 @@
+# Dateien, die auf der Linux-VM landen, immer mit LF-Zeilenenden auschecken
+*.sh text eol=lf
+Caddyfile text eol=lf
+*.yml text eol=lf
+.env.example text eol=lf
