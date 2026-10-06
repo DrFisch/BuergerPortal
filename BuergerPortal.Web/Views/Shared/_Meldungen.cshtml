@@ -2,6 +2,25 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @* Seitenübergreifende Hinweise nach einer Weiterleitung (TempData). *@
 
+@* Ergebnis von Buchung, Storno, Standortänderung und Anträgen (Texte kommen aus den Controllern). *@
+@foreach (var key in new[] { "BookingSuccess", "AntragSuccess" })
+{
+    if (TempData[key] is string erfolg)
+    {
+        <div class="alert alert-success d-flex gap-2 align-items-start" role="status">
+            <i class="bi bi-check-circle" aria-hidden="true"></i>
+            <div>@erfolg</div>
+        </div>
+    }
+}
+@if (TempData["BookingError"] is string fehler)
+{
+    <div class="alert alert-danger d-flex gap-2 align-items-start" role="alert">
+        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+        <div>@fehler</div>
+    </div>
+}
+
 @if (TempData[PostkorbStatusExtensions.TempDataKey] is string postkorb && postkorb == "fehlgeschlagen")
 {
     <div class="alert alert-warning d-flex gap-2 align-items-start" role="status">

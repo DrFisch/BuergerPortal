@@ -5,6 +5,7 @@ using BuergerPortal.Web.Features.Termine.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Text.Json;
 
 namespace BuergerPortal.Web.Controllers
 {
@@ -119,17 +120,16 @@ namespace BuergerPortal.Web.Controllers
 
             if (res.IsSuccessStatusCode)
             {
-                var id = await res.Content.ReadFromJsonAsync<Guid>(cancellationToken: ct);
                 TempData.MerkePostkorbStatus(res);
-
-                // Allgemeine Success-TempData 
-                TempData["BookingSuccess"] = $"Termin gebucht ({id}).";
 
                 if (vm.RelatedAntragId.HasValue)
                 {
                     TempData["AntragTerminOk"] = "Termin zum Antrag gebucht.";
                     return RedirectToAction("Antrag", "Antraege", new { id = vm.RelatedAntragId.Value });
                 }
+
+                // Erfolgsmeldung für die Terminübersicht (Anzeige in _Meldungen; ohne technische Termin-ID)
+                TempData["BookingSuccess"] = "Termin gebucht.";
 
                 // sonst zur Termin-Übersicht 
                 return RedirectToAction(nameof(Index));
@@ -217,7 +217,7 @@ namespace BuergerPortal.Web.Controllers
                 if (!res.IsSuccessStatusCode)
                 {
                     var msg = await res.Content.ReadAsStringAsync(ct);
-                    TempData["BookingError"] = string.IsNullOrWhiteSpace(msg) ? "Stornierung fehlgeschlagen." : msg;
+                    TempData["BookingError"] = ProblemText(msg) ?? "Stornierung fehlgeschlagen.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -288,11 +288,34 @@ namespace BuergerPortal.Web.Controllers
             }
 
             var errorMsg = await res.Content.ReadAsStringAsync(ct);
-            ModelState.AddModelError(string.Empty, string.IsNullOrWhiteSpace(errorMsg)
-                ? "Der Standort konnte nicht geändert werden."
-                : errorMsg);
+            ModelState.AddModelError(string.Empty, ProblemText(errorMsg) ?? "Der Standort konnte nicht geändert werden.");
 
             return View("Details", vm);
+        }
+
+        // Verständlicher Text aus einer Fehlerantwort der API (ProblemDetails: "detail", sonst "title") –
+        // die Oberfläche soll kein rohes JSON zeigen.
+        private static string? ProblemText(string body)
+        {
+            if (string.IsNullOrWhiteSpace(body)) return null;
+            try
+            {
+                var root = JsonDocument.Parse(body).RootElement;
+                foreach (var name in new[] { "detail", "title" })
+                {
+                    if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty(name, out var value)
+                        && value.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(value.GetString()))
+                    {
+                        return value.GetString();
+                    }
+                }
+                return null;
+            }
+            catch (JsonException)
+            {
+                // Kein JSON: kurzen Klartext übernehmen, lange Antworten (z. B. HTML) verwerfen.
+                return body.Length <= 200 ? body : null;
+            }
         }
     }
 }
