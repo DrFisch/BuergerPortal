@@ -1,5 +1,7 @@
+using BuergerPortal.BundId;
 using BuergerPortal.PostkorbSimulation.Api;
 using BuergerPortal.PostkorbSimulation.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,22 @@ builder.Services.AddOptions<PostkorbApiOptions>()
     .ValidateOnStart();
 builder.Services.AddSingleton(TimeProvider.System);
 
+// Oberfläche: Anmeldung über die BundID als eigener SAML-Service-Provider, danach Cookie-Sitzung.
+builder.Services.AddBundIdServiceProvider(builder.Configuration);
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        // Eigener Name: Auf localhost teilen sich alle Dienste die Cookies (Ports trennen Cookies nicht).
+        o.Cookie.Name = "bpsim_postfach";
+        o.Cookie.HttpOnly = true;
+        o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        o.Cookie.SameSite = SameSiteMode.Lax;
+        o.LoginPath = "/bundid/login";
+        o.ReturnUrlParameter = "returnUrl";
+        o.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        o.SlidingExpiration = true;
+    });
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -26,6 +44,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,0 +1,13 @@
+@model BuergerPortal.PostkorbSimulation.Models.LoginErrorViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 36rem;">
+    <div class="card-body">
+        <h1 class="h4">@Model.Title</h1>
+        <div class="alert alert-warning" role="alert">@Model.Message</div>
+        <a class="btn btn-primary" href="@Model.RetryUrl">Erneut mit BundID anmelden</a>
+        <a class="btn btn-outline-secondary" href="~/">Zur Startseite</a>
+    </div>
+</div>

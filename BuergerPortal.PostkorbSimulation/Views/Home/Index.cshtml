@@ -1,5 +1,15 @@
 @{
     ViewData["Title"] = "Start";
+    var anmeldung = Context.Request.Query["anmeldung"].ToString();
+}
+
+@if (anmeldung == "abgebrochen")
+{
+    <div class="alert alert-info" role="status">Die Anmeldung bei der BundID wurde abgebrochen.</div>
+}
+else if (anmeldung == "abgemeldet")
+{
+    <div class="alert alert-success" role="status">Sie wurden vom Postfach abgemeldet.</div>
 }
 
 <div class="card shadow-sm">
@@ -10,6 +20,14 @@
             Behörden-Dienste schicken Nachrichten an das <strong>Postkorb-Handle</strong> einer Person, die Person liest
             sie nach der Anmeldung mit der BundID.
         </p>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <p class="mb-3">Sie sind als <strong>@User.Identity.Name</strong> angemeldet.</p>
+        }
+        else
+        {
+            <a class="btn btn-primary mb-3" asp-controller="BundId" asp-action="Login">Mit BundID anmelden</a>
+        }
         <p class="text-muted small mb-0">
             Hinweis: Es handelt sich um eine Simulation mit fiktiven Testpersonen. Die Schnittstelle ist an die
             öffentlich dokumentierte ZBP-Nachricht (CreateMessage) angelehnt, aber vereinfacht.
