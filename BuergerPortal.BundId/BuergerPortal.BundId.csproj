@@ -11,5 +11,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="ITfoxtec.Identity.Saml2.MvcCore" Version="4.21.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BuergerPortal.BundId.Core\BuergerPortal.BundId.Core.csproj" />
+  </ItemGroup>
 
 </Project>

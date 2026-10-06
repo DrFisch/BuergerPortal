@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- BundID-Grundbegriffe ohne Abhängigkeiten (Claim-Namen, Vertrauensniveaus). Auch für Projekte, die selbst
+       kein SAML sprechen (Web, API) – ohne die SAML-Bibliothek und ihre Microsoft.IdentityModel-Versionen. -->
+
+</Project>
