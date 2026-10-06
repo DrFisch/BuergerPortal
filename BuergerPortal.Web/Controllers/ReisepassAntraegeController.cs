@@ -1,4 +1,5 @@
-﻿using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
+﻿using BuergerPortal.Web.Extensions;
+using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -132,6 +133,7 @@ namespace BuergerPortal.Web.Controllers
                 return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
             TempData["AntragSuccess"] = "Reisepassantrag eingereicht.";
+            TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
         }
 

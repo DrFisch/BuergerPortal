@@ -1,0 +1,14 @@
+@using BuergerPortal.Web.Extensions
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@* Seitenübergreifende Hinweise nach einer Weiterleitung (TempData). *@
+
+@if (TempData[PostkorbStatusExtensions.TempDataKey] is string postkorb && postkorb == "fehlgeschlagen")
+{
+    <div class="alert alert-warning d-flex gap-2 align-items-start" role="status">
+        <i class="bi bi-envelope-exclamation" aria-hidden="true"></i>
+        <div>
+            <strong>@T["Postkorb_Fehlgeschlagen_Titel"]</strong><br />
+            @T["Postkorb_Fehlgeschlagen_Text"]
+        </div>
+    </div>
+}

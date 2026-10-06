@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Postkorb_Fehlgeschlagen_Titel" xml:space="preserve">
+		<value>Bestätigung nicht im BundID-Postfach</value>
+	</data>
+	<data name="Postkorb_Fehlgeschlagen_Text" xml:space="preserve">
+		<value>Ihr Vorgang wurde gespeichert, die Bestätigung konnte aber gerade nicht in Ihr BundID-Postfach zugestellt werden. Sie finden alle Angaben weiterhin hier im BürgerPortal.</value>
+	</data>
+</root>

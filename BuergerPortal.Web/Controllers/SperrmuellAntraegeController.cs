@@ -1,4 +1,5 @@
-﻿using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
+﻿using BuergerPortal.Web.Extensions;
+using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -163,6 +164,7 @@ namespace BuergerPortal.Web.Controllers
                 return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
             TempData["AntragSuccess"] = "Sperrmüllantrag eingereicht.";
+            TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
         }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Postkorb_Fehlgeschlagen_Titel" xml:space="preserve">
+		<value>Confirmation not in your BundID mailbox</value>
+	</data>
+	<data name="Postkorb_Fehlgeschlagen_Text" xml:space="preserve">
+		<value>Your request has been saved, but the confirmation could not be delivered to your BundID mailbox right now. All details remain available here in the Citizen Portal.</value>
+	</data>
+</root>

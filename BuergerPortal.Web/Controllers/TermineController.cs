@@ -120,6 +120,7 @@ namespace BuergerPortal.Web.Controllers
             if (res.IsSuccessStatusCode)
             {
                 var id = await res.Content.ReadFromJsonAsync<Guid>(cancellationToken: ct);
+                TempData.MerkePostkorbStatus(res);
 
                 // Allgemeine Success-TempData 
                 TempData["BookingSuccess"] = $"Termin gebucht ({id}).";
@@ -221,6 +222,7 @@ namespace BuergerPortal.Web.Controllers
                 }
 
                 TempData["BookingSuccess"] = "Termin wurde storniert.";
+                TempData.MerkePostkorbStatus(res);
             }
             catch (Exception)
             {
@@ -281,6 +283,7 @@ namespace BuergerPortal.Web.Controllers
             if (res.IsSuccessStatusCode)
             {
                 TempData["BookingSuccess"] = "Standort wurde erfolgreich geändert.";
+                TempData.MerkePostkorbStatus(res);
                 return RedirectToAction(nameof(Index));
             }
 
