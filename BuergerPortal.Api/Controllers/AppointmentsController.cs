@@ -4,6 +4,8 @@ using BuergerPortal.Application.Appointments.DTOs;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Mail;
+using BuergerPortal.Application.Interfaces.Postkorb;
+using BuergerPortal.Api.Postkorb;
 using BuergerPortal.Domain.Appointments.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +20,13 @@ namespace BuergerPortal.Api.Controllers
     {
         private readonly IAppointmentBusinessService _svc;
         private readonly IEmailSender _email;
+        private readonly IPostkorbService _postkorb;
 
-        public AppointmentsController(IAppointmentBusinessService svc, IEmailSender email) 
-        { 
+        public AppointmentsController(IAppointmentBusinessService svc, IEmailSender email, IPostkorbService postkorb)
+        {
             _svc = svc;
             _email = email;
+            _postkorb = postkorb;
         }
 
         // ---------- Create (201/400/409) ----------
@@ -50,34 +54,54 @@ namespace BuergerPortal.Api.Controllers
 
             var result = await _svc.BookAsync(dto, userId, ct);
 
-            try
+            // Bestätigungen nur, wenn die Buchung tatsächlich geklappt hat (vorher auch bei 409/400 verschickt).
+            if (result.IsSuccess)
             {
-                var userEmail = User.FindFirst("email")?.Value;
-                var userName = User.Identity?.Name ?? "Bürger/in";
-
-                if (!string.IsNullOrWhiteSpace(userEmail))
+                try
                 {
-                    var serviceName = req.Service.GetDisplayName();
-                    var locationName = req.Location.GetDisplayName();
-                    
-                    var subject = $"Termin bestätigt: {serviceName} am {req.StartUtc.ToLocalTime():dd.MM.yyyy HH:mm}";
-                    var html = $"""
-                        <p>Hallo {userName},</p>
-                        <p>Ihr Termin für den Service <b>{serviceName}</b> wurde erfolgreich gebucht.</p>
-                        <p><b>Datum:</b> {req.StartUtc.ToLocalTime():dddd, dd.MM.yyyy HH:mm}<br/>
-                           <b>Ort:</b> {locationName}</p>
-                        <p>Sie können den Termin im Bürgerportal unter 
-                           <a href="https://localhost:7017/termine">„Meine Termine"</a> einsehen.</p>
-                        <p>Viele Grüße,<br/>Ihr Bürgerportal-Team</p>
-                    """;
+                    var userEmail = User.FindFirst("email")?.Value;
+                    var userName = User.Identity?.Name ?? "Bürger/in";
 
-                    await _email.SendAsync(userEmail, subject, html, ct);
+                    if (!string.IsNullOrWhiteSpace(userEmail))
+                    {
+                        var serviceName = req.Service.GetDisplayName();
+                        var locationName = req.Location.GetDisplayName();
+
+                        var subject = $"Termin bestätigt: {serviceName} am {req.StartUtc.ToLocalTime():dd.MM.yyyy HH:mm}";
+                        var html = $"""
+                            <p>Hallo {userName},</p>
+                            <p>Ihr Termin für den Service <b>{serviceName}</b> wurde erfolgreich gebucht.</p>
+                            <p><b>Datum:</b> {req.StartUtc.ToLocalTime():dddd, dd.MM.yyyy HH:mm}<br/>
+                               <b>Ort:</b> {locationName}</p>
+                            <p>Sie können den Termin im Bürgerportal unter
+                               <a href="https://localhost:7017/termine">„Meine Termine"</a> einsehen.</p>
+                            <p>Viele Grüße,<br/>Ihr Bürgerportal-Team</p>
+                        """;
+
+                        await _email.SendAsync(userEmail, subject, html, ct);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
+                catch (Exception ex)
+                {
 
-                Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
+                    Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
+                }
+
+                // Terminbestätigung in das BundID-Postfach.
+                await this.SendPostkorbAsync(_postkorb,
+                    $"Terminbestätigung: {req.Service.GetDisplayName()}",
+                    $"""
+                    {this.Anrede()}
+
+                    Ihr Termin wurde gebucht.
+
+                    Leistung: {req.Service.GetDisplayName()}
+                    Ort: {req.Location.GetDisplayName()}
+                    Termin: {PostkorbBenachrichtigung.Ortszeit(req.StartUtc)}
+
+                    Sie finden den Termin im BürgerPortal unter „Meine Termine“; dort können Sie ihn auch stornieren.
+                    """,
+                    "Terminvereinbarung", ct);
             }
 
             return FromResult(result, id =>
