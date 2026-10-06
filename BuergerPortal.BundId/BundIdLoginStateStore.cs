@@ -10,7 +10,8 @@ namespace BuergerPortal.BundId
     /// <summary>
     /// Speichert den Anmeldezustand in einem verschlüsselten, zeitlich begrenzten Cookie.
     /// SameSite=None + Secure, weil die BundID die Response per Cross-Site-POST an den ACS schickt
-    /// (bei SameSite=Lax würde der Browser das Cookie dabei nicht mitsenden).
+    /// (bei SameSite=Lax würde der Browser das Cookie dabei nicht mitsenden). Pfad: Basispfad der Anwendung + "/bundid",
+    /// damit das Cookie auch unter einem PathBase (z. B. Postfach unter /postfach) beim ACS ankommt.
     /// </summary>
     public sealed class BundIdLoginStateStore(IDataProtectionProvider dataProtectionProvider)
     {
@@ -23,7 +24,8 @@ namespace BuergerPortal.BundId
         public void Save(HttpResponse response, BundIdLoginState state)
         {
             var value = protector.Protect(JsonSerializer.Serialize(state), Lifetime);
-            response.Cookies.Append(CookieName, value, CreateCookieOptions(DateTimeOffset.UtcNow.Add(Lifetime)));
+            response.Cookies.Append(CookieName, value,
+                CreateCookieOptions(response.HttpContext.Request, DateTimeOffset.UtcNow.Add(Lifetime)));
         }
 
         // Liefert null, wenn das Cookie fehlt, manipuliert oder abgelaufen ist.
@@ -45,15 +47,15 @@ namespace BuergerPortal.BundId
 
         public void Delete(HttpResponse response)
         {
-            response.Cookies.Delete(CookieName, CreateCookieOptions(null));
+            response.Cookies.Delete(CookieName, CreateCookieOptions(response.HttpContext.Request, null));
         }
 
-        private static CookieOptions CreateCookieOptions(DateTimeOffset? expires) => new()
+        private static CookieOptions CreateCookieOptions(HttpRequest request, DateTimeOffset? expires) => new()
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
-            Path = "/bundid",
+            Path = request.PathBase.Add(new PathString("/bundid")).Value,
             Expires = expires,
             IsEssential = true,
         };
