@@ -100,4 +100,61 @@
 	<data name="Country_LU" xml:space="preserve">
 		<value>Luxembourg</value>
 	</data>
+	<data name="MeineDaten_Login" xml:space="preserve">
+		<value>Signed in with BundID</value>
+	</data>
+	<data name="MeineDaten_TrustLevel" xml:space="preserve">
+		<value>Level of assurance of this sign-in</value>
+	</data>
+	<data name="MeineDaten_IdentificationMethod" xml:space="preserve">
+		<value>Means of identification</value>
+	</data>
+	<data name="MeineDaten_StepUpHint" xml:space="preserve">
+		<value>Some services, for example submitting a passport application, require the level “substantial”. The portal then asks you to sign in again automatically – you can also trigger this here yourself.</value>
+	</data>
+	<data name="MeineDaten_StepUpButton" xml:space="preserve">
+		<value>Sign in with level “substantial”</value>
+	</data>
+	<data name="Level_0_Name" xml:space="preserve">
+		<value>unknown</value>
+	</data>
+	<data name="Level_0_Text" xml:space="preserve">
+		<value>No BundID level of assurance is available for this sign-in.</value>
+	</data>
+	<data name="Level_1_Name" xml:space="preserve">
+		<value>normal</value>
+	</data>
+	<data name="Level_1_Text" xml:space="preserve">
+		<value>Sign-in with user name and password. Sufficient for simple services such as booking an appointment.</value>
+	</data>
+	<data name="Level_3_Name" xml:space="preserve">
+		<value>substantial</value>
+	</data>
+	<data name="Level_3_Text" xml:space="preserve">
+		<value>Sign-in with a means of identification of medium security, such as the ELSTER certificate. Required e.g. for submitting a passport application.</value>
+	</data>
+	<data name="Level_4_Name" xml:space="preserve">
+		<value>high</value>
+	</data>
+	<data name="Level_4_Text" xml:space="preserve">
+		<value>Sign-in with the highest level of security, such as the online ID function (eID).</value>
+	</data>
+	<data name="Method_Benutzername" xml:space="preserve">
+		<value>User name and password of the BundID account.</value>
+	</data>
+	<data name="Method_Elster" xml:space="preserve">
+		<value>ELSTER certificate, as also used for tax returns.</value>
+	</data>
+	<data name="Method_Smart-eID" xml:space="preserve">
+		<value>Online ID on the smartphone (Smart-eID).</value>
+	</data>
+	<data name="Method_eID" xml:space="preserve">
+		<value>Online ID function of the identity card or electronic residence permit.</value>
+	</data>
+	<data name="Method_eIDAS" xml:space="preserve">
+		<value>Electronic means of identification from another EU member state (eIDAS).</value>
+	</data>
+	<data name="Method_Other" xml:space="preserve">
+		<value>Other means of identification supported by BundID.</value>
+	</data>
 </root>

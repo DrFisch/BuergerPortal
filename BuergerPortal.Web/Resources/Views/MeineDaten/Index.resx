@@ -100,4 +100,61 @@
 	<data name="Country_LU" xml:space="preserve">
 		<value>Luxemburg</value>
 	</data>
+	<data name="MeineDaten_Login" xml:space="preserve">
+		<value>Anmeldung über die BundID</value>
+	</data>
+	<data name="MeineDaten_TrustLevel" xml:space="preserve">
+		<value>Vertrauensniveau dieser Anmeldung</value>
+	</data>
+	<data name="MeineDaten_IdentificationMethod" xml:space="preserve">
+		<value>Identifizierungsmittel</value>
+	</data>
+	<data name="MeineDaten_StepUpHint" xml:space="preserve">
+		<value>Manche Funktionen, zum Beispiel das Einreichen eines Reisepassantrags, verlangen das Vertrauensniveau „substanziell“. Das Portal fordert dann automatisch eine erneute Anmeldung an – Sie können sie hier auch selbst auslösen.</value>
+	</data>
+	<data name="MeineDaten_StepUpButton" xml:space="preserve">
+		<value>Mit Niveau „substanziell“ anmelden</value>
+	</data>
+	<data name="Level_0_Name" xml:space="preserve">
+		<value>unbekannt</value>
+	</data>
+	<data name="Level_0_Text" xml:space="preserve">
+		<value>Für diese Anmeldung liegt kein Vertrauensniveau der BundID vor.</value>
+	</data>
+	<data name="Level_1_Name" xml:space="preserve">
+		<value>normal</value>
+	</data>
+	<data name="Level_1_Text" xml:space="preserve">
+		<value>Anmeldung mit Benutzername und Passwort. Reicht für einfache Dienste wie die Terminbuchung.</value>
+	</data>
+	<data name="Level_3_Name" xml:space="preserve">
+		<value>substanziell</value>
+	</data>
+	<data name="Level_3_Text" xml:space="preserve">
+		<value>Anmeldung mit einem Identifizierungsmittel mittlerer Sicherheit, etwa dem ELSTER-Zertifikat. Nötig z. B. für das Einreichen eines Reisepassantrags.</value>
+	</data>
+	<data name="Level_4_Name" xml:space="preserve">
+		<value>hoch</value>
+	</data>
+	<data name="Level_4_Text" xml:space="preserve">
+		<value>Anmeldung mit dem höchsten Sicherheitsniveau, etwa mit der Online-Ausweisfunktion (eID).</value>
+	</data>
+	<data name="Method_Benutzername" xml:space="preserve">
+		<value>Benutzername und Passwort des BundID-Kontos.</value>
+	</data>
+	<data name="Method_Elster" xml:space="preserve">
+		<value>ELSTER-Zertifikat, wie es auch für die Steuererklärung verwendet wird.</value>
+	</data>
+	<data name="Method_Smart-eID" xml:space="preserve">
+		<value>Online-Ausweis auf dem Smartphone (Smart-eID).</value>
+	</data>
+	<data name="Method_eID" xml:space="preserve">
+		<value>Online-Ausweisfunktion des Personalausweises oder elektronischen Aufenthaltstitels.</value>
+	</data>
+	<data name="Method_eIDAS" xml:space="preserve">
+		<value>Elektronisches Identifizierungsmittel aus einem anderen EU-Staat (eIDAS).</value>
+	</data>
+	<data name="Method_Other" xml:space="preserve">
+		<value>Weiteres Identifizierungsmittel der BundID.</value>
+	</data>
 </root>
