@@ -1,4 +1,12 @@
 ﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{
+    // Angemeldete Person mit BundID-Angaben (Name, Vertrauensniveau); null ohne Anmeldung.
+    var bundIdUser = CurrentUser.GetBundIdUser();
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+    var levelBadge = bundIdUser is { TrustLevel: >= 3 } ? "text-bg-success" : "text-bg-secondary";
+}
 
 <header class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom shadow-sm">
     <div class="container">
@@ -7,17 +15,21 @@
         </a>
 
         <div class="d-flex align-items-center ms-auto d-lg-none">
-            @if (User?.Identity?.IsAuthenticated ?? false)
+            @if (bundIdUser != null)
             {
                 <span class="small text-muted me-2">
-                    @User.Identity!.Name  
+                    @bundIdUser.DisplayName
+                    @if (bundIdUser.TrustLevel > 0)
+                    {
+                        <span class="badge @levelBadge ms-1">@T[$"Level_{bundIdUser.TrustLevel}_Name"]</span>
+                    }
                 </span>
             }
             else
             {
                 <a class="btn btn-sm btn-outline-primary me-2"
                    asp-controller="Account" asp-action="Login">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> @T["Login"]
+                    <i class="bi bi-shield-lock me-1"></i> @T["Login"]
                 </a>
             }
 
@@ -44,8 +56,21 @@
                     </a>
                 </li>
 
-                @if (User?.Identity?.IsAuthenticated ?? false)
+                @if (bundIdUser != null)
                 {
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" asp-controller="MeineDaten" asp-action="Index">
+                            <i class="bi bi-person-vcard me-1"></i> @T["MyData"]
+                        </a>
+                    </li>
+                    @if (!string.IsNullOrWhiteSpace(postfachUrl))
+                    {
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="@postfachUrl">
+                                <i class="bi bi-envelope-paper me-1"></i> @T["MyMailbox"]
+                            </a>
+                        </li>
+                    }
                     <li class="nav-item d-lg-none">
                         <a class="nav-link" asp-controller="Settings" asp-action="Index">
                             <i class="bi bi-gear me-1"></i> @T["ProfileSettings"]
@@ -98,11 +123,11 @@
 
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
 
-                @if (User?.Identity?.IsAuthenticated ?? false)
+                @if (bundIdUser != null)
                 {
                     <li class="nav-item d-none d-lg-inline ms-lg-2">
                         <span class="navbar-text">
-                            @T["HelloUser", User.Identity!.Name]
+                            @T["HelloUser", bundIdUser.DisplayName]
                         </span>
                     </li>
 
@@ -110,8 +135,34 @@
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-2"></i> @T["Account"]
+                            @if (bundIdUser.TrustLevel > 0)
+                            {
+                                <span class="badge @levelBadge ms-2">@T[$"Level_{bundIdUser.TrustLevel}_Name"]</span>
+                            }
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            @if (bundIdUser.IsBundIdLogin)
+                            {
+                                <li>
+                                    <span class="dropdown-item-text small text-muted">
+                                        <i class="bi bi-shield-check me-1"></i>@T["SignedInWithBundId"]
+                                    </span>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                            }
+                            <li>
+                                <a class="dropdown-item" asp-controller="MeineDaten" asp-action="Index">
+                                    <i class="bi bi-person-vcard me-2"></i> @T["MyData"]
+                                </a>
+                            </li>
+                            @if (!string.IsNullOrWhiteSpace(postfachUrl))
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@postfachUrl">
+                                        <i class="bi bi-envelope-paper me-2"></i> @T["MyMailbox"]
+                                    </a>
+                                </li>
+                            }
                             <li>
                                 <a class="dropdown-item" asp-controller="Settings" asp-action="Index">
                                     <i class="bi bi-gear me-2"></i> @T["ProfileSettings"]
@@ -137,13 +188,13 @@
                     <!-- Desktop-Login-Button -->
                     <li class="nav-item ms-lg-2 d-none d-lg-block">
                         <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> @T["Login"]
+                            <i class="bi bi-shield-lock me-1"></i> @T["Login"]
                         </a>
                     </li>
 
                     <li class="nav-item d-lg-none mt-2">
                         <a class="nav-link" asp-controller="Account" asp-action="Login">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> @T["Login"]
+                            <i class="bi bi-shield-lock me-1"></i> @T["Login"]
                         </a>
                     </li>
                 }

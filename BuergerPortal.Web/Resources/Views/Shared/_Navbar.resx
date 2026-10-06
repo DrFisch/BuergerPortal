@@ -34,11 +34,11 @@
   </data>
 
 	<data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+    <value>Abmelden</value>
   </data>
 
 	<data name="Login" xml:space="preserve">
-    <value>Login</value>
+    <value>Mit BundID anmelden</value>
   </data>
 
 	<data name="ThemeToggleAria" xml:space="preserve">
@@ -81,4 +81,25 @@
 	<data name="Card_ReportIssue" xml:space="preserve">
   <value>Mängel melden</value>
 </data>
+  <data name="MyData" xml:space="preserve">
+    <value>Meine Daten</value>
+  </data>
+  <data name="MyMailbox" xml:space="preserve">
+    <value>Mein BundID-Postfach</value>
+  </data>
+  <data name="SignedInWithBundId" xml:space="preserve">
+    <value>Angemeldet mit der BundID</value>
+  </data>
+  <data name="Level_0_Name" xml:space="preserve">
+    <value>unbekannt</value>
+  </data>
+  <data name="Level_1_Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="Level_3_Name" xml:space="preserve">
+    <value>substanziell</value>
+  </data>
+  <data name="Level_4_Name" xml:space="preserve">
+    <value>hoch</value>
+  </data>
 </root>

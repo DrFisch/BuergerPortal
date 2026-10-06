@@ -34,11 +34,11 @@
   </data>
 
 	<data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+    <value>Sign out</value>
   </data>
 
 	<data name="Login" xml:space="preserve">
-    <value>Login</value>
+    <value>Sign in with BundID</value>
   </data>
 
 	<data name="ThemeToggleAria" xml:space="preserve">
@@ -82,4 +82,25 @@
   <value>Report an Issue</value>
 </data>
 
+  <data name="MyData" xml:space="preserve">
+    <value>My data</value>
+  </data>
+  <data name="MyMailbox" xml:space="preserve">
+    <value>My BundID mailbox</value>
+  </data>
+  <data name="SignedInWithBundId" xml:space="preserve">
+    <value>Signed in with BundID</value>
+  </data>
+  <data name="Level_0_Name" xml:space="preserve">
+    <value>unknown</value>
+  </data>
+  <data name="Level_1_Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="Level_3_Name" xml:space="preserve">
+    <value>substantial</value>
+  </data>
+  <data name="Level_4_Name" xml:space="preserve">
+    <value>high</value>
+  </data>
 </root>
