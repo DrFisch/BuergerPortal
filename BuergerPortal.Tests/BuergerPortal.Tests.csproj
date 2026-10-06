@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthenticationServer\AuthenticationServer.csproj" />
+    <ProjectReference Include="..\BuergerPortal.Api\BuergerPortal.Api.csproj" />
   </ItemGroup>
 
 </Project>

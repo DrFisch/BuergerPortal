@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace BuergerPortal.Api.Extensions
@@ -13,6 +14,16 @@ namespace BuergerPortal.Api.Extensions
         public const int SubstantialLevel = 3;
 
         private const string StorkPrefix = "STORK-QAA-Level-";
+
+        // Step-up: Funktionen mit erhöhtem Schutzbedarf verlangen mindestens das BundID-Vertrauensniveau
+        // "substanziell" (STORK-QAA-Level-3); sonst 403.
+        public static AuthorizationOptions AddTrustLevelPolicies(this AuthorizationOptions options)
+        {
+            options.AddPolicy(Substantial, policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireAssertion(ctx => LevelOf(ctx.User) >= SubstantialLevel));
+            return options;
+        }
 
         public static int LevelOf(ClaimsPrincipal user)
         {

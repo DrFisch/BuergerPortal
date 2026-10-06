@@ -128,11 +128,8 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAuthenticatedUser()
               .RequireClaim("scope", "buergerportal_api"));
 
-    // Step-up: Funktionen mit erhöhtem Schutzbedarf verlangen mindestens das BundID-Vertrauensniveau
-    // "substanziell" (STORK-QAA-Level-3); sonst 403.
-    options.AddPolicy(TrustLevelPolicies.Substantial, policy =>
-        policy.RequireAuthenticatedUser()
-              .RequireAssertion(ctx => TrustLevelPolicies.LevelOf(ctx.User) >= TrustLevelPolicies.SubstantialLevel));
+    // Step-up: Policy "trustlevel.substantial" (BundID-Niveau mindestens substanziell)
+    options.AddTrustLevelPolicies();
 });
 
 // --- 3. App Pipeline ---
