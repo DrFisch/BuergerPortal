@@ -17,7 +17,22 @@ var env = builder.Environment.EnvironmentName;
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
 Console.WriteLine($"ENV: {env}");
-Console.WriteLine($"DefaultConnection: {cs}");
+// Nur Server und Datenbank ausgeben – nie Benutzer oder Passwort (die Ausgabe landet z. B. in "docker logs").
+Console.WriteLine($"DefaultConnection: {DescribeConnection(cs)}");
+
+static string DescribeConnection(string? connectionString)
+{
+    if (string.IsNullOrWhiteSpace(connectionString)) return "(nicht konfiguriert)";
+    try
+    {
+        var parts = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
+        return $"Server={parts.DataSource}; Database={parts.InitialCatalog}";
+    }
+    catch (ArgumentException)
+    {
+        return "(ungültige Verbindungszeichenfolge)";
+    }
+}
 
 // DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
