@@ -1,5 +1,7 @@
 ﻿using BuergerPortal.Api.Extensions;
+using BuergerPortal.Api.Postkorb;
 using BuergerPortal.Application.Antraege.AntragReisepass.DTOs;
+using BuergerPortal.Application.Interfaces.Postkorb;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +19,13 @@ namespace BuergerPortal.Api.Controllers
     public sealed class ReisepassAntraegeController : ControllerBase
     {
         private readonly IReisepassAntragBusinessService _service;
+        private readonly IPostkorbService _postkorb;
 
-        public ReisepassAntraegeController(IReisepassAntragBusinessService service)
-            => _service = service;
+        public ReisepassAntraegeController(IReisepassAntragBusinessService service, IPostkorbService postkorb)
+        {
+            _service = service;
+            _postkorb = postkorb;
+        }
 
         [HttpPost("step1")]
         [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
@@ -62,6 +68,21 @@ namespace BuergerPortal.Api.Controllers
             var result = await _service.SubmitAsync(id, userId, ct);
 
             if (!result.IsSuccess) return ToProblem(result);
+
+            // Eingangsbestätigung ins BundID-Postfach – lesbar wie der Antrag selbst erst ab Niveau "substanziell".
+            await this.SendPostkorbAsync(_postkorb,
+                "Eingangsbestätigung: Antrag auf einen Reisepass",
+                $"""
+                {this.Anrede()}
+
+                Ihr Antrag auf einen Reisepass ist bei uns eingegangen.
+
+                Vorgangsnummer: {id}
+                Eingegangen: {PostkorbBenachrichtigung.Ortszeit(DateTime.UtcNow)}
+
+                Für Unterschrift und Fingerabdrücke ist ein persönlicher Termin im Bürgeramt nötig; Sie können ihn im BürgerPortal buchen.
+                """,
+                "Reisepass", ct, storkQaaLevel: TrustLevelPolicies.SubstantialLevel);
 
             return NoContent();
         }
