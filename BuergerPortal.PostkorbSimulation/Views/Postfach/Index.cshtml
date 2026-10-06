@@ -21,7 +21,8 @@ else
     <div class="list-group shadow-sm">
         @foreach (var message in Model.Messages)
         {
-            <div class="list-group-item @(message.Unread ? "list-group-item-primary" : "")">
+            <a class="list-group-item list-group-item-action @(message.Unread ? "list-group-item-primary" : "")"
+               asp-action="Nachricht" asp-route-id="@message.Id">
                 <div class="d-flex flex-wrap justify-content-between gap-2">
                     <span class="@(message.Unread ? "fw-bold" : "")">
                         @if (message.Unread)
@@ -39,7 +40,7 @@ else
                         <span class="badge bg-secondary">Vertrauensniveau „@TrustLevel.Describe(message.StorkQaaLevel)“ nötig</span>
                     </div>
                 }
-            </div>
+            </a>
         }
     </div>
 }

@@ -1,0 +1,50 @@
+@using BuergerPortal.BundId
+@model BuergerPortal.PostkorbSimulation.Models.PostfachMessageViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<p><a asp-action="Index">&larr; Zurück zum Postfach</a></p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h4">@Model.Title</h1>
+        <dl class="row small text-muted mb-3">
+            <dt class="col-sm-3">Von</dt>
+            <dd class="col-sm-9">@Model.Sender</dd>
+            <dt class="col-sm-3">Leistung</dt>
+            <dd class="col-sm-9">@Model.Service</dd>
+            <dt class="col-sm-3">Eingegangen</dt>
+            <dd class="col-sm-9">@Model.Received.ToString("dd.MM.yyyy HH:mm") Uhr</dd>
+            @if (Model.FirstRead is { } firstRead)
+            {
+                <dt class="col-sm-3">Zuerst gelesen</dt>
+                <dd class="col-sm-9">@firstRead.ToString("dd.MM.yyyy HH:mm") Uhr</dd>
+            }
+            @if (!string.IsNullOrEmpty(Model.ReplyAddress))
+            {
+                <dt class="col-sm-3">Antwortadresse</dt>
+                <dd class="col-sm-9">@Model.ReplyAddress</dd>
+            }
+        </dl>
+
+        @if (Model.RequiresHigherLevel)
+        {
+            <div class="alert alert-warning mb-0">
+                <p>
+                    Diese Nachricht ist erst mit dem Vertrauensniveau „@TrustLevel.Describe(Model.StorkQaaLevel)“ lesbar.
+                    Sie sind mit „@TrustLevel.Describe(Model.SessionLevel)“ angemeldet.
+                </p>
+                <a class="btn btn-primary" asp-controller="BundId" asp-action="Login"
+                   asp-route-level="@Model.StorkQaaLevel"
+                   asp-route-returnUrl="@Url.Action("Nachricht", new { id = Model.Id })">Mit höherem Niveau anmelden</a>
+                <span class="small ms-2">z. B. mit ELSTER-Zertifikat oder Online-Ausweis</span>
+            </div>
+        }
+        else
+        {
+            @* Klartext: Razor kodiert den Inhalt, Zeilenumbrüche bleiben erhalten. *@
+            <div class="border rounded p-3 bg-white" style="white-space: pre-wrap;">@Model.Content</div>
+        }
+    </div>
+</div>
