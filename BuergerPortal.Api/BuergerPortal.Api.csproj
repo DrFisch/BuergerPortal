@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BuergerPortal.Infrastructure.Email\BuergerPortal.Infrastructure.Email.csproj" />
     <ProjectReference Include="..\BuergerPortal.Infrastructure\BuergerPortal.Infrastructure.Database.csproj" />
+    <ProjectReference Include="..\BuergerPortal.Infrastructure.Postkorb\BuergerPortal.Infrastructure.Postkorb.csproj" />
   </ItemGroup>
 
 </Project>

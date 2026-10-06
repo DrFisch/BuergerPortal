@@ -5,6 +5,7 @@ using BuergerPortal.Infrastructure;
 using BuergerPortal.Infrastructure.Database.Persistence;
 using BuergerPortal.Infrastructure.Email;
 using BuergerPortal.Infrastructure.Persistence;
+using BuergerPortal.Infrastructure.Postkorb;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpOverrides; 
@@ -48,6 +49,8 @@ builder.Services.AddSwaggerGen(c =>
 // Deine Custom Services
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMailJetEmailSender(builder.Configuration);
+// Bestätigungen in das BundID-Postfach (Postkorb-Simulation); Abschnitt "Postkorb", Prüfung beim Start.
+builder.Services.AddPostkorbService(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 // -------------------------------------------------------
