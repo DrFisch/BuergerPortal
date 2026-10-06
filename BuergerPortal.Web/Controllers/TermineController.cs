@@ -21,7 +21,6 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var client = _cf.CreateClient("BuergerPortalApi");
@@ -69,7 +68,6 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Buchen(Guid? antragId, ServiceType? service)
         {
             var vm = new BuchenVm

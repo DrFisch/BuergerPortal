@@ -62,17 +62,34 @@ builder.Services.AddHttpClient("BuergerPortalApi", client =>
 // --- 4. Authentication ---
 var authConfig = builder.Configuration.GetSection("Authentication");
 
+// Ohne Anmeldung ist nur die Einstiegsseite erreichbar: Jede Seite verlangt eine Anmeldung, außer sie ist
+// ausdrücklich mit [AllowAnonymous] freigegeben (Einstiegsseite, Anmelde- und Fehlerseiten, Datenschutz).
+builder.Services.AddAuthorization(o =>
+    o.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser().Build());
+
+// Anmeldeaufforderung: ohne Sitzung zur Einstiegsseite (Leistungsübersicht + BundID-Knopf), mit Sitzung
+// (z. B. abgelaufenes Token) direkt zur BundID-Anmeldung über den Auth-Server.
+const string LoginOrStartScheme = "BundIdOrStart";
+
 builder.Services
     .AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = LoginOrStartScheme;
+    })
+    .AddPolicyScheme(LoginOrStartScheme, "BundID-Anmeldung oder Einstiegsseite", o =>
+    {
+        o.ForwardDefaultSelector = ctx => ctx.User.Identity?.IsAuthenticated == true
+            ? OpenIdConnectDefaults.AuthenticationScheme
+            : CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
     {
         o.ExpireTimeSpan = TimeSpan.FromHours(24);
         o.SlidingExpiration = false;
-        o.LoginPath = "/Auth/LoginRequired";
+        // Anonym: Einstiegsseite mit Rücksprungziel (/?ReturnUrl=/Termine)
+        o.LoginPath = "/";
         o.AccessDeniedPath = "/Auth/LoginRequired";
 
         // WICHTIG FÜR HTTPS:
@@ -321,7 +338,7 @@ app.MapGet("/logout", async (HttpContext ctx) =>
     {
         ctx.Response.Redirect("/?signedout=1&authDown=1");
     }
-});
+}).AllowAnonymous();
 
 // Frühere Fehler-Adressen (reiner Text) zeigen jetzt die Fehlerseite /Auth/Fehler.
 app.MapGet("/auth-error", () => Results.Redirect("/Auth/Fehler?grund=fehler")).AllowAnonymous();

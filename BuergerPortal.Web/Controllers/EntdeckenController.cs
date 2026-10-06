@@ -14,7 +14,6 @@ namespace BuergerPortal.Web.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var client = _cf.CreateClient("BuergerPortalApi");

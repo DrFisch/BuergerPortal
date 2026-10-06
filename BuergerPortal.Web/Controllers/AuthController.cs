@@ -8,11 +8,12 @@ namespace BuergerPortal.Web.Controllers
     [AllowAnonymous]
     public class AuthController : Controller
     {
+        // Frühere Seite "Anmeldung erforderlich": Es gibt nur noch die Einstiegsseite (mit Rücksprungziel).
         [HttpGet]
         public IActionResult LoginRequired(string? returnUrl = null)
         {
-            ViewData["ReturnUrl"] = string.IsNullOrEmpty(returnUrl) ? Url.Content("~/") : returnUrl;
-            return View();
+            var target = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+            return RedirectToAction("Index", "Home", new { returnUrl = target });
         }
 
         // Verständliche Seite, wenn die Anmeldung nicht geklappt hat

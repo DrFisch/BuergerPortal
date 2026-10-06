@@ -18,9 +18,15 @@ namespace BuergerPortal.Web.Controllers
                     OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-        [Authorize]
+        // Ohne Sitzung (z. B. abgelaufen) nicht erst zur Anmeldung schicken – sonst würde man nach dem Login sofort
+        // wieder abgemeldet. Einfach zur Startseite.
+        [AllowAnonymous]
         public IActionResult Logout()
         {
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return LocalRedirect("/");
+            }
             return SignOut(
                 new AuthenticationProperties { RedirectUri = "/" },
                 CookieAuthenticationDefaults.AuthenticationScheme,

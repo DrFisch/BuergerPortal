@@ -133,36 +133,38 @@ namespace BuergerPortal.Web.Controllers
             return View(vm);
         }
 
+        // Standorte, Stadtplan und News: wie alle Leistungen nur nach der BundID-Anmeldung (Fallback-Policy).
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Standorte()
         {
             return View();
         }
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Stadtplan()
         {
             return View();
         }
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult News()
         {
- 
+
             return View();
         }
 
+        // Datenschutzhinweise müssen auch ohne Anmeldung lesbar sein.
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult Datenschutz()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
