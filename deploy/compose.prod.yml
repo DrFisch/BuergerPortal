@@ -29,7 +29,7 @@ services:
       - "443:443/udp"
     environment:
       BPSIM_DOMAIN: ${BPSIM_DOMAIN:?BPSIM_DOMAIN fehlt}
-      ACME_EMAIL: ${ACME_EMAIL:-}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL fehlt (Kontakt für Let's Encrypt)}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

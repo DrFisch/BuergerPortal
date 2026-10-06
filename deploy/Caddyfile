@@ -1,0 +1,45 @@
+# Reverse Proxy für das BürgerPortal mit BundID-Simulator (Studienprojekt).
+# Basis-Domain aus BPSIM_DOMAIN, z. B. bpsimulation.gortisbuergerportal.de (lokal: bpsimulation.localhost).
+# Zertifikate holt Caddy automatisch: öffentlich bei Let's Encrypt, für *.localhost von seiner internen CA.
+{
+	email {$ACME_EMAIL}
+}
+
+(sicherheit) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# Portal (Web)
+{$BPSIM_DOMAIN} {
+	import sicherheit
+	reverse_proxy web:8080
+}
+
+# Auth-Server: OIDC für das Portal, SAML-Service-Provider gegenüber der BundID (/bundid/acs, /bundid/metadata)
+auth.{$BPSIM_DOMAIN} {
+	import sicherheit
+	reverse_proxy auth:8080
+}
+
+# BundID-Simulator (Identity Provider)
+bundid.{$BPSIM_DOMAIN} {
+	import sicherheit
+	# Der Spring-Actuator des Simulators ist ungeschützt (env, beans, loggers sogar schreibbar) – von außen sperren.
+	@actuator path /actuator /actuator/*
+	respond @actuator 404
+	reverse_proxy bundid-simulator:8080
+}
+
+# Postfach-Simulation: nur die Oberfläche ist öffentlich
+postkorb.{$BPSIM_DOMAIN} {
+	import sicherheit
+	# Nachrichten einliefern (POST /api/v1/messages) nur im internen Netz: API → http://postkorb:8080
+	@api path /api /api/*
+	respond @api 404
+	reverse_proxy postkorb:8080
+}
