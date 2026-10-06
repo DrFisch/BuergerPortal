@@ -1,0 +1,45 @@
+@using BuergerPortal.BundId
+@model BuergerPortal.PostkorbSimulation.Models.PostfachIndexViewModel
+@{
+    ViewData["Title"] = "Postfach";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-baseline mb-3 gap-2">
+    <h1 class="h4 mb-0">Mein BundID-Postfach <span class="badge bg-warning text-dark align-middle">Simulation</span></h1>
+    <span class="text-muted small">
+        Angemeldet als @Model.DisplayName · Vertrauensniveau „@TrustLevel.Describe(Model.SessionLevel)“
+    </span>
+</div>
+
+@if (Model.Messages.Count == 0)
+{
+    <div class="alert alert-secondary">Ihr Postfach ist leer.</div>
+}
+else
+{
+    <p class="text-muted small">@Model.Messages.Count Nachricht(en), davon @Model.UnreadCount ungelesen.</p>
+    <div class="list-group shadow-sm">
+        @foreach (var message in Model.Messages)
+        {
+            <div class="list-group-item @(message.Unread ? "list-group-item-primary" : "")">
+                <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <span class="@(message.Unread ? "fw-bold" : "")">
+                        @if (message.Unread)
+                        {
+                            <span class="badge bg-primary me-1">neu</span>
+                        }
+                        @message.Title
+                    </span>
+                    <small class="text-muted">@message.Received.ToString("dd.MM.yyyy HH:mm") Uhr</small>
+                </div>
+                <small class="text-muted">@message.Sender · @message.Service</small>
+                @if (message.RequiresHigherLevel)
+                {
+                    <div class="small mt-1">
+                        <span class="badge bg-secondary">Vertrauensniveau „@TrustLevel.Describe(message.StorkQaaLevel)“ nötig</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
