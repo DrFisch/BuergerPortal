@@ -1,5 +1,7 @@
 ﻿using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -111,6 +113,17 @@ namespace BuergerPortal.Web.Controllers
             if (!put.IsSuccessStatusCode)
                 return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, put, ct));
 
+            // Step-up: Einreichen verlangt BundID-Niveau "substanziell" (die API prüft es ebenfalls).
+            // Die Angaben sind gespeichert; nach der erneuten Anmeldung geht es zurück zu Schritt 2.
+            if (CurrentTrustLevel() < SubstantialLevel)
+            {
+                TempData["AntragInfo"] = "Sie sind jetzt mit dem Vertrauensniveau „substanziell“ angemeldet. " +
+                                         "Bitte reichen Sie den Antrag erneut ein.";
+                var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(ReisepassStep2), new { id }) };
+                properties.Items["acr_values"] = "STORK-QAA-Level-3";
+                return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+            }
+
             var submit = await client.PostAsync($"api/antraege/reisepass/{id}/submit", content: null, ct);
 
             if (submit.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
@@ -123,6 +136,19 @@ namespace BuergerPortal.Web.Controllers
         }
 
         // -------- Helpers ----------
+        private const int SubstantialLevel = 3;
+
+        // Erreichtes BundID-Vertrauensniveau aus dem Claim "acr" ("STORK-QAA-Level-n"); ASP.NET Core legt ihn
+        // beim Einlesen des ID-Tokens unter einem langen Typnamen ab.
+        private int CurrentTrustLevel()
+        {
+            const string prefix = "STORK-QAA-Level-";
+            var acr = User.FindFirst("acr")?.Value
+                      ?? User.FindFirst("http://schemas.microsoft.com/claims/authnclassreference")?.Value;
+            return acr != null && acr.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                   && int.TryParse(acr[prefix.Length..], out var level) ? level : 0;
+        }
+
         private async Task<TVm> AddModelErrorsAndReturn<TVm>(TVm vm, HttpResponseMessage res, CancellationToken ct)
         {
             try
