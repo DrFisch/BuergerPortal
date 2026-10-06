@@ -8,6 +8,7 @@
 #   dns.ps1 remove               beide A-Records löschen
 param([Parameter(Mandatory)][ValidateSet("show", "backup", "add", "remove")][string]$Action, [string]$Ip = "")
 . "$PSScriptRoot\lib.ps1"
+$ErrorActionPreference = "Stop"   # nur PowerShell-Befehle: jeder Fehler bricht ab (Get-VmIp toleriert gcloud-Meldungen)
 $cfg = Get-BpsimConfig
 if (-not $cfg.IONOS_API_KEY) { throw "IONOS_API_KEY fehlt in der Konfiguration." }
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

@@ -3,7 +3,11 @@
 # Einstellungen: Standardwerte unten; überschreibbar durch eine Datei AUSSERHALB des Repositorys, deren Pfad in der
 # Umgebungsvariable BPSIM_DEPLOY_CONFIG steht (Zeilen KEY=Wert), und durch gleichnamige Umgebungsvariablen.
 # Geheimnisse (IONOS_API_KEY, Passwörter) stehen nur dort bzw. in der .env für den Betrieb – nie im Repository.
-$ErrorActionPreference = "Stop"
+#
+# Fehlerbehandlung: Native Programme (gcloud, ssh, scp, docker) schreiben Status- und Fortschrittsmeldungen auf
+# stderr; PowerShell 5.1 macht daraus mit "Stop" einen Abbruch, auch bei Erfolg. Deshalb "Continue" – über Erfolg
+# entscheidet ausschließlich der Exit-Code ($LASTEXITCODE), der nach jedem wichtigen Aufruf geprüft wird.
+$ErrorActionPreference = "Continue"
 
 function Get-BpsimConfig {
     $cfg = [ordered]@{
@@ -55,6 +59,7 @@ function Invoke-Step {
         $answer = Read-Host "    Ausführen? (j/n)"
         if ($answer -ne "j") { Write-Host "    übersprungen" -ForegroundColor Yellow; return $false }
     }
+    $ErrorActionPreference = "Continue"   # lokal: stderr der Programme ist kein Fehler (siehe Dateikopf)
     $global:LASTEXITCODE = 0
     & $Action
     if ($LASTEXITCODE -ne 0) { throw "Fehlgeschlagen ($LASTEXITCODE): $Display" }
@@ -62,6 +67,7 @@ function Invoke-Step {
 }
 
 function Get-VmIp($cfg) {
+    $ErrorActionPreference = "Continue"
     $ip = gcloud compute addresses describe $cfg.IP_NAME --region $cfg.GCP_REGION --project $cfg.GCP_PROJECT `
         --format "value(address)" 2>$null
     if (-not $ip) { throw "Statische IP $($cfg.IP_NAME) nicht gefunden (gcp-setup.ps1 ausgeführt?)." }
@@ -77,6 +83,7 @@ function Get-SshArgs($cfg) {
 
 # Befehl auf der VM ausführen (Windows-OpenSSH; gcloud compute ssh würde unter Windows PuTTY verwenden).
 function Invoke-VmSsh($cfg, [string]$Command) {
+    $ErrorActionPreference = "Continue"
     $ip = Get-VmIp $cfg
     $sshArgs = (Get-SshArgs $cfg) + @("$($cfg.VM_USER)@$ip", $Command)
     & ssh @sshArgs
@@ -96,6 +103,7 @@ function Invoke-VmScript($cfg, [string[]]$Lines) {
 }
 
 function Copy-ToVm($cfg, [string[]]$Local, [string]$Remote) {
+    $ErrorActionPreference = "Continue"
     $ip = Get-VmIp $cfg
     $scpArgs = (Get-SshArgs $cfg) + $Local + @("$($cfg.VM_USER)@${ip}:$Remote")
     & scp @scpArgs

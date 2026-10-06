@@ -63,8 +63,8 @@ foreach ($c in @(@("signing", "DigitalSignature"), @("encryption", "KeyEncipherm
     if (-not (Test-Path $pfx)) {
         $cert = New-SelfSignedCertificate -Subject "CN=bpsim OpenIddict $($c[0])" -KeyUsage $c[1] -KeyAlgorithm RSA `
             -KeyLength 2048 -KeyExportPolicy Exportable -CertStoreLocation Cert:\CurrentUser\My `
-            -NotAfter (Get-Date).AddYears(5) -Type Custom
-        Export-PfxCertificate -Cert $cert -FilePath $pfx -Password $pfxPassword | Out-Null
+            -NotAfter (Get-Date).AddYears(5) -Type Custom -ErrorAction Stop
+        Export-PfxCertificate -Cert $cert -FilePath $pfx -Password $pfxPassword -ErrorAction Stop | Out-Null
         Remove-Item "Cert:\CurrentUser\My\$($cert.Thumbprint)"
         Write-Host "Zertifikat erzeugt: $pfx"
     }
