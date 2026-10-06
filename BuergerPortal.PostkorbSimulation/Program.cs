@@ -2,6 +2,7 @@ using BuergerPortal.BundId;
 using BuergerPortal.PostkorbSimulation.Api;
 using BuergerPortal.PostkorbSimulation.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,16 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 // Oberfläche: Anmeldung über die BundID als eigener SAML-Service-Provider, danach Cookie-Sitzung.
 builder.Services.AddBundIdServiceProvider(builder.Configuration);
+
+// Schlüssel für Sitzungs-Cookie und Anmeldezustand (bundid_login). Im Container in einem Volume
+// (DataProtection:KeysPath), sonst wären nach jedem Neustart alle Sitzungen ungültig.
+var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
+{
+    builder.Services.AddDataProtection()
+        .SetApplicationName("BuergerPortal.PostkorbSimulation")
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+}
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o =>
     {

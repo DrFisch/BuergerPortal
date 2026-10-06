@@ -17,6 +17,8 @@ RUN dotnet publish BuergerPortal.Web/BuergerPortal.Web.csproj -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Verzeichnis für die Data-Protection-Schlüssel (Volume); gehört dem Laufzeit-Benutzer, damit das Volume beschreibbar ist.
+RUN mkdir -p /data/keys && chown $APP_UID /data/keys
 # Port 8080 (Standard der .NET-Images); läuft als Benutzer "app" (UID 1654) statt root.
 EXPOSE 8080
 USER $APP_UID

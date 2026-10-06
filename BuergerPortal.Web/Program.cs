@@ -41,8 +41,15 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
 });
 
 // --- 2. Data Protection (Verhindert Logout bei Server-Neustart) ---
-// Der Ordner "keys" muss via Docker Volume persistiert werden!
-// Falls du kein Volume hast, lösch diesen Block, aber dann fliegst du beim Neustart raus.
+// Schlüssel für Anmelde-Cookie und Antiforgery-Token. Im Container liegen sie in einem Volume
+// (DataProtection:KeysPath); ohne Einstellung (lokal) im Benutzerprofil wie bisher.
+var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
+{
+    builder.Services.AddDataProtection()
+        .SetApplicationName("BuergerPortal.Web")
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+}
 
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
