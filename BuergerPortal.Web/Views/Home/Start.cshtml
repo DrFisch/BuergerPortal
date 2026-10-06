@@ -17,13 +17,6 @@
     };
 }
 
-@section Styles {
-    <style>
-        .bundid-login-btn { background: #0b4f8a; border-color: #0b4f8a; color: #fff; }
-        .bundid-login-btn:hover, .bundid-login-btn:focus { background: #083c69; border-color: #083c69; color: #fff; }
-    </style>
-}
-
 @if (Context.Request.Query.ContainsKey("signedout"))
 {
     <div class="alert alert-success" role="status">@L["Start_SignedOut"]</div>

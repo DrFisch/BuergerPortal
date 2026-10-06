@@ -8,6 +8,31 @@
     var levelBadge = bundIdUser is { TrustLevel: >= 3 } ? "text-bg-success" : "text-bg-secondary";
 }
 
+@if (bundIdUser == null)
+{
+    @* Ohne Anmeldung gibt es nur die Einstiegsseite – deshalb keine Links zu Leistungen, nur Anmelden und Theme. *@
+    <header class="navbar bg-body-tertiary sticky-top border-bottom shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">@T["BrandTitle"]</a>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary d-flex align-items-center js-theme-toggle"
+                        aria-pressed="false"
+                        aria-label="@T["ThemeToggleAria"]">
+                    <i class="bi bi-moon-stars js-theme-icon"></i>
+                    <span class="js-theme-text d-none d-sm-inline ms-2">@T["ThemeLight"]</span>
+                </button>
+                <a class="btn btn-sm bundid-login-btn d-flex align-items-center gap-2"
+                   asp-controller="Account" asp-action="Login" asp-route-returnUrl="@(ViewData["ReturnUrl"] as string ?? "/")">
+                    @await Html.PartialAsync("_BundIdSymbol", new ViewDataDictionary(ViewData) { ["Size"] = 20 })
+                    <span>@T["Login"]</span>
+                </a>
+            </div>
+        </div>
+    </header>
+}
+else
+{
 <header class="navbar navbar-expand-lg bg-body-tertiary sticky-top border-bottom shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
@@ -222,3 +247,4 @@
         </div>
     </div>
 </header>
+}

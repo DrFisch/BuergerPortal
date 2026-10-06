@@ -40,3 +40,7 @@
     color: var(--bs-secondary-color);
     opacity: 1 !important; /* überschreibt evtl. .opacity-50 */
 }
+
+/* Knopf "Mit BundID anmelden" (Einstiegsseite und Navigation); eigenes Design, nicht das offizielle BundID-Logo */
+.bundid-login-btn { background: #0b4f8a; border-color: #0b4f8a; color: #fff; }
+.bundid-login-btn:hover, .bundid-login-btn:focus { background: #083c69; border-color: #083c69; color: #fff; }
