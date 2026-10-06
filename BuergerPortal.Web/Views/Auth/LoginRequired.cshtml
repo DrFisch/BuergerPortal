@@ -1,5 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Anmeldung erforderlich";
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@{
+    ViewData["Title"] = L["Title"];
     var returnUrl = (string?)ViewData["ReturnUrl"] ?? Url.Content("~/");
 }
 
@@ -8,22 +10,17 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h1 class="h4 mb-3">Anmeldung erforderlich</h1>
-                    <p>
-                        Um die Dienste des Bürgerportals zu nutzen (z.&nbsp;B. Anträge stellen oder den Bearbeitungsstatus einzusehen),
-                        ist eine Anmeldung mit Ihrem Bürgerkonto notwendig.
-                    </p>
-                    <p class="mb-4">
-                        Bitte melden Sie sich an, um fortzufahren.
-                    </p>
+                    <h1 class="h4 mb-3">@L["Title"]</h1>
+                    <p>@L["Text"]</p>
+                    <p class="small text-muted mb-4">@L["WhatIsBundId"]</p>
 
                     <form asp-action="Login" asp-controller="Auth" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="returnUrl" value="@returnUrl" />
                         <button type="submit" class="btn btn-primary">
-                            Jetzt anmelden
+                            <i class="bi bi-shield-lock me-1" aria-hidden="true"></i>@L["SignIn"]
                         </button>
-                        <a href="~/" class="btn btn-link ms-2">Zur Startseite</a>
+                        <a href="~/" class="btn btn-link ms-2">@L["Home"]</a>
                     </form>
                 </div>
             </div>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Cancelled_Title" xml:space="preserve">
+		<value>Anmeldung abgebrochen</value>
+	</data>
+	<data name="Cancelled_Text" xml:space="preserve">
+		<value>Die Anmeldung über die BundID wurde abgebrochen. Sie sind nicht angemeldet und können es jederzeit erneut versuchen.</value>
+	</data>
+	<data name="Unavailable_Title" xml:space="preserve">
+		<value>Anmeldedienst nicht erreichbar</value>
+	</data>
+	<data name="Unavailable_Text" xml:space="preserve">
+		<value>Der Anmeldedienst ist derzeit nicht erreichbar. Bitte versuchen Sie es in einigen Minuten erneut.</value>
+	</data>
+	<data name="Error_Title" xml:space="preserve">
+		<value>Anmeldung nicht möglich</value>
+	</data>
+	<data name="Error_Text" xml:space="preserve">
+		<value>Bei der Anmeldung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</value>
+	</data>
+	<data name="SignIn" xml:space="preserve">
+		<value>Mit BundID anmelden</value>
+	</data>
+	<data name="Home" xml:space="preserve">
+		<value>Zur Startseite</value>
+	</data>
+</root>

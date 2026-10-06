@@ -56,10 +56,10 @@
     <value>Login required</value>
   </data>
   <data name="Alert_LoginRequired_Text" xml:space="preserve">
-    <value>Please log in to access digital services and manage appointments.</value>
+    <value>Please sign in with your BundID to use digital services and manage appointments.</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Login</value>
+    <value>Sign in with BundID</value>
   </data>
 	<data name="Start_Application" xml:space="preserve">
     <value>Apply now</value>

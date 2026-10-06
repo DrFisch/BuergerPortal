@@ -56,10 +56,10 @@
     <value>Anmeldung erforderlich</value>
   </data>
   <data name="Alert_LoginRequired_Text" xml:space="preserve">
-    <value>Bitte melden Sie sich an, um digitale Services zu nutzen und Termine zu verwalten.</value>
+    <value>Bitte melden Sie sich mit Ihrer BundID an, um digitale Services zu nutzen und Termine zu verwalten.</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Anmelden</value>
+    <value>Mit BundID anmelden</value>
   </data>
 	<data name="Start_Application" xml:space="preserve">
     <value>Jetzt beantragen</value>

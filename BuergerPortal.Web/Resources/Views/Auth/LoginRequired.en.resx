@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Sign-in required</value>
+	</data>
+	<data name="Text" xml:space="preserve">
+		<value>To use the services of the Citizen Portal (e.g. submitting applications or checking their status), please sign in with your BundID.</value>
+	</data>
+	<data name="WhatIsBundId" xml:space="preserve">
+		<value>BundID is the central user account for online administrative services in Germany. In this student project, a BundID simulator with fictitious test persons takes its place.</value>
+	</data>
+	<data name="SignIn" xml:space="preserve">
+		<value>Sign in with BundID</value>
+	</data>
+	<data name="Home" xml:space="preserve">
+		<value>Back to home page</value>
+	</data>
+</root>
