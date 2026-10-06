@@ -65,7 +65,7 @@ services:
 
   bundid-simulator:
     # Fork des BundID-Simulators der Bundesagentur für Arbeit (Branch bpsim/standardkonform): signierte Assertions,
-    # IdP-Metadaten, eIDAS-LoA-URIs, Postkorb-Handle.
+    # IdP-Metadaten, eIDAS-LoA-URIs, Postkorb-Handle, Anmeldesitzung (Single Sign-on).
     image: ${BUNDID_SIM_IMAGE:-bpsim-bundid-simulator:latest}
     restart: unless-stopped
     environment:
@@ -76,6 +76,9 @@ services:
       APP_SAML_SIGNING_ENABLED: "true"
       APP_SAML_SIGNING_KEYSTORE: /app/data/idp-signing.p12
       APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:?BUNDID_SIM_KEYSTORE_PASSWORD fehlt}
+      # Anmeldesitzung wie bei der echten BundID: Das Postfach meldet sich ohne erneute Personenauswahl an.
+      APP_SSO_ENABLED: "true"
+      SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
       TZ: Europe/Berlin
     volumes:
@@ -134,7 +137,8 @@ services:
       Authentication__ClientId: mvc_web
       Authentication__ClientSecret: ${WEB_CLIENT_SECRET}
       Api__BaseUrl: http://api:8080/
-      Postkorb__PostfachUrl: https://postkorb.${BPSIM_DOMAIN}/Postfach
+      # Link „Mein BundID-Postfach“: über die Anmeldung des Postfachs, damit es die gerade angemeldete Person zeigt
+      Postkorb__PostfachUrl: "https://bundid.${BPSIM_DOMAIN}/postfach/bundid/login?returnUrl=~/Postfach"
       DataProtection__KeysPath: /data/keys
     volumes:
       - webkeys:/data/keys
@@ -153,8 +157,10 @@ services:
       ConnectionStrings__DefaultConnection: Server=sqlserver;Database=PostkorbDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
       Database__MigrateOnStartup: "true"
       PostkorbApi__ApiKey: ${POSTKORB_API_KEY}
-      BundId__SpEntityId: https://postkorb.${BPSIM_DOMAIN}/bundid/metadata
-      BundId__AssertionConsumerServiceUrl: https://postkorb.${BPSIM_DOMAIN}/bundid/acs
+      # Das Postfach ist Teil des BundID-Auftritts: https://bundid.<domain>/postfach (Caddy leitet den Pfad weiter)
+      PathBase: /postfach
+      BundId__SpEntityId: https://bundid.${BPSIM_DOMAIN}/postfach/bundid/metadata
+      BundId__AssertionConsumerServiceUrl: https://bundid.${BPSIM_DOMAIN}/postfach/bundid/acs
       BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
       DataProtection__KeysPath: /data/keys
     volumes:

@@ -26,20 +26,26 @@ auth.{$BPSIM_DOMAIN} {
 	reverse_proxy auth:8080
 }
 
-# BundID-Simulator (Identity Provider)
+# BundID-Simulator (Identity Provider) und unter /postfach das BundID-Postfach (Simulation) – wie bei der echten
+# BundID ist das Postfach Teil des BundID-Auftritts.
 bundid.{$BPSIM_DOMAIN} {
 	import sicherheit
-	# Der Spring-Actuator des Simulators ist ungeschützt (env, beans, loggers sogar schreibbar) – von außen sperren.
 	@actuator path /actuator /actuator/*
-	respond @actuator 404
-	reverse_proxy bundid-simulator:8080
+	@postfachapi path /postfach/api /postfach/api/*
+	@postfach path /postfach /postfach/*
+	# route: Reihenfolge wie geschrieben – erst sperren, dann Postfach, sonst Simulator.
+	route {
+		# Der Spring-Actuator des Simulators ist ungeschützt (env, beans, loggers sogar schreibbar) – von außen sperren.
+		respond @actuator 404
+		# Nachrichten einliefern (POST /api/v1/messages) nur im internen Netz: API → http://postkorb:8080
+		respond @postfachapi 404
+		reverse_proxy @postfach postkorb:8080
+		reverse_proxy bundid-simulator:8080
+	}
 }
 
-# Postfach-Simulation: nur die Oberfläche ist öffentlich
+# Frühere Adresse des Postfachs: dauerhaft auf die BundID-Adresse umleiten
 postkorb.{$BPSIM_DOMAIN} {
 	import sicherheit
-	# Nachrichten einliefern (POST /api/v1/messages) nur im internen Netz: API → http://postkorb:8080
-	@api path /api /api/*
-	respond @api 404
-	reverse_proxy postkorb:8080
+	redir https://bundid.{$BPSIM_DOMAIN}/postfach{uri} permanent
 }
