@@ -1,5 +1,6 @@
 @model BuergerPortal.Web.Services.BundIdUser
 @using System.Globalization
+@using BuergerPortal.Web.Helper
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer L
 
@@ -121,6 +122,39 @@
                 <dl class="row mb-0">
                     @{ Feld(L["MeineDaten_Email"], Model.Email); }
                 </dl>
+            </div>
+        </section>
+    </div>
+
+    @if (ViewData["PostfachUrl"] is string postfachUrl && !string.IsNullOrWhiteSpace(postfachUrl))
+    {
+        <div class="col-12 col-lg-6">
+            <section class="card h-100 shadow-sm" aria-labelledby="md-postfach">
+                <h2 class="card-header h6 fw-semibold" id="md-postfach">@L["MeineDaten_Postfach"]</h2>
+                <div class="card-body">
+                    <p class="small">@L["MeineDaten_PostfachText"]</p>
+                    <a class="btn btn-primary btn-sm" href="@postfachUrl">
+                        <i class="bi bi-envelope-paper me-1" aria-hidden="true"></i>@L["MeineDaten_PostfachButton"]
+                    </a>
+                </div>
+            </section>
+        </div>
+    }
+
+    <div class="col-12">
+        <section class="card shadow-sm border-info-subtle" aria-labelledby="md-stored">
+            <h2 class="card-header h6 fw-semibold" id="md-stored">
+                <i class="bi bi-database-lock me-1" aria-hidden="true"></i>@L["MeineDaten_Stored"]
+            </h2>
+            <div class="card-body">
+                <p class="small">@L["MeineDaten_StoredIntro"]</p>
+                <dl class="row">
+                    @{ Feld(L["MeineDaten_Bpk2"], Model.MaskedBpk2); }
+                    @{ Feld(L["MeineDaten_PostkorbHandle"], Model.PostkorbHandle); }
+                    @{ Feld(L["MeineDaten_StoredLevel"], Model.TrustLevel > 0 ? L[$"Level_{Model.TrustLevel}_Name"].Value : null); }
+                    @{ Feld(L["MeineDaten_LastLogin"], Model.LastLoginUtc?.ToBerlin().ToString("g", CultureInfo.CurrentCulture)); }
+                </dl>
+                <p class="small mb-0">@L["MeineDaten_SessionOnly"]</p>
             </div>
         </section>
     </div>

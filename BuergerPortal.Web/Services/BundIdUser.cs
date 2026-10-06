@@ -36,6 +36,17 @@ namespace BuergerPortal.Web.Services
         /// <summary>Angemeldet über die BundID (ein altes lokales Konto hat keine bPK2).</summary>
         public bool IsBundIdLogin => !string.IsNullOrEmpty(Bpk2);
 
+        /// <summary>
+        /// bPK2 für die Anzeige gekürzt (Anfang und Ende): Die Person erkennt ihre Kennung wieder, ein Blick über
+        /// die Schulter oder ein Bildschirmfoto gibt sie aber nicht vollständig preis.
+        /// </summary>
+        public string? MaskedBpk2 => Bpk2 switch
+        {
+            null => null,
+            { Length: <= 8 } => new string('•', Bpk2.Length),
+            _ => $"{Bpk2[..4]}…{Bpk2[^4..]}",
+        };
+
         public static BundIdUser FromPrincipal(ClaimsPrincipal principal)
         {
             string? Get(string type) =>

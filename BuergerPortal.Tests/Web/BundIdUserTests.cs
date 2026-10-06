@@ -67,6 +67,19 @@ namespace BuergerPortal.Tests.Web
             Assert.Null(BundIdUser.FromPrincipal(Principal((BundIdClaimTypes.Address, json))).Address);
         }
 
+        [Theory]
+        [InlineData("BUNDIDSIM-U02-bp-md123", "BUND…d123")]
+        [InlineData("kurz", "••••")]
+        [InlineData(null, null)]
+        public void bPK2_wird_fuer_die_Anzeige_gekuerzt(string? bpk2, string? expected)
+        {
+            var user = bpk2 == null
+                ? BundIdUser.FromPrincipal(Principal())
+                : BundIdUser.FromPrincipal(Principal((BundIdClaimTypes.Bpk2, bpk2)));
+
+            Assert.Equal(expected, user.MaskedBpk2);
+        }
+
         [Fact]
         public void Versteht_auch_die_eIDAS_Schreibweise_des_Niveaus()
         {

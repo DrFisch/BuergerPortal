@@ -157,4 +157,34 @@
 	<data name="Method_Other" xml:space="preserve">
 		<value>Other means of identification supported by BundID.</value>
 	</data>
+	<data name="MeineDaten_Postfach" xml:space="preserve">
+		<value>My BundID mailbox</value>
+	</data>
+	<data name="MeineDaten_PostfachText" xml:space="preserve">
+		<value>The Citizen Portal sends confirmations for appointments and applications to your BundID mailbox. You sign in there with BundID as well.</value>
+	</data>
+	<data name="MeineDaten_PostfachButton" xml:space="preserve">
+		<value>Go to BundID mailbox</value>
+	</data>
+	<data name="MeineDaten_Stored" xml:space="preserve">
+		<value>What the Citizen Portal stores permanently</value>
+	</data>
+	<data name="MeineDaten_StoredIntro" xml:space="preserve">
+		<value>Only what is needed to recognise you at your next sign-in and to send messages to your BundID mailbox is stored:</value>
+	</data>
+	<data name="MeineDaten_Bpk2" xml:space="preserve">
+		<value>Personal identifier (bPK2, shortened)</value>
+	</data>
+	<data name="MeineDaten_PostkorbHandle" xml:space="preserve">
+		<value>Postkorb handle (address of your BundID mailbox)</value>
+	</data>
+	<data name="MeineDaten_StoredLevel" xml:space="preserve">
+		<value>Most recent level of assurance</value>
+	</data>
+	<data name="MeineDaten_LastLogin" xml:space="preserve">
+		<value>Last sign-in</value>
+	</data>
+	<data name="MeineDaten_SessionOnly" xml:space="preserve">
+		<value>BundID provides your name, birth details, address and email address anew at every sign-in. The Citizen Portal keeps them only while you are signed in and discards them when you sign out. Details you submit yourself in an application are stored with that application.</value>
+	</data>
 </root>

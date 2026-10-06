@@ -157,4 +157,34 @@
 	<data name="Method_Other" xml:space="preserve">
 		<value>Weiteres Identifizierungsmittel der BundID.</value>
 	</data>
+	<data name="MeineDaten_Postfach" xml:space="preserve">
+		<value>Mein BundID-Postfach</value>
+	</data>
+	<data name="MeineDaten_PostfachText" xml:space="preserve">
+		<value>Bestätigungen zu Terminen und Anträgen schickt das BürgerPortal in Ihr BundID-Postfach. Auch dort melden Sie sich mit der BundID an.</value>
+	</data>
+	<data name="MeineDaten_PostfachButton" xml:space="preserve">
+		<value>Zum BundID-Postfach</value>
+	</data>
+	<data name="MeineDaten_Stored" xml:space="preserve">
+		<value>Was das BürgerPortal dauerhaft speichert</value>
+	</data>
+	<data name="MeineDaten_StoredIntro" xml:space="preserve">
+		<value>Gespeichert wird nur, was nötig ist, um Sie bei der nächsten Anmeldung wiederzuerkennen und Ihnen Nachrichten in Ihr BundID-Postfach zu schicken:</value>
+	</data>
+	<data name="MeineDaten_Bpk2" xml:space="preserve">
+		<value>Persönliche Kennung (bPK2, gekürzt)</value>
+	</data>
+	<data name="MeineDaten_PostkorbHandle" xml:space="preserve">
+		<value>Postkorb-Handle (Adresse Ihres BundID-Postfachs)</value>
+	</data>
+	<data name="MeineDaten_StoredLevel" xml:space="preserve">
+		<value>Zuletzt erreichtes Vertrauensniveau</value>
+	</data>
+	<data name="MeineDaten_LastLogin" xml:space="preserve">
+		<value>Letzte Anmeldung</value>
+	</data>
+	<data name="MeineDaten_SessionOnly" xml:space="preserve">
+		<value>Name, Geburtsdaten, Anschrift und E-Mail-Adresse liefert die BundID bei jeder Anmeldung neu. Das BürgerPortal hält sie nur, solange Sie angemeldet sind; beim Abmelden werden sie verworfen. Angaben, die Sie selbst in einem Antrag absenden, werden mit dem Antrag gespeichert.</value>
+	</data>
 </root>

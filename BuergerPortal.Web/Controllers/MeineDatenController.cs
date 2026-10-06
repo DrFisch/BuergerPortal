@@ -11,9 +11,14 @@ namespace BuergerPortal.Web.Controllers
     /// "Meine Daten": was die BundID bei der Anmeldung übermittelt hat (aus der Sitzung, nicht aus einer Datenbank).
     /// </summary>
     [Authorize]
-    public class MeineDatenController(HttpCurrentUserService currentUser) : Controller
+    public class MeineDatenController(HttpCurrentUserService currentUser, IConfiguration configuration) : Controller
     {
-        public IActionResult Index() => View(currentUser.GetBundIdUser());
+        public IActionResult Index()
+        {
+            // Adresse des BundID-Postfachs (Postkorb-Simulation); ohne Konfiguration kein Link.
+            ViewData["PostfachUrl"] = configuration["Postkorb:PostfachUrl"];
+            return View(currentUser.GetBundIdUser());
+        }
 
         // Step-up zum Ausprobieren: erneute BundID-Anmeldung mit mindestens dem gewünschten Niveau (3 oder 4),
         // danach zurück zu "Meine Daten". Der Auth-Server gibt acr_values als Mindestniveau an die BundID weiter.
