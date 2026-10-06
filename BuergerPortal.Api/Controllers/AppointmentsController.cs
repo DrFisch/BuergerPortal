@@ -99,7 +99,7 @@ namespace BuergerPortal.Api.Controllers
                     Ort: {req.Location.GetDisplayName()}
                     Termin: {PostkorbBenachrichtigung.Ortszeit(req.StartUtc)}
 
-                    Sie finden den Termin im BürgerPortal unter „Meine Termine“; dort können Sie ihn auch stornieren.
+                    Sie finden den Termin im BürgerPortal in der Terminübersicht; dort können Sie ihn auch stornieren.
                     """,
                     "Terminvereinbarung", ct);
             }
@@ -196,7 +196,28 @@ namespace BuergerPortal.Api.Controllers
             if (!TryGetUserId(out var userId))
                 return Problem("Ungültiges Token (sub).", statusCode: StatusCodes.Status401Unauthorized);
 
+            // Termindaten vor dem Storno lesen – für die Bestätigung im Postfach.
+            var appt = await _svc.GetByIdAsync(id, userId, ct);
             var result = await _svc.CancelAsync(id, userId, ct);
+
+            if (result.IsSuccess && appt is not null)
+            {
+                await this.SendPostkorbAsync(_postkorb,
+                    $"Stornobestätigung: {appt.Service.GetDisplayName()}",
+                    $"""
+                    {this.Anrede()}
+
+                    Ihr Termin wurde storniert.
+
+                    Leistung: {appt.Service.GetDisplayName()}
+                    Ort: {appt.Location.GetDisplayName()}
+                    Termin: {PostkorbBenachrichtigung.Ortszeit(appt.StartUtc)}
+
+                    Einen neuen Termin können Sie jederzeit im BürgerPortal buchen.
+                    """,
+                    "Terminvereinbarung", ct);
+            }
+
             return FromResult(result, () => NoContent());
         }
 
