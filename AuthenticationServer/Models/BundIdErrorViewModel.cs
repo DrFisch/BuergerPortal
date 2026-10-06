@@ -6,5 +6,6 @@ namespace AuthenticationServer.Models
         public string Title { get; init; } = string.Empty;
         public string Message { get; init; } = string.Empty;
         public string RetryUrl { get; init; } = "/bundid/login";
+        public string CancelUrl { get; init; } = "/";
     }
 }

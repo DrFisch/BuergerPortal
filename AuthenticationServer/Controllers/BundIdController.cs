@@ -102,11 +102,10 @@ namespace AuthenticationServer.Controllers
 
                 if (authnResponse.Status != Saml2StatusCodes.Success)
                 {
+                    // Abbruch (oder Fehler) bei der BundID: zurück zum Portal, das die Anmeldung angefordert hat.
                     logger.LogInformation("BundID-Anmeldung nicht abgeschlossen: {Status} {Message}",
                         authnResponse.Status, authnResponse.StatusMessage);
-                    return LoginError("Anmeldung nicht abgeschlossen",
-                        "Die Anmeldung bei der BundID wurde abgebrochen oder konnte nicht abgeschlossen werden.",
-                        retryLevel, returnUrl);
+                    return Cancel(returnUrl);
                 }
 
                 httpRequest.Binding.Unbind(httpRequest, authnResponse);
@@ -149,12 +148,31 @@ namespace AuthenticationServer.Controllers
             }
         }
 
+        // Anmeldung abbrechen: Läuft gerade eine OIDC-Anmeldung eines Portals (/connect/authorize), erhält das Portal
+        // den Fehler access_denied und kann selbst eine verständliche Seite zeigen. Sonst zur Startseite.
+        [HttpGet("cancel")]
+        public IActionResult Cancel(string? returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                && returnUrl.StartsWith("/connect/authorize", StringComparison.OrdinalIgnoreCase))
+            {
+                // error_description darf laut RFC 6749 nur ASCII enthalten; den Text für Menschen zeigt das Portal.
+                TempData[CancelledKey] = "Anmeldung bei der BundID abgebrochen";
+                return LocalRedirect(returnUrl);
+            }
+            return LocalRedirect("/");
+        }
+
+        // Von AuthorizationController.Authorize gelesen.
+        public const string CancelledKey = "BundIdCancelled";
+
         private ViewResult LoginError(string title, string message, int retryLevel, string returnUrl) =>
             View("Error", new BundIdErrorViewModel
             {
                 Title = title,
                 Message = message,
                 RetryUrl = Url.Action(nameof(Login), new { level = retryLevel, returnUrl }) ?? "/bundid/login",
+                CancelUrl = Url.Action(nameof(Cancel), new { returnUrl }) ?? "/",
             });
 
         // SP-Metadaten: Damit kann die BundID den Auth-Server als Service Provider einrichten

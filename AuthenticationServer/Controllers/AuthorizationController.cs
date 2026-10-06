@@ -28,6 +28,18 @@ namespace AuthenticationServer.Controllers
             var oidcRequest = HttpContext.GetOpenIddictServerRequest()
                                ?? throw new InvalidOperationException("OIDC request not found.");
 
+            // Anmeldung bei der BundID abgebrochen → dem Portal den OIDC-Fehler access_denied melden.
+            if (TempData[BundIdController.CancelledKey] is string cancelled)
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.AccessDenied,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = cancelled,
+                    }));
+            }
+
             // Gefordertes Vertrauensniveau (OIDC-Parameter acr_values, z. B. "STORK-QAA-Level-3"); 0 = keine Vorgabe
             var requestedLevel = (oidcRequest.AcrValues ?? string.Empty)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries)
