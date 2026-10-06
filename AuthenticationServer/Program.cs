@@ -166,6 +166,12 @@ app.UseForwardedHeaders(forwardedOptions);
 using (var scope = app.Services.CreateScope())
 {
     var config = app.Configuration;
+    // Im Container (Database:MigrateOnStartup=true) legt der Dienst seine Datenbank selbst an bzw. aktualisiert
+    // sie – vor dem Anlegen der OIDC-Clients, die die Tabellen bereits brauchen.
+    if (config.GetValue<bool>("Database:MigrateOnStartup"))
+    {
+        await scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync();
+    }
     await SeedOpenIddictAsync(scope.ServiceProvider, config);
 }
 

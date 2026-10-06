@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpOverrides; 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -141,10 +142,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<PortalDbContext>();
+
+    // Im Container (Database:MigrateOnStartup=true) legt die API ihre Datenbank selbst an bzw. aktualisiert sie –
+    // ohne Fehlerbehandlung: Ohne Datenbank soll der Start sichtbar scheitern (Neustart durch Docker).
+    if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+    {
+        await context.Database.MigrateAsync();
+    }
+
     try
     {
-        var context = services.GetRequiredService<PortalDbContext>();
-
         DbInitializer.SeedAsync(context).GetAwaiter().GetResult();
     }
     catch (Exception ex)
