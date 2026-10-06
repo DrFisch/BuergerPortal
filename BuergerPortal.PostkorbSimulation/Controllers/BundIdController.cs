@@ -44,7 +44,7 @@ public class BundIdController(BundIdSamlService saml, ILogger<BundIdController> 
         switch (result.Outcome)
         {
             case BundIdLoginOutcome.Cancelled:
-                return LocalRedirect("/?anmeldung=abgebrochen");
+                return LocalRedirect("~/?anmeldung=abgebrochen");
             case BundIdLoginOutcome.Failed:
                 return LoginError(result.ErrorTitle, result.ErrorMessage, result.RequestedLevel, result.ReturnUrl);
         }
@@ -70,7 +70,7 @@ public class BundIdController(BundIdSamlService saml, ILogger<BundIdController> 
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return LocalRedirect("/?anmeldung=abgemeldet");
+        return LocalRedirect("~/?anmeldung=abgemeldet");
     }
 
     // SP-Metadaten des Postfachs (eigene EntityID, eigener ACS).
@@ -82,6 +82,6 @@ public class BundIdController(BundIdSamlService saml, ILogger<BundIdController> 
         {
             Title = title,
             Message = message,
-            RetryUrl = Url.Action(nameof(Login), new { level = retryLevel, returnUrl }) ?? "/bundid/login",
+            RetryUrl = Url.Action(nameof(Login), new { level = retryLevel, returnUrl }) ?? Url.Content("~/bundid/login"),
         });
 }

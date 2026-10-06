@@ -77,6 +77,14 @@ forwardedOptions.KnownNetworks.Clear();
 forwardedOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedOptions);
 
+// Betrieb unter einem Unterpfad (PathBase), z. B. https://bundid.<domain>/postfach: Für Bürgerinnen und Bürger ist das
+// Postfach Teil der BundID. Links, Weiterleitungen und Cookies berücksichtigen den Basispfad automatisch.
+var pathBase = app.Configuration["PathBase"];
+if (!string.IsNullOrWhiteSpace(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
