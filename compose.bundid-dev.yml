@@ -23,6 +23,8 @@ services:
       APP_SAML_SIGNING_KEYSTORE: /app/data/idp-signing.p12
       # Test-Keystore wird beim ersten Start erzeugt; Passwort nur für die lokale Entwicklung.
       APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:-nur-lokal-dev}
+      # Anmeldesitzung (Single Sign-on): Das Postfach übernimmt die BundID-Anmeldung des Portals.
+      APP_SSO_ENABLED: "true"
     volumes:
       - bundid-simulator-data:/app/data
     restart: unless-stopped
