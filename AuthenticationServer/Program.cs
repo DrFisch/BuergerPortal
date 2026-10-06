@@ -170,7 +170,18 @@ using (var scope = app.Services.CreateScope())
     // sie – vor dem Anlegen der OIDC-Clients, die die Tabellen bereits brauchen.
     if (config.GetValue<bool>("Database:MigrateOnStartup"))
     {
-        await scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        // Nach einem Neustart der VM startet Docker die Container ohne die Reihenfolge aus Compose (depends_on);
+        // SQL Server fährt dann evtl. noch hoch. Bis zu 24 Versuche im Abstand von 5 s statt abzustürzen.
+        for (var attempt = 1; ; attempt++)
+        {
+            try { await db.Database.MigrateAsync(); break; }
+            catch (Exception ex) when (attempt < 24)
+            {
+                app.Logger.LogWarning("Datenbank noch nicht erreichbar (Versuch {Attempt}/24): {Message}", attempt, ex.Message);
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+        }
     }
     await SeedOpenIddictAsync(scope.ServiceProvider, config);
 }

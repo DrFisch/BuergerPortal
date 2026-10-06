@@ -144,11 +144,21 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<PortalDbContext>();
 
-    // Im Container (Database:MigrateOnStartup=true) legt die API ihre Datenbank selbst an bzw. aktualisiert sie –
-    // ohne Fehlerbehandlung: Ohne Datenbank soll der Start sichtbar scheitern (Neustart durch Docker).
+    // Im Container (Database:MigrateOnStartup=true) legt die API ihre Datenbank selbst an bzw. aktualisiert sie.
+    // Nach einem Neustart der VM startet Docker die Container ohne die Reihenfolge aus Compose (depends_on);
+    // SQL Server fährt dann evtl. noch hoch. Bis zu 24 Versuche im Abstand von 5 s – danach scheitert der Start
+    // sichtbar (Neustart durch Docker) statt mit leerer Datenbank weiterzulaufen.
     if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
     {
-        await context.Database.MigrateAsync();
+        for (var attempt = 1; ; attempt++)
+        {
+            try { await context.Database.MigrateAsync(); break; }
+            catch (Exception ex) when (attempt < 24)
+            {
+                app.Logger.LogWarning("Datenbank noch nicht erreichbar (Versuch {Attempt}/24): {Message}", attempt, ex.Message);
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+        }
     }
 
     try

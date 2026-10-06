@@ -50,10 +50,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 var app = builder.Build();
 
 // Im Container (Database:MigrateOnStartup=true) legt der Dienst seine Datenbank PostkorbDB selbst an bzw. aktualisiert sie.
+// Nach einem Neustart der VM startet Docker die Container ohne die Reihenfolge aus Compose (depends_on); SQL Server
+// fährt dann evtl. noch hoch. Bis zu 24 Versuche im Abstand von 5 s statt abzustürzen.
 if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 {
     using var scope = app.Services.CreateScope();
-    await scope.ServiceProvider.GetRequiredService<PostkorbDbContext>().Database.MigrateAsync();
+    var db = scope.ServiceProvider.GetRequiredService<PostkorbDbContext>();
+    for (var attempt = 1; ; attempt++)
+    {
+        try { await db.Database.MigrateAsync(); break; }
+        catch (Exception ex) when (attempt < 24)
+        {
+            app.Logger.LogWarning("Datenbank noch nicht erreichbar (Versuch {Attempt}/24): {Message}", attempt, ex.Message);
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
 }
 
 // Hinter dem Reverse Proxy (Caddy) kommt HTTP an; Schema und Client-Adresse stehen in X-Forwarded-*.
