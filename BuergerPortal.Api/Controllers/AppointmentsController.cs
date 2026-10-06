@@ -246,15 +246,39 @@ namespace BuergerPortal.Api.Controllers
 
             if (result.IsSuccess)
             {
-                _ = Task.Run(async () => {
-                    var userEmail = User.FindFirst("email")?.Value;
+                // Bestätigungen innerhalb der Anfrage senden. Vorher lief der Versand in Task.Run und las dort
+                // User (HttpContext) und den Scoped-Dienst _email – nach Ende der Anfrage ist beides nicht mehr gültig.
+                var userEmail = User.FindFirst("email")?.Value;
+                try
+                {
                     if (!string.IsNullOrEmpty(userEmail))
                     {
                         var subject = "Standortänderung für Ihren Termin";
                         var body = $"Der Standort für Ihren Termin wurde erfolgreich auf <b>{req.NewLocation.GetDisplayName()}</b> geändert.";
-                        await _email.SendAsync(userEmail, subject, body, default);
+                        await _email.SendAsync(userEmail, subject, body, ct);
                     }
-                }, ct);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"E-Mail-Versand fehlgeschlagen: {ex.Message}");
+                }
+
+                var appt = await _svc.GetByIdAsync(id, userId, ct);
+                if (appt is not null)
+                {
+                    await this.SendPostkorbAsync(_postkorb,
+                        $"Terminänderung: {appt.Service.GetDisplayName()}",
+                        $"""
+                        {this.Anrede()}
+
+                        Der Ort Ihres Termins wurde geändert.
+
+                        Leistung: {appt.Service.GetDisplayName()}
+                        Neuer Ort: {req.NewLocation.GetDisplayName()}
+                        Termin: {PostkorbBenachrichtigung.Ortszeit(appt.StartUtc)}
+                        """,
+                        "Terminvereinbarung", ct);
+                }
 
                 return NoContent();
             }
