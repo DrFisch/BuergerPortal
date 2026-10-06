@@ -107,7 +107,8 @@ Copy-ToVm $cfg @((Join-Path $oidcDir "signing.pfx"), (Join-Path $oidcDir "encryp
 Invoke-VmSsh $cfg "chmod 600 $rd/.env && sudo chown 1654 $rd/secrets/oidc/*.pfx && sudo chmod 600 $rd/secrets/oidc/*.pfx"
 Write-Host "Übertrage Images ..."
 Copy-ToVm $cfg @($tgz) "$rd/"
-Invoke-VmSsh $cfg "gunzip -c $rd/images-$Tag.tar.gz | sudo docker load && rm $rd/images-$Tag.tar.gz"
+# Das Archiv enthält die Datei images.tar (Ausgabe von docker save) – direkt an docker load streamen.
+Invoke-VmSsh $cfg "tar -xzOf $rd/images-$Tag.tar.gz images.tar | sudo docker load && rm $rd/images-$Tag.tar.gz"
 Remove-Item -Recurse -Force $work
 
 # 6) Starten – Caddy nur, wenn alle Namen öffentlich auf die VM zeigen
