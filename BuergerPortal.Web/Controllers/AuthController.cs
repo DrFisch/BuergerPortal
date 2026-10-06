@@ -15,6 +15,15 @@ namespace BuergerPortal.Web.Controllers
             return View();
         }
 
+        // Verständliche Seite, wenn die Anmeldung nicht geklappt hat
+        // (grund: abgebrochen = Abbruch bei der BundID, nicht-erreichbar, sonst allgemeiner Fehler).
+        [HttpGet]
+        public IActionResult Fehler(string? grund = null)
+        {
+            ViewData["Grund"] = grund;
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(string? returnUrl = null)

@@ -169,8 +169,13 @@ builder.Services
             },
             OnRemoteFailure = ctx =>
             {
+                // Technischer Grund ins Log; die Person sieht eine verständliche Seite.
+                // access_denied = Anmeldung bei der BundID abgebrochen (vom Auth-Server zurückgemeldet).
+                ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>()
+                    .LogWarning(ctx.Failure, "OIDC-Anmeldung fehlgeschlagen");
+                var grund = ctx.Failure?.Data["error"] as string == "access_denied" ? "abgebrochen" : "fehler";
                 ctx.HandleResponse();
-                ctx.Response.Redirect("/auth-error?reason=" + Uri.EscapeDataString(ctx.Failure?.Message ?? ""));
+                ctx.Response.Redirect("/Auth/Fehler?grund=" + grund);
                 return Task.CompletedTask;
             },
             OnTokenValidated = ctx =>
@@ -316,23 +321,9 @@ app.MapGet("/logout", async (HttpContext ctx) =>
     }
 });
 
-app.MapGet("/auth-error", async ctx =>
-{
-    var reason = ctx.Request.Query["reason"].ToString();
-    var text = string.IsNullOrWhiteSpace(reason)
-        ? "Authentifizierungsfehler."
-        : $"Authentifizierungsfehler: {WebUtility.UrlDecode(reason)}";
-    ctx.Response.ContentType = "text/plain; charset=utf-8";
-    await ctx.Response.WriteAsync(text);
-}).AllowAnonymous();
-
-app.MapGet("/auth-down", async ctx =>
-{
-    ctx.Response.ContentType = "text/plain; charset=utf-8";
-    await ctx.Response.WriteAsync(
-        "Der Anmeldedienst ist derzeit nicht erreichbar. Bitte später erneut versuchen."
-    );
-}).AllowAnonymous();
+// Frühere Fehler-Adressen (reiner Text) zeigen jetzt die Fehlerseite /Auth/Fehler.
+app.MapGet("/auth-error", () => Results.Redirect("/Auth/Fehler?grund=fehler")).AllowAnonymous();
+app.MapGet("/auth-down", () => Results.Redirect("/Auth/Fehler?grund=nicht-erreichbar")).AllowAnonymous();
 
 app.MapControllerRoute(
     name: "default",
