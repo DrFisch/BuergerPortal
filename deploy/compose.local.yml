@@ -1,0 +1,33 @@
+# Lokaler Test der Betriebs-Konfiguration unter https://bpsimulation.localhost (und auth./bundid./postkorb.…).
+#
+#   docker compose -f compose.prod.yml -f compose.local.yml --env-file .env up -d caddy
+#   docker compose -f compose.prod.yml -f compose.local.yml --env-file .env cp \
+#       caddy:/data/caddy/pki/authorities/local/root.crt secrets/caddy-local-root.crt
+#   docker compose -f compose.prod.yml -f compose.local.yml --env-file .env up -d
+#
+# Einziger Unterschied zum Betrieb: Für *.localhost stellt Caddy Zertifikate seiner internen CA aus. Damit die
+# .NET-Dienste den Auth-Server über https erreichen (Issuer der Tokens), vertrauen sie dieser CA (SSL_CERT_FILE).
+# Das Stammzertifikat wird dafür aus dem Caddy-Container kopiert, weil sein Verzeichnis nur für root lesbar ist.
+# Volumes aus compose.prod.yml bleiben erhalten (Compose führt sie je Zielpfad zusammen).
+
+services:
+  auth:
+    environment:
+      SSL_CERT_FILE: /etc/bpsim/caddy-local-root.crt
+    volumes:
+      - ./secrets/caddy-local-root.crt:/etc/bpsim/caddy-local-root.crt:ro
+  api:
+    environment:
+      SSL_CERT_FILE: /etc/bpsim/caddy-local-root.crt
+    volumes:
+      - ./secrets/caddy-local-root.crt:/etc/bpsim/caddy-local-root.crt:ro
+  web:
+    environment:
+      SSL_CERT_FILE: /etc/bpsim/caddy-local-root.crt
+    volumes:
+      - ./secrets/caddy-local-root.crt:/etc/bpsim/caddy-local-root.crt:ro
+  postkorb:
+    environment:
+      SSL_CERT_FILE: /etc/bpsim/caddy-local-root.crt
+    volumes:
+      - ./secrets/caddy-local-root.crt:/etc/bpsim/caddy-local-root.crt:ro
