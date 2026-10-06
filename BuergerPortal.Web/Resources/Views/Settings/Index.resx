@@ -202,4 +202,46 @@
 	<data name="Settings_Cancel_Button" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
+  <data name="Settings_Tab_Profile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Settings_Profile_Title" xml:space="preserve">
+    <value>Aus der BundID übernommen</value>
+  </data>
+  <data name="Settings_Profile_Description" xml:space="preserve">
+    <value>Diese Angaben stammen aus Ihrer Anmeldung mit der BundID.</value>
+  </data>
+  <data name="Settings_Profile_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Settings_Profile_Email" xml:space="preserve">
+    <value>E-Mail-Adresse</value>
+  </data>
+  <data name="Settings_Profile_TrustLevel" xml:space="preserve">
+    <value>Vertrauensniveau</value>
+  </data>
+  <data name="Settings_Profile_NotProvided" xml:space="preserve">
+    <value>nicht übermittelt</value>
+  </data>
+  <data name="Settings_Profile_EditHint" xml:space="preserve">
+    <value>Ändern können Sie diese Angaben nur in Ihrem BundID-Konto; bei der nächsten Anmeldung übernimmt das Portal sie automatisch.</value>
+  </data>
+  <data name="Settings_Profile_NoBundId" xml:space="preserve">
+    <value>Sie sind ohne BundID angemeldet. Melden Sie sich mit der BundID an, damit Ihre Angaben hier erscheinen.</value>
+  </data>
+  <data name="Settings_Profile_MeineDatenLink" xml:space="preserve">
+    <value>Alle Angaben unter „Meine Daten“</value>
+  </data>
+  <data name="Level_0_Name" xml:space="preserve">
+    <value>unbekannt</value>
+  </data>
+  <data name="Level_1_Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="Level_3_Name" xml:space="preserve">
+    <value>substanziell</value>
+  </data>
+  <data name="Level_4_Name" xml:space="preserve">
+    <value>hoch</value>
+  </data>
 </root>

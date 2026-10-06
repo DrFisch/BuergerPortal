@@ -1,9 +1,11 @@
 ﻿@model BuergerPortal.Web.Features.Settings.ViewModels.SettingsVm
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer L
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
 
 @{
     ViewData["Title"] = L["Settings_Title"];
+    var bundIdUser = CurrentUser.GetBundIdUser();
 }
 
 <div class="container py-4">
@@ -11,7 +13,10 @@
         <!-- Sidebar -->
         <nav class="col-12 col-md-3 mb-3 mb-md-0">
             <div class="list-group" id="settingsNav" role="tablist">
-                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-theme" role="tab">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#tab-profile" role="tab">
+                    @L["Settings_Tab_Profile"]
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-theme" role="tab">
                     @L["Settings_Tab_Theme"]
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-language" role="tab">
@@ -45,8 +50,45 @@
                 @Html.AntiForgeryToken()
                 <div class="tab-content">
 
+                    <!-- PROFIL: Angaben aus der BundID, nur lesen (geändert werden sie im BundID-Konto) -->
+                    <div class="tab-pane fade show active" id="tab-profile" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@L["Settings_Profile_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Profile_Description"]</p>
+                                @if (bundIdUser is { IsBundIdLogin: true })
+                                {
+                                    <dl class="row mb-3">
+                                        <dt class="col-sm-4 fw-normal text-muted">@L["Settings_Profile_Name"]</dt>
+                                        <dd class="col-sm-8">@bundIdUser.DisplayName</dd>
+                                        <dt class="col-sm-4 fw-normal text-muted">@L["Settings_Profile_Email"]</dt>
+                                        <dd class="col-sm-8">@(bundIdUser.Email ?? L["Settings_Profile_NotProvided"].Value)</dd>
+                                        <dt class="col-sm-4 fw-normal text-muted">@L["Settings_Profile_TrustLevel"]</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge @(bundIdUser.TrustLevel >= 3 ? "text-bg-success" : "text-bg-secondary")">@L[$"Level_{bundIdUser.TrustLevel}_Name"]</span>
+                                            @if (!string.IsNullOrEmpty(bundIdUser.IdentificationMethod))
+                                            {
+                                                <span class="text-muted small ms-1">(@bundIdUser.IdentificationMethod)</span>
+                                            }
+                                        </dd>
+                                    </dl>
+                                    <p class="small text-muted mb-2">
+                                        <i class="bi bi-lock me-1" aria-hidden="true"></i>@L["Settings_Profile_EditHint"]
+                                    </p>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info small">@L["Settings_Profile_NoBundId"]</div>
+                                }
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="MeineDaten" asp-action="Index">
+                                    <i class="bi bi-person-vcard me-1" aria-hidden="true"></i>@L["Settings_Profile_MeineDatenLink"]
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- THEME -->
-                    <div class="tab-pane fade show active" id="tab-theme" role="tabpanel">
+                    <div class="tab-pane fade" id="tab-theme" role="tabpanel">
                         <div class="card shadow-sm mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">@L["Settings_Theme_Title"]</h5>

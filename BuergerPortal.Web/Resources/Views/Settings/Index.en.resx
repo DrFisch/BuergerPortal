@@ -202,4 +202,46 @@
 	<data name="Settings_Cancel_Button" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Settings_Tab_Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Settings_Profile_Title" xml:space="preserve">
+    <value>Taken from BundID</value>
+  </data>
+  <data name="Settings_Profile_Description" xml:space="preserve">
+    <value>These details come from your BundID sign-in.</value>
+  </data>
+  <data name="Settings_Profile_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Settings_Profile_Email" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="Settings_Profile_TrustLevel" xml:space="preserve">
+    <value>Level of assurance</value>
+  </data>
+  <data name="Settings_Profile_NotProvided" xml:space="preserve">
+    <value>not provided</value>
+  </data>
+  <data name="Settings_Profile_EditHint" xml:space="preserve">
+    <value>You can only change these details in your BundID account; the portal takes them over automatically at your next sign-in.</value>
+  </data>
+  <data name="Settings_Profile_NoBundId" xml:space="preserve">
+    <value>You are not signed in with BundID. Sign in with BundID to see your details here.</value>
+  </data>
+  <data name="Settings_Profile_MeineDatenLink" xml:space="preserve">
+    <value>All details under “My data”</value>
+  </data>
+  <data name="Level_0_Name" xml:space="preserve">
+    <value>unknown</value>
+  </data>
+  <data name="Level_1_Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="Level_3_Name" xml:space="preserve">
+    <value>substantial</value>
+  </data>
+  <data name="Level_4_Name" xml:space="preserve">
+    <value>high</value>
+  </data>
 </root>
