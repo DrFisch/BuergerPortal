@@ -1,0 +1,170 @@
+# Betrieb des BürgerPortals mit BundID-Simulator und Postkorb-Simulation auf einer VM (alles in Containern, E-004).
+#
+#   docker compose -f compose.prod.yml --env-file .env up -d
+#
+# Werte (Domain, Passwörter, Schlüssel) stehen in .env neben dieser Datei – Vorlage: .env.example. Die .env und der
+# Ordner secrets/ (OpenIddict-Zertifikate) gehören NICHT ins Repository.
+#
+# Nur Caddy hat Ports nach außen (80, 443, 443/udp). Alle anderen Dienste sind nur im internen Netz erreichbar;
+# Caddy trägt die öffentlichen Hostnamen zusätzlich als Netzwerk-Alias, damit z. B. Web und API den Auth-Server intern
+# unter derselben https-Adresse erreichen wie der Browser (Issuer der Tokens).
+name: bpsim
+
+x-dotnet: &dotnet
+  restart: unless-stopped
+  environment: &dotnet-env
+    ASPNETCORE_ENVIRONMENT: Production
+    TZ: Europe/Berlin
+  depends_on:
+    sqlserver:
+      condition: service_healthy
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      BPSIM_DOMAIN: ${BPSIM_DOMAIN:?BPSIM_DOMAIN fehlt}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      default:
+        aliases:
+          - ${BPSIM_DOMAIN}
+          - auth.${BPSIM_DOMAIN}
+          - bundid.${BPSIM_DOMAIN}
+          - postkorb.${BPSIM_DOMAIN}
+    mem_limit: 128m
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD:?SQL_SA_PASSWORD fehlt}
+      # Obergrenze für den Puffer-Cache von SQL Server (sonst nimmt er sich fast den gesamten Container-Speicher).
+      MSSQL_MEMORY_LIMIT_MB: ${SQL_MEMORY_LIMIT_MB:-1024}
+      TZ: Europe/Berlin
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    mem_limit: ${SQL_MEM_LIMIT:-2g}
+
+  bundid-simulator:
+    # Fork des BundID-Simulators der Bundesagentur für Arbeit (Branch bpsim/standardkonform): signierte Assertions,
+    # IdP-Metadaten, eIDAS-LoA-URIs, Postkorb-Handle.
+    image: ${BUNDID_SIM_IMAGE:-bpsim-bundid-simulator:latest}
+    restart: unless-stopped
+    environment:
+      APP_SAML_IDPENTITYID: https://bundid.${BPSIM_DOMAIN}/saml/metadata
+      APP_SAML_SSOURL: https://bundid.${BPSIM_DOMAIN}/saml
+      APP_SAML_LOAFORMAT: eidas
+      APP_SAML_POSTKORBHANDLE_ENABLED: "true"
+      APP_SAML_SIGNING_ENABLED: "true"
+      APP_SAML_SIGNING_KEYSTORE: /app/data/idp-signing.p12
+      APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:?BUNDID_SIM_KEYSTORE_PASSWORD fehlt}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
+      TZ: Europe/Berlin
+    volumes:
+      - simdata:/app/data
+    mem_limit: 384m
+
+  auth:
+    <<: *dotnet
+    image: bpsim-auth:${BPSIM_TAG:-latest}
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=AuthServer;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Database__MigrateOnStartup: "true"
+      OpenIddict__Issuer: https://auth.${BPSIM_DOMAIN}/
+      OpenIddict__SigningCertificatePath: /certs/signing.pfx
+      OpenIddict__EncryptionCertificatePath: /certs/encryption.pfx
+      OpenIddict__CertificatePassword: ${OIDC_CERT_PASSWORD:?OIDC_CERT_PASSWORD fehlt}
+      OpenIddict__Clients__mvc_web__ClientSecret: ${WEB_CLIENT_SECRET:?WEB_CLIENT_SECRET fehlt}
+      OpenIddict__Clients__mvc_web__RedirectUris__0: https://${BPSIM_DOMAIN}/signin-oidc
+      OpenIddict__Clients__mvc_web__PostLogoutRedirectUris__0: https://${BPSIM_DOMAIN}/signout-callback-oidc
+      BundId__SpEntityId: https://auth.${BPSIM_DOMAIN}/bundid/metadata
+      BundId__AssertionConsumerServiceUrl: https://auth.${BPSIM_DOMAIN}/bundid/acs
+      # Metadaten intern abrufen; darin stehen die öffentlichen Adressen des Simulators (für den Browser).
+      BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
+    volumes:
+      - ./secrets/oidc:/certs:ro
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      bundid-simulator:
+        condition: service_started
+    mem_limit: 384m
+
+  api:
+    <<: *dotnet
+    image: bpsim-api:${BPSIM_TAG:-latest}
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=BuergerPortalDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Database__MigrateOnStartup: "true"
+      Authentication__Authority: https://auth.${BPSIM_DOMAIN}
+      Authentication__Audience: buergerportal_api
+      Postkorb__BaseUrl: http://postkorb:8080/
+      Postkorb__ApiKey: ${POSTKORB_API_KEY:?POSTKORB_API_KEY fehlt}
+      # Keine echten E-Mails aus der Simulation (Testpersonen haben fiktive Adressen).
+      MailJet__ApiKey: disabled
+      MailJet__SecretKey: disabled
+    mem_limit: 320m
+
+  web:
+    <<: *dotnet
+    image: bpsim-web:${BPSIM_TAG:-latest}
+    environment:
+      <<: *dotnet-env
+      Authentication__Authority: https://auth.${BPSIM_DOMAIN}
+      Authentication__ClientId: mvc_web
+      Authentication__ClientSecret: ${WEB_CLIENT_SECRET}
+      Api__BaseUrl: http://api:8080/
+      Postkorb__PostfachUrl: https://postkorb.${BPSIM_DOMAIN}/Postfach
+      DataProtection__KeysPath: /data/keys
+    volumes:
+      - webkeys:/data/keys
+    depends_on:
+      auth:
+        condition: service_started
+      api:
+        condition: service_started
+    mem_limit: 320m
+
+  postkorb:
+    <<: *dotnet
+    image: bpsim-postkorb:${BPSIM_TAG:-latest}
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=PostkorbDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Database__MigrateOnStartup: "true"
+      PostkorbApi__ApiKey: ${POSTKORB_API_KEY}
+      BundId__SpEntityId: https://postkorb.${BPSIM_DOMAIN}/bundid/metadata
+      BundId__AssertionConsumerServiceUrl: https://postkorb.${BPSIM_DOMAIN}/bundid/acs
+      BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
+      DataProtection__KeysPath: /data/keys
+    volumes:
+      - postkorbkeys:/data/keys
+    mem_limit: 256m
+
+volumes:
+  caddy_data:
+  caddy_config:
+  sqldata:
+  simdata:
+  webkeys:
+  postkorbkeys:

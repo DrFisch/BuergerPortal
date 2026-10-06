@@ -1,0 +1,4 @@
+# Nie ins Repository: Werte für den Betrieb und die OpenIddict-Zertifikate.
+.env
+secrets/
+*.tar.gz
