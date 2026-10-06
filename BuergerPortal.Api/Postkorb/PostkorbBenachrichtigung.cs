@@ -34,7 +34,8 @@ namespace BuergerPortal.Api.Postkorb
             int storkQaaLevel = 1)
         {
             var handle = controller.User.FindFirst(PostkorbHandleClaim)?.Value;
-            var text = $"{content}\n\nDiese Nachricht wurde automatisch vom BürgerPortal erstellt.";
+            // Rohstrings übernehmen die Zeilenenden der Quelldatei (CRLF) – einheitlich \n verschicken.
+            var text = $"{content}\n\nDiese Nachricht wurde automatisch vom BürgerPortal erstellt.".ReplaceLineEndings("\n");
             var status = await postkorb.SendAsync(new PostkorbMessage(handle, title, text, service, storkQaaLevel), ct);
 
             controller.Response.Headers[StatusHeader] = status switch

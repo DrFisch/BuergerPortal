@@ -1,4 +1,6 @@
-﻿using BuergerPortal.Application.Interfaces.BusinessServices;
+﻿using BuergerPortal.Api.Postkorb;
+using BuergerPortal.Application.Interfaces.BusinessServices;
+using BuergerPortal.Application.Interfaces.Postkorb;
 using BuergerPortal.Application.Antraege.AntragSperrmuell.DTOs;
 using BuergerPortal.Application.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -14,9 +16,13 @@ namespace BuergerPortal.Api.Controllers
     public sealed class SperrmuellAntraegeController : ControllerBase
     {
         private readonly ISperrmuellAntragBusinessService _service;
+        private readonly IPostkorbService _postkorb;
 
-        public SperrmuellAntraegeController(ISperrmuellAntragBusinessService service)
-            => _service = service;
+        public SperrmuellAntraegeController(ISperrmuellAntragBusinessService service, IPostkorbService postkorb)
+        {
+            _service = service;
+            _postkorb = postkorb;
+        }
 
         [HttpPost("step1")]
         [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
@@ -59,6 +65,28 @@ namespace BuergerPortal.Api.Controllers
             var result = await _service.SubmitAsync(id, userId, ct);
 
             if (!result.IsSuccess) return ToProblem(result);
+
+            // Eingangsbestätigung ins BundID-Postfach (Niveau "normal", wie die Anmeldung selbst).
+            var antrag = await _service.GetAsync(id, userId, ct);
+            var details = antrag.IsSuccess && antrag.Value is { } a
+                ? $"""
+                  Abholadresse: {a.Strasse}, {a.PLZ} {a.Ort}
+                  Wunschtag: {a.Wunschzeit.ToString("dddd, dd.MM.yyyy", PostkorbBenachrichtigung.Deutsch)}
+                  """
+                : string.Empty;
+            await this.SendPostkorbAsync(_postkorb,
+                "Eingangsbestätigung: Sperrmüll-Anmeldung",
+                $"""
+                {this.Anrede()}
+
+                Ihre Sperrmüll-Anmeldung ist bei uns eingegangen.
+
+                Vorgangsnummer: {id}
+                {details}
+
+                Den genauen Abholtermin teilen wir Ihnen gesondert mit.
+                """,
+                "Sperrmüllabholung", ct);
 
             return NoContent();
         }
