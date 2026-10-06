@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using OpenIddict.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
 using OpenIddict.Server.AspNetCore;
-using Microsoft.AspNetCore.HttpOverrides; 
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Security.Cryptography.X509Certificates;
 var builder = WebApplication.CreateBuilder(args);
 
 var env = builder.Environment.EnvironmentName;
@@ -68,9 +69,24 @@ builder.Services.AddOpenIddict()
             AuthorizationController.BundIdScope
         );
 
-        // DEV-Zertifikate
-        options.AddDevelopmentEncryptionCertificate()
-               .AddDevelopmentSigningCertificate();
+        // Schlüssel für Signatur und Verschlüsselung der Tokens. Im Betrieb aus PFX-Dateien (Volume), damit
+        // ausgestellte Tokens einen Neustart des Containers überstehen; ohne Konfiguration (lokal)
+        // Entwicklungszertifikate aus dem Zertifikatspeicher des Benutzers.
+        var signingCertificatePath = builder.Configuration["OpenIddict:SigningCertificatePath"];
+        var encryptionCertificatePath = builder.Configuration["OpenIddict:EncryptionCertificatePath"];
+        if (!string.IsNullOrWhiteSpace(signingCertificatePath) && !string.IsNullOrWhiteSpace(encryptionCertificatePath))
+        {
+            var certificatePassword = builder.Configuration["OpenIddict:CertificatePassword"];
+            options.AddSigningCertificate(X509CertificateLoader.LoadPkcs12FromFile(
+                       signingCertificatePath, certificatePassword, X509KeyStorageFlags.EphemeralKeySet))
+                   .AddEncryptionCertificate(X509CertificateLoader.LoadPkcs12FromFile(
+                       encryptionCertificatePath, certificatePassword, X509KeyStorageFlags.EphemeralKeySet));
+        }
+        else
+        {
+            options.AddDevelopmentEncryptionCertificate()
+                   .AddDevelopmentSigningCertificate();
+        }
 
         var issuer = builder.Configuration["OpenIddict:Issuer"];
         if (!string.IsNullOrWhiteSpace(issuer))
