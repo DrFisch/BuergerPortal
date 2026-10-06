@@ -102,11 +102,7 @@ builder.Services.ConfigureApplicationCookie(o =>
 });
 
 // ---------- BundID (SAML) ----------
-builder.Services.Configure<BundIdOptions>(builder.Configuration.GetSection(BundIdOptions.SectionName));
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton<BundIdTokenReplayCache>();
-builder.Services.AddSingleton<BundIdSamlConfigurationProvider>();
-builder.Services.AddSingleton<BundIdLoginStateStore>();
+builder.Services.AddBundIdServiceProvider(builder.Configuration);
 builder.Services.AddScoped<BundIdUserService>();
 // Die BundID-Claims stecken nur in der Sitzung (nicht in der DB). Bei der regelmäßigen Prüfung des
 // Security-Stamps baut Identity die Sitzung neu auf – dabei die BundID-Claims übernehmen.
