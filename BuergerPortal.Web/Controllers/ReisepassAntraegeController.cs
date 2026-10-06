@@ -1,9 +1,11 @@
-﻿using BuergerPortal.Web.Extensions;
+﻿using BuergerPortal.BundId;
+using BuergerPortal.Web.Extensions;
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -138,18 +140,10 @@ namespace BuergerPortal.Web.Controllers
         }
 
         // -------- Helpers ----------
-        private const int SubstantialLevel = 3;
+        private const int SubstantialLevel = TrustLevel.Substantial;
 
-        // Erreichtes BundID-Vertrauensniveau aus dem Claim "acr" ("STORK-QAA-Level-n"); ASP.NET Core legt ihn
-        // beim Einlesen des ID-Tokens unter einem langen Typnamen ab.
-        private int CurrentTrustLevel()
-        {
-            const string prefix = "STORK-QAA-Level-";
-            var acr = User.FindFirst("acr")?.Value
-                      ?? User.FindFirst("http://schemas.microsoft.com/claims/authnclassreference")?.Value;
-            return acr != null && acr.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                   && int.TryParse(acr[prefix.Length..], out var level) ? level : 0;
-        }
+        // Erreichtes BundID-Vertrauensniveau aus dem Claim "acr" (STORK- oder eIDAS-Schreibweise).
+        private int CurrentTrustLevel() => BundIdUser.FromPrincipal(User).TrustLevel;
 
         private async Task<TVm> AddModelErrorsAndReturn<TVm>(TVm vm, HttpResponseMessage res, CancellationToken ct)
         {

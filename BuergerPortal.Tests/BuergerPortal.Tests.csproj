@@ -24,6 +24,7 @@
     <ProjectReference Include="..\AuthenticationServer\AuthenticationServer.csproj" />
     <ProjectReference Include="..\BuergerPortal.Api\BuergerPortal.Api.csproj" />
     <ProjectReference Include="..\BuergerPortal.PostkorbSimulation\BuergerPortal.PostkorbSimulation.csproj" />
+    <ProjectReference Include="..\BuergerPortal.Web\BuergerPortal.Web.csproj" />
   </ItemGroup>
 
 </Project>

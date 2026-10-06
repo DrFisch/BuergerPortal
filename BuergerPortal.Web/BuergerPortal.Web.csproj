@@ -16,4 +16,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BuergerPortal.BundId.Core\BuergerPortal.BundId.Core.csproj" />
+  </ItemGroup>
+
 </Project>

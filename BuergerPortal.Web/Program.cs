@@ -47,6 +47,8 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<AccessTokenHandler>();
+// BundID-Angaben der angemeldeten Person (aus den Claims des ID-Tokens)
+builder.Services.AddScoped<BuergerPortal.Web.Services.HttpCurrentUserService>();
 
 var apiBaseUrl = builder.Configuration["Api:BaseUrl"]
     ?? throw new InvalidOperationException("Api:BaseUrl not configured");

@@ -1,8 +1,15 @@
-﻿
 namespace BuergerPortal.Web.Services
 {
-    public sealed class HttpCurrentUserService 
+    /// <summary>
+    /// Zugriff auf die angemeldete Person für Controller und Views ("Meine Daten", Navigation, Vorbefüllen von
+    /// Formularen). Bündelt das Lesen der BundID-Claims an einer Stelle.
+    /// </summary>
+    public sealed class HttpCurrentUserService(IHttpContextAccessor accessor)
     {
-        //Hier soll der derzeitige user ausgelesen werden
+        public bool IsAuthenticated => accessor.HttpContext?.User.Identity?.IsAuthenticated == true;
+
+        /// <summary>BundID-Angaben der angemeldeten Person; null ohne Anmeldung.</summary>
+        public BundIdUser? GetBundIdUser() =>
+            IsAuthenticated ? BundIdUser.FromPrincipal(accessor.HttpContext!.User) : null;
     }
 }
