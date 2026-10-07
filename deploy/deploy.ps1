@@ -122,6 +122,9 @@ foreach ($h in $hosts) {
 $compose = Get-ComposeCommand $cfg
 if ($dnsOk) {
     Invoke-VmSsh $cfg "$compose up -d --remove-orphans"
+    # Eine geänderte Caddyfile übernimmt der laufende Caddy-Container nicht von selbst (Compose startet ihn nur bei
+    # geänderter Compose-Konfiguration neu) – Konfiguration ohne Unterbrechung neu laden.
+    Invoke-VmSsh $cfg "$compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile"
 } else {
     Write-Host "Caddy wird noch nicht gestartet (DNS fehlt). Nach dem Anlegen der Einträge: deploy.ps1 -SkipBuild" -ForegroundColor Yellow
     Invoke-VmSsh $cfg "$compose up -d --remove-orphans sqlserver bundid-simulator auth api web postkorb"
