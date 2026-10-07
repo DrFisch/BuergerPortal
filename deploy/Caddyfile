@@ -47,8 +47,9 @@ bundid.{$BPSIM_DOMAIN} {
 	}
 }
 
-# Frühere Adresse des Postfachs: dauerhaft auf die BundID-Adresse umleiten
+# Frühere Adresse des Postfachs: dauerhaft auf die Startadresse des Postfachs umleiten. Ohne den alten Pfad – den
+# kennt nur der Postfach-Dienst, nicht das Postfach im Simulator (Standard).
 postkorb.{$BPSIM_DOMAIN} {
 	import sicherheit
-	redir https://bundid.{$BPSIM_DOMAIN}/postfach{uri} permanent
+	redir https://bundid.{$BPSIM_DOMAIN}/postfach/ permanent
 }
