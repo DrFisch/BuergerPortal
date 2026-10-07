@@ -81,6 +81,9 @@ builder.Services.AddAuthorization(o =>
 // (z. B. abgelaufenes Token) direkt zur BundID-Anmeldung über den Auth-Server.
 const string LoginOrStartScheme = "BundIdOrStart";
 
+// Sitzungsregeln (Abmeldung nach Inaktivität, Höchstdauer) – siehe Services/PortalSession.cs
+BuergerPortal.Web.Services.PortalSession.Configure(builder.Configuration);
+
 builder.Services
     .AddAuthentication(options =>
     {
@@ -95,7 +98,8 @@ builder.Services
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
     {
-        o.ExpireTimeSpan = TimeSpan.FromHours(24);
+        // Ablauf nach Inaktivität (30 min); verlängert wird bei jedem Aufruf in PortalSession (OnValidatePrincipal).
+        o.ExpireTimeSpan = BuergerPortal.Web.Services.PortalSession.IdleTimeout;
         o.SlidingExpiration = false;
         // Anonym: Einstiegsseite mit Rücksprungziel (/?ReturnUrl=/Termine)
         o.LoginPath = "/";
@@ -216,8 +220,8 @@ builder.Services
             },
             OnTokenValidated = ctx =>
             {
-                ctx.Properties.IsPersistent = false;
-                ctx.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24);
+                // Sitzungscookie (endet mit dem Browser), Ablauf nach Inaktivität, Anmeldezeit für die Höchstdauer
+                BuergerPortal.Web.Services.PortalSession.Start(ctx.Properties!, DateTimeOffset.UtcNow);
                 return Task.CompletedTask;
             }
         };

@@ -10,6 +10,21 @@ namespace BuergerPortal.Web.Services;
 /// </summary>
 public static class PortalSession
 {
+    /// <summary>
+    /// Ohne Aktivität endet die Sitzung nach dieser Zeit (jeder Seitenaufruf verlängert sie). Standard 30 Minuten,
+    /// zum Testen kürzer einstellbar (Sitzung:InaktivitaetMinuten, siehe <see cref="Configure"/>).
+    /// </summary>
+    public static TimeSpan IdleTimeout { get; private set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>Spätestens nach dieser Zeit ist eine neue BundID-Anmeldung nötig, auch bei laufender Nutzung.</summary>
+    public static readonly TimeSpan MaxLifetime = TimeSpan.FromHours(8);
+
+    /// <summary>Zeitpunkt der BundID-Anmeldung in den Sitzungsdaten (AuthenticationProperties.Items).</summary>
+    public const string LoginTimeKey = ".bpsim.anmeldung";
+
+    /// <summary>Abfrage der Restzeit (sitzung.js) – zählt nicht als Aktivität.</summary>
+    public const string StatusPath = "/Auth/Sitzung";
+
     /// <summary>So lange vor Ablauf wird das Access-Token erneuert.</summary>
     public static readonly TimeSpan RefreshBefore = TimeSpan.FromMinutes(5);
 
@@ -18,9 +33,20 @@ public static class PortalSession
 
     public enum Outcome { Valid, Refresh, Expired }
 
-    /// <summary>Reine Entscheidung (testbar): Token noch lange gültig, bald zu erneuern oder abgelaufen.</summary>
-    public static Outcome Evaluate(DateTimeOffset now, DateTimeOffset? tokenExpiresAt)
+    /// <summary>Beim Start einmal aufrufen (Program.cs).</summary>
+    public static void Configure(IConfiguration configuration) =>
+        IdleTimeout = TimeSpan.FromMinutes(configuration.GetValue("Sitzung:InaktivitaetMinuten", 30));
+
+    /// <summary>
+    /// Reine Entscheidung (testbar): Höchstdauer seit der Anmeldung überschritten → abgelaufen; sonst nach dem
+    /// Access-Token: noch lange gültig, bald zu erneuern oder abgelaufen.
+    /// </summary>
+    public static Outcome Evaluate(DateTimeOffset now, DateTimeOffset? loginUtc, DateTimeOffset? tokenExpiresAt)
     {
+        if (loginUtc is not null && now - loginUtc >= MaxLifetime)
+        {
+            return Outcome.Expired;
+        }
         if (tokenExpiresAt is null || tokenExpiresAt - now > RefreshBefore)
         {
             return Outcome.Valid;
@@ -28,27 +54,59 @@ public static class PortalSession
         return tokenExpiresAt > now ? Outcome.Refresh : Outcome.Expired;
     }
 
+    /// <summary>Restzeit bis zum automatischen Abmelden direkt nach einem Seitenaufruf.</summary>
+    public static TimeSpan Remaining(DateTimeOffset now, DateTimeOffset? loginUtc)
+    {
+        var untilMax = loginUtc is null ? IdleTimeout : loginUtc.Value + MaxLifetime - now;
+        return untilMax < IdleTimeout ? (untilMax > TimeSpan.Zero ? untilMax : TimeSpan.Zero) : IdleTimeout;
+    }
+
+    public static DateTimeOffset? LoginTime(AuthenticationProperties properties) =>
+        properties.Items.TryGetValue(LoginTimeKey, out var value) &&
+        DateTimeOffset.TryParse(value, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.RoundtripKind, out var login) ? login : null;
+
+    /// <summary>Nach der BundID-Anmeldung (OnTokenValidated): Anmeldezeit merken, Ablauf nach Inaktivität setzen.</summary>
+    public static void Start(AuthenticationProperties properties, DateTimeOffset now)
+    {
+        properties.IsPersistent = false;
+        properties.IssuedUtc = now;
+        properties.ExpiresUtc = now + IdleTimeout;
+        properties.Items[LoginTimeKey] = now.ToString("o", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
     public static async Task ValidateAsync(CookieValidatePrincipalContext ctx)
     {
         var now = DateTimeOffset.UtcNow;
-        var outcome = Evaluate(now, AccessTokenRefresher.ExpiresAt(ctx.Properties));
-        if (outcome == Outcome.Valid)
+        var login = LoginTime(ctx.Properties);
+        var outcome = Evaluate(now, login, AccessTokenRefresher.ExpiresAt(ctx.Properties));
+        var maxReached = login is not null && now - login >= MaxLifetime;
+        // Die Restzeit-Abfrage (sitzung.js) zählt nicht als Aktivität: nichts verlängern, nur ein Ende feststellen.
+        var activity = !ctx.HttpContext.Request.Path.Equals(StatusPath, StringComparison.OrdinalIgnoreCase);
+
+        // Token bald oder schon abgelaufen (Höchstdauer nicht erreicht): mit dem Refresh-Token erneuern
+        if (activity && outcome != Outcome.Valid && !maxReached)
         {
-            return;
+            var refresher = ctx.HttpContext.RequestServices.GetRequiredService<AccessTokenRefresher>();
+            if (await refresher.TryRefreshAsync(ctx.Properties, ctx.HttpContext.RequestAborted))
+            {
+                outcome = Outcome.Valid;
+            }
         }
 
-        var refresher = ctx.HttpContext.RequestServices.GetRequiredService<AccessTokenRefresher>();
-        if (await refresher.TryRefreshAsync(ctx.Properties, ctx.HttpContext.RequestAborted))
-        {
-            ctx.ShouldRenew = true; // neue Tokens ins Cookie schreiben
-            return;
-        }
-
-        // Kurz vor Ablauf darf das alte Token noch genutzt werden; danach endet die Sitzung sofort, damit die Seite
-        // nicht mehr als angemeldet erscheint.
+        // Abgelaufen (Höchstdauer erreicht oder Token nicht erneuerbar): Sitzung sofort beenden, damit die Seite
+        // nicht mehr als angemeldet erscheint. Kurz vor Ablauf darf das alte Token noch genutzt werden.
         if (outcome == Outcome.Expired)
         {
             await EndAsync(ctx);
+            return;
+        }
+
+        // Jeder Aufruf zählt als Aktivität: Cookie neu ausstellen (mit ggf. neuen Tokens), Ablauf wieder IdleTimeout
+        // ab jetzt. Die eingebaute SlidingExpiration verlängert erst nach der halben Laufzeit (Grenze 15 bis 30 min).
+        if (activity)
+        {
+            ctx.ShouldRenew = true;
         }
     }
 
