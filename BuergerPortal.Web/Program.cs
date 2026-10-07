@@ -13,6 +13,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG FÜR NGINX
 using Microsoft.AspNetCore.DataProtection; // <--- WICHTIG FÜR COOKIES
 using Microsoft.AspNetCore.WebUtilities;
+using BuergerPortal.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,12 @@ if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
         .SetApplicationName("BuergerPortal.Web")
         .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
 }
+
+// Sitzungsdaten auf dem Server, im Cookie nur eine Kennung (Services/FileTicketStore.cs): im Container neben den
+// Data-Protection-Schlüsseln im Volume (übersteht Neustarts), lokal im Temp-Verzeichnis.
+builder.Services.AddFileTicketStore(!string.IsNullOrWhiteSpace(dataProtectionKeysPath)
+    ? Path.Combine(dataProtectionKeysPath, "sitzungen")
+    : Path.Combine(Path.GetTempPath(), "BuergerPortal.Web", "sitzungen"));
 
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
