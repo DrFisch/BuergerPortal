@@ -1,6 +1,8 @@
 ﻿using BuergerPortal.Api.Contracts.Appointments;
 using BuergerPortal.Api.Extensions;
+using BuergerPortal.Application.Appointments.Calendar;
 using BuergerPortal.Application.Appointments.DTOs;
+using BuergerPortal.Application.Appointments.Validation;
 using BuergerPortal.Application.Common;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Mail;
@@ -186,6 +188,51 @@ namespace BuergerPortal.Api.Controllers
             });
 
             return Ok(resp);
+        }
+
+        // Verfügbarkeit eines Tages an einem Standort: geschlossen (Wochenende, Feiertag, Vorlauf), am Standort vergebene
+        // Zeiten und die eigenen Termine an diesem Tag. Die Buchungsseite bietet damit nur freie Zeiten an; die
+        // verbindliche Prüfung bleibt beim Buchen (AppointmentBusinessService).
+        [HttpGet("availability")]
+        [ProducesResponseType(typeof(DayAvailabilityResponse), StatusCodes.Status200OK)]
+        public async Task<ActionResult<DayAvailabilityResponse>> GetAvailability([FromQuery] DateOnly date,
+            [FromQuery] LocationType location, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId))
+                return Unauthorized();
+
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
+            var time = HttpContext.RequestServices.GetService<TimeProvider>() ?? TimeProvider.System;
+            var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(time.GetUtcNow().UtcDateTime, tz));
+
+            string? closed = date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday
+                ? "Am Wochenende sind die Bürgerämter geschlossen."
+                : BayerischeFeiertage.Name(date) is { } feiertag
+                    ? $"Feiertag ({feiertag}) – die Bürgerämter sind geschlossen."
+                    : date < today
+                        ? "Der Tag liegt in der Vergangenheit."
+                        : date > today.AddDays(AppointmentCreateDtoValidator.MaxDaysAhead)
+                            ? $"Termine sind höchstens {AppointmentCreateDtoValidator.MaxDaysAhead} Tage im Voraus buchbar."
+                            : null;
+
+            var fromUtc = TimeZoneInfo.ConvertTimeToUtc(date.ToDateTime(TimeOnly.MinValue), tz);
+            var toUtc = TimeZoneInfo.ConvertTimeToUtc(date.AddDays(1).ToDateTime(TimeOnly.MinValue), tz);
+
+            TimeRangeResponse Local(DateTime startUtc, DateTime endUtc) => new(
+                TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(startUtc, DateTimeKind.Utc), tz).ToString("HH:mm"),
+                TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(endUtc, DateTimeKind.Utc), tz).ToString("HH:mm"));
+
+            var taken = closed is null ? await _svc.GetBusyAsync(fromUtc, toUtc, location, ct) : [];
+            var own = (await _svc.GetAllForUserAsync(userId, ct))
+                .Where(a => !a.Cancelled && a.StartUtc < toUtc && fromUtc < a.EndUtc);
+
+            return Ok(new DayAvailabilityResponse
+            {
+                Date = date,
+                ClosedReason = closed,
+                Taken = taken.Select(b => Local(b.StartUtc, b.EndUtc)).OrderBy(r => r.Start).ToList(),
+                Own = own.Select(a => Local(a.StartUtc, a.EndUtc)).OrderBy(r => r.Start).ToList(),
+            });
         }
 
         [HttpPost("{id:guid}/cancel")]
