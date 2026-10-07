@@ -192,6 +192,10 @@ builder.Services
                 {
                     ctx.ProtocolMessage.AcrValues = acrValues;
                 }
+
+                // Jede Anmeldung im Portal ist eine neue BundID-Anmeldung (prompt=login → ForceAuthn): Eine noch
+                // bestehende Sitzung am Auth-Server meldet nach Abmeldung oder Zeitablauf nicht still wieder an.
+                ctx.ProtocolMessage.Prompt = OpenIdConnectPrompt.Login;
             },
             OnRemoteFailure = ctx =>
             {
