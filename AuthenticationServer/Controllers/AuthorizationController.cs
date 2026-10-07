@@ -50,6 +50,18 @@ namespace AuthenticationServer.Controllers
                 ? TrustLevel.Parse(authResult.Principal.FindFirstValue(BundIdClaimTypes.TrustLevel)) ?? 0
                 : 0;
 
+            // prompt=login (OIDC Core 3.1.2.1): Der Client verlangt eine neue Anmeldung, auch wenn hier noch eine
+            // Sitzung besteht – das Portal fordert das bei jeder Anmeldung, damit immer die BundID gefragt wird
+            // (dort ForceAuthn). Zurück geht es ohne prompt, sonst würde die Anfrage endlos zur Anmeldung führen.
+            if (oidcRequest.HasPromptValue(PromptValues.Login))
+            {
+                var authorizeUrl = Request.PathBase + Request.Path + QueryString.Create(Request.Query
+                    .Where(p => p.Key != Parameters.Prompt)
+                    .Select(p => KeyValuePair.Create(p.Key, (string?)p.Value.ToString())));
+                var level = requestedLevel > 0 ? $"level={requestedLevel}&" : string.Empty;
+                return Redirect($"/bundid/login?{level}returnUrl={Uri.EscapeDataString(authorizeUrl)}");
+            }
+
             // Step-up: Niveau gefordert, das die Sitzung nicht hat (oder keine Sitzung) → erneuter BundID-Login
             // mit diesem Niveau; danach geht es mit derselben Authorize-Anfrage weiter.
             if (requestedLevel > sessionLevel)
