@@ -25,6 +25,15 @@ services:
       APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:-nur-lokal-dev}
       # Anmeldesitzung (Single Sign-on): Das Postfach übernimmt die BundID-Anmeldung des Portals.
       APP_SSO_ENABLED: "true"
+      # Postfach im Simulator (Variante „simulator“, siehe README): Oberfläche /postfach, Einlieferung
+      # POST /api/v1/messages mit X-Api-Key. Schlüssel und Rücksprung nur für die lokale Entwicklung.
+      APP_POSTFACH_ENABLED: "true"
+      APP_POSTFACH_APIKEY: ${BUNDID_SIM_POSTFACH_API_KEY:-nur-lokal-dev-postfach-schluessel-0001}
+      APP_POSTFACH_PORTALURL: https://localhost:7002/
+      APP_POSTFACH_PORTALNAME: BürgerPortal
+      # Lokal teilen sich alle Ports von localhost die Cookies: Die großen Sitzungscookies des Portals (Port 7002) gehen
+      # auch an den Simulator. Tomcat erlaubt standardmäßig nur 8 KB Header (öffentlich kein Thema: eigene Subdomain).
+      SERVER_MAXHTTPREQUESTHEADERSIZE: 64KB
     volumes:
       - bundid-simulator-data:/app/data
     restart: unless-stopped
