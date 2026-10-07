@@ -1,9 +1,13 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.ReisepassStep2Vm
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer L
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
 
 @{
     ViewData["Title"] = L["PassportStep2_Title"];
+    // Einreichen verlangt „substanziell“; bei niedrigerem Niveau folgt eine erneute BundID-Anmeldung (Step-up) –
+    // dann vorher den Hinweis auf die Simulation zeigen (bundid-hinweis.js).
+    var stepUpNoetig = CurrentUser.GetBundIdUser() is not { TrustLevel: >= 3 };
 }
 
 <div class="container py-5">
@@ -84,7 +88,7 @@
                         <i class="bi bi-arrow-left me-1"></i> @L["PassportStep2_Cancel"]
                     </a>
 
-                    <button type="submit" name="submitAction" value="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-sm fw-bold order-1 order-md-2">
+                    <button type="submit" name="submitAction" value="submit" data-sim-hinweis="@(stepUpNoetig ? "stepup" : null)" class="btn btn-success btn-lg rounded-pill px-5 shadow-sm fw-bold order-1 order-md-2">
                         <i class="bi bi-send-check-fill me-2"></i> @L["PassportStep2_Submit"]
                     </button>
                 </div>

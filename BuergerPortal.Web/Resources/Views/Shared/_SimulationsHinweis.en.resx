@@ -64,4 +64,7 @@
   <data name="Postfach_Real" xml:space="preserve">
     <value>The mailbox is part of your BundID account at id.bund.de. Authorities deliver their messages via the central citizen mailbox (ZBP).</value>
   </data>
+  <data name="StepUp_Note" xml:space="preserve">
+    <value>This function requires the trust level "substantial". In the simulator, choose ELSTER, Smart-eID or eID (online ID card) – "user name" is no longer offered there.</value>
+  </data>
 </root>

@@ -64,4 +64,7 @@
   <data name="Postfach_Real" xml:space="preserve">
     <value>Das Postfach ist Teil Ihres BundID-Kontos auf id.bund.de. Behörden stellen ihre Nachrichten über das Zentrale Bürgerpostfach (ZBP) zu.</value>
   </data>
+  <data name="StepUp_Note" xml:space="preserve">
+    <value>Diese Funktion verlangt das Vertrauensniveau „substanziell“. Wählen Sie im Simulator ELSTER, Smart-eID oder eID (Online-Ausweis) – „Benutzername“ wird dort nicht mehr angeboten.</value>
+  </data>
 </root>
