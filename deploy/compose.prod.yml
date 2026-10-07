@@ -30,6 +30,8 @@ services:
     environment:
       BPSIM_DOMAIN: ${BPSIM_DOMAIN:?BPSIM_DOMAIN fehlt}
       ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL fehlt (Kontakt für Let's Encrypt)}
+      # Ziel von bundid.<domain>/postfach je nach Postfach-Variante (BPSIM_POSTFACH, siehe .env.example)
+      BPSIM_POSTFACH_UPSTREAM: postfach-${BPSIM_POSTFACH:-simulator}:8080
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -79,10 +81,20 @@ services:
       # Anmeldesitzung wie bei der echten BundID: Das Postfach meldet sich ohne erneute Personenauswahl an.
       APP_SSO_ENABLED: "true"
       SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
+      # Postfach im simulierten BundID-Konto (Variante „simulator“): /postfach und Einlieferung POST /api/v1/messages
+      # (nur intern). Läuft immer mit; welches Postfach genutzt wird, entscheidet BPSIM_POSTFACH.
+      APP_POSTFACH_ENABLED: "true"
+      APP_POSTFACH_APIKEY: ${POSTKORB_API_KEY:?POSTKORB_API_KEY fehlt}
+      APP_POSTFACH_PORTALURL: https://${BPSIM_DOMAIN}/
+      APP_POSTFACH_PORTALNAME: BürgerPortal
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
       TZ: Europe/Berlin
     volumes:
       - simdata:/app/data
+    networks:
+      default:
+        aliases:
+          - postfach-simulator
     mem_limit: 384m
 
   auth:
@@ -121,7 +133,8 @@ services:
       Database__MigrateOnStartup: "true"
       Authentication__Authority: https://auth.${BPSIM_DOMAIN}
       Authentication__Audience: buergerportal_api
-      Postkorb__BaseUrl: http://postkorb:8080/
+      # Einlieferung an das Postfach der gewählten Variante: postfach-simulator (BundID-Simulator) oder postfach-dienst
+      Postkorb__BaseUrl: http://postfach-${BPSIM_POSTFACH:-simulator}:8080/
       Postkorb__ApiKey: ${POSTKORB_API_KEY:?POSTKORB_API_KEY fehlt}
       # Keine echten E-Mails aus der Simulation (Testpersonen haben fiktive Adressen).
       MailJet__ApiKey: disabled
@@ -137,8 +150,9 @@ services:
       Authentication__ClientId: mvc_web
       Authentication__ClientSecret: ${WEB_CLIENT_SECRET}
       Api__BaseUrl: http://api:8080/
-      # Link „Mein BundID-Postfach“: über die Anmeldung des Postfachs, damit es die gerade angemeldete Person zeigt
-      Postkorb__PostfachUrl: "https://bundid.${BPSIM_DOMAIN}/postfach/bundid/login?returnUrl=~/Postfach"
+      # Link „Mein BundID-Postfach“ – gleiche Adresse in beiden Varianten; Variante für den Hinweis-Dialog
+      Postkorb__PostfachUrl: "https://bundid.${BPSIM_DOMAIN}/postfach/"
+      Postkorb__Variante: ${BPSIM_POSTFACH:-simulator}
       DataProtection__KeysPath: /data/keys
     volumes:
       - webkeys:/data/keys
@@ -163,8 +177,14 @@ services:
       BundId__AssertionConsumerServiceUrl: https://bundid.${BPSIM_DOMAIN}/postfach/bundid/acs
       BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
       DataProtection__KeysPath: /data/keys
+      Postfach__RuecksprungUrl: https://${BPSIM_DOMAIN}/
+      Postfach__RuecksprungName: BürgerPortal
     volumes:
       - postkorbkeys:/data/keys
+    networks:
+      default:
+        aliases:
+          - postfach-dienst
     mem_limit: 256m
 
 volumes:
