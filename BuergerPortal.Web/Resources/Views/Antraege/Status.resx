@@ -24,7 +24,7 @@
     <value>Noch keine Anträge</value>
   </data>
 	<data name="StatusList_Empty_Text" xml:space="preserve">
-    <value>Starte einen neuen Reisepassantrag über die Übersicht.</value>
+    <value>Starten Sie einen neuen Antrag – Reisepass oder Sperrmüll.</value>
   </data>
 
 	<data name="StatusList_Field_SubmittedLabel" xml:space="preserve">
@@ -52,5 +52,8 @@
   </data>
 	<data name="StatusList_IntroText" xml:space="preserve">
     <value>Hier finden Sie eine Übersicht Ihrer aktuellen Anträge und deren Bearbeitungsstand.</value>
+  </data>
+  <data name="StatusList_Empty_Button" xml:space="preserve">
+    <value>Antrag stellen</value>
   </data>
 </root>

@@ -24,7 +24,7 @@
     <value>No applications yet</value>
   </data>
 	<data name="StatusList_Empty_Text" xml:space="preserve">
-    <value>Start a new passport application from the overview.</value>
+    <value>Start a new application – passport or bulky waste.</value>
   </data>
 
 	<data name="StatusList_Field_SubmittedLabel" xml:space="preserve">
@@ -52,5 +52,8 @@
   </data>
 	<data name="StatusList_IntroText" xml:space="preserve">
     <value>View and track the current status of your submitted applications.</value>
+  </data>
+  <data name="StatusList_Empty_Button" xml:space="preserve">
+    <value>New application</value>
   </data>
 </root>
