@@ -54,6 +54,8 @@ if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<AccessTokenHandler>();
+// Erneuert das Access-Token mit dem Refresh-Token (aufgerufen von PortalSession)
+builder.Services.AddSingleton<BuergerPortal.Web.Services.AccessTokenRefresher>();
 // BundID-Angaben der angemeldeten Person (aus den Claims des ID-Tokens)
 builder.Services.AddScoped<BuergerPortal.Web.Services.HttpCurrentUserService>();
 
@@ -105,6 +107,8 @@ builder.Services
 
         o.Events = new CookieAuthenticationEvents
         {
+            // Bei jedem Aufruf: Gilt die Sitzung noch? Access-Token erneuern oder Sitzung sofort beenden.
+            OnValidatePrincipal = BuergerPortal.Web.Services.PortalSession.ValidateAsync,
             OnRedirectToLogin = ctx =>
             {
                 if (ctx.Request.Path.StartsWithSegments("/api"))
@@ -158,6 +162,8 @@ builder.Services
         options.Scope.Add("buergerportal_api");
         // BundID-Daten der Person (Name, Geburtsdatum, Adresse, Vertrauensniveau, Postkorb-Handle …)
         options.Scope.Add("bundid");
+        // Refresh-Token: Das Access-Token (60 min) wird erneuert, solange die Sitzung gilt.
+        options.Scope.Add("offline_access");
 
         options.MaxAge = TimeSpan.FromHours(24);
         options.BackchannelTimeout = TimeSpan.FromSeconds(3);
@@ -363,112 +369,18 @@ app.Run();
 
 
 // --- AccessTokenHandler Klasse ---
-public sealed class AccessTokenHandler : DelegatingHandler
+// Hängt das Access-Token der Sitzung an API-Aufrufe. Ablauf und Erneuerung prüft vorher PortalSession
+// (OnValidatePrincipal des Cookies) – hier kommt nur noch ein gültiges Token an.
+public sealed class AccessTokenHandler(IHttpContextAccessor accessor, ILogger<AccessTokenHandler> logger) : DelegatingHandler
 {
-    private readonly IHttpContextAccessor _accessor;
-    private readonly ILogger<AccessTokenHandler> _logger;
-    private readonly IOptionsMonitor<OpenIdConnectOptions> _oidcOptions;
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public AccessTokenHandler(IHttpContextAccessor accessor, ILogger<AccessTokenHandler> logger,
-        IOptionsMonitor<OpenIdConnectOptions> oidcOptions, IHttpClientFactory httpClientFactory)
-    {
-        _accessor = accessor; _logger = logger; _oidcOptions = oidcOptions; _httpClientFactory = httpClientFactory;
-    }
-
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
     {
-        var http = _accessor.HttpContext;
-        if (http is null)
-        {
-            _logger.LogWarning("No HttpContext in AccessTokenHandler.");
-            return await base.SendAsync(req, ct);
-        }
-
-        var token = await http.GetTokenAsync("access_token");
-        var expiresAtStr = await http.GetTokenAsync("expires_at");
-        DateTimeOffset? expiresAt = null;
-        if (!string.IsNullOrWhiteSpace(expiresAtStr) && DateTimeOffset.TryParse(expiresAtStr, out var dt))
-        {
-            expiresAt = dt;
-        }
-
-        // Token Expired -> Logout
-        if (expiresAt.HasValue && DateTimeOffset.UtcNow >= expiresAt.Value)
-        {
-            _logger.LogInformation("Access token expired; signing out user.");
-            await http.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return await base.SendAsync(req, ct);
-        }
-
-        // Refresh logic
-        if (!string.IsNullOrWhiteSpace(token) && (!expiresAt.HasValue || expiresAt.Value - DateTimeOffset.UtcNow <= TimeSpan.FromMinutes(5)))
-        {
-            var refreshToken = await http.GetTokenAsync("refresh_token");
-            if (!string.IsNullOrWhiteSpace(refreshToken))
-            {
-                try
-                {
-                    var opts = _oidcOptions.Get(OpenIdConnectDefaults.AuthenticationScheme);
-                    var tokenEndpoint = opts.Configuration?.TokenEndpoint ?? $"{opts.Authority!.TrimEnd('/')}/connect/token";
-
-                    var client = _httpClientFactory.CreateClient();
-                    var pairs = new List<KeyValuePair<string, string>>
-                    {
-                        new("grant_type", "refresh_token"),
-                        new("refresh_token", refreshToken),
-                        new("client_id", opts.ClientId ?? string.Empty),
-                        new("client_secret", opts.ClientSecret ?? string.Empty)
-                    };
-
-                    var res = await client.PostAsync(tokenEndpoint, new FormUrlEncodedContent(pairs), ct);
-                    if (res.IsSuccessStatusCode)
-                    {
-                        using var stream = await res.Content.ReadAsStreamAsync(ct);
-                        var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
-                        var root = doc.RootElement;
-                        var newAccess = root.GetProperty("access_token").GetString();
-                        var newRefresh = root.TryGetProperty("refresh_token", out var r2) ? r2.GetString() : refreshToken;
-                        var expiresIn = root.TryGetProperty("expires_in", out var ei) ? ei.GetInt32() : 0;
-
-                        var auth = await http.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                        if (auth?.Succeeded == true)
-                        {
-                            var props = auth.Properties ?? new AuthenticationProperties();
-                            var at = newAccess ?? token;
-                            var rt = newRefresh ?? refreshToken;
-                            var newExpires = DateTimeOffset.UtcNow.AddSeconds(expiresIn > 0 ? expiresIn : 3600);
-
-                            var tokens = new List<AuthenticationToken>
-                            {
-                                new AuthenticationToken { Name = "access_token", Value = at },
-                                new AuthenticationToken { Name = "refresh_token", Value = rt },
-                                new AuthenticationToken { Name = "expires_at", Value = newExpires.ToString("o") }
-                            };
-
-                            props.StoreTokens(tokens);
-                            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, auth.Principal!, props);
-
-                            token = at;
-                            _logger.LogInformation("Refreshed access token using refresh_token.");
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Refresh token request failed with status {Status}", res.StatusCode);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error while refreshing token.");
-                }
-            }
-        }
-
+        var http = accessor.HttpContext;
+        var token = http is null ? null : await http.GetTokenAsync("access_token");
         if (!string.IsNullOrWhiteSpace(token))
         {
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _logger.LogInformation("Attached Bearer token ({Len} chars) to {Method} {Uri}", token.Length, req.Method, req.RequestUri);
+            logger.LogDebug("Bearer-Token an {Method} {Uri} angehängt.", req.Method, req.RequestUri);
         }
 
         return await base.SendAsync(req, ct);
