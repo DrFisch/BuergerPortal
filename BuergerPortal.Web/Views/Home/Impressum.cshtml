@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Impressum";
+}
+
+<div class="container" style="max-width: 860px;">
+    <h1 class="h3 fw-bold mb-3">Impressum</h1>
+
+    <div class="alert alert-warning d-flex gap-2" role="note">
+        <i class="bi bi-mortarboard" aria-hidden="true"></i>
+        <div>
+            <strong>Studienprojekt – kein Angebot einer Behörde.</strong>
+            Dieses BürgerPortal ist eine Beispielanwendung für die Anmeldung mit der BundID. Es gibt keine echte
+            Stadtverwaltung dahinter; Termine, Anträge und Meldungen werden nicht bearbeitet.
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5">Hintergrund</h2>
+            <p class="mb-2">
+                Entstanden im Modul „Schlüsseltechnologien in der öffentlichen Verwaltung“ des Masterstudiengangs
+                Verwaltungsinformatik an der Hochschule Hof.
+            </p>
+            <p class="mb-0">
+                Die Anmeldung läuft über einen <strong>BundID-Simulator</strong> (Fork des Simulators der Bundesagentur
+                für Arbeit, Apache License 2.0) mit fiktiven Testpersonen – nicht über die echte BundID
+                (<a href="https://id.bund.de" target="_blank" rel="noopener">id.bund.de</a>). Auch das BundID-Postfach ist
+                eine Nachbildung.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h2 class="h5">Bitte beachten</h2>
+            <ul class="mb-0">
+                <li>Geben Sie keine echten persönlichen Daten ein.</li>
+                <li>Inhalte wie Neuigkeiten, Orte und Öffnungszeiten sind Beispiele.</li>
+                <li>Wie das Portal mit Daten umgeht, steht unter <a asp-controller="Home" asp-action="Datenschutz">Datenschutz</a>.</li>
+            </ul>
+        </div>
+    </div>
+</div>

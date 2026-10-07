@@ -173,6 +173,13 @@ namespace BuergerPortal.Web.Controllers
             return View();
         }
 
+        // Impressum: Hinweis auf das Studienprojekt, ohne Anmeldung lesbar (Link im Seitenfuß).
+        [AllowAnonymous]
+        public IActionResult Impressum()
+        {
+            return View();
+        }
+
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
