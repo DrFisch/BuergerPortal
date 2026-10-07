@@ -1,3 +1,9 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{
+    // Optionaler Knopf zurück zum Dienst, von dem man kommt (z. B. BürgerPortal): Postfach:RuecksprungUrl/-Name
+    var ruecksprungUrl = Config["Postfach:RuecksprungUrl"];
+    var ruecksprungName = Config["Postfach:RuecksprungName"] ?? "Dienst";
+}
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,6 +18,10 @@
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="~/">Mein BundID-Postfach <span class="badge bg-warning text-dark ms-1">Simulation</span></a>
+            @if (!string.IsNullOrWhiteSpace(ruecksprungUrl))
+            {
+                <a class="btn btn-sm btn-light ms-auto me-2" href="@ruecksprungUrl">← Zurück zum @ruecksprungName</a>
+            }
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <form class="d-flex align-items-center gap-3" method="post" asp-controller="BundId" asp-action="Logout">
