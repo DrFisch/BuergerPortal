@@ -1,0 +1,36 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@*
+    Hinweis vor dem Wechsel zur BundID-Simulation: Die Person soll wissen, dass sie gleich auf ein Testsystem kommt, was
+    dort passiert und wie es bei der echten BundID wäre. Gesteuert von wwwroot/js/bundid-hinweis.js; welche Blöcke
+    sichtbar sind, bestimmt data-sim-variante (login, stepup).
+*@
+<div class="modal fade" id="simHinweisModal" tabindex="-1" aria-labelledby="simHinweisTitel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="simHinweisTitel">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2" aria-hidden="true"></i>
+                    <span data-sim-variante="login stepup">@L["Login_Title"]</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@L["Close"]"></button>
+            </div>
+            <div class="modal-body small">
+                <span class="badge text-bg-warning mb-2">@L["Badge"]</span>
+                <div data-sim-variante="login stepup">
+                    <p>@L["Login_Intro"]</p>
+                    <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
+                    <ul class="mb-2">
+                        <li>@L["Login_Step1"]</li>
+                        <li>@L["Login_Step2"]</li>
+                    </ul>
+                    <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Login_Real"]</p>
+                </div>
+                <p class="text-body-secondary mt-2 mb-0">@L["NoRealData"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
+                <button type="button" class="btn btn-primary" data-sim-weiter>@L["Continue"]</button>
+            </div>
+        </div>
+    </div>
+</div>

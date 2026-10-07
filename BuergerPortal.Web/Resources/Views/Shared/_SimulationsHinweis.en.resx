@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Badge" xml:space="preserve">
+		<value>Simulation · student project</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Close</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancel</value>
+	</data>
+	<data name="Continue" xml:space="preserve">
+		<value>Understood – continue to the simulation</value>
+	</data>
+	<data name="WhatHappens" xml:space="preserve">
+		<value>What happens there:</value>
+	</data>
+	<data name="InReality" xml:space="preserve">
+		<value>In reality:</value>
+	</data>
+	<data name="NoRealData" xml:space="preserve">
+		<value>All persons there are fictitious – please do not enter real data.</value>
+	</data>
+	<data name="Login_Title" xml:space="preserve">
+		<value>Continue to the BundID simulator</value>
+	</data>
+	<data name="Login_Intro" xml:space="preserve">
+		<value>You are now leaving the BürgerPortal for the sign-in page of a BundID simulator – a test system, not the real BundID.</value>
+	</data>
+	<data name="Login_Step1" xml:space="preserve">
+		<value>You choose a fictitious test person, an identification method (e.g. user name, ELSTER, online ID card) and a "business context" – the same context means the same person.</value>
+	</data>
+	<data name="Login_Step2" xml:space="preserve">
+		<value>The simulator sends the BürgerPortal a digitally signed confirmation (SAML) with the test person's data. The BürgerPortal verifies it and signs you in.</value>
+	</data>
+	<data name="Login_Real" xml:space="preserve">
+		<value>You would be redirected to the BundID (id.bund.de) and identify yourself with your own BundID account – with user name and password, ELSTER certificate or online ID card. The BundID would then transmit your real data to the BürgerPortal.</value>
+	</data>
+</root>

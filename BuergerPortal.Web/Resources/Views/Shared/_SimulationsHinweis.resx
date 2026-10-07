@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Badge" xml:space="preserve">
+		<value>Simulation · Studienprojekt</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Schließen</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Abbrechen</value>
+	</data>
+	<data name="Continue" xml:space="preserve">
+		<value>Verstanden – weiter zur Simulation</value>
+	</data>
+	<data name="WhatHappens" xml:space="preserve">
+		<value>Was dort passiert:</value>
+	</data>
+	<data name="InReality" xml:space="preserve">
+		<value>In echt:</value>
+	</data>
+	<data name="NoRealData" xml:space="preserve">
+		<value>Alle Personen dort sind fiktiv – bitte keine echten Daten eingeben.</value>
+	</data>
+	<data name="Login_Title" xml:space="preserve">
+		<value>Weiter zum BundID-Simulator</value>
+	</data>
+	<data name="Login_Intro" xml:space="preserve">
+		<value>Sie verlassen jetzt das BürgerPortal und kommen auf die Anmeldeseite eines BundID-Simulators – eines Testsystems, nicht der echten BundID.</value>
+	</data>
+	<data name="Login_Step1" xml:space="preserve">
+		<value>Sie wählen eine fiktive Testperson, ein Identifizierungsmittel (z. B. Benutzername, ELSTER, Online-Ausweis) und einen „fachlichen Kontext“ – derselbe Kontext bedeutet dieselbe Person.</value>
+	</data>
+	<data name="Login_Step2" xml:space="preserve">
+		<value>Der Simulator schickt dem BürgerPortal eine digital signierte Bestätigung (SAML) mit den Daten der Testperson. Das BürgerPortal prüft sie und meldet Sie an.</value>
+	</data>
+	<data name="Login_Real" xml:space="preserve">
+		<value>Sie würden zur BundID (id.bund.de) weitergeleitet und sich mit Ihrem eigenen BundID-Konto ausweisen – mit Benutzername und Passwort, ELSTER-Zertifikat oder Online-Ausweis. Die BundID übermittelt dann Ihre echten Daten an das BürgerPortal.</value>
+	</data>
+</root>

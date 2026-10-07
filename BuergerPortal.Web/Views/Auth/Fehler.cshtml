@@ -22,7 +22,7 @@
                     <form asp-action="Login" asp-controller="Auth" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="returnUrl" value="@Url.Content("~/")" />
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" data-sim-hinweis="login">
                             <i class="bi bi-shield-lock me-1" aria-hidden="true"></i>@L["SignIn"]
                         </button>
                         <a href="~/" class="btn btn-link ms-2">@L["Home"]</a>
