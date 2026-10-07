@@ -65,7 +65,10 @@ builder.Services.AddOpenIddict()
                .SetTokenEndpointUris("/connect/token")
                .SetEndSessionEndpointUris("/connect/logout")
                .SetUserInfoEndpointUris("/connect/userinfo")
-               .SetAccessTokenLifetime(TimeSpan.FromMinutes(60));
+               // Laufzeit des Access-Tokens (Standard 60 min); zum Testen der Erneuerung per Refresh-Token kürzer
+               // einstellbar (OpenIddict:AccessTokenLifetimeMinutes).
+               .SetAccessTokenLifetime(TimeSpan.FromMinutes(
+                   builder.Configuration.GetValue("OpenIddict:AccessTokenLifetimeMinutes", 60)));
 
         // Code-Flow + PKCE
         options.AllowAuthorizationCodeFlow()
