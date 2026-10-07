@@ -133,34 +133,29 @@ namespace BuergerPortal.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Fehlerbehandlung 
-            ProblemDetails? problem = null;
+            // Fehlerbehandlung: nur die verständlichen Meldungen der API (detail bzw. Feldfehler) anzeigen, nicht den
+            // englischen Standardtitel der ProblemDetails ("Conflict", "Bad Request").
+            ValidationProblemDetails? problem = null;
             try
             {
                 var ctHeader = res.Content.Headers.ContentType?.MediaType;
-                if (!string.IsNullOrEmpty(ctHeader) &&
-                    (ctHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase) ||
-                     ctHeader.Contains("application/problem+json", StringComparison.OrdinalIgnoreCase)))
+                if (!string.IsNullOrEmpty(ctHeader) && ctHeader.Contains("json", StringComparison.OrdinalIgnoreCase))
                 {
-                    problem = await res.Content.ReadFromJsonAsync<ProblemDetails>(cancellationToken: ct);
+                    problem = await res.Content.ReadFromJsonAsync<ValidationProblemDetails>(cancellationToken: ct);
                 }
             }
-            catch (System.Text.Json.JsonException) {  }
+            catch (System.Text.Json.JsonException) { }
 
-            if (problem is null)
-            {
-                var raw = await res.Content.ReadAsStringAsync(ct);
-                problem = new ProblemDetails
-                {
-                    Title = $"Fehler {(int)res.StatusCode} {res.ReasonPhrase}",
-                    Detail = string.IsNullOrWhiteSpace(raw) ? null : raw,
-                    Status = (int)res.StatusCode
-                };
-            }
+            var messages = new List<string>();
+            if (!string.IsNullOrWhiteSpace(problem?.Detail))
+                messages.Add(problem.Detail);
+            if (problem?.Errors is { Count: > 0 } errors)
+                messages.AddRange(errors.SelectMany(e => e.Value));
+            if (messages.Count == 0)
+                messages.Add("Die Buchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
 
-            ModelState.AddModelError(string.Empty, problem.Title ?? "Buchung fehlgeschlagen.");
-            if (!string.IsNullOrWhiteSpace(problem.Detail))
-                ModelState.AddModelError(string.Empty, problem.Detail);
+            foreach (var message in messages.Distinct())
+                ModelState.AddModelError(string.Empty, message);
 
             return View(vm);
         }
