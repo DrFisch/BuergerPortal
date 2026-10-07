@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"] - BuergerPortal.Web</title>
+    <title>@ViewData["Title"] – BürgerPortal</title>
     <meta name="app-env" content="@Env.EnvironmentName" />
     @if (User.Identity?.IsAuthenticated == true)
     {
@@ -35,8 +35,13 @@
     </script>
 
     <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#0d6efd">
+    <meta name="theme-color" content="#0d6efd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#212529" media="(prefers-color-scheme: dark)">
     <link rel="icon" sizes="128x128" href="/icons/portal-128.png">
+    @* Als App auf dem Startbildschirm (iOS liest das Manifest nur teilweise) *@
+    <link rel="apple-touch-icon" href="/icons/portal-192.png">
+    <meta name="apple-mobile-web-app-title" content="BürgerPortal">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" asp-append-version="true" />
@@ -79,12 +84,5 @@
 
     @RenderSection("Scripts", required: false)
 
-    <script>
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
-          });
-        }
-    </script>
 </body>
 </html>

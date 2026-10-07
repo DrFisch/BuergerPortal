@@ -11,6 +11,7 @@ const PRECACHE = [
     '/js/site.js',
     '/lib/bootstrap/dist/css/bootstrap.min.css',
     '/icons/portal-128.png',
+    '/icons/portal-192.png',
     '/icons/portal-512.png'
 ];
 

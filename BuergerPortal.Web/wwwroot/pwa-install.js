@@ -5,7 +5,8 @@ let newWorker;
  * SERVICE WORKER REGISTRIERUNG & UPDATE-LOGIK
  */
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
+    // Einzige Registrierung des Service Workers (vorher zusätzlich im Layout); sw.js nie aus dem HTTP-Cache.
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(reg => {
         reg.addEventListener('updatefound', () => {
             newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -25,7 +26,7 @@ if ('serviceWorker' in navigator) {
 }
 
 function showUpdateNotification() {
-    const updateNow = confirm("Eine neue Version der App ist verfügbar. Möchtest du jetzt aktualisieren?");
+    const updateNow = confirm("Eine neue Version des BürgerPortals ist verfügbar. Jetzt aktualisieren?");
     if (updateNow && newWorker) {
         newWorker.postMessage({ type: 'SKIP_WAITING' });
     }
