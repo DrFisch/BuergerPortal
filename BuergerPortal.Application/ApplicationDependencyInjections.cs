@@ -15,6 +15,7 @@ using BuergerPortal.Application.UserEinstellungen.Validations;
 using BuergerPortal.Application.UserEInstellungen.BusinessServices;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace BuergerPortal.Application
             services.AddScoped<IPoiBusinessService, PoiBusinessService>();
 
             //----------Validations---------
+            // Uhr für fachliche Prüfungen (in Tests ersetzbar)
+            services.TryAddSingleton(TimeProvider.System);
             services.AddScoped<IValidator<AppointmentCreateDto>, AppointmentCreateDtoValidator>();
             // Reisepass Antrag Validations
             services.AddScoped<IValidator<ReisepassStep1Dto>, ReisepassStep1Validator>();
