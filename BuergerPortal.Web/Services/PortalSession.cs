@@ -110,6 +110,17 @@ public static class PortalSession
         }
     }
 
+    /// <summary>Name des Sitzungscookies (Standard des Cookie-Schemas, bei Größe in Teile C1, C2 … aufgeteilt).</summary>
+    public const string CookieName = ".AspNetCore.Cookies";
+
+    /// <summary>
+    /// Ist die Sitzung abgelaufen (statt nie begonnen oder abgemeldet)? Entweder hat dieser Aufruf sie beendet, oder der
+    /// Browser schickt noch ein Sitzungscookie, das nicht mehr gilt (Inaktivität: Ablaufzeit im Cookie überschritten).
+    /// </summary>
+    public static bool WasExpired(HttpContext http) =>
+        http.Items.ContainsKey(ExpiredItem) ||
+        (http.User.Identity?.IsAuthenticated != true && http.Request.Cookies.ContainsKey(CookieName));
+
     private static async Task EndAsync(CookieValidatePrincipalContext ctx)
     {
         ctx.RejectPrincipal();

@@ -88,4 +88,10 @@
 	<data name="Service_MyData_Text" xml:space="preserve">
 		<value>Jederzeit einsehen, welche Angaben die BundID übermittelt hat und was das Portal davon speichert.</value>
 	</data>
+  <data name="Start_SessionExpired_Title" xml:space="preserve">
+    <value>Sitzung abgelaufen.</value>
+  </data>
+  <data name="Start_SessionExpired_Text" xml:space="preserve">
+    <value>Sie wurden aus Sicherheitsgründen automatisch abgemeldet – nach 30 Minuten ohne Aktivität oder spätestens 8 Stunden nach der Anmeldung. Bitte melden Sie sich erneut mit Ihrer BundID an.</value>
+  </data>
 </root>

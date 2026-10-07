@@ -88,4 +88,10 @@
 	<data name="Service_MyData_Text" xml:space="preserve">
 		<value>See at any time which details BundID transmitted and what the portal stores.</value>
 	</data>
+  <data name="Start_SessionExpired_Title" xml:space="preserve">
+    <value>Session expired.</value>
+  </data>
+  <data name="Start_SessionExpired_Text" xml:space="preserve">
+    <value>For your security you were signed out automatically – after 30 minutes without activity or at the latest 8 hours after signing in. Please sign in again with your BundID.</value>
+  </data>
 </root>

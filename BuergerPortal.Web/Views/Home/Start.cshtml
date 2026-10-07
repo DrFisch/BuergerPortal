@@ -17,7 +17,14 @@
     };
 }
 
-@if (Context.Request.Query.ContainsKey("signedout"))
+@if (ViewData["SessionExpired"] is true)
+{
+    <div class="alert alert-warning d-flex gap-2" role="status">
+        <i class="bi bi-hourglass-bottom" aria-hidden="true"></i>
+        <div><strong>@L["Start_SessionExpired_Title"]</strong> @L["Start_SessionExpired_Text"]</div>
+    </div>
+}
+else if (Context.Request.Query.ContainsKey("signedout"))
 {
     <div class="alert alert-success" role="status">@L["Start_SignedOut"]</div>
 }

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides; // <--- WICHTIG FÜR NGINX
 using Microsoft.AspNetCore.DataProtection; // <--- WICHTIG FÜR COOKIES
+using Microsoft.AspNetCore.WebUtilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,12 +116,17 @@ builder.Services
             OnValidatePrincipal = BuergerPortal.Web.Services.PortalSession.ValidateAsync,
             OnRedirectToLogin = ctx =>
             {
-                if (ctx.Request.Path.StartsWithSegments("/api"))
+                // API und Hintergrundabrufe der Seiten (fetch mit X-Requested-With) bekommen 401 statt HTML.
+                if (ctx.Request.Path.StartsWithSegments("/api") || ctx.Request.Headers.XRequestedWith == "fetch")
                 {
                     ctx.Response.StatusCode = 401;
                     return Task.CompletedTask;
                 }
-                ctx.Response.Redirect(ctx.RedirectUri);
+                // Abgelaufene Sitzung: Die Einstiegsseite sagt, warum man nicht mehr angemeldet ist.
+                var target = BuergerPortal.Web.Services.PortalSession.WasExpired(ctx.HttpContext)
+                    ? QueryHelpers.AddQueryString(ctx.RedirectUri, "sitzung", "abgelaufen")
+                    : ctx.RedirectUri;
+                ctx.Response.Redirect(target);
                 return Task.CompletedTask;
             },
             OnRedirectToAccessDenied = ctx =>

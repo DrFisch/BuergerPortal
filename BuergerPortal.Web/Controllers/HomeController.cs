@@ -1,6 +1,9 @@
 using BuergerPortal.Web.Features.Home.ViewModels;
 using BuergerPortal.Web.Features.Termine.Contracts;
 using BuergerPortal.Web.Models;
+using BuergerPortal.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -29,6 +32,12 @@ namespace BuergerPortal.Web.Controllers
             if (User.Identity?.IsAuthenticated != true)
             {
                 ViewData["ReturnUrl"] = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
+                // Sitzung abgelaufen (Inaktivität oder Höchstdauer): Hinweis zeigen, nicht mehr gültiges Cookie löschen.
+                if (Request.Query["sitzung"] == "abgelaufen" || PortalSession.WasExpired(HttpContext))
+                {
+                    ViewData["SessionExpired"] = true;
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                }
                 return View("Start");
             }
 

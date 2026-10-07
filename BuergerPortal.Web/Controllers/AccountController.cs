@@ -27,8 +27,9 @@ namespace BuergerPortal.Web.Controllers
             {
                 return LocalRedirect("/");
             }
+            // Nach dem Abmelden (auch am Auth-Server) bestätigt die Einstiegsseite die Abmeldung.
             return SignOut(
-                new AuthenticationProperties { RedirectUri = "/" },
+                new AuthenticationProperties { RedirectUri = "/?signedout=1" },
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 OpenIdConnectDefaults.AuthenticationScheme);
         }
