@@ -81,6 +81,8 @@ services:
       # Anmeldesitzung wie bei der echten BundID: Das Postfach meldet sich ohne erneute Personenauswahl an.
       APP_SSO_ENABLED: "true"
       SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
+      # Hinter Caddy: X-Forwarded-Proto auswerten, damit Weiterleitungen (z. B. im Postfach) https:// enthalten
+      SERVER_FORWARDHEADERSSTRATEGY: native
       # Postfach im simulierten BundID-Konto (Variante „simulator“): /postfach und Einlieferung POST /api/v1/messages
       # (nur intern). Läuft immer mit; welches Postfach genutzt wird, entscheidet BPSIM_POSTFACH.
       APP_POSTFACH_ENABLED: "true"
