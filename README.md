@@ -3,7 +3,7 @@
 Bürgerportal einer Stadt (Termine, Reisepass- und Sperrmüll-Anträge, Mängelmeldungen), bei dem die Anmeldung
 **ausschließlich über die BundID** erfolgt – hier über einen erweiterten **BundID-Simulator** der Bundesagentur für
 Arbeit. Bestätigungen landen in einem simulierten **BundID-Postfach** (Zentrales Bürgerpostfach), das – wie bei der
-echten BundID – Teil des BundID-Auftritts ist und die BundID-Anmeldesitzung mitnutzt.
+echten BundID – Teil des BundID-Auftritts ist. Für das Postfach gibt es zwei umschaltbare Varianten (siehe unten).
 Branch `feature/bundidsimulator`; jeder Umbau-Schritt ist ein eigener, begründeter Commit.
 
 ## Architektur
@@ -12,23 +12,40 @@ Branch `feature/bundidsimulator`; jeder Umbau-Schritt ist ein eigener, begründe
 flowchart LR
     B[Browser] -->|OIDC| W[BuergerPortal.Web]
     W -->|OIDC| A[AuthenticationServer<br/>SAML-Service-Provider]
-    A -->|SAML 2.0| S[BundID-Simulator<br/>Fork bpsim/standardkonform]
+    A -->|SAML 2.0| S[BundID-Simulator<br/>Fork bpsim/standardkonform<br/>mit Postfach]
     W -->|Access-Token| API[BuergerPortal.Api]
-    API -->|REST + API-Schlüssel| P[BuergerPortal.PostkorbSimulation<br/>zweiter SAML-SP]
-    P -->|SAML 2.0, Single Sign-on| S
+    API -->|REST + API-Schlüssel<br/>Variante simulator| S
+    API -.->|REST + API-Schlüssel<br/>Variante dienst| P[BuergerPortal.PostkorbSimulation<br/>zweiter SAML-SP]
+    P -.->|SAML 2.0, Single Sign-on| S
 ```
 
 Öffentlich (Betrieb): Portal `https://<domain>`, Auth-Server `https://auth.<domain>`, BundID-Simulator
-`https://bundid.<domain>` und darunter das Postfach `https://bundid.<domain>/postfach`.
+`https://bundid.<domain>` und darunter das Postfach `https://bundid.<domain>/postfach/`.
 
 | Projekt | Aufgabe |
 |---|---|
-| `AuthenticationServer` | ASP.NET Identity + OpenIddict; meldet Personen per SAML 2.0 bei der BundID an, legt Konten per bPK2 an, stellt OIDC-Tokens aus (Vertrauensniveau als `acr`, Postkorb-Handle) |
-| `BuergerPortal.Web` | Oberfläche; ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“ |
-| `BuergerPortal.Api` | Fachlogik; Policy für Vertrauensniveau; sendet Bestätigungen an das Postfach |
-| `BuergerPortal.PostkorbSimulation` | simuliertes BundID-Postfach (REST nach ZBP `CreateMessage`; Oberfläche meldet sich als eigener SAML-SP über die bestehende BundID-Sitzung an, ohne `ForceAuthn`) |
+| `AuthenticationServer` | ASP.NET Identity + OpenIddict; meldet Personen per SAML 2.0 bei der BundID an (`prompt=login` → `ForceAuthn`), legt Konten per bPK2 an, stellt OIDC-Tokens aus (Vertrauensniveau als `acr`, Postkorb-Handle, Refresh-Token) |
+| `BuergerPortal.Web` | Oberfläche; ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“; Sitzungsdaten serverseitig |
+| `BuergerPortal.Api` | Fachlogik (Terminprüfung je Standort, Feiertage); Policy für Vertrauensniveau; sendet Bestätigungen an das Postfach |
+| `BuergerPortal.PostkorbSimulation` | Postfach-Variante „dienst“: REST nach ZBP `CreateMessage`; Oberfläche meldet sich als eigener SAML-SP über die bestehende BundID-Sitzung an, ohne `ForceAuthn` |
 | `BuergerPortal.BundId` / `.Core` | gemeinsamer SAML-Ablauf (ITfoxtec.Identity.Saml2) bzw. Claim-Namen und Vertrauensniveaus |
-| `BuergerPortal.Tests` | xUnit: SAML-Prüfungen und Angriffsfälle, Kontoanlage, Policies, Postkorb |
+| `BuergerPortal.Tests` | xUnit: SAML-Prüfungen und Angriffsfälle, Kontoanlage, Policies, Postkorb, Sitzung, Terminprüfung |
+
+## BundID-Postfach: zwei Varianten
+
+| Variante (`BPSIM_POSTFACH`) | Wo das Postfach liegt | Anmeldung |
+|---|---|---|
+| `simulator` (Standard) | im BundID-Simulator (Fork), Teil des simulierten BundID-Kontos | Anmeldesitzung der BundID direkt, kein SAML dazwischen |
+| `dienst` | eigener Dienst `BuergerPortal.PostkorbSimulation` unter derselben Adresse | als zweiter SAML-Dienstanbieter mit Single Sign-on |
+
+Beide nehmen Nachrichten gleich an (`POST /api/v1/messages`, Header `X-Api-Key`), beide haben „Zurück zum BürgerPortal“.
+Umschalten im Betrieb: `deploy/postfach-modus.ps1 -Modus simulator|dienst` (Nachrichten bleiben im jeweiligen Postfach).
+
+## Sitzung
+
+30 Minuten ohne Aktivität oder spätestens 8 Stunden nach der Anmeldung endet die Sitzung; zwei Minuten vorher warnt
+die Seite („Angemeldet bleiben“). Das Access-Token wird solange per Refresh-Token erneuert. Die Sitzungsdaten liegen
+verschlüsselt auf dem Server, das Cookie enthält nur eine Kennung. Jede Anmeldung ist eine neue BundID-Anmeldung.
 
 ## Lokal starten (Entwicklung)
 
@@ -37,7 +54,7 @@ Voraussetzungen: .NET SDK 9, SQL Server LocalDB, Docker.
 1. **BundID-Simulator** (Fork) bauen und starten:
    ```
    docker build -t buergerportal/bundid-simulator:dev https://github.com/DrFisch/bundid-simulator.git#bpsim/standardkonform
-   docker compose -f compose.bundid-dev.yml up -d        # http://localhost:8090/saml/metadata
+   docker compose -f compose.bundid-dev.yml up -d        # http://localhost:8090/saml/metadata, Postfach /postfach
    ```
 2. **Datenbanken** anlegen (einmalig bzw. nach neuen Migrationen), jeweils aus dem Repo-Wurzelverzeichnis:
    ```
@@ -47,10 +64,12 @@ Voraussetzungen: .NET SDK 9, SQL Server LocalDB, Docker.
    ```
    Im Container übernehmen das die Dienste beim Start (`Database:MigrateOnStartup=true`).
 3. **Dienste starten** (je ein Terminal, Profil `https`): Auth-Server https://localhost:7001, Web https://localhost:7002,
-   API https://localhost:7003, Postkorb https://localhost:7005.
+   API https://localhost:7003, Postfach-Dienst https://localhost:7005. Standard lokal ist die Variante „dienst“; für
+   das Postfach im Simulator API und Web mit `Postkorb__BaseUrl=http://localhost:8090/`,
+   `Postkorb__ApiKey=<APP_POSTFACH_APIKEY aus compose.bundid-dev.yml>`, `Postkorb__PostfachUrl=http://localhost:8090/postfach`
+   und `Postkorb__Variante=simulator` starten.
 4. https://localhost:7002 öffnen → „Mit BundID anmelden“ → im Simulator eine Testperson wählen
    (Identifizierungsmittel „Benutzername“ = Niveau normal, „Elster“ = substanziell, „eID“ = hoch).
-   „Mein BundID-Postfach“ öffnet danach das Postfach ohne erneute Auswahl (Anmeldesitzung des Simulators).
 
 Tests: `dotnet test BuergerPortal.Tests`.
 
@@ -61,11 +80,11 @@ Alles läuft in Containern auf einer VM, auch SQL Server; nur Caddy (HTTPS) ist 
 | Datei | Zweck |
 |---|---|
 | `Dockerfile.auth`, `.api`, `.portal`, `.postkorb` | Images (Multi-Stage, Nicht-root, ohne lokale Einstellungen) |
-| `deploy/compose.prod.yml` | alle Dienste mit Limits, Volumes, Healthcheck; Konfiguration nur aus `.env` |
-| `deploy/Caddyfile` | Hosts, automatisches TLS, Postfach unter `bundid.<domain>/postfach`, Simulator-Actuator und Postkorb-REST von außen gesperrt |
+| `deploy/compose.prod.yml` | alle Dienste mit Limits, Volumes, Healthcheck; Konfiguration nur aus `.env` (u. a. `BPSIM_POSTFACH`) |
+| `deploy/Caddyfile` | Hosts, automatisches TLS, Postfach unter `bundid.<domain>/postfach` (Ziel je Variante), Simulator-Actuator und Einlieferungs-REST von außen gesperrt |
 | `deploy/.env.example` | alle benötigten Werte (die echte `.env` gehört nie ins Repository) |
 | `deploy/compose.local.yml` | lokaler Test des Betriebs unter `https://bpsimulation.localhost` (Ablauf im Dateikopf) |
-| `deploy/*.ps1` | `gcp-setup`, `deploy`, `vm-start`/`-stop`/`-status`, `logs`, `db-backup`, `destroy`, `dns` (nur `bpsimulation`-Einträge) |
+| `deploy/*.ps1` | `gcp-setup`, `deploy`, `vm-start`/`-stop`/`-status`, `logs`, `db-backup`, `destroy`, `dns` (nur `bpsimulation`-Einträge), `postfach-modus` |
 
 Die Skripte lesen ihre Einstellungen aus einer Datei außerhalb des Repositorys (Pfad in `BPSIM_DEPLOY_CONFIG`) und
 fragen vor jedem kostenpflichtigen Schritt nach.
@@ -76,4 +95,5 @@ fragen vor jedem kostenpflichtigen Schritt nach.
 - Der BundID-Simulator ist ein **Fork** des Simulators der Bundesagentur für Arbeit
   (https://github.com/ba-itsys/bundid-simulator): signierte Assertions, IdP-Metadaten, eIDAS-LoA-URIs und das Attribut
   Postkorb-Handle wurden ergänzt, damit eine SAML-Bibliothek mit voller Prüfung arbeiten kann; dazu eine
-  Anmeldesitzung (Single Sign-on, `ForceAuthn` wird beachtet). Details im Fork unter `FORK.md`.
+  Anmeldesitzung (Single Sign-on, `ForceAuthn` wird beachtet) und ein Postfach im simulierten Konto. Details im Fork
+  unter `FORK.md`.
