@@ -17,11 +17,14 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
     {
         private readonly IAppointmentRepository _repo;
         private readonly IValidator<AppointmentCreateDto> _validator;
+        private readonly TimeProvider _time;
 
-        public AppointmentBusinessService(IAppointmentRepository repo, IValidator<AppointmentCreateDto> validator)
+        public AppointmentBusinessService(IAppointmentRepository repo, IValidator<AppointmentCreateDto> validator,
+            TimeProvider time)
         {
             _repo = repo;
             _validator = validator;
+            _time = time;
         }
 
         // Meldungen bei belegten Zeiten (die Oberfläche zeigt sie unverändert an)
@@ -116,6 +119,9 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             if (appt.Status == AppointmentStatus.Cancelled)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Termin ist bereits storniert.");
 
+            if (appt.StartUtc <= _time.GetUtcNow().UtcDateTime)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Vergangene Termine können nicht storniert werden.");
+
             appt.Status = AppointmentStatus.Cancelled;
             
 
@@ -169,8 +175,16 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             if (appt.Status == AppointmentStatus.Cancelled)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Stornierte Termine können nicht geändert werden.");
 
-            if (appt.StartUtc < DateTime.UtcNow)
+            if (appt.StartUtc < _time.GetUtcNow().UtcDateTime)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Vergangene Termine können nicht geändert werden.");
+
+            if (appt.Location == newLocation)
+                return Result<Guid>.Fail(ErrorCodes.Validation, "Der Termin findet bereits an diesem Standort statt.");
+
+            // Am neuen Standort muss die Zeit noch frei sein (der eigene Termin zählt nicht).
+            if (await _repo.ExistsLocationOverlapAsync(newLocation, appt.StartUtc, appt.EndUtc, appt.Id, ct))
+                return Result<Guid>.Fail(ErrorCodes.SlotConflict,
+                    "Am neuen Standort ist diese Zeit bereits vergeben. Bitte buchen Sie dort einen neuen Termin.");
 
             appt.Location = newLocation;
             await _repo.UpdateAsync(appt, ct);

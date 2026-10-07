@@ -45,7 +45,7 @@ namespace BuergerPortal.Tests.Termine
         }
 
         private readonly MemoryRepository _repo = new();
-        private AppointmentBusinessService Service => new(_repo, new AppointmentCreateDtoValidator(Now));
+        private AppointmentBusinessService Service => new(_repo, new AppointmentCreateDtoValidator(Now), Now);
 
         // Do 08.10.2026, Ortszeit UTC+2
         private static AppointmentCreateDto Dto(LocationType ort, int stunde, int minute, int dauer = 15)
@@ -104,5 +104,35 @@ namespace BuergerPortal.Tests.Termine
             Assert.Equal(2, alle.Count);
         }
 
+        [Fact]
+        public async Task Vergangener_Termin_kann_nicht_storniert_werden()
+        {
+            var vergangen = new Appointment
+            {
+                Id = Guid.NewGuid(), UserId = Anna, Location = LocationType.BuergermtMitte, Status = AppointmentStatus.Booked,
+                StartUtc = new DateTime(2026, 10, 6, 7, 0, 0, DateTimeKind.Utc), EndUtc = new DateTime(2026, 10, 6, 7, 15, 0, DateTimeKind.Utc)
+            };
+            _repo.Items.Add(vergangen);
+
+            var result = await Service.CancelAsync(vergangen.Id, Anna, default);
+
+            Assert.Equal("Vergangene Termine können nicht storniert werden.", result.ErrorMessage);
+            Assert.Equal(AppointmentStatus.Booked, vergangen.Status);
+        }
+
+        [Fact]
+        public async Task Standortwechsel_nur_wenn_die_Zeit_dort_frei_ist()
+        {
+            var anna = await Service.BookAsync(Dto(LocationType.BuergermtMitte, 9, 0), Anna, default);
+            await Service.BookAsync(Dto(LocationType.BuergermtNord, 9, 0), Bernd, default);
+
+            var belegt = await Service.UpdateLocationAsync(anna.Value, Anna, LocationType.BuergermtNord, default);
+            var gleich = await Service.UpdateLocationAsync(anna.Value, Anna, LocationType.BuergermtMitte, default);
+            var frei = await Service.UpdateLocationAsync(anna.Value, Anna, LocationType.BuergermtSued, default);
+
+            Assert.Equal(ErrorCodes.SlotConflict, belegt.ErrorCode);
+            Assert.Equal(ErrorCodes.Validation, gleich.ErrorCode);
+            Assert.True(frei.IsSuccess);
+        }
     }
 }
