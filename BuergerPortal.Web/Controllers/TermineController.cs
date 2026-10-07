@@ -45,6 +45,9 @@ namespace BuergerPortal.Web.Controllers
                     utc.Kind == DateTimeKind.Utc ? utc : DateTime.SpecifyKind(utc, DateTimeKind.Utc),
                     BerlinTz);
 
+            // "Vergangen" in Ortszeit bestimmen: Vorher verglich die Ansicht den Tag (Uhrzeit ließ sich aus "08:00 - 08:15"
+            // nicht lesen) mit der Serveruhr – heutige Termine galten ab 0 Uhr als vergangen und waren nicht stornierbar.
+            var nowLocal = ToBerlin(DateTime.UtcNow);
             var vm = new TermineIndexVm
             {
                 Termine = apiItems.Select(x =>
@@ -56,7 +59,9 @@ namespace BuergerPortal.Web.Controllers
                         Id = x.Id,
                         Service = x.Service,
                         Datum = startLocal.Date,
-                        Uhrzeit = $"{startLocal:HH\\:mm} - {endLocal:HH\\:mm}",
+                        Start = startLocal,
+                        Uhrzeit = $"{startLocal:HH\\:mm}–{endLocal:HH\\:mm}",
+                        Vergangen = startLocal <= nowLocal,
                         Location = x.Location,
                         Storniert = x.Cancelled,
                         AntragId = x.AntragId

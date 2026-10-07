@@ -15,15 +15,15 @@
 
 	<!-- Titel / Überschrift -->
 	<data name="Termine_Title" xml:space="preserve">
-    <value>Termine – Übersicht</value>
+    <value>Meine Termine</value>
   </data>
 	<data name="Termine_Heading" xml:space="preserve">
-    <value>Termine – Übersicht</value>
+    <value>Meine Termine</value>
   </data>
 
 	<!-- Intro -->
 	<data name="Termine_IntroText" xml:space="preserve">
-    <value>Hier siehst du deine gebuchten Termine. Du kannst Termine auch stornieren.</value>
+    <value>Hier sehen Sie Ihre gebuchten Termine. Anstehende Termine können Sie bis zum Beginn stornieren.</value>
   </data>
 
 	<!-- Buttons -->
@@ -36,7 +36,7 @@
 
 	<!-- Empty state -->
 	<data name="Termine_Empty_Text" xml:space="preserve">
-    <value>Du hast aktuell keine gebuchten Termine.</value>
+    <value>Sie haben derzeit keine anstehenden Termine.</value>
   </data>
 
 	<!-- Tabelle Header -->
@@ -87,5 +87,11 @@
   </data>
 	<data name="Termine_Action_ViewDetails" xml:space="preserve">
     <value>Details anzeigen</value>
+  </data>
+  <data name="Termine_Clock" xml:space="preserve">
+    <value>Uhr</value>
+  </data>
+  <data name="Termine_Cancel_Confirm" xml:space="preserve">
+    <value>Termin „{0}“ am {1} um {2} Uhr wirklich stornieren? Die Stornobestätigung kommt in Ihr BundID-Postfach.</value>
   </data>
 </root>
