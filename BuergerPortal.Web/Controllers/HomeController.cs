@@ -160,12 +160,9 @@ namespace BuergerPortal.Web.Controllers
             return View();
         }
 
-        // Datenschutzhinweise müssen auch ohne Anmeldung lesbar sein.
+        // Frühere englische Vorlagenseite: dauerhaft auf die Datenschutzhinweise umleiten (ohne Anmeldung lesbar).
         [AllowAnonymous]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Privacy() => RedirectToActionPermanent(nameof(Datenschutz));
 
         [AllowAnonymous]
         public IActionResult Datenschutz()
