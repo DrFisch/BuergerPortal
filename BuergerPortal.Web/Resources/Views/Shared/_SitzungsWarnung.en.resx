@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>You will be signed out soon</value>
+	</data>
+	<data name="Text_Before" xml:space="preserve">
+		<value>For your security your session ends in</value>
+	</data>
+	<data name="Text_After" xml:space="preserve">
+		<value>minutes.</value>
+	</data>
+	<data name="Reason_Idle" xml:space="preserve">
+		<value>Reason: 30 minutes without activity. Choose “Stay signed in” to continue without signing in with BundID again.</value>
+	</data>
+	<data name="Reason_Max" xml:space="preserve">
+		<value>The maximum duration of a sign-in (8 hours) has been reached. Afterwards you need to sign in with BundID again.</value>
+	</data>
+	<data name="Logout" xml:space="preserve">
+		<value>Sign out now</value>
+	</data>
+	<data name="Stay" xml:space="preserve">
+		<value>Stay signed in</value>
+	</data>
+</root>

@@ -1,0 +1,28 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@*
+    Warnung kurz vor dem automatischen Abmelden (30 Minuten ohne Aktivität, höchstens 8 Stunden nach der Anmeldung).
+    Gesteuert von wwwroot/js/sitzung.js; die Restzeit kommt aus dem Meta-Element bpsim-sitzung im Layout.
+*@
+<div class="modal fade" id="sitzungModal" tabindex="-1" aria-labelledby="sitzungTitel" aria-hidden="true"
+     data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="sitzungTitel">
+                    <i class="bi bi-hourglass-split text-warning me-2" aria-hidden="true"></i>@L["Title"]
+                </h2>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">
+                    @L["Text_Before"] <strong class="font-monospace" data-sitzung-rest>2:00</strong> @L["Text_After"]
+                </p>
+                <p class="small text-muted mb-0" data-sitzung-normal>@L["Reason_Idle"]</p>
+                <p class="small text-muted mb-0" data-sitzung-hoechstdauer hidden>@L["Reason_Max"]</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Logout">@L["Logout"]</a>
+                <button type="button" class="btn btn-primary" data-sitzung-verlaengern>@L["Stay"]</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 ﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@using Microsoft.AspNetCore.Authentication
 <!DOCTYPE html>
 <html lang="@System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
@@ -6,6 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - BuergerPortal.Web</title>
     <meta name="app-env" content="@Env.EnvironmentName" />
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @* Restzeit bis zum automatischen Abmelden (dieser Aufruf hat die Sitzung gerade verlängert), für sitzung.js *@
+        var anmeldung = (await Context.AuthenticateAsync()).Properties is { } sitzung
+            ? BuergerPortal.Web.Services.PortalSession.LoginTime(sitzung) : null;
+        <meta name="bpsim-sitzung" content="@((int)BuergerPortal.Web.Services.PortalSession.Remaining(DateTimeOffset.UtcNow, anmeldung).TotalSeconds)" />
+    }
 
     <script>
         (function () {
@@ -56,9 +64,15 @@
 
     @* Hinweis vor dem Wechsel zur BundID-Simulation (Anmeldung, Postfach) *@
     <partial name="_SimulationsHinweis" />
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @* Warnung kurz vor dem automatischen Abmelden *@
+        <partial name="_SitzungsWarnung" />
+    }
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/bundid-hinweis.js" asp-append-version="true"></script>
+    <script src="~/js/sitzung.js" asp-append-version="true"></script>
     <script src="~/js/theme.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/pwa-install.js" asp-append-version="true"></script>

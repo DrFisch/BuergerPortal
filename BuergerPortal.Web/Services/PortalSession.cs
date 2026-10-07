@@ -22,7 +22,7 @@ public static class PortalSession
     /// <summary>Zeitpunkt der BundID-Anmeldung in den Sitzungsdaten (AuthenticationProperties.Items).</summary>
     public const string LoginTimeKey = ".bpsim.anmeldung";
 
-    /// <summary>Abfrage der Restzeit (sitzung.js) – zählt nicht als Aktivität.</summary>
+    /// <summary>Restzeit der Sitzung (sitzung.js): GET fragt nur ab und zählt nicht als Aktivität, POST verlängert.</summary>
     public const string StatusPath = "/Auth/Sitzung";
 
     /// <summary>So lange vor Ablauf wird das Access-Token erneuert.</summary>
@@ -54,7 +54,7 @@ public static class PortalSession
         return tokenExpiresAt > now ? Outcome.Refresh : Outcome.Expired;
     }
 
-    /// <summary>Restzeit bis zum automatischen Abmelden direkt nach einem Seitenaufruf.</summary>
+    /// <summary>Restzeit, wenn der laufende Aufruf die Sitzung verlängert (Seitenaufruf, POST /Auth/Sitzung).</summary>
     public static TimeSpan Remaining(DateTimeOffset now, DateTimeOffset? loginUtc)
     {
         var untilMax = loginUtc is null ? IdleTimeout : loginUtc.Value + MaxLifetime - now;
@@ -82,7 +82,8 @@ public static class PortalSession
         var outcome = Evaluate(now, login, AccessTokenRefresher.ExpiresAt(ctx.Properties));
         var maxReached = login is not null && now - login >= MaxLifetime;
         // Die Restzeit-Abfrage (sitzung.js) zählt nicht als Aktivität: nichts verlängern, nur ein Ende feststellen.
-        var activity = !ctx.HttpContext.Request.Path.Equals(StatusPath, StringComparison.OrdinalIgnoreCase);
+        var activity = !(HttpMethods.IsGet(ctx.HttpContext.Request.Method) &&
+                         ctx.HttpContext.Request.Path.Equals(StatusPath, StringComparison.OrdinalIgnoreCase));
 
         // Token bald oder schon abgelaufen (Höchstdauer nicht erreicht): mit dem Refresh-Token erneuern
         if (activity && outcome != Outcome.Valid && !maxReached)
