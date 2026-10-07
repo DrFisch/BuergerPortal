@@ -17,17 +17,22 @@ if ('serviceWorker' in navigator) {
         });
     });
 
+    // Neu laden nur nach einem bestätigten Update. Beim ersten Besuch übernimmt der Service Worker die Seite ebenfalls
+    // (clients.claim → controllerchange); ein Neuladen in diesem Moment brach z. B. den Klick auf „Mit BundID anmelden“ ab.
     let refreshing;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        window.location.reload();
+        if (refreshing || !updateAccepted) return;
         refreshing = true;
+        window.location.reload();
     });
 }
+
+let updateAccepted = false;
 
 function showUpdateNotification() {
     const updateNow = confirm("Eine neue Version des BürgerPortals ist verfügbar. Jetzt aktualisieren?");
     if (updateNow && newWorker) {
+        updateAccepted = true;
         newWorker.postMessage({ type: 'SKIP_WAITING' });
     }
 }
