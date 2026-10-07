@@ -286,6 +286,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // app.UseHsts(); // Macht Nginx/Certbot bereits
 }
+// Verständliche Seite bei 404 usw. (Statuscode bleibt erhalten, z. B. 401 für Hintergrundabrufe)
+app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
 app.UseStaticFiles();
 

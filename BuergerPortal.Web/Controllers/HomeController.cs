@@ -186,6 +186,16 @@ namespace BuergerPortal.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        // Statusseiten (UseStatusCodePagesWithReExecute), z. B. 404 statt der leeren Fehlerseite des Browsers.
+        [AllowAnonymous]
+        [HttpGet("/Home/Status/{code:int}")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Status(int code)
+        {
+            ViewData["StatusCode"] = code;
+            return View("Error", new ErrorViewModel());
+        }
         [HttpGet("/home/testuser")]
         public IActionResult TestUser()
         {
