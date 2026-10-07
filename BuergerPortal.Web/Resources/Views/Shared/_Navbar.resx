@@ -71,7 +71,7 @@
 </data>
 
 	<data name="Card_Appointments" xml:space="preserve">
-  <value>Terminbuchung</value>
+  <value>Termine</value>
 </data>
 
 	<data name="Card_Applications" xml:space="preserve">
@@ -101,5 +101,11 @@
   </data>
   <data name="Level_4_Name" xml:space="preserve">
     <value>hoch</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
+  <data name="Discover" xml:space="preserve">
+    <value>Stadt entdecken</value>
   </data>
 </root>

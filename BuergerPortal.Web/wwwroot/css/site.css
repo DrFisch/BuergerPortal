@@ -44,3 +44,47 @@
 /* Knopf "Mit BundID anmelden" (Einstiegsseite und Navigation); eigenes Design, nicht das offizielle BundID-Logo */
 .bundid-login-btn { background: #0b4f8a; border-color: #0b4f8a; color: #fff; }
 .bundid-login-btn:hover, .bundid-login-btn:focus { background: #083c69; border-color: #083c69; color: #fff; }
+
+/* Tab-Leiste unten auf dem Handy (Views/Shared/_TabLeiste.cshtml) */
+.bp-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bp-tab {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .1rem;
+    padding: .45rem 0 .35rem;
+    font-size: .7rem;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+}
+
+.bp-tab .bi {
+    font-size: 1.25rem;
+}
+
+.bp-tab.active {
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+    body.has-tabbar {
+        padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+    }
+}
+
+/* Hauptmenue: aktiver Bereich */
+.navbar .nav-link.active {
+    color: var(--bs-primary);
+}

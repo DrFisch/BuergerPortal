@@ -6,6 +6,10 @@
     var bundIdUser = CurrentUser.GetBundIdUser();
     var postfachUrl = Config["Postkorb:PostfachUrl"];
     var levelBadge = bundIdUser is { TrustLevel: >= 3 } ? "text-bg-success" : "text-bg-secondary";
+    // Hervorhebung des aktuellen Bereichs im Hauptmenü
+    var controller = ViewContext.RouteData.Values["controller"] as string ?? "";
+    string Aktiv(params string[] names) => names.Contains(controller, StringComparer.OrdinalIgnoreCase) ? "active fw-semibold" : "";
+    string? AriaAktiv(params string[] names) => names.Contains(controller, StringComparer.OrdinalIgnoreCase) ? "page" : null;
 }
 
 @if (bundIdUser == null)
@@ -74,76 +78,65 @@ else
         </button>
 
         <div id="mainNav" class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto ms-lg-4 gap-lg-1">
+                @* Persönliche Bereiche: auf dem Desktop im Konto-Menü rechts, auf dem Handy hier *@
                 <li class="nav-item d-lg-none">
-                    <a class="nav-link" asp-controller="Home" asp-action="Index">
+                    <a class="nav-link @Aktiv("Home")" asp-controller="Home" asp-action="Index">
                         <i class="bi bi-house-door me-1"></i> @T["Home"]
                     </a>
                 </li>
-
-                @if (bundIdUser != null)
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link @Aktiv("MeineDaten")" asp-controller="MeineDaten" asp-action="Index">
+                        <i class="bi bi-person-vcard me-1"></i> @T["MyData"]
+                    </a>
+                </li>
+                @if (!string.IsNullOrWhiteSpace(postfachUrl))
                 {
                     <li class="nav-item d-lg-none">
-                        <a class="nav-link" asp-controller="MeineDaten" asp-action="Index">
-                            <i class="bi bi-person-vcard me-1"></i> @T["MyData"]
+                        <a class="nav-link" href="@postfachUrl" data-sim-hinweis="postfach">
+                            <i class="bi bi-envelope-paper me-1"></i> @T["MyMailbox"]
                         </a>
                     </li>
-                    @if (!string.IsNullOrWhiteSpace(postfachUrl))
-                    {
-                        <li class="nav-item d-lg-none">
-                            <a class="nav-link" href="@postfachUrl" data-sim-hinweis="postfach">
-                                <i class="bi bi-envelope-paper me-1"></i> @T["MyMailbox"]
-                            </a>
-                        </li>
-                    }
-                    <li class="nav-item d-lg-none">
-                        <a class="nav-link" asp-controller="Settings" asp-action="Index">
-                            <i class="bi bi-gear me-1"></i> @T["ProfileSettings"]
-                        </a>
-                    </li>
-
                 }
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link @Aktiv("Settings")" asp-controller="Settings" asp-action="Index">
+                        <i class="bi bi-gear me-1"></i> @T["ProfileSettings"]
+                    </a>
+                </li>
                 <li class="nav-item d-lg-none">
                     <hr class="dropdown-divider my-2" />
                 </li>
-
                 <li class="nav-item d-lg-none">
-                    <span class="nav-link text-uppercase text-muted small">
-                        @T["Services"] 
-                    </span>
+                    <span class="nav-link text-uppercase text-muted small">@T["Services"]</span>
                 </li>
 
-                <!-- Terminbuchung -->
-                <li class="nav-item d-lg-none">
-                    <a class="nav-link" asp-controller="Termine" asp-action="Index">
-                        <i class="bi bi-calendar3-range me-1"></i>
-                        @T["Card_Appointments"]
+                @* Leistungen: Hauptmenü am Desktop, auf dem Handy unter „Leistungen“ *@
+                <li class="nav-item">
+                    <a class="nav-link @Aktiv("Termine")" aria-current="@AriaAktiv("Termine")" asp-controller="Termine" asp-action="Index">
+                        <i class="bi bi-calendar3-range me-1"></i> @T["Card_Appointments"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @Aktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" aria-current="@AriaAktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" asp-controller="Antraege" asp-action="Index">
+                        <i class="bi bi-file-earmark-text me-1"></i> @T["Card_Applications"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @Aktiv("Maengel")" aria-current="@AriaAktiv("Maengel")" asp-controller="Maengel" asp-action="Create">
+                        <i class="bi bi-exclamation-octagon me-1"></i> @T["Card_ReportIssue"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @Aktiv("Entdecken")" aria-current="@AriaAktiv("Entdecken")" asp-controller="Entdecken" asp-action="Index">
+                        <i class="bi bi-compass me-1"></i> @T["Discover"]
                     </a>
                 </li>
 
-                <!-- Anträge -->
-                <li class="nav-item d-lg-none">
-                    <a class="nav-link" asp-controller="Antraege" asp-action="Index">
-                        <i class="bi bi-file-earmark-text me-1"></i>
-                        @T["Card_Applications"]
-                    </a>
-                </li>
-
-                <!-- Mängelmelder -->
-                <li class="nav-item d-lg-none">
-                    <a class="nav-link" asp-controller="Maengel" asp-action="Create">
-                        <i class="bi bi-exclamation-octagon me-1"></i>
-                        @T["Card_ReportIssue"]
-                    </a>
-                </li>
-
-                
                 <li class="nav-item d-none d-lg-none" id="appInstallMenuItem">
                     <button type="button" id="btnInstall" class="nav-link btn btn-link w-100 text-start" onclick="installApp()">
                         <i class="bi bi-download me-1"></i> @T["InstallAppLink"]
                     </button>
                 </li>
-                
             </ul>
 
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">

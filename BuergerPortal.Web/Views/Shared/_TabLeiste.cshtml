@@ -1,0 +1,31 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@*
+    Tab-Leiste am unteren Rand auf kleinen Bildschirmen (Handy, installierte App): die wichtigsten Bereiche mit einem
+    Tipp erreichbar. Auf dem Desktop übernimmt das Hauptmenü oben.
+*@
+@{
+    var controller = ViewContext.RouteData.Values["controller"] as string ?? "";
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+    string Aktiv(params string[] names) => names.Contains(controller, StringComparer.OrdinalIgnoreCase) ? "active" : "";
+}
+<nav class="bp-tabbar d-lg-none border-top bg-body-tertiary" aria-label="@T["Label"]">
+    <a class="bp-tab @Aktiv("Home")" asp-controller="Home" asp-action="Index">
+        <i class="bi bi-house-door" aria-hidden="true"></i><span>@T["Home"]</span>
+    </a>
+    <a class="bp-tab @Aktiv("Termine")" asp-controller="Termine" asp-action="Index">
+        <i class="bi bi-calendar3" aria-hidden="true"></i><span>@T["Appointments"]</span>
+    </a>
+    <a class="bp-tab @Aktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" asp-controller="Antraege" asp-action="Index">
+        <i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>@T["Applications"]</span>
+    </a>
+    <a class="bp-tab @Aktiv("Maengel")" asp-controller="Maengel" asp-action="Create">
+        <i class="bi bi-exclamation-octagon" aria-hidden="true"></i><span>@T["Issues"]</span>
+    </a>
+    @if (!string.IsNullOrWhiteSpace(postfachUrl))
+    {
+        <a class="bp-tab" href="@postfachUrl" data-sim-hinweis="postfach">
+            <i class="bi bi-envelope-paper" aria-hidden="true"></i><span>@T["Mailbox"]</span>
+        </a>
+    }
+</nav>

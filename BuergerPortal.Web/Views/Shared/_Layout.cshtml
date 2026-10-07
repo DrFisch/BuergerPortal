@@ -4,7 +4,7 @@
 <html lang="@System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>@ViewData["Title"] – BürgerPortal</title>
     <meta name="app-env" content="@Env.EnvironmentName" />
     @if (User.Identity?.IsAuthenticated == true)
@@ -49,7 +49,7 @@
     <link rel="stylesheet" href="~/BuergerPortal.Web.styles.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
 </head>
-<body>
+<body class="@(User.Identity?.IsAuthenticated == true ? "has-tabbar" : null)">
     @await Html.PartialAsync("_Navbar")
 
     <main class="container py-4">
@@ -66,6 +66,11 @@
             </div>
         </div>
     </footer>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <partial name="_TabLeiste" />
+    }
 
     @* Hinweis vor dem Wechsel zur BundID-Simulation (Anmeldung, Postfach) *@
     <partial name="_SimulationsHinweis" />

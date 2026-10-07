@@ -103,4 +103,10 @@
   <data name="Level_4_Name" xml:space="preserve">
     <value>high</value>
   </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Discover" xml:space="preserve">
+    <value>Discover the city</value>
+  </data>
 </root>
