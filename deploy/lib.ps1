@@ -115,6 +115,13 @@ function Get-ComposeCommand($cfg) {
     return "cd $($cfg.REMOTE_DIR) && sudo docker compose -f compose.prod.yml --env-file .env"
 }
 
+# .env-Datei (KEY=Wert je Zeile) in eine geordnete Tabelle lesen
+function Read-EnvFile([string]$Path) {
+    $values = [ordered]@{}
+    foreach ($line in Get-Content $Path) { if ($line -match '^([A-Z_]+)=(.*)$') { $values[$Matches[1]] = $Matches[2] } }
+    return $values
+}
+
 # Textdatei mit LF-Zeilenenden schreiben (für Linux; Set-Content schriebe CRLF und unter PS 5.1 kein UTF-8)
 function Write-LfFile([string]$Path, [string[]]$Lines) {
     [IO.File]::WriteAllText($Path, (($Lines -join "`n") + "`n"), (New-Object Text.UTF8Encoding $false))

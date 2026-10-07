@@ -28,11 +28,6 @@ function New-Secret([int]$Length) {
     return -join ($bytes | ForEach-Object { $chars[$_ % $chars.Length] })
 }
 
-function Read-EnvFile([string]$Path) {
-    $values = [ordered]@{}
-    foreach ($line in Get-Content $Path) { if ($line -match '^([A-Z_]+)=(.*)$') { $values[$Matches[1]] = $Matches[2] } }
-    return $values
-}
 
 Write-Host "Deploy Tag $Tag nach $($cfg.VM_NAME) (https://$($cfg.BPSIM_DOMAIN))"
 if (-not $Yes -and (Read-Host "Fortfahren? (j/n)") -ne "j") { return }
@@ -45,6 +40,7 @@ if (-not (Test-Path $cfg.ENV_FILE)) {
         SQL_SA_PASSWORD = "Aa1" + (New-Secret 24); SQL_MEMORY_LIMIT_MB = "1024"; SQL_MEM_LIMIT = "2g"
         BUNDID_SIM_KEYSTORE_PASSWORD = New-Secret 24; OIDC_CERT_PASSWORD = New-Secret 24
         WEB_CLIENT_SECRET = New-Secret 40; POSTKORB_API_KEY = New-Secret 48
+        BPSIM_POSTFACH = "simulator"
     }
     Write-LfFile $cfg.ENV_FILE ($env0.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" })
     Write-Host "Neue .env für den Betrieb angelegt: $($cfg.ENV_FILE)"
@@ -52,6 +48,8 @@ if (-not (Test-Path $cfg.ENV_FILE)) {
 $envValues = Read-EnvFile $cfg.ENV_FILE
 $envValues["BPSIM_TAG"] = $Tag
 $envValues["BUNDID_SIM_IMAGE"] = $simImage
+# Postfach-Variante (simulator | dienst) – Standard Postfach im BundID-Simulator; umschalten mit postfach-modus.ps1
+if (-not $envValues.Contains("BPSIM_POSTFACH")) { $envValues["BPSIM_POSTFACH"] = "simulator" }
 Write-LfFile $cfg.ENV_FILE ($envValues.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" })
 
 # 2) OpenIddict-Zertifikate (Signatur, Verschlüsselung) – einmalig, selbstsigniert, 5 Jahre
