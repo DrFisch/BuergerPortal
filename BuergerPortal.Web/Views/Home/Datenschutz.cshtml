@@ -1,5 +1,93 @@
-﻿@{
+@{
     ViewData["Title"] = "Datenschutz";
 }
-<h2>Datenschutz</h2>
-<p>Hinweise zur Datenverarbeitung folgen.</p>
+
+<div class="container" style="max-width: 860px;">
+    <h1 class="h3 fw-bold mb-2">Datenschutz</h1>
+    <p class="text-muted">
+        Welche Daten das BürgerPortal verarbeitet – Stand dieses Studienprojekts. Alle Personen im BundID-Simulator sind
+        fiktiv; bitte geben Sie keine echten Daten ein.
+    </p>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-shield-check me-2" aria-hidden="true"></i>Anmeldung mit der BundID</h2>
+            <p>
+                Bei der Anmeldung übermittelt die BundID (hier: der Simulator) Ihre Angaben an das Portal: Name, Geburtsname,
+                Geburtsdatum und -ort, Anschrift, E-Mail-Adresse, das erreichte Vertrauensniveau, das Identifizierungsmittel,
+                eine pseudonyme Kennung (bPK2) und das Postkorb-Handle (Adresse Ihres BundID-Postfachs).
+            </p>
+            <p class="mb-1"><strong>Dauerhaft gespeichert</strong> wird davon nur, was nötig ist, um Sie wiederzuerkennen
+                und Ihnen Nachrichten zu schicken:</p>
+            <ul>
+                <li>bPK2 (pseudonyme Kennung, nur für dieses Portal gültig),</li>
+                <li>Postkorb-Handle,</li>
+                <li>zuletzt erreichtes Vertrauensniveau und Zeitpunkt der letzten Anmeldung.</li>
+            </ul>
+            <p class="mb-0">
+                Alle übrigen Angaben stehen nur in Ihrer Sitzung (verschlüsseltes Cookie) und werden beim Abmelden oder bei
+                Sitzungsende verworfen. Was genau übermittelt und gespeichert wurde, sehen Sie unter „Meine Daten“.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-hourglass-split me-2" aria-hidden="true"></i>Sitzung und Cookies</h2>
+            <ul class="mb-0">
+                <li><strong>Sitzungscookie</strong> des Portals: endet nach 30 Minuten ohne Aktivität, spätestens 8 Stunden
+                    nach der Anmeldung oder beim Schließen des Browsers.</li>
+                <li><strong>Anmelde-Cookies</strong> des Anmeldedienstes (Auth-Server) und des BundID-Simulators
+                    (Anmeldesitzung für das Postfach, 30 Minuten).</li>
+                <li><strong>Einstellungen</strong>: Sprache und Farbschema (Cookie bzw. lokaler Speicher des Browsers),
+                    Schutz vor gefälschten Formularen (Antiforgery-Cookie).</li>
+                <li>Keine Werbe- oder Analyse-Cookies.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-database me-2" aria-hidden="true"></i>Was Sie selbst eingeben</h2>
+            <p class="mb-0">
+                Termine (Leistung, Standort, Zeit), Anträge (Ihre Angaben im Formular), Mängelmeldungen (Beschreibung,
+                Standort) und Ihre Einstellungen werden zu Ihrem Konto gespeichert. Bestätigungen gehen an Ihr
+                BundID-Postfach (Simulation) und werden dort gespeichert. Es werden keine E-Mails verschickt.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-phone me-2" aria-hidden="true"></i>App auf dem Smartphone</h2>
+            <p class="mb-0">
+                Die installierbare App speichert nur Programmdateien (Layout, Skripte, Bilder) auf dem Gerät, keine Seiten
+                mit persönlichen Daten. Ohne Internetverbindung erscheint nur ein Hinweis.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-globe2 me-2" aria-hidden="true"></i>Externe Dienste</h2>
+            <ul class="mb-0">
+                <li><strong>Karten</strong> („Stadt entdecken“, Mängelmelder): Kartenkacheln von OpenStreetMap bzw. CARTO,
+                    Kartenbibliothek Leaflet über unpkg.com, Adresssuche über Nominatim (OpenStreetMap). Dabei erhalten diese
+                    Dienste Ihre IP-Adresse und den Kartenausschnitt bzw. Suchbegriff.</li>
+                <li><strong>Wetter</strong>: Das Portal fragt Open-Meteo mit den Koordinaten der Stadt ab – ohne Daten von
+                    Ihnen.</li>
+                <li><strong>Google Maps</strong> öffnet sich nur, wenn Sie bei einem Ort auf den Kartenlink klicken.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-hdd-network me-2" aria-hidden="true"></i>Betrieb</h2>
+            <p class="mb-0">
+                Alle Dienste und die Datenbank laufen in Containern auf einer virtuellen Maschine in der Google Cloud (Region
+                us-central1, USA). Hintergrund des Projekts: <a asp-controller="Home" asp-action="Impressum">Impressum</a>.
+            </p>
+        </div>
+    </div>
+</div>
