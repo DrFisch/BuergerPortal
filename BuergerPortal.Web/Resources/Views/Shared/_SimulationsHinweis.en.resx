@@ -49,4 +49,19 @@
 	<data name="Login_Real" xml:space="preserve">
 		<value>You would be redirected to the BundID (id.bund.de) and identify yourself with your own BundID account – with user name and password, ELSTER certificate or online ID card. The BundID would then transmit your real data to the BürgerPortal.</value>
 	</data>
+  <data name="Postfach_Title" xml:space="preserve">
+    <value>Continue to the BundID mailbox (simulation)</value>
+  </data>
+  <data name="Postfach_Intro" xml:space="preserve">
+    <value>You are now going to a replica of the BundID mailbox. It belongs to the BundID simulator of this student project and is not a real mailbox.</value>
+  </data>
+  <data name="Postfach_Step1" xml:space="preserve">
+    <value>The mailbox signs in with the BundID in the background. Since you are already signed in there, this usually happens without choosing a person again (single sign-on; the session lasts 30 minutes).</value>
+  </data>
+  <data name="Postfach_Step2" xml:space="preserve">
+    <value>It shows the messages sent to your Postkorb handle – for example confirmations of appointments and applications from the BürgerPortal.</value>
+  </data>
+  <data name="Postfach_Real" xml:space="preserve">
+    <value>The mailbox is part of your BundID account at id.bund.de. Authorities deliver their messages via the central citizen mailbox (ZBP).</value>
+  </data>
 </root>

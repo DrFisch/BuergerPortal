@@ -91,7 +91,7 @@ else
                     @if (!string.IsNullOrWhiteSpace(postfachUrl))
                     {
                         <li class="nav-item d-lg-none">
-                            <a class="nav-link" href="@postfachUrl">
+                            <a class="nav-link" href="@postfachUrl" data-sim-hinweis="postfach">
                                 <i class="bi bi-envelope-paper me-1"></i> @T["MyMailbox"]
                             </a>
                         </li>
@@ -183,7 +183,7 @@ else
                             @if (!string.IsNullOrWhiteSpace(postfachUrl))
                             {
                                 <li>
-                                    <a class="dropdown-item" href="@postfachUrl">
+                                    <a class="dropdown-item" href="@postfachUrl" data-sim-hinweis="postfach">
                                         <i class="bi bi-envelope-paper me-2"></i> @T["MyMailbox"]
                                     </a>
                                 </li>

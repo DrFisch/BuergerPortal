@@ -49,4 +49,19 @@
 	<data name="Login_Real" xml:space="preserve">
 		<value>Sie würden zur BundID (id.bund.de) weitergeleitet und sich mit Ihrem eigenen BundID-Konto ausweisen – mit Benutzername und Passwort, ELSTER-Zertifikat oder Online-Ausweis. Die BundID übermittelt dann Ihre echten Daten an das BürgerPortal.</value>
 	</data>
+  <data name="Postfach_Title" xml:space="preserve">
+    <value>Weiter zum BundID-Postfach (Simulation)</value>
+  </data>
+  <data name="Postfach_Intro" xml:space="preserve">
+    <value>Sie kommen jetzt zu einer Nachbildung des BundID-Postfachs. Sie gehört zum BundID-Simulator dieses Studienprojekts und ist kein echtes Postfach.</value>
+  </data>
+  <data name="Postfach_Step1" xml:space="preserve">
+    <value>Das Postfach meldet sich im Hintergrund bei der BundID an. Weil Sie dort schon angemeldet sind, geschieht das in der Regel ohne erneute Personenauswahl (Single Sign-on; die Sitzung gilt 30 Minuten).</value>
+  </data>
+  <data name="Postfach_Step2" xml:space="preserve">
+    <value>Angezeigt werden die Nachrichten an Ihr Postkorb-Handle – zum Beispiel Bestätigungen zu Terminen und Anträgen aus dem BürgerPortal.</value>
+  </data>
+  <data name="Postfach_Real" xml:space="preserve">
+    <value>Das Postfach ist Teil Ihres BundID-Kontos auf id.bund.de. Behörden stellen ihre Nachrichten über das Zentrale Bürgerpostfach (ZBP) zu.</value>
+  </data>
 </root>

@@ -2,7 +2,7 @@
 @*
     Hinweis vor dem Wechsel zur BundID-Simulation: Die Person soll wissen, dass sie gleich auf ein Testsystem kommt, was
     dort passiert und wie es bei der echten BundID wäre. Gesteuert von wwwroot/js/bundid-hinweis.js; welche Blöcke
-    sichtbar sind, bestimmt data-sim-variante (login, stepup).
+    sichtbar sind, bestimmt data-sim-variante (login, stepup, postfach).
 *@
 <div class="modal fade" id="simHinweisModal" tabindex="-1" aria-labelledby="simHinweisTitel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -11,6 +11,7 @@
                 <h2 class="modal-title h5" id="simHinweisTitel">
                     <i class="bi bi-exclamation-triangle-fill text-warning me-2" aria-hidden="true"></i>
                     <span data-sim-variante="login stepup">@L["Login_Title"]</span>
+                    <span data-sim-variante="postfach">@L["Postfach_Title"]</span>
                 </h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@L["Close"]"></button>
             </div>
@@ -24,6 +25,15 @@
                         <li>@L["Login_Step2"]</li>
                     </ul>
                     <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Login_Real"]</p>
+                </div>
+                <div data-sim-variante="postfach">
+                    <p>@L["Postfach_Intro"]</p>
+                    <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
+                    <ul class="mb-2">
+                        <li>@L["Postfach_Step1"]</li>
+                        <li>@L["Postfach_Step2"]</li>
+                    </ul>
+                    <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Postfach_Real"]</p>
                 </div>
                 <p class="text-body-secondary mt-2 mb-0">@L["NoRealData"]</p>
             </div>
