@@ -1,4 +1,9 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{
+    // Postfach-Variante (Postkorb:Variante): „simulator“ = Postfach im BundID-Simulator, sonst eigener Postfach-Dienst
+    var postfachImSimulator = string.Equals(Config["Postkorb:Variante"], "simulator", StringComparison.OrdinalIgnoreCase);
+}
 @*
     Hinweis vor dem Wechsel zur BundID-Simulation: Die Person soll wissen, dass sie gleich auf ein Testsystem kommt, was
     dort passiert und wie es bei der echten BundID wäre. Gesteuert von wwwroot/js/bundid-hinweis.js; welche Blöcke
@@ -31,8 +36,9 @@
                     <p>@L["Postfach_Intro"]</p>
                     <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
                     <ul class="mb-2">
-                        <li>@L["Postfach_Step1"]</li>
+                        <li>@(postfachImSimulator ? L["Postfach_Step1_Simulator"] : L["Postfach_Step1"])</li>
                         <li>@L["Postfach_Step2"]</li>
+                        <li>@L["Postfach_Step3"]</li>
                     </ul>
                     <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Postfach_Real"]</p>
                 </div>

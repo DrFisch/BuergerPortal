@@ -67,4 +67,10 @@
   <data name="StepUp_Note" xml:space="preserve">
     <value>This function requires the trust level "substantial". In the simulator, choose ELSTER, Smart-eID or eID (online ID card) – "user name" is no longer offered there.</value>
   </data>
+  <data name="Postfach_Step1_Simulator" xml:space="preserve">
+    <value>Here the mailbox is part of the simulated BundID account. As you are already signed in with BundID, you see it without selecting a person again (sign-in session, 30 minutes).</value>
+  </data>
+  <data name="Postfach_Step3" xml:space="preserve">
+    <value>“Back to BürgerPortal” brings you back here.</value>
+  </data>
 </root>

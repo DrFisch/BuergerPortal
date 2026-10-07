@@ -67,4 +67,10 @@
   <data name="StepUp_Note" xml:space="preserve">
     <value>Diese Funktion verlangt das Vertrauensniveau „substanziell“. Wählen Sie im Simulator ELSTER, Smart-eID oder eID (Online-Ausweis) – „Benutzername“ wird dort nicht mehr angeboten.</value>
   </data>
+  <data name="Postfach_Step1_Simulator" xml:space="preserve">
+    <value>Das Postfach ist hier Teil des simulierten BundID-Kontos. Weil Sie bei der BundID schon angemeldet sind, sehen Sie es ohne erneute Personenauswahl (Anmeldesitzung, 30 Minuten).</value>
+  </data>
+  <data name="Postfach_Step3" xml:space="preserve">
+    <value>Mit „Zurück zum BürgerPortal“ kommen Sie wieder hierher.</value>
+  </data>
 </root>
