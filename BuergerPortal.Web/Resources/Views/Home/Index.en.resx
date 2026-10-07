@@ -203,7 +203,7 @@
     <value>Digital services</value>
   </data>
 	<data name="Hero_PrivacyShort" xml:space="preserve">
-    <value>Compliant with data protection standards.</value>
+    <value>Sign-in with BundID – only what is necessary is stored.</value>
   </data>
 	<data name="Hero_PwaShort" xml:space="preserve">
     <value>Also available as an app on your phone or tablet.</value>
@@ -219,7 +219,7 @@
     <value>Issue Reporter</value>
   </data>
   <data name="Card_ReportIssue_Text" xml:space="preserve">
-    <value>Here you can report an issue in the city</value>
+    <value>Report damage in the city – such as potholes or broken street lights.</value>
   </data>
   <data name="Card_ReportIssue_Button" xml:space="preserve">
     <value>Go to Issue Reporter</value>
@@ -353,4 +353,19 @@
 	<data name="Card_Explore_Button" xml:space="preserve"><value>Explore &amp; Search</value></data>
 	<data name="PWA_Inline_Hint" xml:space="preserve"><value>Install the citizen portal as an app for faster access.</value></data>
 	<data name="PWA_Install_Now" xml:space="preserve"><value>Install now</value></data>
+  <data name="Hero_Stat_AllAppointments" xml:space="preserve">
+    <value>All appointments</value>
+  </data>
+  <data name="Card_BundId_Title" xml:space="preserve">
+    <value>BundID: My data &amp; mailbox</value>
+  </data>
+  <data name="Card_BundId_Text" xml:space="preserve">
+    <value>See which details BundID transmitted and read confirmations in your BundID mailbox.</value>
+  </data>
+  <data name="Card_BundId_MyData" xml:space="preserve">
+    <value>My data</value>
+  </data>
+  <data name="Card_BundId_Mailbox" xml:space="preserve">
+    <value>Open mailbox</value>
+  </data>
 </root>

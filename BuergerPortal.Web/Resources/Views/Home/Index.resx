@@ -133,7 +133,7 @@
     <value>Zugriff auf alle Anträge &amp; Statusübersicht</value>
   </data>
   <data name="Card_Applications_Text" xml:space="preserve">
-    <value>Neue Anträge stellen und den Bearbeitungsstatus bestehenden Anträge verfolgen.</value>
+    <value>Neue Anträge stellen und den Bearbeitungsstand bestehender Anträge verfolgen.</value>
   </data>
   <data name="Card_Appointments" xml:space="preserve">
     <value>Beratungstermine</value>
@@ -148,7 +148,7 @@
     <value>Mangelmelder</value>
   </data>
   <data name="Card_ReportIssue_Text" xml:space="preserve">
-    <value>Hier können sie einen Mangel in der Stadt melden</value>
+    <value>Schäden im Stadtgebiet melden – etwa Schlaglöcher oder defekte Straßenlaternen.</value>
   </data>
   <data name="Card_ReportIssue_Button" xml:space="preserve">
     <value>Zum Mangelmelder</value>
@@ -181,7 +181,7 @@
     <value>Zu meinen Anträgen</value>
   </data>
   <data name="GoToSettings" xml:space="preserve">
-    <value>Zur Settings-Seite</value>
+    <value>Zu den Einstellungen</value>
   </data>
   <data name="Hint_Access" xml:space="preserve">
     <value>• Barrierefreier Zugang vorhanden</value>
@@ -211,7 +211,7 @@
     <value>Digitale Dienste</value>
   </data>
 	<data name="Hero_PrivacyShort" xml:space="preserve">
-    <value>Datenschutzkonform nach geltenden Standards.</value>
+    <value>Anmeldung mit der BundID – gespeichert wird nur das Nötigste.</value>
   </data>
 	<data name="Hero_PwaShort" xml:space="preserve">
     <value>Auch als App auf Smartphone und Tablet nutzbar.</value>
@@ -351,4 +351,19 @@
 	<data name="Card_Explore_Button" xml:space="preserve"><value>Entdecken &amp; Suchen</value></data>
 	<data name="PWA_Inline_Hint" xml:space="preserve"><value>Installieren Sie das Bürgerportal als App für einen schnelleren Zugriff.</value></data>
 	<data name="PWA_Install_Now" xml:space="preserve"><value>Jetzt installieren</value></data>
+  <data name="Hero_Stat_AllAppointments" xml:space="preserve">
+    <value>Alle Termine</value>
+  </data>
+  <data name="Card_BundId_Title" xml:space="preserve">
+    <value>BundID: Meine Daten &amp; Postfach</value>
+  </data>
+  <data name="Card_BundId_Text" xml:space="preserve">
+    <value>Sehen Sie, welche Angaben die BundID übermittelt hat, und lesen Sie Bestätigungen in Ihrem BundID-Postfach.</value>
+  </data>
+  <data name="Card_BundId_MyData" xml:space="preserve">
+    <value>Meine Daten</value>
+  </data>
+  <data name="Card_BundId_Mailbox" xml:space="preserve">
+    <value>Zum Postfach</value>
+  </data>
 </root>
