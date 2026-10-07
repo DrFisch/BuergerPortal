@@ -165,28 +165,26 @@ namespace BuergerPortal.Web.Controllers
             return View(vm);
         }
 
+        // Verfügbarkeit eines Tages an einem Standort für die Buchungsseite (Uhrzeiten, Kalender): geschlossen
+        // (Wochenende, Feiertag, Vorlauf), am Standort vergebene Zeiten, eigene Termine. Abruf per fetch.
         [HttpGet]
-        [Authorize] 
-        public async Task<IActionResult> Busy([FromQuery] string date, CancellationToken ct)
+        [Authorize]
+        public async Task<IActionResult> Verfuegbarkeit([FromQuery] DateOnly date, [FromQuery] LocationType location,
+            CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(date))
-                return BadRequest("date (YYYY-MM-DD) fehlt.");
-
-            var client = _cf.CreateClient("BuergerPortalApi"); 
-            var res = await client.GetAsync($"api/appointments/busy?date={date}", ct);
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var res = await client.GetAsync(
+                $"api/appointments/availability?date={date:yyyy-MM-dd}&location={(int)location}", ct);
 
             if (res.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(); 
+                return Unauthorized();
 
             if (!res.IsSuccessStatusCode)
-                return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+                return StatusCode((int)res.StatusCode);
 
-            var items = await res.Content.ReadFromJsonAsync<List<BusySlotResponse>>(cancellationToken: ct)
-                        ?? new List<BusySlotResponse>();
-
-            return Json(items);
+            var day = await res.Content.ReadFromJsonAsync<DayAvailabilityResponse>(cancellationToken: ct);
+            return Json(day);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -36,4 +36,31 @@
 	<data name="Busy" xml:space="preserve"><value>busy</value></data>
 	<data name="Close" xml:space="preserve"><value>Close</value></data>
 
+  <data name="Slot_Taken" xml:space="preserve">
+    <value>taken</value>
+  </data>
+  <data name="Slot_Own" xml:space="preserve">
+    <value>your appointment</value>
+  </data>
+  <data name="Slot_Past" xml:space="preserve">
+    <value>past</value>
+  </data>
+  <data name="Day_NoFree" xml:space="preserve">
+    <value>There is no suitable time left on this day at the selected location.</value>
+  </data>
+  <data name="Day_Moved" xml:space="preserve">
+    <value>Nothing is free on {0} – suggested is the next free day: {1}.</value>
+  </data>
+  <data name="Day_NotFound" xml:space="preserve">
+    <value>Nothing is free at this location in the next 30 days. Please choose another location.</value>
+  </data>
+  <data name="Day_SearchNext" xml:space="preserve">
+    <value>Find next free day</value>
+  </data>
+  <data name="Calendar_NotFree" xml:space="preserve">
+    <value>This time is not available. Please choose a free time.</value>
+  </data>
+  <data name="Day_Error" xml:space="preserve">
+    <value>The free times could not be loaded. Please reload the page.</value>
+  </data>
 </root>

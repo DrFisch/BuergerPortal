@@ -66,7 +66,7 @@
                         <label class="form-label fw-semibold">@T["Location"]</label>
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-geo-alt"></i></span>
-                            <select asp-for="Location" class="form-select border-start-0" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
+                            <select asp-for="Location" class="form-select border-start-0" id="locationSelect" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
                         </div>
                         <span asp-validation-for="Location" class="text-danger small"></span>
                     </div>
@@ -74,14 +74,14 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">@T["Date"]</label>
                         <input asp-for="LocalDate" type="date" class="form-control form-control-lg rounded-3" id="dateInput" />
-                        <span id="weekendNote" class="text-danger small mt-1 d-block fw-medium"></span>
                         <span asp-validation-for="LocalDate" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">@T["Time"]</label>
                         <div class="input-group input-group-lg">
-                            <select asp-for="LocalTime" class="form-select rounded-start-3" id="timeSelect"></select>
+                            <select asp-for="LocalTime" class="form-select rounded-start-3" id="timeSelect"
+                                    data-initial="@Model.LocalTime.ToString(@"hh\:mm")"></select>
                             <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#kalenderModal">
                                 <i class="bi bi-calendar3"></i>
                             </button>
@@ -93,8 +93,16 @@
                     <div class="col-12">
                         <label class="form-label fw-semibold">@T["Duration"]</label>
                         <select asp-for="Duration" class="form-select form-select-lg rounded-3" id="durationSelect" asp-items="Html.GetEnumSelectList<DurationOption>()"></select>
-                        <div id="clientErrorMsg" class="text-danger small mt-2 fw-bold"></div>
                         <span asp-validation-for="Duration" class="text-danger small"></span>
+                    </div>
+
+                    @* Hinweis zum gewählten Tag (geschlossen, ausgebucht, verschoben) – gefüllt von der Verfügbarkeitsabfrage *@
+                    <div class="col-12" id="dayNoteBox" hidden>
+                        <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-0 rounded-4" role="status">
+                            <i class="bi bi-calendar-x" aria-hidden="true"></i>
+                            <span id="dayNote" class="flex-grow-1"></span>
+                            <button type="button" class="btn btn-sm btn-outline-dark" id="nextFreeDay">@T["Day_SearchNext"]</button>
+                        </div>
                     </div>
                 </div>
 
@@ -111,7 +119,7 @@
                 <div class="text-muted small d-none d-md-block">
                    
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow fw-bold transition-all hover-lift">
+                <button type="submit" id="submitBooking" class="btn btn-primary btn-lg rounded-pill px-5 shadow fw-bold transition-all hover-lift">
                     @T["BookAppointment"] <i class="bi bi-arrow-right-short ms-2"></i>
                 </button>
             </div>
@@ -136,11 +144,15 @@
                         <i class="bi bi-arrow-clockwise"></i> @T["Reload"]
                     </button>
                 </div>
-                <div class="d-flex gap-3 mb-3 small fw-medium">
+                <div class="d-flex gap-3 mb-3 small fw-medium flex-wrap">
                     <span class="d-flex align-items-center gap-1">
                         <span class="badge bg-danger p-2 rounded-1"> </span> @T["Busy"]
                     </span>
+                    <span class="d-flex align-items-center gap-1">
+                        <span class="badge bg-primary p-2 rounded-1"> </span> @T["Slot_Own"]
+                    </span>
                 </div>
+                <div id="calendarNote" class="alert alert-warning py-2 small" hidden></div>
                 <div id="dpCalendar" class="rounded-3 shadow-sm"></div>
             </div>
             <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
@@ -172,7 +184,7 @@
             min-height: 400px;
         }
 
-        .form-control-lg, .form-select-lg {
+        .form-control-lg, .form-select-lg, .input-group-lg > .form-select {
             font-size: 1rem;
             padding: 0.75rem 1rem;
         }
@@ -191,101 +203,191 @@
     <script src="~/lib/daypilot/daypilot-javascript.min.js" asp-append-version="true"></script>
 
     <script>
-        const START_HOUR = 8;
-        const END_HOUR = 12;
+        // Buchungsseite: Uhrzeiten aus der Verfügbarkeit des Tages am gewählten Standort (/Termine/Verfuegbarkeit).
+        // Vergebene, eigene und vergangene Zeiten sind nicht wählbar; geschlossene Tage (Wochenende, Feiertag,
+        // Vorlauf) zeigen den Grund. Die verbindliche Prüfung macht die API beim Buchen.
+        const TEXT = {
+            taken: @Json.Serialize(T["Slot_Taken"].Value),
+            own: @Json.Serialize(T["Slot_Own"].Value),
+            past: @Json.Serialize(T["Slot_Past"].Value),
+            noFree: @Json.Serialize(T["Day_NoFree"].Value),
+            moved: @Json.Serialize(T["Day_Moved"].Value),
+            notFound: @Json.Serialize(T["Day_NotFound"].Value),
+            calendarNotFree: @Json.Serialize(T["Calendar_NotFree"].Value),
+            error: @Json.Serialize(T["Day_Error"].Value)
+        };
+        const MAX_DAYS_AHEAD = 90;
         const STEP_MIN = 15;
 
         const dateInput = document.getElementById('dateInput');
+        const locationSelect = document.getElementById('locationSelect');
         const timeSelect = document.getElementById('timeSelect');
         const durationSelect = document.getElementById('durationSelect');
-        const form = document.getElementById('appointmentForm');
-        const clientErrorMsg = document.getElementById('clientErrorMsg');
-        const weekendNote = document.getElementById('weekendNote');
+        const submitButton = document.getElementById('submitBooking');
+        const dayNoteBox = document.getElementById('dayNoteBox');
+        const dayNote = document.getElementById('dayNote');
+        const nextFreeDayButton = document.getElementById('nextFreeDay');
+        let currentDay = null;
 
-        function isWeekendDateStr(yyyyMmDd) {
-            const d = new Date(yyyyMmDd + "T00:00:00");
-            const dow = d.getDay();
-            return dow === 0 || dow === 6;
+        // Datum als JJJJ-MM-TT in Ortszeit (nicht toISOString: das rechnet in UTC und verschiebt den Tag)
+        function ymd(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+        function parseYmd(s) {
+            const [y, m, d] = s.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+        function addDays(s, n) {
+            const d = parseYmd(s);
+            d.setDate(d.getDate() + n);
+            return ymd(d);
+        }
+        function minutes(text) {
+            const [h, m] = text.split(':').map(Number);
+            return h * 60 + m;
+        }
+        function hhmm(min) {
+            return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0');
+        }
+        function overlaps(start, end, ranges) {
+            return ranges.some(r => start < minutes(r.end) && minutes(r.start) < end);
+        }
+        function german(s) {
+            return parseYmd(s).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
-        function buildOptions() {
-            const currentVal = timeSelect.value;
-            timeSelect.innerHTML = "";
-            const chosen = new Date(dateInput.value + "T00:00:00");
+        async function loadDay(date) {
+            const res = await fetch(`/Termine/Verfuegbarkeit?date=${date}&location=${locationSelect.value}`,
+                { headers: { 'X-Requested-With': 'fetch' }, credentials: 'same-origin' });
+            if (res.status === 401) {
+                window.location.reload(); // Sitzung abgelaufen → Einstiegsseite mit Hinweis
+                return null;
+            }
+            if (!res.ok) {
+                throw new Error('Verfügbarkeit ' + res.status);
+            }
+            return res.json();
+        }
+
+        // Status je Startzeit für den Tag und die gewählte Dauer
+        function slots(day) {
+            const dur = parseInt(durationSelect.value, 10) || 15;
+            const open = minutes(day.opensAt), close = minutes(day.closesAt);
             const now = new Date();
-            const isToday = chosen.toDateString() === now.toDateString();
+            const isToday = day.date === ymd(now);
+            const nowMin = now.getHours() * 60 + now.getMinutes();
+            const result = [];
+            for (let t = open; t + dur <= close; t += STEP_MIN) {
+                let state = 'free';
+                if (isToday && t <= nowMin) state = 'past';
+                else if (overlaps(t, t + dur, day.own)) state = 'own';
+                else if (overlaps(t, t + dur, day.taken)) state = 'taken';
+                result.push({ time: hhmm(t), state });
+            }
+            return result;
+        }
 
-            for (let h = START_HOUR; h < END_HOUR; h++) {
-                for (let m = 0; m < 60; m += STEP_MIN) {
-                    const t = new Date(chosen);
-                    t.setHours(h, m, 0, 0);
-                    if (isToday && t <= now) continue;
+        function showNote(text, withSearch) {
+            dayNote.textContent = text;
+            nextFreeDayButton.hidden = !withSearch;
+            dayNoteBox.hidden = false;
+        }
 
-                    const hh = String(h).padStart(2, '0');
-                    const mm = String(m).padStart(2, '0');
-                    const label = `${hh}:${mm}`;
+        function render(day, keep) {
+            currentDay = day;
+            timeSelect.innerHTML = '';
+            dayNoteBox.hidden = true;
+            if (day.closedReason) {
+                timeSelect.disabled = true;
+                submitButton.disabled = true;
+                showNote(day.closedReason, true);
+                return;
+            }
+            const list = slots(day);
+            for (const s of list) {
+                const opt = document.createElement('option');
+                opt.value = s.time;
+                opt.disabled = s.state !== 'free';
+                opt.textContent = s.state === 'free' ? s.time : `${s.time} – ${TEXT[s.state]}`;
+                timeSelect.appendChild(opt);
+            }
+            const free = list.filter(s => s.state === 'free');
+            timeSelect.disabled = free.length === 0;
+            submitButton.disabled = free.length === 0;
+            if (free.length === 0) {
+                showNote(TEXT.noFree, true);
+                return;
+            }
+            timeSelect.value = free.some(s => s.time === keep) ? keep : free[0].time;
+        }
 
-                    const opt = document.createElement('option');
-                    opt.value = label;
-                    opt.textContent = label;
-                    timeSelect.appendChild(opt);
+        async function refresh(keep) {
+            try {
+                const day = await loadDay(dateInput.value);
+                if (day) render(day, keep ?? timeSelect.value);
+            } catch (e) {
+                showNote(TEXT.error, false);
+            }
+        }
+
+        // Nächster Tag mit freier Zeit (höchstens 30 Tage weiter, nicht über den Vorlauf hinaus)
+        async function findNextFree(from, includeFrom) {
+            const limit = addDays(ymd(new Date()), MAX_DAYS_AHEAD);
+            let date = includeFrom ? from : addDays(from, 1);
+            for (let i = 0; i < 30 && date <= limit; i++, date = addDays(date, 1)) {
+                const day = await loadDay(date);
+                if (!day) return null;
+                if (!day.closedReason && slots(day).some(s => s.state === 'free')) return day;
+            }
+            return null;
+        }
+
+        async function jumpToNextFree(includeFrom) {
+            const start = dateInput.value;
+            nextFreeDayButton.disabled = true;
+            try {
+                const day = await findNextFree(start, includeFrom);
+                if (!day) {
+                    showNote(TEXT.notFound, false);
+                    return;
                 }
-            }
-            if (currentVal) timeSelect.value = currentVal;
-            showOrHideClientError();
-        }
-
-        function validateBusinessEnd() {
-            if (!timeSelect.value) return false;
-            const [hh, mm] = timeSelect.value.split(':').map(Number);
-            const dur = parseInt(durationSelect.value) || 15;
-
-            const endMin = (hh * 60) + mm + dur;
-            return endMin > (END_HOUR * 60);
-        }
-
-        function showOrHideClientError() {
-            if (validateBusinessEnd()) {
-                clientErrorMsg.textContent = `⚠️ Der Termin endet nach ${END_HOUR}:00 Uhr. Bitte Startzeit oder Dauer anpassen.`;
-            } else {
-                clientErrorMsg.textContent = "";
+                dateInput.value = day.date;
+                render(day);
+                if (day.date !== start) {
+                    showNote(TEXT.moved.replace('{0}', german(start)).replace('{1}', german(day.date)), false);
+                }
+            } catch (e) {
+                showNote(TEXT.error, false);
+            } finally {
+                nextFreeDayButton.disabled = false;
             }
         }
 
-        // Init
         (function init() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = ymd(new Date());
             dateInput.min = today;
-            if (!dateInput.value) dateInput.value = today;
-            buildOptions();
+            dateInput.max = addDays(today, MAX_DAYS_AHEAD);
+            if (!dateInput.value || dateInput.value < today) dateInput.value = today;
+            const keep = timeSelect.dataset.initial;
+            // Beim ersten Aufruf direkt einen Tag mit freien Zeiten vorschlagen (z. B. wenn morgen Samstag ist)
+            loadDay(dateInput.value).then(day => {
+                if (!day) return;
+                if (!day.closedReason && slots(day).some(s => s.state === 'free')) render(day, keep);
+                else jumpToNextFree(false);
+            }).catch(() => showNote(TEXT.error, false));
         })();
 
-        dateInput.addEventListener('change', () => {
-            if (isWeekendDateStr(dateInput.value)) {
-                weekendNote.textContent = "Wochenende nicht möglich. Datum wurde angepasst.";
-                const dt = new Date(dateInput.value + "T00:00:00");
-                dt.setDate(dt.getDate() + (dt.getDay() === 6 ? 2 : 1));
-                dateInput.value = dt.toISOString().split('T')[0];
-            } else {
-                weekendNote.textContent = "";
-            }
-            buildOptions();
-        });
+        dateInput.addEventListener('change', () => refresh());
+        locationSelect.addEventListener('change', () => refresh());
+        durationSelect.addEventListener('change', () => { if (currentDay) render(currentDay, timeSelect.value); });
+        nextFreeDayButton.addEventListener('click', () => jumpToNextFree(false));
 
-        timeSelect.addEventListener('change', showOrHideClientError);
-        durationSelect.addEventListener('change', showOrHideClientError);
-
-        form.addEventListener('submit', (e) => {
-            if (validateBusinessEnd()) {
-                e.preventDefault();
-                showOrHideClientError();
-                window.scrollTo({ top: clientErrorMsg.offsetTop - 100, behavior: 'smooth' });
-            }
-        });
-
-        // --- DayPilot Kalender ---
+        // --- Kalender (Tagesansicht): gleiche Verfügbarkeit, nur freie Zeiten übernehmen ---
         (function initCalendar() {
             const dp = new DayPilot.Calendar("dpCalendar");
+            const calDate = document.getElementById('kalenderDate');
+            const calendarNote = document.getElementById('calendarNote');
+            let calDay = null;
             dp.viewType = "Day";
             dp.locale = "de-de";
             dp.cellDuration = 15;
@@ -295,50 +397,56 @@
             dp.heightSpec = "BusinessHoursNoScroll";
 
             dp.onTimeRangeSelected = (args) => {
-                const datePart = args.start.toString("yyyy-MM-dd");
-                const timePart = args.start.toString("HH:mm");
-
-                dateInput.value = datePart;
-                buildOptions();
-                timeSelect.value = timePart;
-
-                bootstrap.Modal.getInstance(document.getElementById('kalenderModal')).hide();
                 dp.clearSelection();
+                const time = args.start.toString("HH:mm");
+                const slot = calDay && !calDay.closedReason ? slots(calDay).find(s => s.time === time) : null;
+                if (!slot || slot.state !== 'free') {
+                    calendarNote.textContent = calDay && calDay.closedReason ? calDay.closedReason : TEXT.calendarNotFree;
+                    calendarNote.hidden = false;
+                    return;
+                }
+                dateInput.value = calDay.date;
+                render(calDay, time);
+                bootstrap.Modal.getInstance(document.getElementById('kalenderModal')).hide();
             };
-
             dp.init();
 
-            const modalEl = document.getElementById('kalenderModal');
-            modalEl.addEventListener('shown.bs.modal', async () => {
-                const calDate = document.getElementById('kalenderDate');
-                calDate.value = dateInput.value;
-                dp.startDate = calDate.value;
-                dp.update();
-                await loadBusyData(calDate.value);
-            });
-
-            async function loadBusyData(date) {
+            async function show(date) {
+                calendarNote.hidden = true;
+                dp.startDate = date;
                 try {
-                    const res = await fetch(`/Termine/Busy?date=${date}`);
-                    const data = await res.json();
-                    const events = data.map((e, i) => ({
-                        id: i,
-                        text: "Belegt",
-                        start: e.startUtc || e.StartUtc,
-                        end: e.endUtc || e.EndUtc,
-                        backColor: "#f8d7da",
-                        borderColor: "#f5c2c7",
-                        fontColor: "#842029"
-                    }));
-                    dp.update({ events });
-                } catch (e) { console.error("Busy-Daten Fehler", e); }
+                    calDay = await loadDay(date);
+                } catch (e) {
+                    calDay = null;
+                }
+                if (!calDay) {
+                    dp.update({ events: [] });
+                    return;
+                }
+                if (calDay.closedReason) {
+                    calendarNote.textContent = calDay.closedReason;
+                    calendarNote.hidden = false;
+                }
+                const ev = (r, i, text, own) => ({
+                    id: (own ? 'o' : 't') + i, text,
+                    start: `${calDay.date}T${r.start}:00`, end: `${calDay.date}T${r.end}:00`,
+                    backColor: own ? "#cfe2ff" : "#f8d7da", borderColor: own ? "#9ec5fe" : "#f5c2c7",
+                    fontColor: own ? "#052c65" : "#842029"
+                });
+                dp.update({ events: [
+                    ...calDay.taken.map((r, i) => ev(r, i, TEXT.taken, false)),
+                    ...calDay.own.map((r, i) => ev(r, i, TEXT.own, true))
+                ] });
             }
 
-            document.getElementById('kalenderReload').addEventListener('click', () => {
-                dp.startDate = document.getElementById('kalenderDate').value;
-                dp.update();
-                loadBusyData(dp.startDate);
+            document.getElementById('kalenderModal').addEventListener('shown.bs.modal', () => {
+                calDate.min = dateInput.min;
+                calDate.max = dateInput.max;
+                calDate.value = dateInput.value;
+                show(calDate.value);
             });
+            calDate.addEventListener('change', () => show(calDate.value));
+            document.getElementById('kalenderReload').addEventListener('click', () => show(calDate.value));
         })();
     </script>
 }

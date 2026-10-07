@@ -36,4 +36,31 @@
 	<data name="Busy" xml:space="preserve"><value>belegt</value></data>
 	<data name="Close" xml:space="preserve"><value>Schließen</value></data>
 
+  <data name="Slot_Taken" xml:space="preserve">
+    <value>vergeben</value>
+  </data>
+  <data name="Slot_Own" xml:space="preserve">
+    <value>eigener Termin</value>
+  </data>
+  <data name="Slot_Past" xml:space="preserve">
+    <value>vorbei</value>
+  </data>
+  <data name="Day_NoFree" xml:space="preserve">
+    <value>An diesem Tag ist am gewählten Standort keine passende Zeit mehr frei.</value>
+  </data>
+  <data name="Day_Moved" xml:space="preserve">
+    <value>Am {0} ist nichts frei – vorgeschlagen ist der nächste freie Tag: {1}.</value>
+  </data>
+  <data name="Day_NotFound" xml:space="preserve">
+    <value>In den nächsten 30 Tagen ist an diesem Standort nichts frei. Bitte wählen Sie einen anderen Standort.</value>
+  </data>
+  <data name="Day_SearchNext" xml:space="preserve">
+    <value>Nächsten freien Tag suchen</value>
+  </data>
+  <data name="Calendar_NotFree" xml:space="preserve">
+    <value>Diese Zeit ist nicht frei. Bitte wählen Sie eine freie Zeit.</value>
+  </data>
+  <data name="Day_Error" xml:space="preserve">
+    <value>Die freien Zeiten konnten nicht geladen werden. Bitte laden Sie die Seite neu.</value>
+  </data>
 </root>
