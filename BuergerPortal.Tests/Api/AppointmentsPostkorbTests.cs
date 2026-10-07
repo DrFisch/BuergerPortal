@@ -48,7 +48,7 @@ namespace BuergerPortal.Tests.Api
             public Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, Guid currentUserId, CancellationToken ct) =>
                 Task.FromResult(bookResult);
             public Task<List<AppointmentListItemDto>> GetAllForUserAsync(Guid userId, CancellationToken ct) => throw new NotImplementedException();
-            public Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct) => throw new NotImplementedException();
+            public Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, LocationType? location, CancellationToken ct) => throw new NotImplementedException();
             public Task<Result<Guid>> CancelAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();
             public Task<Result<Guid>> DeleteAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();
             public Task<AppointmentListItemDto?> GetByIdAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();

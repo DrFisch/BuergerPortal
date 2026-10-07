@@ -24,6 +24,11 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             _validator = validator;
         }
 
+        // Meldungen bei belegten Zeiten (die Oberfläche zeigt sie unverändert an)
+        public const string LocationTakenMessage =
+            "Dieser Zeitraum ist am gewählten Standort bereits vergeben. Bitte wählen Sie eine andere Uhrzeit oder einen anderen Standort.";
+        public const string OwnOverlapMessage = "Sie haben zu dieser Zeit bereits einen anderen Termin.";
+
         public async Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, Guid currentUserId, CancellationToken ct)
         {
             if (currentUserId == Guid.Empty)
@@ -36,9 +41,14 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 return Result<Guid>.Fail(ErrorCodes.Validation, msg);
             }
 
-            var collides = await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct);
-            if (collides)
-                return Result<Guid>.Fail(ErrorCodes.SlotConflict, "Zeitslot bereits belegt.");
+            // Ein Bürgeramt hat einen Schalter: Der Zeitraum darf am Standort noch nicht vergeben sein (vorher wurde nur
+            // gegen die eigenen Termine geprüft – zwei Personen konnten denselben Termin buchen).
+            if (await _repo.ExistsLocationOverlapAsync(dto.Location, dto.StartUtc, dto.EndUtc, null, ct))
+                return Result<Guid>.Fail(ErrorCodes.SlotConflict, LocationTakenMessage);
+
+            // Niemand kann zur selben Zeit an zwei Orten sein.
+            if (await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct))
+                return Result<Guid>.Fail(ErrorCodes.SlotConflict, OwnOverlapMessage);
 
             var entity = new Appointment {
                 Id = Guid.NewGuid(),
@@ -74,14 +84,15 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 })
                 .ToList();
         }
-        public async Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct)
+        public async Task<List<BusySlotDto>> GetBusyAsync(DateTime fromUtc, DateTime toUtc, LocationType? location,
+            CancellationToken ct)
         {
             // Guard
             if (fromUtc.Kind != DateTimeKind.Utc) fromUtc = DateTime.SpecifyKind(fromUtc, DateTimeKind.Utc);
             if (toUtc.Kind != DateTimeKind.Utc) toUtc = DateTime.SpecifyKind(toUtc, DateTimeKind.Utc);
             if (toUtc <= fromUtc) return new List<BusySlotDto>();
 
-            var overlaps = await _repo.GetOverlappingAsync(fromUtc, toUtc, ct);
+            var overlaps = await _repo.GetOverlappingAsync(fromUtc, toUtc, location, ct);
             return overlaps
                 .Select(a => new BusySlotDto
                 {

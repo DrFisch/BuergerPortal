@@ -158,7 +158,9 @@ namespace BuergerPortal.Api.Controllers
 
         [HttpGet("busy")]
         [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date, CancellationToken ct)
+        // location: nur Termine an diesem Standort (ohne Angabe wie bisher alle Standorte)
+        public async Task<ActionResult<IEnumerable<BusySlotResponse>>> GetBusy([FromQuery] DateOnly date,
+            [FromQuery] LocationType? location, CancellationToken ct)
         {
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
@@ -168,7 +170,7 @@ namespace BuergerPortal.Api.Controllers
             var fromUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
             var toUtc = TimeZoneInfo.ConvertTimeToUtc(localEnd, tz);
 
-            var dtos = await _svc.GetBusyAsync(fromUtc, toUtc, ct);
+            var dtos = await _svc.GetBusyAsync(fromUtc, toUtc, location, ct);
 
             var resp = dtos.Select(x =>
             {

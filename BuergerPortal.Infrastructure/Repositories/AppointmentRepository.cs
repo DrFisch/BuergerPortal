@@ -23,6 +23,15 @@ namespace BuergerPortal.Infrastructure.Repositories
                    !(a.EndUtc <= startUtc || a.StartUtc >= endUtc),
                ct);
 
+        public Task<bool> ExistsLocationOverlapAsync(LocationType location, DateTime startUtc, DateTime endUtc,
+            Guid? excludeId, CancellationToken ct)
+            => _db.Appointments.AnyAsync(a =>
+                   a.Location == location &&
+                   a.Status == AppointmentStatus.Booked &&
+                   a.Id != excludeId &&
+                   a.StartUtc < endUtc && startUtc < a.EndUtc,
+               ct);
+
         public async Task CreateAsync(Appointment entity, CancellationToken ct)
         {
             _db.Appointments.Add(entity);
@@ -36,11 +45,13 @@ namespace BuergerPortal.Infrastructure.Repositories
               .OrderBy(a => a.StartUtc)
               .ToListAsync(ct);
         }
-        public Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct)
+        public Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, LocationType? location,
+            CancellationToken ct)
         {
             return _db.Appointments
           .AsNoTracking()
           .Where(a => a.Status == AppointmentStatus.Booked &&
+                      (location == null || a.Location == location) &&
                       a.StartUtc < toUtc && fromUtc < a.EndUtc)
           .ToListAsync(ct);
         }
