@@ -3,7 +3,8 @@
 // (z. B. „Meine Daten“ mit Name, Anschrift, bPK2), die nach dem Abmelden nicht im Browser bleiben dürfen. Ohne Netz
 // erscheint die Offline-Seite. Zwischengespeichert werden nur statische Dateien (CSS, JS, Bilder, Schriften).
 // Neue Cache-Version: Beim Aktivieren werden ältere Caches gelöscht – auch bp-v6, das noch HTML-Seiten enthielt.
-const CACHE_NAME = 'bp-static-v7';
+// v8: Offline-Seite ohne Inline-Skript (Content-Security-Policy).
+const CACHE_NAME = 'bp-static-v8';
 const OFFLINE_URL = '/offline.html';
 const PRECACHE = [
     OFFLINE_URL,

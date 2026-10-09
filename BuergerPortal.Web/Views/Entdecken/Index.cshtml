@@ -33,7 +33,7 @@
         </div>
 
         <div class="d-grid mb-3">
-            <button class="btn btn-outline-primary rounded-pill shadow-sm fw-bold border-2" onclick="openGlobalMap()">
+            <button class="btn btn-outline-primary rounded-pill shadow-sm fw-bold border-2" type="button" id="openGlobalMap">
                 <i class="bi bi-map-fill me-2"></i> @L["Show_Map_Overview"]
             </button>
         </div>
@@ -63,7 +63,7 @@
                  data-cat="@poi.Cat"
                  data-tags="@poi.Tags?.ToLower()"
                  data-desc="@poi.Desc.ToLower()">
-                <div class="card h-100 border-0 shadow-sm rounded-4 poi-card p-2" onclick="openPoiDetails('@poi.Id')">
+                <div class="card h-100 border-0 shadow-sm rounded-4 poi-card p-2" data-poi-details="@poi.Id">
                     <div class="card-body p-3 d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge category-badge px-2 py-1 rounded-pill">@poi.Cat</span>
@@ -288,11 +288,27 @@
             window.openGlobalMap = function() {
                 globalMapModal.show();
             };
+            document.getElementById('openGlobalMap').addEventListener('click', openGlobalMap);
+
+            // Details: Klick auf eine Karte der Liste (statt onclick-Attribut – Content-Security-Policy)
+            document.addEventListener('click', function (e) {
+                const card = e.target.closest('.poi-card[data-poi-details]');
+                if (card) openPoiDetails(card.dataset.poiDetails);
+            });
 
             document.getElementById('globalMapModal').addEventListener('shown.bs.modal', function () {
                 if (globalMap !== null) globalMap.remove();
                 globalMap = L.map('globalMap').setView([50.312, 11.912], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(globalMap);
+                // „Details“ im Popup: Leaflet hält Klicks im Popup zurück, deshalb beim Öffnen anbinden
+                globalMap.on('popupopen', function (ev) {
+                    const button = ev.popup.getElement().querySelector('[data-poi-details]');
+                    if (!button) return;
+                    button.addEventListener('click', function () {
+                        globalMapModal.hide();
+                        openPoiDetails(button.dataset.poiDetails);
+                    });
+                });
 
                 const markerGroup = [];
                 allPois.forEach(poi => {
@@ -303,8 +319,8 @@
                             .bindPopup(`
                                 <div class="text-center">
                                     <h6 class="fw-bold mb-1">${poi.Name || poi.name}</h6>
-                                    <button class="btn btn-xs btn-primary rounded-pill mt-1"
-                                            onclick="bootstrap.Modal.getInstance(document.getElementById('globalMapModal')).hide(); openPoiDetails('${poi.Id || poi.id}')">
+                                    <button type="button" class="btn btn-xs btn-primary rounded-pill mt-1"
+                                            data-poi-details="${poi.Id || poi.id}">
                                         Details
                                     </button>
                                 </div>`);
