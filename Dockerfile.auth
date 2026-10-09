@@ -2,7 +2,7 @@
 # Bauen aus der Repo-Wurzel:  docker build -f Dockerfile.auth -t bpsim-auth .
 
 # ---------- Build ----------
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 # Erst nur die Projektdateien: Die Restore-Schicht bleibt im Cache, solange sich keine Abhängigkeit ändert.
 COPY AuthenticationServer/AuthenticationServer.csproj AuthenticationServer/
