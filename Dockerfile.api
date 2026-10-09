@@ -22,7 +22,7 @@ RUN dotnet publish BuergerPortal.Api/BuergerPortal.Api.csproj -c Release -o /app
     --no-restore /p:UseAppHost=false
 
 # ---------- Laufzeit ----------
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 # Port 8080 (Standard der .NET-Images); läuft als Benutzer "app" (UID 1654) statt root.
