@@ -287,6 +287,9 @@ forwardedOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedOptions);
 
+// Content-Security-Policy mit Nonce je Anfrage (Services/ContentSecurityPolicy.cs), vor allen anderen Ausgaben
+app.UseContentSecurityPolicy();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
