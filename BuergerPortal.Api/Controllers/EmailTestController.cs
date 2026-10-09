@@ -1,8 +1,11 @@
-﻿using BuergerPortal.Application.Interfaces.Mail;
+﻿using BuergerPortal.Api.Extensions;
+using BuergerPortal.Application.Interfaces.Mail;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuergerPortal.Api.Controllers
 {
+    // Nur in der Entwicklung (DiagnosticsEndpointConvention): anonymer Testversand über Mailjet
+    [DiagnosticsEndpoint]
     [ApiController]
     [Route("api/email")]
     public class EmailTestController : ControllerBase

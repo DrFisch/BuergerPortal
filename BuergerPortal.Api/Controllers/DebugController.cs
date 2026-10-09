@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using BuergerPortal.Api.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuergerPortal.Api.Controllers
 {
+    // Nur in der Entwicklung (DiagnosticsEndpointConvention): Echo des Authorization-Headers, Token-Inhalt
+    [DiagnosticsEndpoint]
     [ApiController]
     [Route("api/debug")]
     public class DebugController : ControllerBase

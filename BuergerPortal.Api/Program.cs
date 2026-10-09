@@ -17,7 +17,9 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. Services registrieren ---
-builder.Services.AddControllers();
+// Diagnose-Controller (api/debug, api/email/test) nur in Development bzw. mit Diagnostics:Enabled=true
+builder.Services.AddControllers(o => o.Conventions.Add(new DiagnosticsEndpointConvention(
+    DiagnosticsEndpointConvention.IsEnabled(builder.Configuration, builder.Environment))));
 builder.Services.AddEndpointsApiExplorer();
 
 // Swagger Konfiguration
