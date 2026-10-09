@@ -10,9 +10,9 @@ namespace BuergerPortal.Web.Services;
 /// stammen oder als Inline-Skript die <b>Nonce</b> dieser Antwort tragen – eine Zufallszahl, die bei jeder Anfrage neu
 /// entsteht. Ein eingeschleustes Skript kennt sie nicht und wird nicht ausgeführt. Die Nonce setzt
 /// <see cref="ScriptNonceTagHelper"/> an jedes &lt;script&gt; der Razor-Ansichten.
-/// Header-Name aus <c>Csp:Header</c>: <c>Content-Security-Policy-Report-Only</c> (Standard: Verstöße nur in der
-/// Browser-Konsole melden) oder <c>Content-Security-Policy</c> (durchsetzen). Die übrigen Hosts (Auth-Server,
-/// Simulator) bekommen ihre Regeln von Caddy (deploy/Caddyfile).
+/// Header-Name aus <c>Csp:Header</c>: <c>Content-Security-Policy</c> (Standard: durchsetzen) oder
+/// <c>Content-Security-Policy-Report-Only</c> (Verstöße nur in der Browser-Konsole melden, z. B. zum Prüfen neuer
+/// Seiten). Die übrigen Hosts (Auth-Server, Simulator) bekommen ihre Regeln von Caddy (deploy/Caddyfile).
 /// </summary>
 public static class ContentSecurityPolicy
 {
@@ -21,9 +21,9 @@ public static class ContentSecurityPolicy
     public const string ConfigKey = "Csp:Header";
     private const string NonceKey = "bpsim.csp.nonce";
 
-    /// <summary>Header-Name laut Konfiguration; unbekannte Werte gelten als "nur melden".</summary>
+    /// <summary>Header-Name laut Konfiguration; ohne bzw. mit unbekanntem Wert wird durchgesetzt.</summary>
     public static string HeaderName(IConfiguration configuration) =>
-        string.Equals(configuration[ConfigKey], EnforceHeader, StringComparison.OrdinalIgnoreCase) ? EnforceHeader : ReportOnlyHeader;
+        string.Equals(configuration[ConfigKey], ReportOnlyHeader, StringComparison.OrdinalIgnoreCase) ? ReportOnlyHeader : EnforceHeader;
 
     /// <summary>
     /// Die Regeln. <paramref name="authorityOrigin"/> = Adresse des Auth-Servers (Abmelden leitet dorthin weiter).

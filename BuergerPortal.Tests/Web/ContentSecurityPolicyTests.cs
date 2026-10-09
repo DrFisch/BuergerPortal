@@ -9,7 +9,7 @@ namespace BuergerPortal.Tests.Web
 {
     /// <summary>
     /// Content-Security-Policy des Portals: Nonce je Antwort, jedes &lt;script&gt; der Seite trägt genau diese Nonce,
-    /// Schalter zwischen "nur melden" und "durchsetzen" (echter Host des Portals, Einstiegsseite ohne Anmeldung).
+    /// Schalter zwischen "durchsetzen" (Standard) und "nur melden" (echter Host des Portals, Einstiegsseite ohne Anmeldung).
     /// </summary>
     public class ContentSecurityPolicyTests
     {
@@ -39,11 +39,11 @@ namespace BuergerPortal.Tests.Web
         private static string NonceOf(string policy) => Regex.Match(policy, "'nonce-([^']+)'").Groups[1].Value;
 
         [Fact]
-        public async Task Standard_meldet_nur_und_jedes_Skript_traegt_die_Nonce()
+        public async Task Standard_setzt_durch_und_jedes_Skript_traegt_die_Nonce()
         {
             var response = await Start(null);
-            var policy = Assert.Single(response.Headers.GetValues(ContentSecurityPolicy.ReportOnlyHeader));
-            Assert.False(response.Headers.Contains(ContentSecurityPolicy.EnforceHeader));
+            var policy = Assert.Single(response.Headers.GetValues(ContentSecurityPolicy.EnforceHeader));
+            Assert.False(response.Headers.Contains(ContentSecurityPolicy.ReportOnlyHeader));
 
             var nonce = NonceOf(policy);
             Assert.True(nonce.Length >= 20, "Nonce fehlt oder ist zu kurz");
@@ -56,17 +56,17 @@ namespace BuergerPortal.Tests.Web
         [Fact]
         public async Task Jede_Antwort_hat_eine_neue_Nonce()
         {
-            var first = NonceOf((await Start(null)).Headers.GetValues(ContentSecurityPolicy.ReportOnlyHeader).Single());
-            var second = NonceOf((await Start(null)).Headers.GetValues(ContentSecurityPolicy.ReportOnlyHeader).Single());
+            var first = NonceOf((await Start(null)).Headers.GetValues(ContentSecurityPolicy.EnforceHeader).Single());
+            var second = NonceOf((await Start(null)).Headers.GetValues(ContentSecurityPolicy.EnforceHeader).Single());
             Assert.NotEqual(first, second);
         }
 
         [Fact]
-        public async Task Schalter_setzt_die_Regeln_durch()
+        public async Task Schalter_meldet_nur()
         {
-            var response = await Start(ContentSecurityPolicy.EnforceHeader);
-            Assert.True(response.Headers.Contains(ContentSecurityPolicy.EnforceHeader));
-            Assert.False(response.Headers.Contains(ContentSecurityPolicy.ReportOnlyHeader));
+            var response = await Start(ContentSecurityPolicy.ReportOnlyHeader);
+            Assert.True(response.Headers.Contains(ContentSecurityPolicy.ReportOnlyHeader));
+            Assert.False(response.Headers.Contains(ContentSecurityPolicy.EnforceHeader));
         }
 
         [Fact]

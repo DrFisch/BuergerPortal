@@ -19,14 +19,16 @@
 	header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 }
 
-# Content-Security-Policy: Der Header-Name kommt aus BPSIM_CSP_HEADER – "Content-Security-Policy-Report-Only" meldet
-# Verstöße nur in der Browser-Konsole, "Content-Security-Policy" setzt die Regeln durch. Die Regeln des Portals setzt
+# Content-Security-Policy: Der Header-Name kommt aus BPSIM_CSP_HEADER – "Content-Security-Policy" (Standard) setzt die
+# Regeln durch, "Content-Security-Policy-Report-Only" meldet Verstöße nur in der Browser-Konsole. Die Regeln des Portals setzt
 # die Webanwendung selbst (mit einer Nonce je Anfrage für ihre Inline-Skripte).
 #
 # Die SAML-Bindung (HTTP-POST) und OpenID Connect (response_mode=form_post) brauchen ein Formular, das sich selbst
 # abschickt. Die Bibliotheken schreiben dafür je ein festes Inline-Skript; erlaubt sind genau diese über ihren Hash:
 #   ITfoxtec (AuthnRequest an die BundID):  window.addEventListener("DOMContentLoaded", function() { document.forms[0].submit() })
 #   OpenIddict (Code an das Portal):        document.form.submit();
+# Nach einem Update von ITfoxtec oder OpenIddict prüfen, ob die Skripte gleich geblieben sind (Browser-Test t_csp.py),
+# sonst blockiert der Browser das Abschicken und die Anmeldung bleibt stehen.
 # form-action: Die Formulare gehen nur an die eigenen Adressen (Auth-Server → Simulator/Portal, Simulator →
 # Auth-Server/Postfach). Bei der echten BundID käme deren Adresse (z. B. https://id.bund.de) hinzu.
 
@@ -42,7 +44,7 @@
 auth.{$BPSIM_DOMAIN} {
 	import sicherheit
 	import keine-geraetefunktionen
-	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE=' 'sha256-j7OoGArf6XW6YY4cAyS3riSSvrJRqpSi1fOF9vQ5SrI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE=' 'sha256-j7OoGArf6XW6YY4cAyS3riSSvrJRqpSi1fOF9vQ5SrI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
 	reverse_proxy auth:8080
 }
 
@@ -53,7 +55,7 @@ auth.{$BPSIM_DOMAIN} {
 bundid.{$BPSIM_DOMAIN} {
 	import sicherheit
 	import keine-geraetefunktionen
-	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
 	@actuator path /actuator /actuator/*
 	@api path /api /api/*
 	@postfachapi path /postfach/api /postfach/api/*
@@ -75,6 +77,6 @@ bundid.{$BPSIM_DOMAIN} {
 postkorb.{$BPSIM_DOMAIN} {
 	import sicherheit
 	import keine-geraetefunktionen
-	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'none'; frame-ancestors 'none'"
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy} "default-src 'none'; frame-ancestors 'none'"
 	redir https://bundid.{$BPSIM_DOMAIN}/postfach/ permanent
 }
