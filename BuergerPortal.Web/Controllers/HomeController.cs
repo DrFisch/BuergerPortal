@@ -193,12 +193,6 @@ namespace BuergerPortal.Web.Controllers
             ViewData["StatusCode"] = code;
             return View("Error", new ErrorViewModel());
         }
-        [HttpGet("/home/testuser")]
-        public IActionResult TestUser()
-        {
-            var lines = User.Claims.Select(c => $"{c.Type} = {c.Value}");
-            return Content(string.Join("\n", lines));
-        }
 
         // Hilfsmethodne f�r wetter
         private string GetWeatherDescription(int code) => code switch

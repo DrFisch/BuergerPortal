@@ -307,50 +307,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// --- Auth Debug Routen ---
-app.MapGet("/auth/debug", async (HttpContext ctx) =>
+// --- Diagnose-Adressen (/auth/debug, /home/testuser): nur in Development bzw. mit Diagnostics:Enabled=true ---
+if (DiagnosticEndpoints.IsEnabled(app.Configuration, app.Environment))
 {
-    var idToken = await ctx.GetTokenAsync("id_token");
-    var accessToken = await ctx.GetTokenAsync("access_token");
-    var refreshToken = await ctx.GetTokenAsync("refresh_token");
-
-    var claims = ctx.User.Claims.Select(c => new { c.Type, c.Value });
-
-    static string? DecodeJwtPayload(string? jwt)
-    {
-        if (string.IsNullOrEmpty(jwt)) return null;
-        var parts = jwt.Split('.');
-        if (parts.Length < 2) return null;
-        string Base64UrlDecode(string s)
-        {
-            s = s.Replace('-', '+').Replace('_', '/');
-            switch (s.Length % 4) { case 2: s += "=="; break; case 3: s += "="; break; }
-            var bytes = Convert.FromBase64String(s);
-            return System.Text.Encoding.UTF8.GetString(bytes);
-        }
-        return Base64UrlDecode(parts[1]);
-    }
-
-    var idPayload = DecodeJwtPayload(idToken);
-    var accessPayload = DecodeJwtPayload(accessToken);
-
-    var result = new
-    {
-        Authenticated = ctx.User.Identity?.IsAuthenticated,
-        Name = ctx.User.Identity?.Name,
-        Claims = claims,
-        Tokens = new
-        {
-            HasIdToken = idToken != null,
-            HasAccessToken = accessToken != null,
-            HasRefreshToken = refreshToken != null
-        },
-        IdTokenPayload = idPayload,
-        AccessTokenPayload = accessPayload
-    };
-
-    await ctx.Response.WriteAsJsonAsync(result);
-}).RequireAuthorization();
+    app.MapDiagnosticEndpoints();
+}
 
 app.MapGet("/login", async (HttpContext ctx) =>
 {
