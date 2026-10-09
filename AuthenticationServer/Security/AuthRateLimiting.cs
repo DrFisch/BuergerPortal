@@ -33,9 +33,10 @@ public static class AuthRateLimiting
 
     public static IServiceCollection AddAuthRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
-        var limits = configuration.GetSection("RateLimiting").Get<Limits>() ?? new Limits();
         return services.AddRateLimiter(options =>
         {
+            // erst beim Aufbau der Optionen lesen: dann ist die Konfiguration vollständig (auch in Tests)
+            var limits = configuration.GetSection("RateLimiting").Get<Limits>() ?? new Limits();
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
