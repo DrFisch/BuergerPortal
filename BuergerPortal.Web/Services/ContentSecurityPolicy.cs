@@ -56,7 +56,8 @@ public static class ContentSecurityPolicy
 
         return app.Use(async (context, next) =>
         {
-            var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
+            // Base64url (nur A–Z, a–z, 0–9, '-', '_'): Der HTML-Encoder schreibt sonst z. B. '+' als &#x2B; ins Attribut.
+            var nonce = System.Buffers.Text.Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(16));
             context.Items[NonceKey] = nonce;
             context.Response.OnStarting(() =>
             {

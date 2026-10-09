@@ -47,6 +47,7 @@ namespace BuergerPortal.Tests.Web
 
             var nonce = NonceOf(policy);
             Assert.True(nonce.Length >= 20, "Nonce fehlt oder ist zu kurz");
+            Assert.Matches("^[A-Za-z0-9_-]+$", nonce);   // Base64url: im HTML-Attribut unverändert
             var html = await response.Content.ReadAsStringAsync();
             var scripts = Regex.Matches(html, "<script[^>]*>").Select(m => m.Value).ToList();
             Assert.NotEmpty(scripts);
