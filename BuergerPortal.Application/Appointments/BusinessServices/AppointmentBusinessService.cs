@@ -18,19 +18,23 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
         private readonly IAppointmentRepository _repo;
         private readonly IValidator<AppointmentCreateDto> _validator;
         private readonly TimeProvider _time;
+        private readonly IAppointmentBookingLock _bookingLock;
 
         public AppointmentBusinessService(IAppointmentRepository repo, IValidator<AppointmentCreateDto> validator,
-            TimeProvider time)
+            TimeProvider time, IAppointmentBookingLock bookingLock)
         {
             _repo = repo;
             _validator = validator;
             _time = time;
+            _bookingLock = bookingLock;
         }
 
         // Meldungen bei belegten Zeiten (die Oberfläche zeigt sie unverändert an)
         public const string LocationTakenMessage =
             "Dieser Zeitraum ist am gewählten Standort bereits vergeben. Bitte wählen Sie eine andere Uhrzeit oder einen anderen Standort.";
         public const string OwnOverlapMessage = "Sie haben zu dieser Zeit bereits einen anderen Termin.";
+        public const string BusyMessage =
+            "Die Terminvergabe ist gerade stark ausgelastet. Bitte versuchen Sie es in einem Moment erneut.";
 
         public async Task<Result<Guid>> BookAsync(AppointmentCreateDto dto, Guid currentUserId, CancellationToken ct)
         {
@@ -44,27 +48,43 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                 return Result<Guid>.Fail(ErrorCodes.Validation, msg);
             }
 
-            // Ein Bürgeramt hat einen Schalter: Der Zeitraum darf am Standort noch nicht vergeben sein (vorher wurde nur
-            // gegen die eigenen Termine geprüft – zwei Personen konnten denselben Termin buchen).
-            if (await _repo.ExistsLocationOverlapAsync(dto.Location, dto.StartUtc, dto.EndUtc, null, ct))
-                return Result<Guid>.Fail(ErrorCodes.SlotConflict, LocationTakenMessage);
+            // Prüfen und Speichern unter einer Sperre je Person und Standort: Ohne sie sahen zwei gleichzeitige Anfragen
+            // beide „frei“ und buchten denselben Zeitraum (IAppointmentBookingLock).
+            IAppointmentBookingLease lease;
+            try
+            {
+                lease = await _bookingLock.AcquireAsync(currentUserId, dto.Location, ct);
+            }
+            catch (TimeoutException)
+            {
+                return Result<Guid>.Fail(ErrorCodes.SlotConflict, BusyMessage);
+            }
 
-            // Niemand kann zur selben Zeit an zwei Orten sein.
-            if (await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct))
-                return Result<Guid>.Fail(ErrorCodes.SlotConflict, OwnOverlapMessage);
+            await using (lease)
+            {
+                // Ein Bürgeramt hat einen Schalter: Der Zeitraum darf am Standort noch nicht vergeben sein (vorher wurde nur
+                // gegen die eigenen Termine geprüft – zwei Personen konnten denselben Termin buchen).
+                if (await _repo.ExistsLocationOverlapAsync(dto.Location, dto.StartUtc, dto.EndUtc, null, ct))
+                    return Result<Guid>.Fail(ErrorCodes.SlotConflict, LocationTakenMessage);
 
-            var entity = new Appointment {
-                Id = Guid.NewGuid(),
-                Service = dto.Service,
-                Location = dto.Location,
-                StartUtc = dto.StartUtc,
-                EndUtc = dto.EndUtc,
-                UserId = currentUserId,
-                Status = AppointmentStatus.Booked,
-                AntragId=dto.AntragId
-            };
-            await _repo.CreateAsync(entity, ct);
-            return Result<Guid>.Success(entity.Id);
+                // Niemand kann zur selben Zeit an zwei Orten sein.
+                if (await _repo.ExistsOverlapAsync(currentUserId, dto.StartUtc, dto.EndUtc, ct))
+                    return Result<Guid>.Fail(ErrorCodes.SlotConflict, OwnOverlapMessage);
+
+                var entity = new Appointment {
+                    Id = Guid.NewGuid(),
+                    Service = dto.Service,
+                    Location = dto.Location,
+                    StartUtc = dto.StartUtc,
+                    EndUtc = dto.EndUtc,
+                    UserId = currentUserId,
+                    Status = AppointmentStatus.Booked,
+                    AntragId=dto.AntragId
+                };
+                await _repo.CreateAsync(entity, ct);
+                await lease.CommitAsync(ct);
+                return Result<Guid>.Success(entity.Id);
+            }
         }
 
         public async Task<List<AppointmentListItemDto>> GetAllForUserAsync(Guid userId, CancellationToken ct)
@@ -181,15 +201,30 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             if (appt.Location == newLocation)
                 return Result<Guid>.Fail(ErrorCodes.Validation, "Der Termin findet bereits an diesem Standort statt.");
 
-            // Am neuen Standort muss die Zeit noch frei sein (der eigene Termin zählt nicht).
-            if (await _repo.ExistsLocationOverlapAsync(newLocation, appt.StartUtc, appt.EndUtc, appt.Id, ct))
-                return Result<Guid>.Fail(ErrorCodes.SlotConflict,
-                    "Am neuen Standort ist diese Zeit bereits vergeben. Bitte buchen Sie dort einen neuen Termin.");
+            // Wie beim Buchen: Prüfen und Speichern unter der Sperre für Person und neuen Standort.
+            IAppointmentBookingLease lease;
+            try
+            {
+                lease = await _bookingLock.AcquireAsync(currentUserId, newLocation, ct);
+            }
+            catch (TimeoutException)
+            {
+                return Result<Guid>.Fail(ErrorCodes.SlotConflict, BusyMessage);
+            }
 
-            appt.Location = newLocation;
-            await _repo.UpdateAsync(appt, ct);
+            await using (lease)
+            {
+                // Am neuen Standort muss die Zeit noch frei sein (der eigene Termin zählt nicht).
+                if (await _repo.ExistsLocationOverlapAsync(newLocation, appt.StartUtc, appt.EndUtc, appt.Id, ct))
+                    return Result<Guid>.Fail(ErrorCodes.SlotConflict,
+                        "Am neuen Standort ist diese Zeit bereits vergeben. Bitte buchen Sie dort einen neuen Termin.");
 
-            return Result<Guid>.Success(appt.Id);
+                appt.Location = newLocation;
+                await _repo.UpdateAsync(appt, ct);
+                await lease.CommitAsync(ct);
+
+                return Result<Guid>.Success(appt.Id);
+            }
         }
     }
 }

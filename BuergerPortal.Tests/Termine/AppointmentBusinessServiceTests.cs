@@ -22,17 +22,25 @@ namespace BuergerPortal.Tests.Termine
         {
             public List<Appointment> Items { get; } = [];
 
+            /// <summary>Verzögerung zwischen Prüfen und Speichern – macht gleichzeitige Anfragen im Test sichtbar.</summary>
+            public TimeSpan CheckDelay { get; set; } = TimeSpan.Zero;
+
             private static bool Overlaps(Appointment a, DateTime start, DateTime end) =>
                 a.Status == AppointmentStatus.Booked && a.StartUtc < end && start < a.EndUtc;
 
             public Task<bool> ExistsOverlapAsync(Guid userId, DateTime startUtc, DateTime endUtc, CancellationToken ct) =>
                 Task.FromResult(Items.Any(a => a.UserId == userId && Overlaps(a, startUtc, endUtc)));
 
-            public Task<bool> ExistsLocationOverlapAsync(LocationType location, DateTime startUtc, DateTime endUtc,
-                Guid? excludeId, CancellationToken ct) =>
-                Task.FromResult(Items.Any(a => a.Location == location && a.Id != excludeId && Overlaps(a, startUtc, endUtc)));
+            public async Task<bool> ExistsLocationOverlapAsync(LocationType location, DateTime startUtc, DateTime endUtc,
+                Guid? excludeId, CancellationToken ct)
+            {
+                bool taken;
+                lock (Items) taken = Items.Any(a => a.Location == location && a.Id != excludeId && Overlaps(a, startUtc, endUtc));
+                if (CheckDelay > TimeSpan.Zero) await Task.Delay(CheckDelay, ct);
+                return taken;
+            }
 
-            public Task CreateAsync(Appointment entity, CancellationToken ct) { Items.Add(entity); return Task.CompletedTask; }
+            public Task CreateAsync(Appointment entity, CancellationToken ct) { lock (Items) Items.Add(entity); return Task.CompletedTask; }
             public Task<List<Appointment>> GetAllForUserAsync(Guid userId, CancellationToken ct) =>
                 Task.FromResult(Items.Where(a => a.UserId == userId).ToList());
             public Task<List<Appointment>> GetOverlappingAsync(DateTime fromUtc, DateTime toUtc, LocationType? location,
@@ -44,8 +52,43 @@ namespace BuergerPortal.Tests.Termine
             public Task DeleteAsync(Appointment entity, CancellationToken ct) { Items.Remove(entity); return Task.CompletedTask; }
         }
 
+        /// <summary>Sperre im Speicher (wie sp_getapplock: erst Person, dann Standort, exklusiv).</summary>
+        private sealed class MemoryLock : IAppointmentBookingLock
+        {
+            private readonly System.Collections.Concurrent.ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
+
+            public async Task<IAppointmentBookingLease> AcquireAsync(Guid userId, LocationType location, CancellationToken ct)
+            {
+                var person = _locks.GetOrAdd($"person:{userId}", _ => new SemaphoreSlim(1, 1));
+                var standort = _locks.GetOrAdd($"standort:{location}", _ => new SemaphoreSlim(1, 1));
+                await person.WaitAsync(ct);
+                await standort.WaitAsync(ct);
+                return new Lease(person, standort);
+            }
+
+            private sealed class Lease(SemaphoreSlim person, SemaphoreSlim standort) : IAppointmentBookingLease
+            {
+                public Task CommitAsync(CancellationToken ct) => Task.CompletedTask;
+                public ValueTask DisposeAsync() { standort.Release(); person.Release(); return ValueTask.CompletedTask; }
+            }
+        }
+
+        /// <summary>Keine Sperre – so verhielt sich das Buchen vor 6.48.</summary>
+        private sealed class NoLock : IAppointmentBookingLock
+        {
+            public Task<IAppointmentBookingLease> AcquireAsync(Guid userId, LocationType location, CancellationToken ct) =>
+                Task.FromResult<IAppointmentBookingLease>(new Lease());
+
+            private sealed class Lease : IAppointmentBookingLease
+            {
+                public Task CommitAsync(CancellationToken ct) => Task.CompletedTask;
+                public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+            }
+        }
+
         private readonly MemoryRepository _repo = new();
-        private AppointmentBusinessService Service => new(_repo, new AppointmentCreateDtoValidator(Now), Now);
+        private readonly MemoryLock _lock = new();
+        private AppointmentBusinessService Service => new(_repo, new AppointmentCreateDtoValidator(Now), Now, _lock);
 
         // Do 08.10.2026, Ortszeit UTC+2
         private static AppointmentCreateDto Dto(LocationType ort, int stunde, int minute, int dauer = 15)
@@ -64,6 +107,35 @@ namespace BuergerPortal.Tests.Termine
             Assert.False(result.IsSuccess);
             Assert.Equal(ErrorCodes.SlotConflict, result.ErrorCode);
             Assert.Equal(AppointmentBusinessService.LocationTakenMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task Gleichzeitige_Buchungen_desselben_Zeitraums_nur_eine_gelingt()
+        {
+            _repo.CheckDelay = TimeSpan.FromMilliseconds(100);   // beide Anfragen prüfen „gleichzeitig“
+
+            var results = await Task.WhenAll(
+                Service.BookAsync(Dto(LocationType.BuergermtMitte, 9, 0, 30), Anna, default),
+                Service.BookAsync(Dto(LocationType.BuergermtMitte, 9, 15), Bernd, default));
+
+            Assert.Single(results, r => r.IsSuccess);
+            Assert.Single(_repo.Items);
+            Assert.Equal(AppointmentBusinessService.LocationTakenMessage, results.Single(r => !r.IsSuccess).ErrorMessage);
+        }
+
+        [Fact]
+        public async Task Ohne_Sperre_gingen_beide_gleichzeitigen_Buchungen_durch()
+        {
+            // Nachweis des Fehlers vor 6.48: Prüfen und Speichern ohne Sperre
+            _repo.CheckDelay = TimeSpan.FromMilliseconds(100);
+            var ungeschuetzt = new AppointmentBusinessService(_repo, new AppointmentCreateDtoValidator(Now), Now, new NoLock());
+
+            var results = await Task.WhenAll(
+                ungeschuetzt.BookAsync(Dto(LocationType.BuergermtMitte, 9, 0, 30), Anna, default),
+                ungeschuetzt.BookAsync(Dto(LocationType.BuergermtMitte, 9, 15), Bernd, default));
+
+            Assert.All(results, r => Assert.True(r.IsSuccess));
+            Assert.Equal(2, _repo.Items.Count);   // Doppelbuchung am selben Schalter
         }
 
         [Fact]
