@@ -16,7 +16,7 @@ RUN dotnet publish BuergerPortal.PostkorbSimulation/BuergerPortal.PostkorbSimula
     --no-restore /p:UseAppHost=false
 
 # ---------- Laufzeit ----------
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 # Verzeichnis für die Data-Protection-Schlüssel (Volume); gehört dem Laufzeit-Benutzer, damit das Volume beschreibbar ist.
