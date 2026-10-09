@@ -282,7 +282,7 @@ var forwardedOptions = new ForwardedHeadersOptions
 
 // WICHTIG: Damit ASP.NET Core dem Docker-Netzwerk vertraut!
 // Sonst werden die Header ignoriert und du bleibst auf http hängen.
-forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownIPNetworks.Clear();   // .NET 10: KnownIPNetworks statt KnownNetworks
 forwardedOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedOptions);
