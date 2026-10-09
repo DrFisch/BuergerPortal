@@ -25,6 +25,8 @@ namespace BuergerPortal.Infrastructure
                 opt.UseSqlServer(cs));
 
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            // Sperre je Person und Standort beim Buchen (gleichzeitige Anfragen, sp_getapplock)
+            services.AddScoped<IAppointmentBookingLock, SqlServerAppointmentBookingLock>();
             services.AddScoped<IReisepassRepository, ReisepassRepository>();
             services.AddScoped<ISperrmuellRepository, SperrmuellRepository>();
             services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
