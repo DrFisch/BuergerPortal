@@ -32,6 +32,8 @@ services:
       ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL fehlt (Kontakt für Let's Encrypt)}
       # Ziel von bundid.<domain>/postfach je nach Postfach-Variante (BPSIM_POSTFACH, siehe .env.example)
       BPSIM_POSTFACH_UPSTREAM: postfach-${BPSIM_POSTFACH:-simulator}:8080
+      # Content-Security-Policy nur melden (…-Report-Only) oder durchsetzen (Content-Security-Policy), siehe .env.example
+      BPSIM_CSP_HEADER: ${BPSIM_CSP_HEADER:-Content-Security-Policy-Report-Only}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

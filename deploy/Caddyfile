@@ -14,23 +14,46 @@
 	}
 }
 
+# Browser-Funktionen, die eine Seite nutzen darf: hier keine (Portal: eigene Regel mit Standort und Kamera).
+(keine-geraetefunktionen) {
+	header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+}
+
+# Content-Security-Policy: Der Header-Name kommt aus BPSIM_CSP_HEADER – "Content-Security-Policy-Report-Only" meldet
+# Verstöße nur in der Browser-Konsole, "Content-Security-Policy" setzt die Regeln durch. Die Regeln des Portals setzt
+# die Webanwendung selbst (mit einer Nonce je Anfrage für ihre Inline-Skripte).
+#
+# Die SAML-Bindung (HTTP-POST) und OpenID Connect (response_mode=form_post) brauchen ein Formular, das sich selbst
+# abschickt. Die Bibliotheken schreiben dafür je ein festes Inline-Skript; erlaubt sind genau diese über ihren Hash:
+#   ITfoxtec (AuthnRequest an die BundID):  window.addEventListener("DOMContentLoaded", function() { document.forms[0].submit() })
+#   OpenIddict (Code an das Portal):        document.form.submit();
+# form-action: Die Formulare gehen nur an die eigenen Adressen (Auth-Server → Simulator/Portal, Simulator →
+# Auth-Server/Postfach). Bei der echten BundID käme deren Adresse (z. B. https://id.bund.de) hinzu.
+
 # Portal (Web)
 {$BPSIM_DOMAIN} {
 	import sicherheit
+	# Standort (Mängelmelder) und Kamera (Foto zur Meldung) nur für das Portal selbst
+	header Permissions-Policy "camera=(self), microphone=(), geolocation=(self), payment=(), usb=()"
 	reverse_proxy web:8080
 }
 
 # Auth-Server: OIDC für das Portal, SAML-Service-Provider gegenüber der BundID (/bundid/acs, /bundid/metadata)
 auth.{$BPSIM_DOMAIN} {
 	import sicherheit
+	import keine-geraetefunktionen
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE=' 'sha256-j7OoGArf6XW6YY4cAyS3riSSvrJRqpSi1fOF9vQ5SrI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
 	reverse_proxy auth:8080
 }
 
 # BundID-Simulator (Identity Provider) und unter /postfach das BundID-Postfach (Simulation) – wie bei der echten
 # BundID ist das Postfach Teil des BundID-Auftritts. Je nach BPSIM_POSTFACH antwortet das Postfach im Simulator
 # (postfach-simulator) oder der eigene Postfach-Dienst (postfach-dienst); Ziel aus BPSIM_POSTFACH_UPSTREAM.
+# CSP: Der Postfach-Dienst meldet sich wie der Auth-Server per ITfoxtec an (gleicher Hash).
 bundid.{$BPSIM_DOMAIN} {
 	import sicherheit
+	import keine-geraetefunktionen
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'self'; script-src 'self' 'sha256-F11Vk5g1QdkJN0OQC2IzZlIEqqeVU52/pUbdc4c4NWE='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://{$BPSIM_DOMAIN} https://*.{$BPSIM_DOMAIN}; frame-ancestors 'none'"
 	@actuator path /actuator /actuator/*
 	@api path /api /api/*
 	@postfachapi path /postfach/api /postfach/api/*
@@ -51,5 +74,7 @@ bundid.{$BPSIM_DOMAIN} {
 # kennt nur der Postfach-Dienst, nicht das Postfach im Simulator (Standard).
 postkorb.{$BPSIM_DOMAIN} {
 	import sicherheit
+	import keine-geraetefunktionen
+	header {$BPSIM_CSP_HEADER:Content-Security-Policy-Report-Only} "default-src 'none'; frame-ancestors 'none'"
 	redir https://bundid.{$BPSIM_DOMAIN}/postfach/ permanent
 }
