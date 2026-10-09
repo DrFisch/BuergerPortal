@@ -47,6 +47,16 @@ Umschalten im Betrieb: `deploy/postfach-modus.ps1 -Modus simulator|dienst` (Nach
 die Seite („Angemeldet bleiben“). Das Access-Token wird solange per Refresh-Token erneuert. Die Sitzungsdaten liegen
 verschlüsselt auf dem Server, das Cookie enthält nur eine Kennung. Jede Anmeldung ist eine neue BundID-Anmeldung.
 
+## Sicherheit
+
+| Was | Wie | Einstellung |
+|---|---|---|
+| Content-Security-Policy | Portal: Nonce je Anfrage (`Services/ContentSecurityPolicy.cs`, Tag-Helper an jedem `<script>`); Auth-Server und Simulator: Caddy, mit dem Hash der festen Auto-POST-Skripte von ITfoxtec (SAMLRequest) und OpenIddict (`form_post`) | `BPSIM_CSP_HEADER` = `Content-Security-Policy` (Standard) bzw. `…-Report-Only` (nur melden); im Web `Csp:Header` |
+| Permissions-Policy | Caddy: Standort und Kamera nur im Portal | `deploy/Caddyfile` |
+| Rate-Limiting | Auth-Server je Client-IP und Minute: `/bundid/login` + `/bundid/acs` 30, `/connect/*` 60, Token/UserInfo 300; API je Person 10 Buchungen/Stornos/Umbuchungen | `RateLimiting:Saml`, `:Oidc`, `:Backchannel` (Auth), `RateLimiting:BuchungenProMinute` (API) |
+| Doppelbuchungen | Prüfen und Speichern in einer Transaktion unter `sp_getapplock` je Person und Standort | – |
+| Diagnose-Adressen | `/auth/debug`, `/home/testuser` (Web), `api/debug/*`, `api/email/test` (API) nur in `Development` | `Diagnostics:Enabled=true` schaltet sie auch sonst ein |
+
 ## Lokal starten (Entwicklung)
 
 Voraussetzungen: .NET SDK 9, SQL Server LocalDB, Docker.
