@@ -12,6 +12,7 @@ using BuergerPortal.Domain.Appointments.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BuergerPortal.Api.Controllers
 {
@@ -33,6 +34,7 @@ namespace BuergerPortal.Api.Controllers
 
         // ---------- Create (201/400/409) ----------
         [HttpPost]
+        [EnableRateLimiting(BookingRateLimiting.Policy)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -236,6 +238,7 @@ namespace BuergerPortal.Api.Controllers
         }
 
         [HttpPost("{id:guid}/cancel")]
+        [EnableRateLimiting(BookingRateLimiting.Policy)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -271,6 +274,7 @@ namespace BuergerPortal.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [EnableRateLimiting(BookingRateLimiting.Policy)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -285,6 +289,7 @@ namespace BuergerPortal.Api.Controllers
         }
 
         [HttpPatch("{id:guid}/location")]
+        [EnableRateLimiting(BookingRateLimiting.Policy)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateLocation(Guid id, [FromBody] UpdateLocationRequest req, CancellationToken ct)

@@ -55,6 +55,8 @@ builder.Services.AddMailJetEmailSender(builder.Configuration);
 // Bestätigungen in das BundID-Postfach (Postkorb-Simulation); Abschnitt "Postkorb", Prüfung beim Start.
 builder.Services.AddPostkorbService(builder.Configuration);
 builder.Services.AddApplicationServices();
+// Buchen/Stornieren/Umbuchen je Person begrenzen (Extensions/BookingRateLimiting.cs)
+builder.Services.AddBookingRateLimiting(builder.Configuration);
 
 // -------------------------------------------------------
 // 2. Authentication / Authorization (JWT gegen Auth-Server)
@@ -204,6 +206,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+// nach der Anmeldung: Grenzen je Person (sub aus dem Access-Token)
+app.UseRateLimiter();
 
 app.MapControllers();
 
