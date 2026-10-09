@@ -1,3 +1,4 @@
+using AuthenticationServer.Security;
 using AuthenticationServer.BundId;
 using BuergerPortal.BundId;
 using AuthenticationServer.Controllers;
@@ -148,6 +149,9 @@ builder.Services.Configure<SecurityStampValidatorOptions>(o => o.OnRefreshingPri
     return Task.CompletedTask;
 });
 
+// Anmelde-Endpunkte (SAML-ACS, OIDC) je Client-IP begrenzen (Security/AuthRateLimiting.cs)
+builder.Services.AddAuthRateLimiting(builder.Configuration);
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -165,6 +169,8 @@ forwardedOptions.KnownNetworks.Clear();
 forwardedOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedOptions);
+// Nach den Forwarded Headers: Die Grenzen gelten je echter Client-IP (aus X-Forwarded-For von Caddy).
+app.UseRateLimiter();
 
 using (var scope = app.Services.CreateScope())
 {
