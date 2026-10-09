@@ -94,6 +94,14 @@ async function installApp() {
 
 window.installApp = installApp;
 
+// Alle Knöpfe „App installieren“ (Attribut data-pwa-install) – ohne onclick-Attribut wegen der Content-Security-Policy
+document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-pwa-install]')) {
+        e.preventDefault();
+        installApp();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     if (isStandalone()) {
         hideInstallPrompts();
