@@ -59,7 +59,7 @@ verschlüsselt auf dem Server, das Cookie enthält nur eine Kennung. Jede Anmeld
 
 ## Lokal starten (Entwicklung)
 
-Voraussetzungen: .NET SDK 9, SQL Server LocalDB, Docker.
+Voraussetzungen: .NET SDK 10 (siehe `global.json`; alle Projekte zielen auf `net10.0`, LTS), SQL Server LocalDB, Docker.
 
 1. **BundID-Simulator** (Fork) bauen und starten:
    ```
