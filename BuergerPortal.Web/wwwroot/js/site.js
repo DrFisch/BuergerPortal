@@ -9,3 +9,8 @@
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
+
+// Punkt am App-Symbol (Badging API, gesetzt vom Service Worker bei einer Benachrichtigung) auf der Postfach-Seite entfernen
+if (document.querySelector('[data-app-badge-clear]') && navigator.clearAppBadge) {
+    navigator.clearAppBadge().catch(() => { });
+}
