@@ -96,7 +96,13 @@
     transform: translateX(-50%);
     bottom: calc(1rem + env(safe-area-inset-bottom));
     width: min(36rem, calc(100% - 2rem));
-    z-index: 1060;
+    /* ueber Kopfzeile (1020) und Tab-Leiste (1030), unter Dialogen (1050/1055); leere Flaeche laesst Klicks durch */
+    z-index: 1045;
+    pointer-events: none;
+}
+
+.bp-app-hinweise > * {
+    pointer-events: auto;
 }
 
 @media (max-width: 991.98px) {
