@@ -2,6 +2,7 @@
 using BuergerPortal.Domain.Appointments.Entity;
 using BuergerPortal.Domain.Maengel;
 using BuergerPortal.Domain.Poi.Entity;
+using BuergerPortal.Domain.Push.Entity;
 using BuergerPortal.Domain.Settings.Entity;
 using BuergerPortal.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
         public DbSet<PoiEntity> Pois => Set<PoiEntity>();
+        public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
 
 
         protected override void OnModelCreating(ModelBuilder b)
@@ -227,6 +229,21 @@ namespace BuergerPortal.Infrastructure.Persistence
             // Indizes für die Suche
             poi.HasIndex(x => x.Name);
             poi.HasIndex(x => x.Category);
+
+            // -------------------------
+            // PUSH-ABOS (WEB PUSH)
+            // -------------------------
+            var push = b.Entity<PushSubscription>();
+            push.ToTable("PushSubscriptions");
+            push.HasKey(x => x.Id);
+            push.Property(x => x.UserId).IsRequired();
+            // URL (ASCII); 800 Zeichen passen in einen eindeutigen Index (SQL Server: höchstens 1700 Byte)
+            push.Property(x => x.Endpoint).HasMaxLength(800).IsUnicode(false).IsRequired();
+            push.Property(x => x.P256dh).HasMaxLength(100).IsUnicode(false).IsRequired();
+            push.Property(x => x.Auth).HasMaxLength(50).IsUnicode(false).IsRequired();
+            push.Property(x => x.CreatedUtc).IsRequired();
+            push.HasIndex(x => x.Endpoint).IsUnique();
+            push.HasIndex(x => x.UserId);
         }
     }
 }
