@@ -76,4 +76,13 @@
 	<data name="SafariMac_Text" xml:space="preserve">
 		<value>In Safari on macOS Sonoma or later, choose “Add to Dock” in the “File” menu.</value>
 	</data>
+  <data name="Qr_Title" xml:space="preserve">
+    <value>Open on your phone</value>
+  </data>
+  <data name="Qr_Alt" xml:space="preserve">
+    <value>QR code with the address of BürgerPortal</value>
+  </data>
+  <data name="Qr_Text" xml:space="preserve">
+    <value>Scan with your phone camera – the portal opens there and you can install it as an app on your phone.</value>
+  </data>
 </root>

@@ -76,4 +76,13 @@
 	<data name="SafariMac_Text" xml:space="preserve">
 		<value>In Safari ab macOS Sonoma im Menü „Ablage“ den Eintrag „Zum Dock hinzufügen“ wählen.</value>
 	</data>
+  <data name="Qr_Title" xml:space="preserve">
+    <value>Auf dem Handy öffnen</value>
+  </data>
+  <data name="Qr_Alt" xml:space="preserve">
+    <value>QR-Code mit der Adresse des BürgerPortals</value>
+  </data>
+  <data name="Qr_Text" xml:space="preserve">
+    <value>Mit der Kamera des Handys scannen – das Portal öffnet sich dort, und Sie können es auf dem Handy als App installieren.</value>
+  </data>
 </root>

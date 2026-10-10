@@ -2,7 +2,8 @@
 @*
     Dialog „App installieren“ (wwwroot/pwa-install.js). Bietet der Browser den eigenen Installationsdialog an
     (beforeinstallprompt, nur Chromium), erscheint direkt dieser. Sonst zeigt dieser Dialog die Anleitung für das erkannte
-    Gerät – data-pwa-plattform: ios, android, android-firefox, desktop (Chrome/Edge), firefox, safari-mac.
+    Gerät – data-pwa-plattform: ios, android, android-firefox, desktop (Chrome/Edge), firefox, safari-mac. Am Computer
+    zusätzlich ein QR-Code (/app/qr.svg), um das Portal auf dem Handy zu öffnen.
 *@
 <div class="modal fade" id="appInstallModal" tabindex="-1" aria-labelledby="appInstallTitel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -58,6 +59,15 @@
                 <div data-pwa-plattform="safari-mac">
                     <p class="fw-semibold mb-1">@L["SafariMac_Title"]</p>
                     <p class="mb-0">@L["SafariMac_Text"]</p>
+                </div>
+
+                <div data-pwa-qr hidden>
+                    <hr />
+                    <p class="fw-semibold mb-2">@L["Qr_Title"]</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img class="border rounded bg-white p-1" width="132" height="132" alt="@L["Qr_Alt"]" data-pwa-qr-bild />
+                        <p class="small text-body-secondary mb-0">@L["Qr_Text"]</p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

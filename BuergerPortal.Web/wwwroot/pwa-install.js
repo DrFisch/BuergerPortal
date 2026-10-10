@@ -96,6 +96,14 @@ function zeigeAnleitung() {
     if (!modalEl || !window.bootstrap) return;
     const p = plattform();
     modalEl.querySelectorAll('[data-pwa-plattform]').forEach(block => { block.hidden = block.dataset.pwaPlattform !== p; });
+    // Am Computer: QR-Code, um das Portal auf dem Handy zu öffnen (Bild erst jetzt laden)
+    const qr = modalEl.querySelector('[data-pwa-qr]');
+    if (qr) {
+        const amComputer = !['ios', 'android', 'android-firefox'].includes(p);
+        qr.hidden = !amComputer;
+        const bild = qr.querySelector('[data-pwa-qr-bild]');
+        if (amComputer && bild && !bild.getAttribute('src')) bild.src = '/app/qr.svg';
+    }
     bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
