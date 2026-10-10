@@ -250,4 +250,73 @@
   <data name="Settings_Subheading" xml:space="preserve">
     <value>Ihre Angaben aus der BundID und Ihre persönlichen Einstellungen für das BürgerPortal.</value>
   </data>
+  <data name="Settings_Tab_Notifications" xml:space="preserve">
+    <value>Benachrichtigungen</value>
+  </data>
+  <data name="Settings_Push_Title" xml:space="preserve">
+    <value>Benachrichtigungen aufs Handy</value>
+  </data>
+  <data name="Settings_Push_Description" xml:space="preserve">
+    <value>Erhalten Sie eine Mitteilung, sobald eine neue Nachricht in Ihrem BundID-Postfach liegt – etwa eine Termin- oder Eingangsbestätigung. Die Einstellung gilt für dieses Gerät und diesen Browser.</value>
+  </data>
+  <data name="Settings_Push_StatusLabel" xml:space="preserve">
+    <value>Auf diesem Gerät:</value>
+  </data>
+  <data name="Push_Status_Checking" xml:space="preserve">
+    <value>wird geprüft …</value>
+  </data>
+  <data name="Push_Status_On" xml:space="preserve">
+    <value>eingeschaltet</value>
+  </data>
+  <data name="Push_Status_Off" xml:space="preserve">
+    <value>ausgeschaltet</value>
+  </data>
+  <data name="Push_Status_Unsupported" xml:space="preserve">
+    <value>nicht verfügbar</value>
+  </data>
+  <data name="Push_Status_Denied" xml:space="preserve">
+    <value>im Browser blockiert</value>
+  </data>
+  <data name="Push_Status_NotConfigured" xml:space="preserve">
+    <value>nicht eingerichtet</value>
+  </data>
+  <data name="Settings_Push_IosHint" xml:space="preserve">
+    <value>Auf iPhone und iPad gibt es Benachrichtigungen nur in der installierten App (ab iOS 16.4): zuerst „App installieren“, dann das BürgerPortal vom Home-Bildschirm öffnen und hier einschalten.</value>
+  </data>
+  <data name="Settings_Push_Unsupported" xml:space="preserve">
+    <value>Dieser Browser unterstützt keine Benachrichtigungen (Web Push).</value>
+  </data>
+  <data name="Settings_Push_Denied" xml:space="preserve">
+    <value>Benachrichtigungen sind für das BürgerPortal im Browser blockiert. Erlauben Sie sie in den Website-Einstellungen des Browsers und laden Sie die Seite neu.</value>
+  </data>
+  <data name="Settings_Push_NotConfigured" xml:space="preserve">
+    <value>Benachrichtigungen sind auf diesem Server nicht eingerichtet.</value>
+  </data>
+  <data name="Settings_Push_On" xml:space="preserve">
+    <value>Einschalten</value>
+  </data>
+  <data name="Settings_Push_Off" xml:space="preserve">
+    <value>Ausschalten</value>
+  </data>
+  <data name="Settings_Push_Test" xml:space="preserve">
+    <value>Test-Benachrichtigung senden</value>
+  </data>
+  <data name="Push_Msg_On" xml:space="preserve">
+    <value>Benachrichtigungen sind auf diesem Gerät eingeschaltet.</value>
+  </data>
+  <data name="Push_Msg_Off" xml:space="preserve">
+    <value>Benachrichtigungen sind auf diesem Gerät ausgeschaltet.</value>
+  </data>
+  <data name="Push_Msg_TestSent" xml:space="preserve">
+    <value>Test-Benachrichtigung verschickt – sie erscheint in wenigen Sekunden.</value>
+  </data>
+  <data name="Push_Msg_TestNone" xml:space="preserve">
+    <value>Kein Gerät erreicht. Bitte Benachrichtigungen aus- und wieder einschalten.</value>
+  </data>
+  <data name="Push_Msg_Error" xml:space="preserve">
+    <value>Das hat nicht geklappt. Bitte versuchen Sie es später erneut.</value>
+  </data>
+  <data name="Settings_Push_Privacy" xml:space="preserve">
+    <value>Gespeichert werden nur die Adresse dieses Geräts beim Push-Dienst des Browsers (z. B. Google, Apple, Mozilla, Microsoft) und zwei Schlüssel. Der Inhalt ist verschlüsselt; auf dem Sperrbildschirm erscheint nur der Betreff der Nachricht.</value>
+  </data>
 </root>

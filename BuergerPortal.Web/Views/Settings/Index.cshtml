@@ -46,6 +46,9 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-install" role="tab">
                     <i class="bi bi-download me-2" aria-hidden="true"></i>@L["Settings_Tab_Install"]
                 </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-notifications" role="tab">
+                    <i class="bi bi-bell me-2" aria-hidden="true"></i>@L["Settings_Tab_Notifications"]
+                </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#tab-privacy" role="tab">
                     <i class="bi bi-shield-check me-2" aria-hidden="true"></i>@L["Settings_Tab_Privacy"]
                 </a>
@@ -151,6 +154,41 @@
                         </div>
                     </div>
 
+                    <!-- BENACHRICHTIGUNGEN (Web Push, wwwroot/js/push.js) – gilt je Gerät, nicht je Konto -->
+                    <div class="tab-pane fade" id="tab-notifications" role="tabpanel">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body" data-push
+                                 data-status-on="@L["Push_Status_On"]" data-status-off="@L["Push_Status_Off"]"
+                                 data-status-unsupported="@L["Push_Status_Unsupported"]" data-status-denied="@L["Push_Status_Denied"]"
+                                 data-status-not-configured="@L["Push_Status_NotConfigured"]"
+                                 data-msg-on="@L["Push_Msg_On"]" data-msg-off="@L["Push_Msg_Off"]"
+                                 data-msg-test-sent="@L["Push_Msg_TestSent"]" data-msg-test-none="@L["Push_Msg_TestNone"]"
+                                 data-msg-error="@L["Push_Msg_Error"]">
+                                <h5 class="card-title">@L["Settings_Push_Title"]</h5>
+                                <p class="text-muted">@L["Settings_Push_Description"]</p>
+                                <p class="mb-3">
+                                    @L["Settings_Push_StatusLabel"]
+                                    <span class="badge text-bg-secondary" data-push-status role="status">@L["Push_Status_Checking"]</span>
+                                </p>
+                                <div class="alert alert-info small" data-push-hinweis="ios" hidden>@L["Settings_Push_IosHint"]</div>
+                                <div class="alert alert-warning small" data-push-hinweis="unsupported" hidden>@L["Settings_Push_Unsupported"]</div>
+                                <div class="alert alert-warning small" data-push-hinweis="denied" hidden>@L["Settings_Push_Denied"]</div>
+                                <div class="alert alert-secondary small" data-push-hinweis="not-configured" hidden>@L["Settings_Push_NotConfigured"]</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-primary" data-push-an hidden>
+                                        <i class="bi bi-bell me-1" aria-hidden="true"></i>@L["Settings_Push_On"]
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" data-push-aus hidden>
+                                        <i class="bi bi-bell-slash me-1" aria-hidden="true"></i>@L["Settings_Push_Off"]
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-push-test hidden>@L["Settings_Push_Test"]</button>
+                                </div>
+                                <div class="small mt-2" data-push-meldung role="status" aria-live="polite"></div>
+                                <p class="small text-muted mt-3 mb-0">@L["Settings_Push_Privacy"]</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- PRIVACY -->
                     <div class="tab-pane fade" id="tab-privacy" role="tabpanel">
                         <div class="card shadow-sm mb-3">
@@ -212,6 +250,7 @@
 
 
 @section Scripts {
+    <script src="~/js/push.js" asp-append-version="true"></script>
     <script>
               (function syncThemeRadiosWithEffectiveTheme(){
           const eff = (document.documentElement.getAttribute('data-bs-theme') || 'light').toLowerCase();
@@ -239,29 +278,6 @@
             const saved = localStorage.getItem('theme');
             if (saved) setTheme(saved);
         })();
-
-        // Push
-        async function registerSw() {
-            if (!('serviceWorker' in navigator)) return null;
-            try { return await navigator.serviceWorker.register('/service-worker.js'); } catch { return null; }
-        }
-        document.getElementById('btnEnablePush')?.addEventListener('click', async () => {
-            if (!('Notification' in window)) return alert('Push wird nicht unterstützt.');
-            const perm = await Notification.requestPermission();
-            if (perm !== 'granted') return alert('Keine Berechtigung.');
-            const reg = await registerSw(); if (!reg) return alert('Kein Service Worker verfügbar.');
-            document.getElementById('PushEnabled').value = 'true';
-            alert('Push aktiviert (Demo). Jetzt speichern.');
-        });
-        document.getElementById('btnTestPush')?.addEventListener('click', async () => {
-            const reg = await navigator.serviceWorker.getRegistration();
-            if (!reg) return alert('Kein Service Worker.');
-            reg.showNotification('Test', { body: 'So sieht eine Push-Mitteilung aus.', icon: '/icons/portal-128.png' });
-        });
-        document.getElementById('btnDisablePush')?.addEventListener('click', () => {
-            document.getElementById('PushEnabled').value = 'false';
-            alert('Push deaktiviert (Demo). Jetzt speichern.');
-        });
 
         // Cache
         document.getElementById('btnClearCache')?.addEventListener('click', async () => {
