@@ -88,3 +88,19 @@
 .navbar .nav-link.active {
     color: var(--bs-primary);
 }
+
+/* Hinweise der App unten, ueber der Tab-Leiste (Views/Shared/_AppHinweise.cshtml) */
+.bp-app-hinweise {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    width: min(36rem, calc(100% - 2rem));
+    z-index: 1060;
+}
+
+@media (max-width: 991.98px) {
+    body.has-tabbar .bp-app-hinweise {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    }
+}

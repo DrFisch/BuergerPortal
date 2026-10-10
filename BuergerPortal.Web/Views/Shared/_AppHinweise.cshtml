@@ -1,0 +1,13 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@*
+    Hinweise der App unten am Bildschirm (über der Tab-Leiste): eine neue Version ist da (Service Worker,
+    wwwroot/pwa-install.js) – statt des früheren confirm()-Dialogs.
+*@
+<div class="bp-app-hinweise" aria-live="polite">
+    <div id="pwaUpdateBanner" class="alert alert-primary shadow d-flex align-items-center gap-2 mb-2 py-2" role="status" hidden>
+        <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+        <span class="me-auto small">@L["Update_Text"]</span>
+        <button type="button" class="btn btn-sm btn-link text-secondary text-decoration-none" data-pwa-update-spaeter>@L["Later"]</button>
+        <button type="button" class="btn btn-sm btn-primary" data-pwa-update>@L["Update_Now"]</button>
+    </div>
+</div>

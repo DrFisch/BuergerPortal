@@ -29,13 +29,25 @@ if ('serviceWorker' in navigator) {
 
 let updateAccepted = false;
 
+// Neue Version: Hinweisleiste unten (Views/Shared/_AppHinweise.cshtml) statt des früheren confirm()-Dialogs.
+// „Jetzt aktualisieren“ aktiviert den neuen Service Worker und lädt neu; „Später“ – die neue Version gilt dann beim
+// nächsten Start der App.
 function showUpdateNotification() {
-    const updateNow = confirm("Eine neue Version des BürgerPortals ist verfügbar. Jetzt aktualisieren?");
-    if (updateNow && newWorker) {
-        updateAccepted = true;
-        newWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
+    const banner = document.getElementById('pwaUpdateBanner');
+    if (banner) banner.hidden = false;
 }
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-pwa-update]')) {
+        document.getElementById('pwaUpdateBanner').hidden = true;
+        if (newWorker) {
+            updateAccepted = true;
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+        }
+    } else if (e.target.closest('[data-pwa-update-spaeter]')) {
+        document.getElementById('pwaUpdateBanner').hidden = true;
+    }
+});
 
 /**
  * PWA INSTALLATIONS-LOGIK & UI-STEUERUNG
