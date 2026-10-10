@@ -94,4 +94,7 @@
   <data name="Start_SessionExpired_Text" xml:space="preserve">
     <value>Sie wurden aus Sicherheitsgründen automatisch abgemeldet – nach 30 Minuten ohne Aktivität oder spätestens 8 Stunden nach der Anmeldung. Bitte melden Sie sich erneut mit Ihrer BundID an.</value>
   </data>
+  <data name="Start_InstallApp" xml:space="preserve">
+    <value>Als App auf dem Handy oder Computer installieren</value>
+  </data>
 </root>

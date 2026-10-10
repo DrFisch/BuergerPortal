@@ -94,4 +94,7 @@
   <data name="Start_SessionExpired_Text" xml:space="preserve">
     <value>For your security you were signed out automatically – after 30 minutes without activity or at the latest 8 hours after signing in. Please sign in again with your BundID.</value>
   </data>
+  <data name="Start_InstallApp" xml:space="preserve">
+    <value>Install as an app on your phone or computer</value>
+  </data>
 </root>

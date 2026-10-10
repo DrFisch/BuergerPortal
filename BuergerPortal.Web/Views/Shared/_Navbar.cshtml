@@ -132,7 +132,8 @@ else
                     </a>
                 </li>
 
-                <li class="nav-item d-none d-lg-none" id="appInstallMenuItem">
+                @* immer sichtbar (außer in der installierten App): Browser-Dialog oder Anleitung je Gerät, wwwroot/pwa-install.js *@
+                <li class="nav-item" data-pwa-install-item>
                     <button type="button" class="nav-link btn btn-link w-100 text-start" data-pwa-install>
                         <i class="bi bi-download me-1"></i> @T["InstallAppLink"]
                     </button>
