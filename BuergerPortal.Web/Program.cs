@@ -32,11 +32,13 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
     opts.SupportedCultures = cultures;
     opts.SupportedUICultures = cultures;
 
+    // Deutsch ist Standard – auch auf Handys mit englischer Systemsprache. Die Sprache des Browsers
+    // (Accept-Language) wird deshalb nicht ausgewertet; Englisch nur nach eigener Wahl (Cookie über die
+    // Sprachwahl in der Kopfzeile bzw. die Einstellungen) oder per ?culture=en.
     opts.RequestCultureProviders = new IRequestCultureProvider[]
     {
         new CookieRequestCultureProvider(),
-        new QueryStringRequestCultureProvider(),
-        new AcceptLanguageHeaderRequestCultureProvider()
+        new QueryStringRequestCultureProvider()
     };
 
     opts.SetDefaultCulture("de");
