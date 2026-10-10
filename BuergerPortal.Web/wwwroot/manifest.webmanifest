@@ -7,8 +7,16 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
+  "categories": [
+    "government",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/icons/portal-128.png",
@@ -36,6 +44,54 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Termin buchen",
+      "short_name": "Termin",
+      "description": "Freie Zeiten im Bürgeramt finden und buchen",
+      "url": "/Termine/Buchen"
+    },
+    {
+      "name": "Meine Termine",
+      "short_name": "Termine",
+      "url": "/Termine"
+    },
+    {
+      "name": "Mein BundID-Postfach",
+      "short_name": "Postfach",
+      "description": "Bestätigungen zu Terminen und Anträgen",
+      "url": "/Postfach"
+    },
+    {
+      "name": "Mangel melden",
+      "short_name": "Melden",
+      "description": "Schaden oder Mangel im Stadtgebiet melden",
+      "url": "/Maengel/Create"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/start-handy.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Startseite mit nächstem Termin und Schnellzugriffen"
+    },
+    {
+      "src": "/screenshots/termin-handy.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Termin buchen – nur freie Zeiten je Bürgeramt"
+    },
+    {
+      "src": "/screenshots/start-computer.jpg",
+      "sizes": "1280x800",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Startseite am Computer"
     }
   ]
 }
