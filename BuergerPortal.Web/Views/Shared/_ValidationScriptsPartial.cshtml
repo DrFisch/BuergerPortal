@@ -1,2 +1,5 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+﻿@* Formularprüfung im Browser: jquery.validate braucht jQuery – das Layout lädt es nicht (schon am Ausgangsstand),
+   deshalb brach die Prüfung auf allen Formularseiten mit „jQuery is not defined“ ab. *@
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
