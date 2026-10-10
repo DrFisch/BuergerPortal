@@ -1,3 +1,4 @@
+using BuergerPortal.Api.Push;
 using BuergerPortal.Application.Interfaces.Postkorb;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
@@ -44,6 +45,14 @@ namespace BuergerPortal.Api.Postkorb
                 PostkorbDeliveryStatus.NoMailbox => "kein-postfach",
                 _ => "fehlgeschlagen",
             };
+
+            // Benachrichtigung aufs Handy (Web Push), falls eingerichtet und abonniert: nur der Betreff, den Inhalt
+            // liest die Person im Postfach. Im Hintergrund – die Antwort wartet nicht auf die Push-Dienste.
+            if (status == PostkorbDeliveryStatus.Delivered && Guid.TryParse(controller.User.FindFirst("sub")?.Value, out var userId))
+            {
+                controller.HttpContext.RequestServices.GetService<PushQueue>()?.TryEnqueue(userId,
+                    new PushNotification("Neue Nachricht im BundID-Postfach", title, "/Postfach", "postfach"));
+            }
             return status;
         }
     }

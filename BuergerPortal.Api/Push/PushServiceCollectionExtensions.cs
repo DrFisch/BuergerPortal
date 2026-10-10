@@ -13,6 +13,8 @@ namespace BuergerPortal.Api.Push
                 // keine Weiterleitungen folgen: Ziel bleibt der geprüfte Push-Dienst (PushOptions.IsAllowedEndpoint)
                 .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AllowAutoRedirect = false });
             services.AddScoped<PushNotifier>();
+            services.AddSingleton<PushQueue>();
+            services.AddHostedService<PushQueueWorker>();
             services.AddRateLimiter(o => o.AddPolicy<string, PushRateLimitPolicy>(PushRateLimitPolicy.Name));
             return services;
         }
