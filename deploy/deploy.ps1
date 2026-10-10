@@ -28,6 +28,15 @@ function New-Secret([int]$Length) {
     return -join ($bytes | ForEach-Object { $chars[$_ % $chars.Length] })
 }
 
+# VAPID-Schlüsselpaar für Benachrichtigungen (Web Push, RFC 8292): P-256, base64url – öffentlich unkomprimiert
+# (0x04 || X || Y, 65 Byte), privat 32 Byte
+function New-VapidKeys {
+    $key = [Security.Cryptography.ECDsa]::Create([Security.Cryptography.ECCurve+NamedCurves]::nistP256)
+    $p = $key.ExportParameters($true)
+    $b64u = { param([byte[]]$b) [Convert]::ToBase64String($b).TrimEnd('=').Replace('+', '-').Replace('/', '_') }
+    return @((& $b64u ([byte[]](@(4) + $p.Q.X + $p.Q.Y))), (& $b64u $p.D))
+}
+
 
 Write-Host "Deploy Tag $Tag nach $($cfg.VM_NAME) (https://$($cfg.BPSIM_DOMAIN))"
 if (-not $Yes -and (Read-Host "Fortfahren? (j/n)") -ne "j") { return }
@@ -50,6 +59,14 @@ $envValues["BPSIM_TAG"] = $Tag
 $envValues["BUNDID_SIM_IMAGE"] = $simImage
 # Postfach-Variante (simulator | dienst) – Standard Postfach im BundID-Simulator; umschalten mit postfach-modus.ps1
 if (-not $envValues.Contains("BPSIM_POSTFACH")) { $envValues["BPSIM_POSTFACH"] = "simulator" }
+# Benachrichtigungen: Schlüsselpaar einmalig erzeugen und danach behalten (neue Schlüssel = alle Abos ungültig).
+# Die Werte stehen nur in der .env und werden nicht ausgegeben.
+if (-not $envValues["BPSIM_VAPID_PUBLIC_KEY"] -or -not $envValues["BPSIM_VAPID_PRIVATE_KEY"]) {
+    $vapid = New-VapidKeys
+    $envValues["BPSIM_VAPID_PUBLIC_KEY"] = $vapid[0]
+    $envValues["BPSIM_VAPID_PRIVATE_KEY"] = $vapid[1]
+    Write-Host "VAPID-Schlüsselpaar für Benachrichtigungen erzeugt (steht in der .env)."
+}
 Write-LfFile $cfg.ENV_FILE ($envValues.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" })
 
 # 2) OpenIddict-Zertifikate (Signatur, Verschlüsselung) – einmalig, selbstsigniert, 5 Jahre

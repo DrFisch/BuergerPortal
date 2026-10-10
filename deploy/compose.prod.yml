@@ -143,6 +143,11 @@ services:
       # Keine echten E-Mails aus der Simulation (Testpersonen haben fiktive Adressen).
       MailJet__ApiKey: disabled
       MailJet__SecretKey: disabled
+      # Benachrichtigungen aufs Handy (Web Push): VAPID-Schlüssel aus der .env (deploy.ps1 erzeugt sie einmalig),
+      # Kontakt für die Push-Dienste = Adresse des Portals. Ohne Schlüssel bleibt Push aus.
+      Push__VapidPublicKey: ${BPSIM_VAPID_PUBLIC_KEY:-}
+      Push__VapidPrivateKey: ${BPSIM_VAPID_PRIVATE_KEY:-}
+      Push__Subject: https://${BPSIM_DOMAIN}
     mem_limit: 320m
 
   web:
