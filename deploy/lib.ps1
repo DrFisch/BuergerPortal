@@ -68,10 +68,16 @@ function Invoke-Step {
 
 function Get-VmIp($cfg) {
     $ErrorActionPreference = "Continue"
-    $ip = gcloud compute addresses describe $cfg.IP_NAME --region $cfg.GCP_REGION --project $cfg.GCP_PROJECT `
-        --format "value(address)" 2>$null
-    if (-not $ip) { throw "Statische IP $($cfg.IP_NAME) nicht gefunden (gcp-setup.ps1 ausgeführt?)." }
-    return $ip.Trim()
+    # Bis zu drei Versuche: Am 2026-10-10 lieferte gcloud während eines Deployments zweimal nichts zurück (die IP
+    # bestand), kurz danach wieder normal – vermutlich vorübergehend. Die Fehlermeldung von gcloud wird mit ausgegeben.
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+        $out = @(gcloud compute addresses describe $cfg.IP_NAME --region $cfg.GCP_REGION --project $cfg.GCP_PROJECT `
+            --format "value(address)" 2>&1 | ForEach-Object { "$_" })
+        $ip = $out | Where-Object { $_ -match "^\d+\.\d+\.\d+\.\d+$" } | Select-Object -First 1
+        if ($ip) { return $ip.Trim() }
+        if ($attempt -lt 3) { Start-Sleep -Seconds 5 }
+    }
+    throw "Statische IP $($cfg.IP_NAME) nicht gefunden (gcp-setup.ps1 ausgeführt?). gcloud: $($out -join ' ')"
 }
 
 function Get-SshArgs($cfg) {
