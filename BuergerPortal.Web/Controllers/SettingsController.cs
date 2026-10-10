@@ -24,19 +24,22 @@ namespace BuergerPortal.Web.Controllers
 
             
             var dto = await TryGetSettingsOrDefault(http, "api/users/me/settings", ct);
+            // angezeigt wird die Sprache, in der die Seite gerade läuft (Sprachwahl in der Kopfzeile), nicht ein älterer
+            // gespeicherter Wert – sonst würde „Speichern“ die eben gewählte Sprache zurücksetzen
+            var language = CurrentLanguage();
 
             var vm = new SettingsVm
             {
                 Theme = string.Equals(dto.Theme, "Dark", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light",
-                Language = string.IsNullOrWhiteSpace(dto.Language) ? "de" : dto.Language,
+                Language = language,
                 PushEnabled = dto.PushEnabled,
                 ReduceDataUsage = dto.ReduceDataUsage,
                 AnalyticsOptIn = dto.AnalyticsOptIn,
                 AllowGeolocation = dto.AllowGeolocation,
                 Languages = new[]
                 {
-            new SelectListItem("Deutsch","de", dto.Language=="de"),
-            new SelectListItem("English","en", dto.Language=="en")
+            new SelectListItem("Deutsch","de", language=="de"),
+            new SelectListItem("English","en", language=="en")
         }
             };
             // nach dem Erstellen von vm:
@@ -172,7 +175,8 @@ namespace BuergerPortal.Web.Controllers
             var payload = new UserSettingsUpdateRequest
             {
                 Theme = themeForDb,
-                Language = string.IsNullOrWhiteSpace(dto.Language) ? "de" : dto.Language,
+                // aktuelle Sprache übernehmen – sonst setzte der Farbschema-Schalter die Sprachwahl zurück
+                Language = CurrentLanguage(),
                 PushEnabled = dto.PushEnabled,
                 ReduceDataUsage = dto.ReduceDataUsage,
                 AnalyticsOptIn = dto.AnalyticsOptIn,
@@ -189,6 +193,10 @@ namespace BuergerPortal.Web.Controllers
 
             return StatusCode((int)res.StatusCode);
         }
+
+        // Sprache der laufenden Anfrage (Cookie der Sprachwahl, sonst Deutsch)
+        private static string CurrentLanguage() =>
+            System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "en" : "de";
 
         private void SetClientCookies(string? theme, string? lang)
         {
