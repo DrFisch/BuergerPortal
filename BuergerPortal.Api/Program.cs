@@ -1,4 +1,5 @@
 using BuergerPortal.Api.Extensions;
+using BuergerPortal.Api.Push;
 using BuergerPortal.Application;
 using BuergerPortal.Application.Appointments.BusinessServices;
 using BuergerPortal.Infrastructure;
@@ -57,6 +58,8 @@ builder.Services.AddPostkorbService(builder.Configuration);
 builder.Services.AddApplicationServices();
 // Buchen/Stornieren/Umbuchen je Person begrenzen (Extensions/BookingRateLimiting.cs)
 builder.Services.AddBookingRateLimiting(builder.Configuration);
+// Benachrichtigungen aufs Handy (Web Push, Push/); ohne Abschnitt "Push" mit VAPID-Schlüsseln ausgeschaltet
+builder.Services.AddWebPush(builder.Configuration);
 
 // -------------------------------------------------------
 // 2. Authentication / Authorization (JWT gegen Auth-Server)
