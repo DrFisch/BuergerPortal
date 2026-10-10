@@ -193,8 +193,9 @@ namespace BuergerPortal.Web.Controllers
         }
 
         // Statusseiten (UseStatusCodePagesWithReExecute), z. B. 404 statt der leeren Fehlerseite des Browsers.
+        // Für jede Methode: Das Neuausführen behält die Methode der ursprünglichen Anfrage (nach einem POST sonst 405).
         [AllowAnonymous]
-        [HttpGet("/Home/Status/{code:int}")]
+        [Route("/Home/Status/{code:int}")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Status(int code)
         {
