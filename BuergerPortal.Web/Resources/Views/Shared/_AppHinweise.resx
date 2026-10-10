@@ -22,4 +22,7 @@
 	<data name="Later" xml:space="preserve">
 		<value>Später</value>
 	</data>
+  <data name="Offline_Text" xml:space="preserve">
+    <value>Keine Internetverbindung – Termine, Anträge und Postfach sind erst wieder erreichbar, wenn Sie online sind.</value>
+  </data>
 </root>

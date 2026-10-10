@@ -161,7 +161,4 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     updateInstallUi();
     window.matchMedia?.('(display-mode: standalone)').addEventListener?.('change', updateInstallUi);
-
-    window.addEventListener('online', () => document.body.classList.remove('is-offline'));
-    window.addEventListener('offline', () => document.body.classList.add('is-offline'));
 });

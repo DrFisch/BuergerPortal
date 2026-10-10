@@ -1,7 +1,7 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
 @*
     Hinweise der App unten am Bildschirm (über der Tab-Leiste): eine neue Version ist da (Service Worker,
-    wwwroot/pwa-install.js) – statt des früheren confirm()-Dialogs.
+    wwwroot/pwa-install.js) – statt des früheren confirm()-Dialogs; keine Internetverbindung (wwwroot/js/site.js).
 *@
 <div class="bp-app-hinweise" aria-live="polite">
     @* hidden am äußeren Element, d-flex innen – sonst gewinnt d-flex (auch !important) gegen [hidden] *@
@@ -11,6 +11,12 @@
             <span class="me-auto small">@L["Update_Text"]</span>
             <button type="button" class="btn btn-sm btn-link text-secondary text-decoration-none" data-pwa-update-spaeter>@L["Later"]</button>
             <button type="button" class="btn btn-sm btn-primary" data-pwa-update>@L["Update_Now"]</button>
+        </div>
+    </div>
+    <div id="offlineBanner" class="alert alert-warning shadow mb-2 py-2" role="status" hidden>
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-wifi-off" aria-hidden="true"></i>
+            <span class="small">@L["Offline_Text"]</span>
         </div>
     </div>
 </div>

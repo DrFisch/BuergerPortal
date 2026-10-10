@@ -22,4 +22,7 @@
 	<data name="Later" xml:space="preserve">
 		<value>Later</value>
 	</data>
+  <data name="Offline_Text" xml:space="preserve">
+    <value>No internet connection – appointments, applications and mailbox are available again once you are online.</value>
+  </data>
 </root>
