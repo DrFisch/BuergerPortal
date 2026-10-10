@@ -368,4 +368,7 @@
   <data name="Card_BundId_Mailbox" xml:space="preserve">
     <value>Open mailbox</value>
   </data>
+  <data name="PWA_Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
 </root>
