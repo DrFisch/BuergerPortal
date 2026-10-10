@@ -1,0 +1,26 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{
+    // Ziel des Kurzbefehls „Postfach“ der App (manifest.webmanifest)
+    ViewData["Title"] = L["Title"];
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+}
+
+<div class="container" style="max-width: 640px;">
+    <h1 class="h3 fw-bold mb-3"><i class="bi bi-envelope-paper me-2 text-primary" aria-hidden="true"></i>@L["Title"]</h1>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <p>@L["Text"]</p>
+            @if (!string.IsNullOrWhiteSpace(postfachUrl))
+            {
+                <a class="btn btn-primary" href="@postfachUrl" data-sim-hinweis="postfach">
+                    @L["Button"] <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i>
+                </a>
+            }
+            else
+            {
+                <p class="text-body-secondary mb-0">@L["NotConfigured"]</p>
+            }
+        </div>
+    </div>
+</div>

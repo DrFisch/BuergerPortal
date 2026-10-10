@@ -170,6 +170,14 @@ namespace BuergerPortal.Web.Controllers
             return View();
         }
 
+        // Kurzbefehl „Postfach“ der installierten App (manifest.webmanifest): Kurzbefehle müssen im Bereich der App liegen.
+        // Die Seite führt mit dem üblichen Hinweis vor dem Wechsel zur Simulation weiter ins BundID-Postfach.
+        [HttpGet("/Postfach")]
+        public IActionResult Postfach()
+        {
+            return View();
+        }
+
         // Impressum: Hinweis auf das Studienprojekt, ohne Anmeldung lesbar (Link im Seitenfuß).
         [AllowAnonymous]
         public IActionResult Impressum()
