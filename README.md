@@ -25,11 +25,11 @@ flowchart LR
 | Projekt | Aufgabe |
 |---|---|
 | `AuthenticationServer` | ASP.NET Identity + OpenIddict; meldet Personen per SAML 2.0 bei der BundID an (`prompt=login` → `ForceAuthn`), legt Konten per bPK2 an, stellt OIDC-Tokens aus (Vertrauensniveau als `acr`, Postkorb-Handle, Refresh-Token) |
-| `BuergerPortal.Web` | Oberfläche; ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“; Sitzungsdaten serverseitig |
-| `BuergerPortal.Api` | Fachlogik (Terminprüfung je Standort, Feiertage); Policy für Vertrauensniveau; sendet Bestätigungen an das Postfach |
+| `BuergerPortal.Web` | Oberfläche und installierbare App (PWA); ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“; Sitzungsdaten serverseitig |
+| `BuergerPortal.Api` | Fachlogik (Terminprüfung je Standort, Feiertage); Policy für Vertrauensniveau; sendet Bestätigungen an das Postfach und Benachrichtigungen per Web Push |
 | `BuergerPortal.PostkorbSimulation` | Postfach-Variante „dienst“: REST nach ZBP `CreateMessage`; Oberfläche meldet sich als eigener SAML-SP über die bestehende BundID-Sitzung an, ohne `ForceAuthn` |
 | `BuergerPortal.BundId` / `.Core` | gemeinsamer SAML-Ablauf (ITfoxtec.Identity.Saml2) bzw. Claim-Namen und Vertrauensniveaus |
-| `BuergerPortal.Tests` | xUnit: SAML-Prüfungen und Angriffsfälle, Kontoanlage, Policies, Postkorb, Sitzung, Terminprüfung |
+| `BuergerPortal.Tests` | xUnit: SAML-Prüfungen und Angriffsfälle, Kontoanlage, Policies, Postkorb, Sitzung, Terminprüfung, Web Push (RFC-8291-Beispiel) |
 
 ## BundID-Postfach: zwei Varianten
 
@@ -56,6 +56,22 @@ verschlüsselt auf dem Server, das Cookie enthält nur eine Kennung. Jede Anmeld
 | Rate-Limiting | Auth-Server je Client-IP und Minute: `/bundid/login` + `/bundid/acs` 30, `/connect/*` 60, Token/UserInfo 300; API je Person 10 Buchungen/Stornos/Umbuchungen | `RateLimiting:Saml`, `:Oidc`, `:Backchannel` (Auth), `RateLimiting:BuchungenProMinute` (API) |
 | Doppelbuchungen | Prüfen und Speichern in einer Transaktion unter `sp_getapplock` je Person und Standort | – |
 | Diagnose-Adressen | `/auth/debug`, `/home/testuser` (Web), `api/debug/*`, `api/email/test` (API) nur in `Development` | `Diagnostics:Enabled=true` schaltet sie auch sonst ein |
+| Push-Abos | nur `https` zu bekannten Push-Diensten (Schutz vor Server-Side Request Forgery), Schlüssel als Punkt auf P-256 geprüft, nur eigene Abos änderbar, Antiforgery-Token im Portal, 10 Anfragen je Minute und Person | `Push:AllowedHosts` (leer = Google, Microsoft, Mozilla, Apple) |
+
+## App (PWA) und Benachrichtigungen
+
+- **Installieren:** ein Dialog „App installieren“ mit Anleitung je Gerät (Android, iPhone/iPad, Computer) und QR-Code
+  (`/app/qr.svg`); Manifest mit Kurzbefehlen, Screenshots und maskierbarem Icon; Hinweisleisten „Neue Version“ und
+  „Offline“. Der Service Worker (`wwwroot/sw.js`) speichert nur statische Dateien, keine Seiten.
+- **Benachrichtigungen (Web Push):** Einstellungen → Benachrichtigungen. Bei einer neuen Postfach-Nachricht schickt die API
+  Titel, Betreff und Ziel (`/Postfach`) an jedes Gerät der Person – verschlüsselt nach **RFC 8291** (aes128gcm), der
+  Server weist sich per **VAPID** aus (RFC 8292); beides mit Bordmitteln von .NET (`BuergerPortal.Api/Push/`). Ablauf:
+  Browser → `/push/subscriptions` (Portal, Antiforgery) → `api/push/subscriptions` (API, Tabelle `PushSubscriptions`);
+  Postfach zugestellt → Warteschlange → Push-Dienst des Browsers → Service Worker zeigt an, Punkt am App-Symbol.
+  iPhone/iPad: nur als installierte App ab iOS 16.4.
+- **Schlüssel:** `Push:VapidPublicKey`, `Push:VapidPrivateKey` (P-256, base64url), `Push:Subject` (Kontakt). Ohne
+  Schlüssel ist Push aus. Im Betrieb erzeugt `deploy/deploy.ps1` das Paar einmalig in der `.env`
+  (`BPSIM_VAPID_PUBLIC_KEY`, `BPSIM_VAPID_PRIVATE_KEY`); danach nicht mehr ändern, sonst werden alle Abos ungültig.
 
 ## Lokal starten (Entwicklung)
 
@@ -77,7 +93,8 @@ Voraussetzungen: .NET SDK 10 (siehe `global.json`; alle Projekte zielen auf `net
    API https://localhost:7003, Postfach-Dienst https://localhost:7005. Standard lokal ist die Variante „dienst“; für
    das Postfach im Simulator API und Web mit `Postkorb__BaseUrl=http://localhost:8090/`,
    `Postkorb__ApiKey=<APP_POSTFACH_APIKEY aus compose.bundid-dev.yml>`, `Postkorb__PostfachUrl=http://localhost:8090/postfach`
-   und `Postkorb__Variante=simulator` starten.
+   und `Postkorb__Variante=simulator` starten. Für Benachrichtigungen die API zusätzlich mit `Push__VapidPublicKey`,
+   `Push__VapidPrivateKey` und `Push__Subject` starten (Schlüsselpaar z. B. mit `Vapid.GenerateKeys()`).
 4. https://localhost:7002 öffnen → „Mit BundID anmelden“ → im Simulator eine Testperson wählen
    (Identifizierungsmittel „Benutzername“ = Niveau normal, „Elster“ = substanziell, „eID“ = hoch).
 
