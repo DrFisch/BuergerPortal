@@ -317,6 +317,9 @@
     <value>Das hat nicht geklappt. Bitte versuchen Sie es später erneut.</value>
   </data>
   <data name="Settings_Push_Privacy" xml:space="preserve">
-    <value>Gespeichert werden nur die Adresse dieses Geräts beim Push-Dienst des Browsers (z. B. Google, Apple, Mozilla, Microsoft) und zwei Schlüssel. Der Inhalt ist verschlüsselt; auf dem Sperrbildschirm erscheint nur der Betreff der Nachricht.</value>
+    <value>Gespeichert werden nur die Adresse dieses Geräts beim Push-Dienst des Browsers (z. B. Google, Apple, Mozilla, Microsoft) und zwei Schlüssel. Der Inhalt ist verschlüsselt; auf dem Sperrbildschirm erscheint nur der Betreff der Nachricht. Beim Abmelden bleiben Benachrichtigungen eingeschaltet.</value>
+  </data>
+  <data name="Settings_Push_PrivacyLink" xml:space="preserve">
+    <value>Mehr zum Datenschutz</value>
   </data>
 </root>

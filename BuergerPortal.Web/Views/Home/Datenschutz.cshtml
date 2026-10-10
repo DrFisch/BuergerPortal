@@ -60,9 +60,44 @@
     <div class="card border-0 shadow-sm rounded-4 mb-3">
         <div class="card-body p-4">
             <h2 class="h5"><i class="bi bi-phone me-2" aria-hidden="true"></i>App auf dem Smartphone</h2>
-            <p class="mb-0">
+            <p>
                 Die installierbare App speichert nur Programmdateien (Layout, Skripte, Bilder) auf dem Gerät, keine Seiten
                 mit persönlichen Daten. Ohne Internetverbindung erscheint nur ein Hinweis.
+            </p>
+            <ul class="mb-0">
+                <li>Wählen Sie beim Hinweis „App installieren“ auf der Startseite <strong>„Später“</strong>, merkt sich der
+                    Browser den Zeitpunkt im lokalen Speicher (<code>bpsim.pwa.hinweisSpaeter</code>) und zeigt den Hinweis
+                    30 Tage nicht mehr. Der Wert verlässt das Gerät nicht.</li>
+                <li>Den QR-Code „Auf dem Handy öffnen“ erzeugt das Portal selbst; er enthält nur die Adresse des Portals.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3" id="benachrichtigungen">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-bell me-2" aria-hidden="true"></i>Benachrichtigungen aufs Handy</h2>
+            <p>
+                Nur wenn Sie sie unter Einstellungen → Benachrichtigungen einschalten. Ihr Browser legt dann beim Push-Dienst
+                seines Herstellers ein Abo an (Chrome/Android: Google, Edge: Microsoft, Firefox: Mozilla, Safari/iPhone:
+                Apple). Das Portal speichert zu Ihrem Konto:
+            </p>
+            <ul>
+                <li>die Adresse dieses Abos beim Push-Dienst und zwei Schlüssel Ihres Browsers für die Verschlüsselung,</li>
+                <li>den Zeitpunkt, an dem Sie die Benachrichtigungen eingeschaltet haben.</li>
+            </ul>
+            <p>
+                Bei einer neuen Nachricht in Ihrem BundID-Postfach schickt das Portal Titel, Betreff und Ziel (z. B.
+                <code>/Postfach</code>) über den Push-Dienst an Ihr Gerät – <strong>Ende-zu-Ende-verschlüsselt</strong>
+                (RFC 8291): Der Push-Dienst sieht nur, dass eine Nachricht für dieses Gerät kommt, nicht den Inhalt. Den Text
+                der Nachricht lesen Sie weiterhin nur im Postfach. Auf dem Sperrbildschirm erscheint der Betreff, sofern Sie
+                das in den Einstellungen Ihres Geräts nicht ausgeschaltet haben.
+            </p>
+            <p class="mb-0">
+                Die Einstellung gilt je Gerät. <strong>Beim Abmelden bleiben Benachrichtigungen auf dem Gerät eingeschaltet</strong>
+                – auf einem gemeinsam genutzten Gerät schalten Sie sie bitte vorher aus. Meldet sich auf dem Gerät eine andere
+                Person an und schaltet Benachrichtigungen ein, gehen sie nur noch an diese Person. Ausschalten (oder die
+                Erlaubnis im Browser entziehen) löscht das Abo; Abos, die der Push-Dienst nicht mehr kennt, löscht das Portal
+                beim nächsten Versand.
             </p>
         </div>
     </div>

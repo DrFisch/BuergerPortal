@@ -184,7 +184,10 @@
                                     <button type="button" class="btn btn-outline-primary" data-push-test hidden>@L["Settings_Push_Test"]</button>
                                 </div>
                                 <div class="small mt-2" data-push-meldung role="status" aria-live="polite"></div>
-                                <p class="small text-muted mt-3 mb-0">@L["Settings_Push_Privacy"]</p>
+                                <p class="small text-muted mt-3 mb-0">
+                                    @L["Settings_Push_Privacy"]
+                                    <a asp-controller="Home" asp-action="Datenschutz" asp-fragment="benachrichtigungen">@L["Settings_Push_PrivacyLink"]</a>
+                                </p>
                             </div>
                         </div>
                     </div>

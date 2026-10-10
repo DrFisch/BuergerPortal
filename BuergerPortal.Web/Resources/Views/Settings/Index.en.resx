@@ -317,6 +317,9 @@
     <value>That did not work. Please try again later.</value>
   </data>
   <data name="Settings_Push_Privacy" xml:space="preserve">
-    <value>Only this device's address at the browser's push service (e.g. Google, Apple, Mozilla, Microsoft) and two keys are stored. The content is encrypted; the lock screen only shows the message subject.</value>
+    <value>Only this device's address at the browser's push service (e.g. Google, Apple, Mozilla, Microsoft) and two keys are stored. The content is encrypted; the lock screen only shows the message subject. Notifications stay on when you log out.</value>
+  </data>
+  <data name="Settings_Push_PrivacyLink" xml:space="preserve">
+    <value>More on privacy</value>
   </data>
 </root>
