@@ -1,40 +1,16 @@
 using BuergerPortal.Domain.Appointments.Enums;
 using BuergerPortal.Infrastructure.Persistence;
 using BuergerPortal.Infrastructure.Repositories;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace BuergerPortal.Tests.Termine
 {
     /// <summary>
-    /// Sperre beim Buchen gegen einen echten SQL Server (sp_getapplock): Gleicher Standort wartet, bis die erste Buchung
-    /// fertig ist; ein anderer Standort wartet nicht. Verbindung aus BPSIM_TEST_SQL, sonst die eigene LocalDB-Test-DB
-    /// BuergerPortalDB_bpsim. Ohne erreichbaren SQL Server (z. B. in der CI unter Linux) wird der Test übersprungen.
-    /// Die Sperren ändern keine Daten.
+    /// Sperre beim Buchen gegen einen echten SQL Server (sp_getapplock, siehe SqlServerTest): Gleicher Standort wartet,
+    /// bis die erste Buchung fertig ist; ein anderer Standort wartet nicht. Die Sperren ändern keine Daten.
     /// </summary>
     public class AppointmentBookingLockTests
     {
-        private static readonly string ConnectionString = Environment.GetEnvironmentVariable("BPSIM_TEST_SQL")
-            ?? @"Server=(localdb)\mssqllocaldb;Database=BuergerPortalDB_bpsim;Trusted_Connection=True;Connect Timeout=5";
-
-        public sealed class SqlServerFactAttribute : FactAttribute
-        {
-            public SqlServerFactAttribute()
-            {
-                try
-                {
-                    using var connection = new SqlConnection(ConnectionString);
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    Skip = $"kein SQL Server erreichbar ({ex.GetType().Name})";
-                }
-            }
-        }
-
-        private static PortalDbContext NewContext() =>
-            new(new DbContextOptionsBuilder<PortalDbContext>().UseSqlServer(ConnectionString).Options);
+        private static PortalDbContext NewContext() => SqlServerTest.NewContext();
 
         [SqlServerFact]
         public async Task Gleicher_Standort_wartet_bis_die_erste_Buchung_fertig_ist()
