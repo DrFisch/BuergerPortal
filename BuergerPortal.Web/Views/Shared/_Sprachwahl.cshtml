@@ -1,0 +1,13 @@
+@* Sprachwahl Deutsch/Englisch – in der Kopfzeile immer sichtbar (Handy und Computer, mit und ohne Anmeldung).
+   Standard ist Deutsch; die Wahl merkt sich ein Cookie (LanguageController). *@
+@{
+    var aktuell = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var zurueck = Uri.EscapeDataString(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString);
+    var extraClass = ViewData["Class"] as string ?? "";
+}
+<div class="btn-group btn-group-sm bp-sprachwahl @extraClass" role="group" aria-label="Sprache / Language">
+    <a class="btn @(aktuell == "de" ? "btn-secondary" : "btn-outline-secondary")" href="~/sprache/de?returnUrl=@zurueck"
+       hreflang="de" lang="de" title="Deutsch" aria-current="@(aktuell == "de" ? "true" : null)">DE</a>
+    <a class="btn @(aktuell == "en" ? "btn-secondary" : "btn-outline-secondary")" href="~/sprache/en?returnUrl=@zurueck"
+       hreflang="en" lang="en" title="English" aria-current="@(aktuell == "en" ? "true" : null)">EN</a>
+</div>
