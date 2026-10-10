@@ -31,6 +31,7 @@ namespace BuergerPortal.Infrastructure
             services.AddScoped<ISperrmuellRepository, SperrmuellRepository>();
             services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
             services.AddScoped<IPoiRepository, PoiRepository>();
+            services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
 
             return services;
         }
