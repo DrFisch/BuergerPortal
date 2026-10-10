@@ -316,7 +316,6 @@
                         <div class="mt-auto">
                             <button class="btn btn-success btn-sm w-100 rounded-pill fw-semibold shadow-sm"
                                     type="button"
-                                    id="btnInstallHome"
                                     data-pwa-install>
                                 <i class="bi bi-plus-circle me-1"></i> @T["Settings_Install_Button"]
                             </button>
@@ -549,49 +548,5 @@
     </style>
 }
 
-@section Scripts {
-    <script>
-        let deferredPrompt;
-        const installCard = document.getElementById('pwaInstallCard');
-
-        // Event abfangen, wenn die App installierbar ist
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Verhindern, dass der Standard-Banner des Browsers erscheint
-            e.preventDefault();
-            // Event speichern
-            deferredPrompt = e;
-            // Die Karte auf der Homepage einblenden
-            if (installCard) {
-                installCard.style.display = 'block';
-            }
-        });
-
-        async function installApp() {
-            if (!deferredPrompt) return;
-            try {
-                // Den Installations-Dialog anzeigen
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to install prompt: ${outcome}`);
-
-                // Prompt löschen, da er nur einmal verwendet werden kann
-                deferredPrompt = null;
-
-                // Karte wieder ausblenden
-                if (installCard) {
-                    installCard.style.display = 'none';
-                }
-            } catch (err) {
-                console.error('installApp error', err);
-            }
-        }
-
-        window.addEventListener('appinstalled', () => {
-            deferredPrompt = null;
-            if (installCard) {
-                installCard.style.display = 'none';
-            }
-            console.log('PWA wurde erfolgreich installiert');
-        });
-    </script>
-}
+@* Installieren der App (Karte, Hinweis): wwwroot/pwa-install.js – vorher stand hier eine zweite Fassung, die wegen
+   des doppelt deklarierten deferredPrompt gar nicht lief. *@
