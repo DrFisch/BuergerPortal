@@ -74,6 +74,8 @@
 
     @* Hinweis vor dem Wechsel zur BundID-Simulation (Anmeldung, Postfach) *@
     <partial name="_SimulationsHinweis" />
+    @* Dialog „App installieren“ mit Anleitung je Gerät (wwwroot/pwa-install.js) *@
+    <partial name="_AppInstallieren" />
     @if (User.Identity?.IsAuthenticated == true)
     {
         @* Warnung kurz vor dem automatischen Abmelden *@

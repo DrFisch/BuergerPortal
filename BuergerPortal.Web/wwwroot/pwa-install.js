@@ -39,82 +39,109 @@ function showUpdateNotification() {
 
 /**
  * PWA INSTALLATIONS-LOGIK & UI-STEUERUNG
+ * Ein Klick auf ein Element mit data-pwa-install installiert die App: Bietet der Browser seinen eigenen Dialog an
+ * (beforeinstallprompt – nur Chromium, und nur wenn er die Kriterien erfüllt sieht), erscheint dieser. Sonst öffnet sich
+ * der Dialog „App installieren“ mit der Anleitung für das erkannte Gerät (Views/Shared/_AppInstallieren.cshtml) – so
+ * gibt es auch auf dem iPhone, in Firefox oder nach einem abgelehnten Browser-Dialog immer einen Weg.
+ * In der installierten App (display-mode: standalone) sind alle Einträge ausgeblendet.
  */
-function showInstallPrompts() {
-    // Falls wir im Standalone-Modus sind, nichts anzeigen
-    if (isStandalone()) return;
-
-    // 1. Die Feature-Card auf dem Home-Bildschirm (falls vorhanden)
-    const card = document.getElementById('pwaInstallCard');
-    if (card) card.style.display = 'block';
-
-    // 2. Der dezente Alert über dem Login-Hinweis
-    const inlineAlert = document.getElementById('pwaInlineInstallAlert');
-    if (inlineAlert) inlineAlert.classList.remove('d-none');
-
-    // 3. Optional: Einmaliger Toast oder Browser-Alert (nur bei erstem Laden)
-    if (!sessionStorage.getItem('pwa_alert_shown')) {
-        // Hier ein dezenter Toast oder einfacher Alert
-        console.log("Hinweis: Installieren Sie diese App für eine bessere Erfahrung.");
-        sessionStorage.setItem('pwa_alert_shown', 'true');
-    }
-}
-
-function hideInstallPrompts() {
-    const card = document.getElementById('pwaInstallCard');
-    if (card) card.style.display = 'none';
-
-    const inlineAlert = document.getElementById('pwaInlineInstallAlert');
-    if (inlineAlert) inlineAlert.classList.add('d-none');
-}
+const SPAETER_KEY = 'bpsim.pwa.hinweisSpaeter';   // „Später“ beim Hinweis auf der Startseite (Zeitpunkt)
+const SPAETER_TAGE = 30;
 
 function isStandalone() {
     return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true;
 }
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallPrompts();
-});
+/** Gerät/Browser für die passende Anleitung: ios, android, android-firefox, firefox, safari-mac, desktop. */
+function plattform() {
+    const ua = navigator.userAgent;
+    // iPadOS meldet sich als Mac – erkennbar an der Touch-Unterstützung
+    if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'ios';
+    if (/Android/.test(ua)) return /Firefox\//.test(ua) ? 'android-firefox' : 'android';
+    if (/Firefox\//.test(ua)) return 'firefox';
+    if (/Safari\//.test(ua) && !/Chrome|Chromium|Edg\//.test(ua)) return 'safari-mac';
+    return 'desktop';
+}
+
+function hinweisZurueckgestellt() {
+    try {
+        const zeit = Number(localStorage.getItem(SPAETER_KEY));
+        return zeit > 0 && Date.now() - zeit < SPAETER_TAGE * 24 * 60 * 60 * 1000;
+    } catch {
+        return false;   // ohne Speicher (privates Fenster): Hinweis zeigen
+    }
+}
+
+function updateInstallUi() {
+    const standalone = isStandalone();
+    document.documentElement.classList.toggle('pwa-standalone', standalone);
+    document.querySelectorAll('[data-pwa-install-item], [data-pwa-install]').forEach(el => { el.hidden = standalone; });
+
+    // Karte auf der Startseite: immer, solange die App nicht installiert ist
+    const card = document.getElementById('pwaInstallCard');
+    if (card) card.style.display = standalone ? 'none' : 'block';
+
+    // Hinweis oben auf der Startseite: auf dem Handy oder wenn der Browser das Installieren anbietet – bis „Später“
+    const inlineAlert = document.getElementById('pwaInlineInstallAlert');
+    if (inlineAlert) {
+        const p = plattform();
+        const sinnvoll = deferredPrompt || p === 'ios' || p.startsWith('android');
+        inlineAlert.classList.toggle('d-none', standalone || !sinnvoll || hinweisZurueckgestellt());
+    }
+}
+
+function zeigeAnleitung() {
+    const modalEl = document.getElementById('appInstallModal');
+    if (!modalEl || !window.bootstrap) return;
+    const p = plattform();
+    modalEl.querySelectorAll('[data-pwa-plattform]').forEach(block => { block.hidden = block.dataset.pwaPlattform !== p; });
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
 
 async function installApp() {
-    if (!deferredPrompt) return;
-    try {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Installations-Ergebnis: ${outcome}`);
-        deferredPrompt = null;
-        hideInstallPrompts();
-    } catch (err) {
-        console.error('installApp error', err);
+    if (deferredPrompt) {
+        try {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;   // nur einmal verwendbar
+            updateInstallUi();
+            return;
+        } catch (err) {
+            console.error('installApp error', err);
+        }
     }
+    zeigeAnleitung();
 }
 
 window.installApp = installApp;
 
-// Alle Knöpfe „App installieren“ (Attribut data-pwa-install) – ohne onclick-Attribut wegen der Content-Security-Policy
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();   // eigener Knopf statt der Leiste des Browsers
+    deferredPrompt = e;
+    updateInstallUi();
+});
+
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    updateInstallUi();
+});
+
+// Alle Knöpfe „App installieren“ (Attribut data-pwa-install) und „Später“ – ohne onclick-Attribut (Content-Security-Policy)
 document.addEventListener('click', (e) => {
     if (e.target.closest('[data-pwa-install]')) {
         e.preventDefault();
         installApp();
+    } else if (e.target.closest('[data-pwa-spaeter]')) {
+        try { localStorage.setItem(SPAETER_KEY, String(Date.now())); } catch { /* ohne Speicher: nur jetzt ausblenden */ }
+        document.getElementById('pwaInlineInstallAlert')?.classList.add('d-none');
     }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (isStandalone()) {
-        hideInstallPrompts();
-    }
-
-    // Falls das Event schon gefeuert wurde
-    if (deferredPrompt) showInstallPrompts();
+    updateInstallUi();
+    window.matchMedia?.('(display-mode: standalone)').addEventListener?.('change', updateInstallUi);
 
     window.addEventListener('online', () => document.body.classList.remove('is-offline'));
     window.addEventListener('offline', () => document.body.classList.add('is-offline'));
-});
-
-window.addEventListener('appinstalled', () => {
-    hideInstallPrompts();
-    deferredPrompt = null;
 });

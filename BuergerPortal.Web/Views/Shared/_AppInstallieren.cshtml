@@ -1,0 +1,68 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
+@*
+    Dialog „App installieren“ (wwwroot/pwa-install.js). Bietet der Browser den eigenen Installationsdialog an
+    (beforeinstallprompt, nur Chromium), erscheint direkt dieser. Sonst zeigt dieser Dialog die Anleitung für das erkannte
+    Gerät – data-pwa-plattform: ios, android, android-firefox, desktop (Chrome/Edge), firefox, safari-mac.
+*@
+<div class="modal fade" id="appInstallModal" tabindex="-1" aria-labelledby="appInstallTitel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="appInstallTitel">
+                    <i class="bi bi-phone me-2 text-primary" aria-hidden="true"></i>@L["Title"]
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@L["Close"]"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-body-secondary">@L["Why"]</p>
+
+                <div data-pwa-plattform="ios">
+                    <p class="fw-semibold mb-1">@L["Ios_Title"]</p>
+                    <ol class="mb-2">
+                        <li>@L["Ios_Step1"] <i class="bi bi-box-arrow-up" aria-hidden="true"></i></li>
+                        <li>@L["Ios_Step2"]</li>
+                        <li>@L["Ios_Step3"]</li>
+                    </ol>
+                    <p class="small text-body-secondary mb-0">@L["Ios_Note"]</p>
+                </div>
+
+                <div data-pwa-plattform="android">
+                    <p class="fw-semibold mb-1">@L["Android_Title"]</p>
+                    <ol class="mb-0">
+                        <li>@L["Android_Step1"] <i class="bi bi-three-dots-vertical" aria-hidden="true"></i></li>
+                        <li>@L["Android_Step2"]</li>
+                    </ol>
+                </div>
+
+                <div data-pwa-plattform="android-firefox">
+                    <p class="fw-semibold mb-1">@L["AndroidFirefox_Title"]</p>
+                    <ol class="mb-0">
+                        <li>@L["Android_Step1"] <i class="bi bi-three-dots-vertical" aria-hidden="true"></i></li>
+                        <li>@L["AndroidFirefox_Step2"]</li>
+                    </ol>
+                </div>
+
+                <div data-pwa-plattform="desktop">
+                    <p class="fw-semibold mb-1">@L["Desktop_Title"]</p>
+                    <ol class="mb-0">
+                        <li>@L["Desktop_Step1"] <i class="bi bi-window-plus" aria-hidden="true"></i></li>
+                        <li>@L["Desktop_Step2"]</li>
+                    </ol>
+                </div>
+
+                <div data-pwa-plattform="firefox">
+                    <p class="fw-semibold mb-1">@L["Firefox_Title"]</p>
+                    <p class="mb-0">@L["Firefox_Text"]</p>
+                </div>
+
+                <div data-pwa-plattform="safari-mac">
+                    <p class="fw-semibold mb-1">@L["SafariMac_Title"]</p>
+                    <p class="mb-0">@L["SafariMac_Text"]</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">@L["Ok"]</button>
+            </div>
+        </div>
+    </div>
+</div>

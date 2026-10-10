@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>BürgerPortal als App installieren</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Schließen</value>
+	</data>
+	<data name="Ok" xml:space="preserve">
+		<value>Verstanden</value>
+	</data>
+	<data name="Why" xml:space="preserve">
+		<value>Die App startet wie eine normale App vom Startbildschirm – ohne Adressleiste und mit Kurzbefehlen für Termine, Postfach und Meldungen. Aus Datenschutzgründen speichert sie keine Seiten mit Ihren persönlichen Daten auf dem Gerät.</value>
+	</data>
+	<data name="Ios_Title" xml:space="preserve">
+		<value>iPhone und iPad (Safari)</value>
+	</data>
+	<data name="Ios_Step1" xml:space="preserve">
+		<value>Unten (bzw. oben) auf „Teilen“ tippen</value>
+	</data>
+	<data name="Ios_Step2" xml:space="preserve">
+		<value>„Zum Home-Bildschirm“ wählen (ggf. in der Liste nach unten scrollen)</value>
+	</data>
+	<data name="Ios_Step3" xml:space="preserve">
+		<value>Mit „Hinzufügen“ bestätigen – das BürgerPortal erscheint auf dem Home-Bildschirm.</value>
+	</data>
+	<data name="Ios_Note" xml:space="preserve">
+		<value>Andere Browser auf dem iPhone (z. B. Chrome, Edge) bieten „Zum Home-Bildschirm“ ebenfalls im Teilen-Menü an, sofern sie es unterstützen.</value>
+	</data>
+	<data name="Android_Title" xml:space="preserve">
+		<value>Android (Chrome, Edge, Samsung Internet)</value>
+	</data>
+	<data name="Android_Step1" xml:space="preserve">
+		<value>Das Browsermenü öffnen</value>
+	</data>
+	<data name="Android_Step2" xml:space="preserve">
+		<value>„App installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen und bestätigen.</value>
+	</data>
+	<data name="AndroidFirefox_Title" xml:space="preserve">
+		<value>Android (Firefox)</value>
+	</data>
+	<data name="AndroidFirefox_Step2" xml:space="preserve">
+		<value>„Installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen und bestätigen.</value>
+	</data>
+	<data name="Desktop_Title" xml:space="preserve">
+		<value>Computer (Chrome, Edge)</value>
+	</data>
+	<data name="Desktop_Step1" xml:space="preserve">
+		<value>In der Adressleiste rechts auf das Symbol „App installieren“ klicken</value>
+	</data>
+	<data name="Desktop_Step2" xml:space="preserve">
+		<value>Oder im Browsermenü unter „Apps“ bzw. „Speichern und teilen“ den Eintrag „BürgerPortal installieren“ wählen.</value>
+	</data>
+	<data name="Firefox_Title" xml:space="preserve">
+		<value>Firefox</value>
+	</data>
+	<data name="Firefox_Text" xml:space="preserve">
+		<value>Firefox bietet das Installieren von Web-Apps am Computer nicht oder je nach Version nur eingeschränkt an. Öffnen Sie das Portal in Edge oder Chrome – oder auf dem Handy.</value>
+	</data>
+	<data name="SafariMac_Title" xml:space="preserve">
+		<value>Mac (Safari)</value>
+	</data>
+	<data name="SafariMac_Text" xml:space="preserve">
+		<value>In Safari ab macOS Sonoma im Menü „Ablage“ den Eintrag „Zum Dock hinzufügen“ wählen.</value>
+	</data>
+</root>

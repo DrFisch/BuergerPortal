@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Install BürgerPortal as an app</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Close</value>
+	</data>
+	<data name="Ok" xml:space="preserve">
+		<value>Got it</value>
+	</data>
+	<data name="Why" xml:space="preserve">
+		<value>The app starts like a normal app from your home screen – without an address bar and with shortcuts for appointments, mailbox and reports. For data protection it does not store pages with your personal data on the device.</value>
+	</data>
+	<data name="Ios_Title" xml:space="preserve">
+		<value>iPhone and iPad (Safari)</value>
+	</data>
+	<data name="Ios_Step1" xml:space="preserve">
+		<value>Tap “Share” at the bottom (or top)</value>
+	</data>
+	<data name="Ios_Step2" xml:space="preserve">
+		<value>Choose “Add to Home Screen” (scroll down the list if needed)</value>
+	</data>
+	<data name="Ios_Step3" xml:space="preserve">
+		<value>Confirm with “Add” – BürgerPortal appears on your home screen.</value>
+	</data>
+	<data name="Ios_Note" xml:space="preserve">
+		<value>Other browsers on the iPhone (e.g. Chrome, Edge) also offer “Add to Home Screen” in the share menu if they support it.</value>
+	</data>
+	<data name="Android_Title" xml:space="preserve">
+		<value>Android (Chrome, Edge, Samsung Internet)</value>
+	</data>
+	<data name="Android_Step1" xml:space="preserve">
+		<value>Open the browser menu</value>
+	</data>
+	<data name="Android_Step2" xml:space="preserve">
+		<value>Choose “Install app” or “Add to home screen” and confirm.</value>
+	</data>
+	<data name="AndroidFirefox_Title" xml:space="preserve">
+		<value>Android (Firefox)</value>
+	</data>
+	<data name="AndroidFirefox_Step2" xml:space="preserve">
+		<value>Choose “Install” or “Add to home screen” and confirm.</value>
+	</data>
+	<data name="Desktop_Title" xml:space="preserve">
+		<value>Computer (Chrome, Edge)</value>
+	</data>
+	<data name="Desktop_Step1" xml:space="preserve">
+		<value>Click the “Install app” icon on the right of the address bar</value>
+	</data>
+	<data name="Desktop_Step2" xml:space="preserve">
+		<value>Or choose “Install BürgerPortal” in the browser menu under “Apps” or “Save and share”.</value>
+	</data>
+	<data name="Firefox_Title" xml:space="preserve">
+		<value>Firefox</value>
+	</data>
+	<data name="Firefox_Text" xml:space="preserve">
+		<value>Firefox does not offer installing web apps on the computer, or only to a limited extent depending on the version. Open the portal in Edge or Chrome – or on your phone.</value>
+	</data>
+	<data name="SafariMac_Title" xml:space="preserve">
+		<value>Mac (Safari)</value>
+	</data>
+	<data name="SafariMac_Text" xml:space="preserve">
+		<value>In Safari on macOS Sonoma or later, choose “Add to Dock” in the “File” menu.</value>
+	</data>
+</root>
