@@ -10,8 +10,16 @@
 # unter derselben https-Adresse erreichen wie der Browser (Issuer der Tokens).
 name: bpsim
 
+# Container-Logs begrenzen (Docker schreibt sonst unbegrenzt): je Dienst höchstens 3 Dateien à 10 MB
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 x-dotnet: &dotnet
   restart: unless-stopped
+  logging: *logging
   environment: &dotnet-env
     ASPNETCORE_ENVIRONMENT: Production
     TZ: Europe/Berlin
@@ -23,6 +31,7 @@ services:
   caddy:
     image: caddy:2
     restart: unless-stopped
+    logging: *logging
     ports:
       - "80:80"
       - "443:443"
@@ -50,6 +59,7 @@ services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
+    logging: *logging
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_PID: Express
@@ -72,6 +82,7 @@ services:
     # IdP-Metadaten, eIDAS-LoA-URIs, Postkorb-Handle, Anmeldesitzung (Single Sign-on).
     image: ${BUNDID_SIM_IMAGE:-bpsim-bundid-simulator:latest}
     restart: unless-stopped
+    logging: *logging
     environment:
       APP_SAML_IDPENTITYID: https://bundid.${BPSIM_DOMAIN}/saml/metadata
       APP_SAML_SSOURL: https://bundid.${BPSIM_DOMAIN}/saml
