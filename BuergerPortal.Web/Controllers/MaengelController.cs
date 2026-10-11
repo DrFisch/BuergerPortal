@@ -21,10 +21,25 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestSizeLimit(10 * 1024 * 1024)]
         public async Task<IActionResult> Create(CreateMangelVm vm, CancellationToken ct)
         {
             if (!ModelState.IsValid)
                 return View(vm);
+
+            // Foto: im Browser schon verkleinert; ohne Skript kann es ein großes Kamerabild sein
+            string? fotoBase64 = null;
+            if (vm.Foto is { Length: > 0 })
+            {
+                if (vm.Foto.Length > 2 * 1024 * 1024)
+                {
+                    ModelState.AddModelError(nameof(vm.Foto), "Das Foto ist zu groß (höchstens 2 MB). Bitte ein kleineres wählen.");
+                    return View(vm);
+                }
+                using var stream = new MemoryStream();
+                await vm.Foto.CopyToAsync(stream, ct);
+                fotoBase64 = Convert.ToBase64String(stream.ToArray());
+            }
 
             if (vm.Latitude is null || vm.Longitude is null)
             {
@@ -41,7 +56,9 @@ namespace BuergerPortal.Web.Controllers
                 Beschreibung = vm.Beschreibung,
                 Latitude = vm.Latitude,
                 Longitude = vm.Longitude,
-                AddressHint = vm.AddressHint
+                AddressHint = vm.AddressHint,
+                FotoBase64 = fotoBase64,
+                FotoContentType = fotoBase64 == null ? null : vm.Foto!.ContentType,
             };
 
             var res = await client.PostAsJsonAsync("api/maengelmeldungen", req, ct);
@@ -90,8 +107,8 @@ namespace BuergerPortal.Web.Controllers
             var created = await res.Content.ReadFromJsonAsync<CreateMaengelmeldungResponse>(cancellationToken: ct);
 
             TempData["Meldung"] = created is null
-                ? "Mängelmeldung wurde erstellt. Die Stadt denkt ihnen für diesen Hinweis und wird sich um das Problem kümmern!"
-                : $"Mängelmeldung wurde erstellt. Die Stadt denkt ihnen für diesen Hinweis und wird sich um das Problem kümmern! ID: {created.Id}";
+                ? "Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem."
+                : $"Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem. Nummer: {created.Id.ToString()[..8]}";
 
             return RedirectToAction(nameof(Create));
         }

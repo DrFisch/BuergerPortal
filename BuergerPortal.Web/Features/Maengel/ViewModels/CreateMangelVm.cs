@@ -20,5 +20,8 @@ namespace BuergerPortal.Web.Features.Maengel.ViewModels
 
         [MaxLength(500, ErrorMessage = "Der Adresshinweis darf maximal 500 Zeichen lang sein.")]
         public string? AddressHint { get; set; }
+
+        // Optionales Foto (im Browser auf höchstens 1600 px verkleinert; die API prüft Typ, Größe und Dateisignatur)
+        public IFormFile? Foto { get; set; }
     }
 }
