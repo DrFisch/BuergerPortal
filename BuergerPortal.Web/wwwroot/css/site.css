@@ -139,9 +139,31 @@
     --bs-btn-active-color: #212529;
 }
 
-[data-bs-theme="dark"] .btn-outline-primary {
+/* Blau-Rand-Knoepfe in beiden Schemata mit der Akzentfarbe (Bootstrap-Blau auf hellem Grund: 4,3:1) */
+.btn-outline-primary {
     --bs-btn-color: var(--bp-akzent);
     --bs-btn-border-color: var(--bp-akzent);
+}
+
+/* Dunkelmodus: Abzeichen auf hellem Grau mit dunkler Schrift (weiss auf #adb5bd: 2,1:1), Blau-Text heller */
+[data-bs-theme="dark"] .text-bg-secondary {
+    color: #212529 !important;
+}
+
+[data-bs-theme="dark"] .text-primary {
+    color: var(--bp-akzent) !important;
+}
+
+/* Tuerkis-Rand-Knopf (Startseite): Bootstrap-Tuerkis auf Weiss 2,0:1 -> dunkleres Tuerkis 5,1:1 */
+[data-bs-theme="light"] .btn-outline-info,
+:root:not([data-bs-theme="dark"]) .btn-outline-info {
+    --bs-btn-color: #087990;
+    --bs-btn-border-color: #087990;
+}
+
+/* Dunkelmodus: Gruen-Text heller (Bootstrap-Gruen auf #212529: 3,4:1 -> #75b798: 6,6:1) */
+[data-bs-theme="dark"] .text-success {
+    color: #75b798 !important;
 }
 
 /* Sprunglink fuer Tastatur und Screenreader (Views/Shared/_Navbar.cshtml) */
