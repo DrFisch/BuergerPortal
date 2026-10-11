@@ -69,6 +69,8 @@ ACS-Adresse und das `InResponseTo` der signierten Bearer-Bestätigung (SAML Prof
 | Doppelbuchungen | Prüfen und Speichern in einer Transaktion unter `sp_getapplock` je Person und Standort | – |
 | Diagnose-Adressen | `/auth/debug`, `/home/testuser` (Web), `api/debug/*`, `api/email/test` (API) nur in `Development` | `Diagnostics:Enabled=true` schaltet sie auch sonst ein |
 | Push-Abos | nur `https` zu bekannten Push-Diensten (Schutz vor Server-Side Request Forgery), Schlüssel als Punkt auf P-256 geprüft, nur eigene Abos änderbar, Antiforgery-Token im Portal, 10 Anfragen je Minute und Person | `Push:AllowedHosts` (leer = Google, Microsoft, Mozilla, Apple) |
+| Cookies | Sitzung und Antiforgery mit Präfix `__Host-` (Portal `__Host-bp-sitzung`, `__Host-bp-antiforgery`; Auth-Server `__Host-bp-auth`, `__Host-bp-auth-antiforgery`): nur Secure, `Path=/`, ohne `Domain` – keine andere Subdomain kann sie setzen | – |
+| Data-Protection-Schlüssel | mit Zertifikat verschlüsselt abgelegt (Portal, Auth-Server, Postfach-Dienst); lokal ohne Zertifikat wie bisher | `DataProtection:CertificatePath`, `:CertificatePassword`; Betrieb: `deploy.ps1` erzeugt `secrets/dataprotection/dataprotection.pfx` und `DATAPROTECTION_CERT_PASSWORD` einmalig |
 
 ## App (PWA) und Benachrichtigungen
 
@@ -84,6 +86,27 @@ ACS-Adresse und das `InResponseTo` der signierten Bearer-Bestätigung (SAML Prof
 - **Schlüssel:** `Push:VapidPublicKey`, `Push:VapidPrivateKey` (P-256, base64url), `Push:Subject` (Kontakt). Ohne
   Schlüssel ist Push aus. Im Betrieb erzeugt `deploy/deploy.ps1` das Paar einmalig in der `.env`
   (`BPSIM_VAPID_PUBLIC_KEY`, `BPSIM_VAPID_PRIVATE_KEY`); danach nicht mehr ändern, sonst werden alle Abos ungültig.
+
+## Bürgerfunktionen
+
+- **Termine:** „Zum Kalender hinzufügen“ (`/Termine/Kalender/{id}`, iCalendar RFC 5545 mit Erinnerung 1 h vorher) und
+  QR-Code zum Einchecken. Der QR-Code enthält nur einen signierten, befristeten Verweis (Data Protection, Zweck
+  `Termine.Checkin`); die Seite `/Termine/Einchecken` zeigt ohne Anmeldung nur Leistung, Zeit, Standort und Status –
+  keine Personendaten. Erinnerung **24 h vorher** ins BundID-Postfach und als Benachrichtigung
+  (`TerminErinnerung:StundenVorher`, `:IntervallMinuten`, `:Enabled`); kurzfristige Buchungen bekommen keine.
+- **Anträge:** Zeitleiste mit Zeitpunkten (eingereicht, in Bearbeitung, abgeschlossen; Tabelle
+  `AntragStatusEreignisse`). Jede Statusänderung kommt als Nachricht ins BundID-Postfach (wie `CreateState` des
+  echten Zentralen Bürgerpostfachs) und als Benachrichtigung. Die Bearbeitung durch die Behörde ist **simuliert**:
+  nach 2 bzw. 5 Minuten (`AntragSimulation:InBearbeitungNachMinuten`, `:AbschlussNachMinuten`, `:IntervallSekunden`,
+  `:Enabled`).
+- **Mängelmelder:** Karte und Standort, Foto aus Kamera oder Galerie – im Browser auf höchstens 1600 px verkleinert, dabei
+  fallen die Metadaten (EXIF, GPS) weg; der Server prüft Typ (JPEG/PNG/WebP am Dateianfang) und Größe (2 MB). „Meine
+  Meldungen“ mit Foto; Teilen aus der Galerie des Handys in die installierte App (`share_target`, der Service Worker
+  nimmt das Foto an).
+- **Meine Daten:** „Ihre letzten Anmeldungen“ (bis zu fünf: Zeitpunkt, Vertrauensniveau, Identifizierungsmittel; keine
+  IP, kein Gerät; Tabelle `BundIdAnmeldungen` im Auth-Server, Claim `bundid_anmeldungen` im ID-Token).
+- **Barrierefreiheit:** Sprunglink „Zum Inhalt“, Beschriftungen der Formularfelder, Kontraste nach WCAG 2.1 AA in hell
+  und dunkel (geprüft mit axe-core auf allen wichtigen Seiten).
 
 ## Lokal starten (Entwicklung)
 
