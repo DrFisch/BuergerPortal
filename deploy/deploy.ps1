@@ -145,7 +145,7 @@ Remove-Item -Recurse -Force $work
 
 # 6) Starten – Caddy nur, wenn alle Namen öffentlich auf die VM zeigen
 $ip = Get-VmIp $cfg
-$hosts = @($cfg.BPSIM_DOMAIN, "auth.$($cfg.BPSIM_DOMAIN)", "bundid.$($cfg.BPSIM_DOMAIN)", "postkorb.$($cfg.BPSIM_DOMAIN)")
+$hosts = @($cfg.BPSIM_DOMAIN, "auth.$($cfg.BPSIM_DOMAIN)", "bundid.$($cfg.BPSIM_DOMAIN)")
 $dnsOk = $true
 foreach ($h in $hosts) {
     $a = (Resolve-DnsName -Name $h -Type A -Server 8.8.8.8 -DnsOnly -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "A" }).IPAddress

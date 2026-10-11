@@ -1,4 +1,4 @@
-# Lokaler Test der Betriebs-Konfiguration unter https://bpsimulation.localhost (und auth./bundid./postkorb.…).
+# Lokaler Test der Betriebs-Konfiguration unter https://bpsimulation.localhost (und auth./bundid.…).
 #
 #   docker compose -f compose.prod.yml -f compose.local.yml --env-file .env up -d caddy
 #   docker compose -f compose.prod.yml -f compose.local.yml --env-file .env cp \

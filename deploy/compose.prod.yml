@@ -55,7 +55,6 @@ services:
           - ${BPSIM_DOMAIN}
           - auth.${BPSIM_DOMAIN}
           - bundid.${BPSIM_DOMAIN}
-          - postkorb.${BPSIM_DOMAIN}
     mem_limit: 128m
 
   sqlserver:
