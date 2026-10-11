@@ -16,7 +16,7 @@ namespace BuergerPortal.Tests.Web
             using var factory = new TerminKalenderTests.PortalFactory(authenticated: false);
             var token = factory.Services.GetRequiredService<TerminCheckinLink>()
                 .Create(appointmentId, TerminKalenderTests.StartUtc.AddMinutes(15));
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
             var response = await client.GetAsync($"/Termine/Einchecken/{token}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("no-store", response.Headers.CacheControl!.ToString());
@@ -47,7 +47,7 @@ namespace BuergerPortal.Tests.Web
         public async Task Ungueltige_Kennung_ohne_Anfrage_an_die_API()
         {
             using var factory = new TerminKalenderTests.PortalFactory(authenticated: false);
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
             var html = await client.GetStringAsync("/Termine/Einchecken/erfunden");
 
@@ -58,7 +58,7 @@ namespace BuergerPortal.Tests.Web
         public async Task Termindetails_zeigen_QR_Code_der_zur_Einchecken_Seite_fuehrt()
         {
             using var factory = new TerminKalenderTests.PortalFactory();
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
             var html = await client.GetStringAsync($"/Termine/Details/{TerminKalenderTests.Gebucht}");
             var url = System.Text.RegularExpressions.Regex.Match(html, "id=\"checkinQr\" data-url=\"([^\"]+)\"").Groups[1].Value;
@@ -73,7 +73,7 @@ namespace BuergerPortal.Tests.Web
         public async Task Stornierter_Termin_ohne_QR_Code_und_ohne_Kalenderdatei()
         {
             using var factory = new TerminKalenderTests.PortalFactory();
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
             var html = await client.GetStringAsync($"/Termine/Details/{TerminKalenderTests.Storniert}");
 

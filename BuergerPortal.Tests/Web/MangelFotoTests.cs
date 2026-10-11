@@ -98,7 +98,7 @@ namespace BuergerPortal.Tests.Web
         private static HttpRequestMessage Melden(PortalFactory factory, byte[] foto)
         {
             var antiforgery = factory.Services.GetRequiredService<IAntiforgery>();
-            var tokens = antiforgery.GetTokens(new DefaultHttpContext { RequestServices = factory.Services, User = Person() });
+            var tokens = antiforgery.GetTokens(new DefaultHttpContext { RequestServices = factory.Services, User = Person(), Request = { Scheme = "https" } });
             var options = factory.Services.GetRequiredService<IOptions<AntiforgeryOptions>>().Value;
             var form = new MultipartFormDataContent
             {
@@ -121,7 +121,7 @@ namespace BuergerPortal.Tests.Web
         {
             var api = new FakeApi();
             using var factory = new PortalFactory(api);
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
             var response = await client.SendAsync(Melden(factory, Jpeg));
 
@@ -136,7 +136,7 @@ namespace BuergerPortal.Tests.Web
         {
             var api = new FakeApi();
             using var factory = new PortalFactory(api);
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
             var response = await client.SendAsync(Melden(factory, new byte[2 * 1024 * 1024 + 1]));
 
@@ -149,7 +149,7 @@ namespace BuergerPortal.Tests.Web
         public async Task Meine_Meldungen_mit_Foto_vom_eigenen_Server()
         {
             using var factory = new PortalFactory(new FakeApi());
-            var client = factory.CreateClient();
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") });
 
             var html = await client.GetStringAsync("/Maengel");
             var foto = await client.GetAsync($"/Maengel/Foto/{Meldung}");
@@ -166,7 +166,7 @@ namespace BuergerPortal.Tests.Web
         public async Task Teilen_ohne_Service_Worker_fuehrt_zum_Formular_Manifest_kennt_das_Ziel()
         {
             using var factory = new PortalFactory(new FakeApi());
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
             var teilen = new MultipartFormDataContent { { new ByteArrayContent(Jpeg), "foto", "foto.jpg" } };
 
             var response = await client.PostAsync("/Maengel/Teilen", teilen);

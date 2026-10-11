@@ -79,7 +79,7 @@ namespace BuergerPortal.Tests.Web
             var api = new FakeApi();
             using var factory = new PortalFactory(api);
 
-            var key = await factory.CreateClient().GetFromJsonAsync<Dictionary<string, string>>("/push/key");
+            var key = await factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") }).GetFromJsonAsync<Dictionary<string, string>>("/push/key");
 
             Assert.Equal("BKey", key!["publicKey"]);
             Assert.Equal(["GET /api/push/key"], api.Calls);
@@ -91,7 +91,7 @@ namespace BuergerPortal.Tests.Web
             var api = new FakeApi();
             using var factory = new PortalFactory(api);
 
-            var response = await factory.CreateClient().SendAsync(Subscribe());
+            var response = await factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") }).SendAsync(Subscribe());
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Empty(api.Calls);
@@ -103,13 +103,13 @@ namespace BuergerPortal.Tests.Web
             var api = new FakeApi();
             using var factory = new PortalFactory(api);
             var antiforgery = factory.Services.GetRequiredService<IAntiforgery>();
-            var tokens = antiforgery.GetTokens(new DefaultHttpContext { RequestServices = factory.Services, User = Person() });
+            var tokens = antiforgery.GetTokens(new DefaultHttpContext { RequestServices = factory.Services, User = Person(), Request = { Scheme = "https" } });
             var options = factory.Services.GetRequiredService<IOptions<AntiforgeryOptions>>().Value;
             var request = Subscribe();
             request.Headers.Add("Cookie", $"{options.Cookie.Name}={tokens.CookieToken}");
             request.Headers.Add(options.HeaderName!, tokens.RequestToken);
 
-            var response = await factory.CreateClient().SendAsync(request);
+            var response = await factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") }).SendAsync(request);
 
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
             Assert.Equal(["POST /api/push/subscriptions"], api.Calls);
