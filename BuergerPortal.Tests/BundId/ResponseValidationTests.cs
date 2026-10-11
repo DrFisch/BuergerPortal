@@ -87,6 +87,44 @@ namespace BuergerPortal.Tests.BundId
             Assert.Throws<SecurityTokenReplayDetectedException>(() => Validate(samlResponse, replayCache));
         }
 
+        [Fact]
+        public void Gueltige_Response_ist_an_den_eigenen_ACS_und_die_eigene_Anfrage_gerichtet()
+        {
+            BundIdResponseChecks.EnsureAddressedTo(Validate(CreateResponse()), Acs, RequestId);
+        }
+
+        [Fact]
+        public void ITfoxtec_prueft_Destination_und_Recipient_nicht_selbst()
+        {
+            // Beleg, warum BundIdResponseChecks nötig ist: Die Bibliothek akzeptiert eine Antwort an einen fremden ACS.
+            var response = Validate(CreateResponse(destination: new Uri("https://fremder-dienst.example.test/acs")));
+
+            Assert.Equal("https://fremder-dienst.example.test/acs", response.Destination!.OriginalString);
+        }
+
+        [Fact]
+        public void Response_an_fremden_ACS_wird_abgelehnt()
+        {
+            var response = Validate(CreateResponse(destination: new Uri("https://fremder-dienst.example.test/acs")));
+
+            Assert.Throws<BundIdInvalidResponseException>(() => BundIdResponseChecks.EnsureAddressedTo(response, Acs, RequestId));
+        }
+
+        [Fact]
+        public void Signierte_Bestaetigung_fuer_eine_andere_Anfrage_wird_abgelehnt()
+        {
+            // Angriff: eigene, gültig signierte Assertion (Anfrage des Angreifers) in eine Response packen, deren
+            // unsigniertes InResponseTo auf die Anfrage des Opfers zeigt. Die Signatur bleibt gültig.
+            var xml = Encoding.UTF8.GetString(Convert.FromBase64String(CreateResponse(requestId: "_req-angreifer")));
+            var document = new System.Xml.XmlDocument { PreserveWhitespace = true };
+            document.LoadXml(xml);
+            document.DocumentElement!.SetAttribute("InResponseTo", RequestId);
+            var response = Validate(Convert.ToBase64String(Encoding.UTF8.GetBytes(document.OuterXml)));
+
+            Assert.Equal(RequestId, response.InResponseToAsString);
+            Assert.Throws<BundIdInvalidResponseException>(() => BundIdResponseChecks.EnsureAddressedTo(response, Acs, RequestId));
+        }
+
         // Service-Provider-Seite: dieselbe Konfiguration wie im Auth-Server.
         private static Saml2AuthnResponse Validate(string samlResponse, BundIdTokenReplayCache? replayCache = null)
         {
@@ -104,7 +142,7 @@ namespace BuergerPortal.Tests.BundId
 
         // Identity-Provider-Seite: signierte Response wie vom Simulator-Fork (Assertion signiert).
         private static string CreateResponse(X509Certificate2? signingCertificate = null,
-            string audience = SpEntityId, string issuer = IdpEntityId)
+            string audience = SpEntityId, string issuer = IdpEntityId, Uri? destination = null, string requestId = RequestId)
         {
             var idpConfig = new Saml2Configuration
             {
@@ -114,9 +152,10 @@ namespace BuergerPortal.Tests.BundId
             };
             var response = new Saml2AuthnResponse(idpConfig)
             {
-                InResponseTo = new Saml2Id(RequestId),
+                InResponseTo = new Saml2Id(requestId),
                 Status = Saml2StatusCodes.Success,
-                Destination = Acs,
+                // ITfoxtec übernimmt die Destination auch als Recipient der Bearer-Bestätigung.
+                Destination = destination ?? Acs,
                 NameId = new Saml2NameIdentifier("BUNDIDSIM-T01", NameIdentifierFormats.Transient),
                 ClaimsIdentity = new ClaimsIdentity(
                 [

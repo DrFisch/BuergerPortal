@@ -99,8 +99,9 @@ namespace BuergerPortal.BundId
 
         /// <summary>
         /// Prüft die SAML-Response der BundID (HTTP-POST vom Browser an den ACS).
-        /// ITfoxtec prüft beim Unbind Signatur (Zertifikat aus den IdP-Metadaten), Issuer, Audience (= eigene EntityID)
-        /// und Zeitfenster; hier zusätzlich InResponseTo, Status, Pflichtattribute und Vertrauensniveau.
+        /// ITfoxtec prüft beim Unbind Signatur (Zertifikat aus den IdP-Metadaten), Issuer, Audience (= eigene EntityID),
+        /// Zeitfenster und Replay; hier zusätzlich InResponseTo, Status, Empfänger (Destination/Recipient),
+        /// Pflichtattribute und Vertrauensniveau.
         /// </summary>
         public async Task<BundIdLoginResult> ProcessResponseAsync(HttpRequest request, HttpResponse response,
             CancellationToken ct)
@@ -152,6 +153,10 @@ namespace BuergerPortal.BundId
                 }
 
                 httpRequest.Binding.Unbind(httpRequest, authnResponse);
+
+                // Was ITfoxtec nicht prüft: an den eigenen ACS gerichtet, signierte Bestätigung zur eigenen Anfrage.
+                BundIdResponseChecks.EnsureAddressedTo(authnResponse,
+                    new Uri(options.Value.AssertionConsumerServiceUrl), loginState.RequestId);
 
                 // SAML-Attribute (OIDs) in verständliche Werte übersetzen.
                 var attributes = BundIdAttributes.FromSaml(authnResponse.ClaimsIdentity, options.Value.PostkorbHandleAttribute);
