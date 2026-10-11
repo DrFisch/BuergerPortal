@@ -199,4 +199,13 @@
   <data name="MeineDaten_InspektorNeu" xml:space="preserve">
     <value>Sign in again and inspect</value>
   </data>
+  <data name="MeineDaten_LetzteAnmeldungen" xml:space="preserve">
+    <value>Your recent sign-ins</value>
+  </data>
+  <data name="MeineDaten_LetzteAnmeldungenText" xml:space="preserve">
+    <value>As with online banking: if a sign-in looks unfamiliar, change the credentials of your BundID account. Only time, trust level and means of identification of the last five sign-ins are stored – no IP address, no device. (Simulation: anyone who picks the same test person with the same context uses the same account.)</value>
+  </data>
+  <data name="MeineDaten_Zeitpunkt" xml:space="preserve">
+    <value>Time</value>
+  </data>
 </root>

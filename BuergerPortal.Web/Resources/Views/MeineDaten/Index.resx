@@ -199,4 +199,13 @@
   <data name="MeineDaten_InspektorNeu" xml:space="preserve">
     <value>Neu anmelden und ansehen</value>
   </data>
+  <data name="MeineDaten_LetzteAnmeldungen" xml:space="preserve">
+    <value>Ihre letzten Anmeldungen</value>
+  </data>
+  <data name="MeineDaten_LetzteAnmeldungenText" xml:space="preserve">
+    <value>Wie beim Online-Banking: Kommt Ihnen eine Anmeldung unbekannt vor, ändern Sie die Zugangsdaten Ihres BundID-Kontos. Gespeichert werden nur Zeitpunkt, Vertrauensniveau und Identifizierungsmittel der letzten fünf Anmeldungen – keine IP-Adresse, kein Gerät. (Simulation: Wer dieselbe Testperson mit demselben fachlichen Kontext wählt, nutzt dasselbe Konto.)</value>
+  </data>
+  <data name="MeineDaten_Zeitpunkt" xml:space="preserve">
+    <value>Zeitpunkt</value>
+  </data>
 </root>

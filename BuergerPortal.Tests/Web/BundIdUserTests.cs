@@ -87,5 +87,24 @@ namespace BuergerPortal.Tests.Web
 
             Assert.Equal(TrustLevel.High, user.TrustLevel);
         }
+
+        [Fact]
+        public void Letzte_Anmeldungen_als_Liste_oder_je_Claim_neueste_zuerst()
+        {
+            var alsListe = BundIdUser.FromPrincipal(Principal(("bundid_anmeldungen",
+                "[{\"zeit\":\"2026-10-10T08:00:00.0000000Z\",\"niveau\":1,\"mittel\":\"Benutzername\"},{\"zeit\":\"2026-10-11T09:30:00.0000000Z\",\"niveau\":3,\"mittel\":\"Elster\"}]")));
+            var jeClaim = BundIdUser.FromPrincipal(Principal(
+                ("bundid_anmeldungen", "{\"zeit\":\"2026-10-10T08:00:00.0000000Z\",\"niveau\":1,\"mittel\":null}"),
+                ("bundid_anmeldungen", "{\"zeit\":\"2026-10-11T09:30:00.0000000Z\",\"niveau\":3,\"mittel\":\"Elster\"}"),
+                ("bundid_anmeldungen", "kein json")));
+
+            foreach (var user in new[] { alsListe, jeClaim })
+            {
+                Assert.Equal(2, user.LetzteAnmeldungen.Count);
+                Assert.Equal(new BundIdAnmeldungInfo(new DateTime(2026, 10, 11, 9, 30, 0, DateTimeKind.Utc), 3, "Elster"), user.LetzteAnmeldungen[0]);
+                Assert.Equal(DateTimeKind.Utc, user.LetzteAnmeldungen[1].ZeitpunktUtc.Kind);
+            }
+            Assert.Null(jeClaim.LetzteAnmeldungen[1].Mittel);
+        }
     }
 }

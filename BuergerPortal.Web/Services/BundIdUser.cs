@@ -8,6 +8,9 @@ namespace BuergerPortal.Web.Services
     /// <summary>Anschrift aus der BundID (Claim "address", JSON nach OIDC).</summary>
     public sealed record BundIdAddress(string? StreetAddress, string? PostalCode, string? Locality, string? Country);
 
+    /// <summary>Eine frühere BundID-Anmeldung: Zeitpunkt (UTC), Vertrauensniveau, Identifizierungsmittel.</summary>
+    public sealed record BundIdAnmeldungInfo(DateTime ZeitpunktUtc, int Niveau, string? Mittel);
+
     /// <summary>
     /// Angaben der angemeldeten Person aus der BundID. Sie stammen aus dem ID-Token und leben nur in der
     /// Sitzung, nicht in einer Datenbank des Portals – bei jeder Anmeldung liefert die BundID sie neu.
@@ -32,6 +35,9 @@ namespace BuergerPortal.Web.Services
         public int TrustLevel { get; init; }
 
         public DateTime? LastLoginUtc { get; init; }
+
+        /// <summary>Die letzten BundID-Anmeldungen laut Auth-Server (neueste zuerst; Zeitpunkt, Niveau, Mittel).</summary>
+        public IReadOnlyList<BundIdAnmeldungInfo> LetzteAnmeldungen { get; init; } = [];
 
         /// <summary>Angemeldet über die BundID (ein altes lokales Konto hat keine bPK2).</summary>
         public bool IsBundIdLogin => !string.IsNullOrEmpty(Bpk2);
@@ -73,7 +79,42 @@ namespace BuergerPortal.Web.Services
                 LastLoginUtc = DateTime.TryParse(Get(BundIdClaimTypes.LastLogin), CultureInfo.InvariantCulture,
                     DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var lastLogin)
                     ? lastLogin : null,
+                LetzteAnmeldungen = ParseAnmeldungen(principal.FindAll(BundIdClaimTypes.LastLogins).Select(c => c.Value)),
             };
+        }
+
+        // Claim "bundid_anmeldungen": im ID-Token ein JSON-Array; der Token-Handler legt je Eintrag einen Claim an (JSON-Objekt).
+        // Beide Formen lesen: [{"zeit": …, "niveau": 3, "mittel": "Elster"}, …] bzw. je Claim ein Objekt.
+        private static IReadOnlyList<BundIdAnmeldungInfo> ParseAnmeldungen(IEnumerable<string> werte)
+        {
+            var liste = new List<BundIdAnmeldungInfo>();
+            foreach (var wert in werte)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(wert);
+                    var eintraege = json.RootElement.ValueKind == JsonValueKind.Array
+                        ? json.RootElement.EnumerateArray().ToList()
+                        : [json.RootElement];
+                    foreach (var e in eintraege)
+                    {
+                        if (e.TryGetProperty("zeit", out var zeit)
+                            && DateTime.TryParse(zeit.GetString(), CultureInfo.InvariantCulture,
+                                DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var zeitpunkt))
+                        {
+                            liste.Add(new BundIdAnmeldungInfo(zeitpunkt,
+                                e.TryGetProperty("niveau", out var niveau) && niveau.TryGetInt32(out var n) ? n : 0,
+                                e.TryGetProperty("mittel", out var mittel) && mittel.ValueKind == JsonValueKind.String
+                                    ? mittel.GetString() : null));
+                        }
+                    }
+                }
+                catch (JsonException)
+                {
+                    // unlesbarer Eintrag – überspringen
+                }
+            }
+            return liste.OrderByDescending(a => a.ZeitpunktUtc).ToList();
         }
 
         // OIDC-Adress-Claim: {"street_address": …, "postal_code": …, "locality": …, "country": …}

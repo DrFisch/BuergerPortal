@@ -159,6 +159,37 @@
         </div>
     }
 
+    @if (Model.LetzteAnmeldungen.Count > 0)
+    {
+        <div class="col-12">
+            <section class="card shadow-sm" aria-labelledby="md-anmeldungen" id="letzteAnmeldungen">
+                <h2 class="card-header h6 fw-semibold" id="md-anmeldungen">
+                    <i class="bi bi-clock-history me-1" aria-hidden="true"></i>@L["MeineDaten_LetzteAnmeldungen"]
+                </h2>
+                <div class="card-body">
+                    <p class="small">@L["MeineDaten_LetzteAnmeldungenText"]</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr><th scope="col">@L["MeineDaten_Zeitpunkt"]</th><th scope="col">@L["MeineDaten_TrustLevel"]</th><th scope="col">@L["MeineDaten_IdentificationMethod"]</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var anmeldung in Model.LetzteAnmeldungen)
+                                {
+                                    <tr>
+                                        <td>@anmeldung.ZeitpunktUtc.ToBerlin().ToString("g", CultureInfo.CurrentCulture)</td>
+                                        <td>@(anmeldung.Niveau > 0 ? L[$"Level_{anmeldung.Niveau}_Name"].Value : "–")</td>
+                                        <td>@(anmeldung.Mittel ?? "–")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    }
+
     <div class="col-12">
         <section class="card shadow-sm border-info-subtle" aria-labelledby="md-stored">
             <h2 class="card-header h6 fw-semibold" id="md-stored">
