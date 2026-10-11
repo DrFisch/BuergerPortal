@@ -60,6 +60,11 @@ builder.Services.AddApplicationServices();
 builder.Services.AddBookingRateLimiting(builder.Configuration);
 // Benachrichtigungen aufs Handy (Web Push, Push/); ohne Abschnitt "Push" mit VAPID-Schlüsseln ausgeschaltet
 builder.Services.AddWebPush(builder.Configuration);
+// Simulierte Antragsbearbeitung mit Statusmeldungen ins Postfach (Antraege/); Abschnitt "AntragSimulation"
+builder.Services.Configure<BuergerPortal.Api.Antraege.AntragSimulationOptions>(
+    builder.Configuration.GetSection(BuergerPortal.Api.Antraege.AntragSimulationOptions.Section));
+builder.Services.AddSingleton<BuergerPortal.Api.Antraege.AntragBearbeitungSimulation>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<BuergerPortal.Api.Antraege.AntragBearbeitungSimulation>());
 
 // -------------------------------------------------------
 // 2. Authentication / Authorization (JWT gegen Auth-Server)

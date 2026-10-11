@@ -49,6 +49,8 @@ namespace BuergerPortal.Tests.Api
                 ["Postkorb:BaseUrl"] = "http://postfach.invalid/",
                 ["Postkorb:ApiKey"] = "test-schluessel-mit-mindestens-32-zeichen",
                 ["Database:MigrateOnStartup"] = "false",
+                // Tests rufen die simulierte Bearbeitung gezielt auf (RunOnceAsync), nicht im Takt
+                ["AntragSimulation:Enabled"] = "false",
             };
             foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
             {
