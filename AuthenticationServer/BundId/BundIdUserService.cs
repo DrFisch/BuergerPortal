@@ -9,8 +9,12 @@ namespace AuthenticationServer.BundId
     /// Verbindet eine BundID-Anmeldung mit einem Benutzerkonto des Portals: Wiedererkennung über die bPK2,
     /// beim ersten Login wird das Konto automatisch angelegt (Just-in-Time-Provisioning).
     /// </summary>
-    public sealed class BundIdUserService(UserManager<ApplicationUser> userManager, ILogger<BundIdUserService> logger)
+    public sealed class BundIdUserService(UserManager<ApplicationUser> userManager, ApplicationDbContext db,
+        ILogger<BundIdUserService> logger)
     {
+        // So viele Anmeldungen zeigt "Meine Daten" ("Ihre letzten Anmeldungen"); ältere werden gelöscht.
+        public const int AnzahlLetzteAnmeldungen = 5;
+
         public async Task<(ApplicationUser User, bool Created)> FindOrCreateAsync(BundIdAttributes attributes,
             CancellationToken ct = default)
         {
@@ -56,6 +60,30 @@ namespace AuthenticationServer.BundId
                     string.Join("; ", result.Errors.Select(e => e.Description)));
                 throw new BundIdException("Die Anmeldung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.");
             }
+
+            // Anmeldeprotokoll: nur Zeitpunkt, Niveau und Identifizierungsmittel; die letzten fünf behalten
+            db.BundIdAnmeldungen.Add(new BundIdAnmeldung
+            {
+                UserId = user.Id,
+                ZeitpunktUtc = user.LastLoginUtc.Value,
+                Niveau = attributes.TrustLevel,
+                Mittel = attributes.IdentificationMethod,
+            });
+            await db.SaveChangesAsync();
+            var aeltere = await db.BundIdAnmeldungen.Where(a => a.UserId == user.Id)
+                .OrderByDescending(a => a.ZeitpunktUtc).ThenByDescending(a => a.Id)
+                .Skip(AnzahlLetzteAnmeldungen).ToListAsync();
+            if (aeltere.Count > 0)
+            {
+                db.BundIdAnmeldungen.RemoveRange(aeltere);
+                await db.SaveChangesAsync();
+            }
         }
+
+        /// <summary>Die letzten Anmeldungen des Kontos, neueste zuerst.</summary>
+        public async Task<IReadOnlyList<BundIdAnmeldung>> GetLetzteAnmeldungenAsync(string userId, CancellationToken ct = default) =>
+            await db.BundIdAnmeldungen.AsNoTracking().Where(a => a.UserId == userId)
+                .OrderByDescending(a => a.ZeitpunktUtc).ThenByDescending(a => a.Id)
+                .Take(AnzahlLetzteAnmeldungen).ToListAsync(ct);
     }
 }

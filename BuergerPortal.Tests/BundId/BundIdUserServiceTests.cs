@@ -93,5 +93,24 @@ namespace BuergerPortal.Tests.BundId
             Assert.Equal(TrustLevel.Substantial, stored.TrustLevel);
             Assert.NotNull(stored.LastLoginUtc);
         }
+
+        [Fact]
+        public async Task Jede_Anmeldung_wird_protokolliert_nur_die_letzten_fuenf_bleiben()
+        {
+            using var scope = CreateServices().CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<BundIdUserService>();
+            var (user, _) = await service.FindOrCreateAsync(Person("BUNDIDSIM-T09"));
+
+            for (var i = 0; i < 7; i++)
+            {
+                await service.UpdateLoginDataAsync(user, Person("BUNDIDSIM-T09", i % 2 == 0 ? TrustLevel.Normal : TrustLevel.Substantial)
+                    with { IdentificationMethod = i % 2 == 0 ? "Benutzername" : "Elster" });
+            }
+
+            var letzte = await service.GetLetzteAnmeldungenAsync(user.Id);
+            Assert.Equal(BundIdUserService.AnzahlLetzteAnmeldungen, letzte.Count);
+            Assert.Equal((TrustLevel.Normal, "Benutzername"), (letzte[0].Niveau, letzte[0].Mittel));   // neueste zuerst (i = 6)
+            Assert.Equal(5, await scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().BundIdAnmeldungen.CountAsync());
+        }
     }
 }

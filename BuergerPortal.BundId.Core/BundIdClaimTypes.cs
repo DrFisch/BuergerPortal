@@ -15,6 +15,7 @@ namespace BuergerPortal.BundId
         public const string TrustLevel = "acr";                 // STORK-QAA-Level-n
         public const string IdentificationMethod = "amr";       // z. B. eID, Elster, Benutzername
         public const string LastLogin = "bundid_last_login";    // aus der DB (Zeitpunkt der Anmeldung)
+        public const string LastLogins = "bundid_anmeldungen";  // aus der DB: letzte Anmeldungen (JSON: zeit, niveau, mittel)
 
         public static readonly IReadOnlySet<string> All = new HashSet<string>
         {

@@ -1,4 +1,5 @@
 ﻿using BuergerPortal.BundId;
+using AuthenticationServer.BundId;
 using AuthenticationServer.Data;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore;
@@ -13,7 +14,7 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace AuthenticationServer.Controllers
 {
     public class AuthorizationController(UserManager<ApplicationUser> userManager,
-    SignInManager<ApplicationUser> signInManager) : Controller
+    SignInManager<ApplicationUser> signInManager, BundIdUserService bundIdUsers) : Controller
     {
         // Scope, mit dem ein Client die BundID-Daten der Person anfordert.
         public const string BundIdScope = "bundid";
@@ -118,6 +119,16 @@ namespace AuthenticationServer.Controllers
                 if (user.LastLoginUtc is { } lastLogin)
                     claims.Add(new Claim(BundIdClaimTypes.LastLogin,
                         DateTime.SpecifyKind(lastLogin, DateTimeKind.Utc).ToString("O")));
+                // "Ihre letzten Anmeldungen" auf "Meine Daten": Zeitpunkt, Niveau, Identifizierungsmittel (nur ID-Token)
+                var anmeldungen = await bundIdUsers.GetLetzteAnmeldungenAsync(user.Id);
+                if (anmeldungen.Count > 0)
+                    claims.Add(new Claim(BundIdClaimTypes.LastLogins, System.Text.Json.JsonSerializer.Serialize(
+                        anmeldungen.Select(a => new
+                        {
+                            zeit = DateTime.SpecifyKind(a.ZeitpunktUtc, DateTimeKind.Utc).ToString("O"),
+                            niveau = a.Niveau,
+                            mittel = a.Mittel,
+                        })), JsonClaimValueTypes.JsonArray));
             }
 
             var identity = new ClaimsIdentity(
@@ -146,6 +157,7 @@ namespace AuthenticationServer.Controllers
                         => new[] { Destinations.AccessToken, Destinations.IdentityToken },
                     // Persönliche Angaben nur ins ID-Token (Anzeige im Portal), nicht in jeden API-Aufruf.
                     _ when BundIdClaimTypes.All.Contains(claim.Type) || claim.Type == BundIdClaimTypes.LastLogin
+                        || claim.Type == BundIdClaimTypes.LastLogins
                         => new[] { Destinations.IdentityToken },
                     _ => new[] { Destinations.AccessToken }
                 });
