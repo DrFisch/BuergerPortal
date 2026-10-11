@@ -289,6 +289,44 @@ namespace BuergerPortal.Web.Controllers
             return File(Encoding.UTF8.GetBytes(ics), IcsCalendar.ContentType, $"termin-{startLocal:yyyy-MM-dd-HHmm}.ics");
         }
 
+        // Einchecken im Bürgeramt: Ziel des QR-Codes aus den Termindetails. Ohne Anmeldung (das Gerät am Eingang ist nicht
+        // angemeldet); gezeigt werden nur Leistung, Ort, Zeit und Status – keine Personendaten. Die Kennung im Link ist
+        // verschlüsselt, signiert und zeitlich begrenzt (TerminCheckinLink).
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Einchecken(string id, [FromServices] TerminCheckinLink links,
+            [FromServices] TimeProvider time, CancellationToken ct)
+        {
+            Response.Headers.CacheControl = "no-store";
+            Response.Headers["X-Robots-Tag"] = "noindex";
+
+            var appointmentId = links.Read(id);
+            if (appointmentId is null)
+                return View(new TerminCheckinVm { Status = CheckinStatus.Ungueltig });
+
+            var res = await _cf.CreateClient("BuergerPortalApi").GetAsync($"api/appointments/{appointmentId}/checkin", ct);
+            var x = res.IsSuccessStatusCode
+                ? await res.Content.ReadFromJsonAsync<AppointmentListItemResponse>(cancellationToken: ct)
+                : null;
+            if (x == null)
+                return View(new TerminCheckinVm { Status = CheckinStatus.Ungueltig });
+
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(time.GetUtcNow().UtcDateTime, BerlinTz);
+            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc), BerlinTz);
+            var endLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc), BerlinTz);
+            return View(new TerminCheckinVm
+            {
+                Status = x.Cancelled ? CheckinStatus.Storniert
+                    : endLocal < nowLocal ? CheckinStatus.Vorbei
+                    : CheckinStatus.Gueltig,
+                Service = x.Service,
+                Location = x.Location,
+                Start = startLocal,
+                End = endLocal,
+                Heute = startLocal.Date == nowLocal.Date,
+            });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]

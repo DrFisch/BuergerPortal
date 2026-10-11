@@ -1,0 +1,52 @@
+@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@model TerminCheckinVm
+@inject IViewLocalizer L
+
+@{
+    ViewData["Title"] = L["Checkin_Title"];
+    var (farbe, icon, titel) = Model.Status switch
+    {
+        CheckinStatus.Gueltig => ("success", "bi-check-circle-fill", L["Checkin_Valid"]),
+        CheckinStatus.Storniert => ("danger", "bi-x-circle-fill", L["Checkin_Cancelled"]),
+        CheckinStatus.Vorbei => ("secondary", "bi-clock-history", L["Checkin_Past"]),
+        _ => ("warning", "bi-exclamation-triangle-fill", L["Checkin_Invalid"]),
+    };
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-@farbe" id="checkinStatus" data-status="@Model.Status">
+                <div class="card-body text-center p-4">
+                    <p class="text-uppercase small text-muted mb-2">@L["Checkin_Title"]</p>
+                    <i class="bi @icon text-@farbe display-4" aria-hidden="true"></i>
+                    <h1 class="h3 mt-2">@titel</h1>
+
+                    @if (Model.Status != CheckinStatus.Ungueltig && Model.Start is { } start && Model.End is { } end)
+                    {
+                        <dl class="row text-start small mt-4 mb-0">
+                            <dt class="col-5 text-muted fw-normal">@L["Checkin_Service"]</dt>
+                            <dd class="col-7">@Model.Service?.ToDisplayName()</dd>
+                            <dt class="col-5 text-muted fw-normal">@L["Checkin_Location"]</dt>
+                            <dd class="col-7">@Model.Location?.ToDisplayName()</dd>
+                            <dt class="col-5 text-muted fw-normal">@L["Checkin_Time"]</dt>
+                            <dd class="col-7">
+                                @(Model.Heute ? L["Checkin_Today"].Value : start.ToString("D")), @start.ToString("HH:mm")–@end.ToString("HH:mm") @L["Checkin_Clock"]
+                            </dd>
+                        </dl>
+                    }
+                    else
+                    {
+                        <p class="mt-3 mb-0">@L["Checkin_InvalidText"]</p>
+                    }
+                </div>
+                <div class="card-footer small text-muted text-start">
+                    <i class="bi bi-shield-lock me-1" aria-hidden="true"></i>@L["Checkin_Privacy"]
+                </div>
+            </div>
+            <p class="small text-muted mt-3">@L["Checkin_Simulation"]</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Checkin_Title" xml:space="preserve">
+		<value>Einchecken im Bürgeramt</value>
+	</data>
+	<data name="Checkin_Valid" xml:space="preserve">
+		<value>Termin gültig</value>
+	</data>
+	<data name="Checkin_Cancelled" xml:space="preserve">
+		<value>Termin storniert</value>
+	</data>
+	<data name="Checkin_Past" xml:space="preserve">
+		<value>Termin ist vorbei</value>
+	</data>
+	<data name="Checkin_Invalid" xml:space="preserve">
+		<value>QR-Code ungültig</value>
+	</data>
+	<data name="Checkin_InvalidText" xml:space="preserve">
+		<value>Der QR-Code ist abgelaufen, verändert oder gehört zu keinem Termin. Bitte öffnen Sie den Termin im BürgerPortal und zeigen Sie den aktuellen QR-Code vor.</value>
+	</data>
+	<data name="Checkin_Service" xml:space="preserve">
+		<value>Leistung</value>
+	</data>
+	<data name="Checkin_Location" xml:space="preserve">
+		<value>Ort</value>
+	</data>
+	<data name="Checkin_Time" xml:space="preserve">
+		<value>Zeit</value>
+	</data>
+	<data name="Checkin_Today" xml:space="preserve">
+		<value>heute</value>
+	</data>
+	<data name="Checkin_Clock" xml:space="preserve">
+		<value>Uhr</value>
+	</data>
+	<data name="Checkin_Privacy" xml:space="preserve">
+		<value>Diese Seite zeigt keine persönlichen Daten – nur Leistung, Ort, Zeit und Status des Termins.</value>
+	</data>
+	<data name="Checkin_Simulation" xml:space="preserve">
+		<value>Simulation: Ein Gerät am Eingang des Bürgeramts würde diesen QR-Code scannen und den Termin als „angekommen“ vermerken. Eine Behördenansicht gibt es im Studienprojekt nicht.</value>
+	</data>
+</root>

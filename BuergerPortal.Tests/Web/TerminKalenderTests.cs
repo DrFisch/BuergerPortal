@@ -22,6 +22,8 @@ namespace BuergerPortal.Tests.Web
     {
         internal static readonly Guid Gebucht = Guid.Parse("6f9d2c1e-0000-4000-8000-000000000001");
         internal static readonly Guid Storniert = Guid.Parse("6f9d2c1e-0000-4000-8000-000000000002");
+        // Relativ zu heute, damit die Tests nicht mit dem Kalender veralten (der Einchecklink läuft einen Tag nach Ende ab).
+        internal static readonly DateTime StartUtc = DateTime.UtcNow.Date.AddDays(2).AddHours(9).AddMinutes(15);
 
         private sealed class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
             : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
@@ -50,8 +52,8 @@ namespace BuergerPortal.Tests.Web
                                 id,
                                 service = 1,
                                 location = 1,
-                                startUtc = new DateTime(2026, 10, 13, 9, 15, 0, DateTimeKind.Utc),
-                                endUtc = new DateTime(2026, 10, 13, 9, 30, 0, DateTimeKind.Utc),
+                                startUtc = StartUtc,
+                                endUtc = StartUtc.AddMinutes(15),
                                 cancelled,
                             }),
                         });
@@ -96,9 +98,10 @@ namespace BuergerPortal.Tests.Web
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("text/calendar", response.Content.Headers.ContentType!.MediaType);
-            Assert.Equal("termin-2026-10-13-1115.ics", response.Content.Headers.ContentDisposition!.FileNameStar
+            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(StartUtc, TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin"));
+            Assert.Equal($"termin-{startLocal:yyyy-MM-dd-HHmm}.ics", response.Content.Headers.ContentDisposition!.FileNameStar
                 ?? response.Content.Headers.ContentDisposition.FileName);
-            Assert.Contains("DTSTART:20261013T091500Z", ics);
+            Assert.Contains($"DTSTART:{StartUtc:yyyyMMdd}T091500Z", ics);
             Assert.Contains($"UID:{Gebucht}@localhost", ics);
             Assert.Contains("Termin im Bürgeramt:", ics);
         }
