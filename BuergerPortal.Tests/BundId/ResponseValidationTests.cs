@@ -84,6 +84,23 @@ namespace BuergerPortal.Tests.BundId
             Assert.Contains("expired", error.Message);
         }
 
+        // Uhrzeit-Toleranz (gemessen, ITfoxtec 4.21): Eine vorgehende Uhr des IdP wird bis 5 Minuten toleriert
+        // (Standard von Microsoft.IdentityModel), das Ende der Bearer-Bestätigung gilt dagegen ohne Toleranz.
+        [Fact]
+        public void Ausstellung_bis_5_Minuten_in_der_Zukunft_wird_toleriert()
+        {
+            Validate(CreateResponse(issuedAgo: TimeSpan.FromMinutes(-4)));
+            Assert.ThrowsAny<Exception>(() => Validate(CreateResponse(issuedAgo: TimeSpan.FromMinutes(-6))));
+        }
+
+        [Fact]
+        public void Nach_NotOnOrAfter_gibt_es_keine_Toleranz()
+        {
+            // 5 Minuten gültig, vor 6 Minuten ausgestellt: seit einer Minute abgelaufen
+            var error = Assert.Throws<Saml2RequestException>(() => Validate(CreateResponse(issuedAgo: TimeSpan.FromMinutes(6))));
+            Assert.Contains("expired", error.Message);
+        }
+
         [Fact]
         public void Gueltige_Response_ist_an_den_eigenen_ACS_und_die_eigene_Anfrage_gerichtet()
         {
