@@ -46,7 +46,8 @@ namespace BuergerPortal.Tests.BundId
 
         // Identity-Provider-Seite: signierte Response wie vom Simulator-Fork (Assertion signiert).
         public static string CreateResponse(X509Certificate2? signingCertificate = null,
-            string audience = SpEntityId, string issuer = IdpEntityId, Uri? destination = null, string requestId = RequestId)
+            string audience = SpEntityId, string issuer = IdpEntityId, Uri? destination = null, string requestId = RequestId,
+            TimeSpan? issuedAgo = null)
         {
             var idpConfig = new Saml2Configuration
             {
@@ -70,6 +71,17 @@ namespace BuergerPortal.Tests.BundId
                 ]),
             };
             response.CreateSecurityToken(audience, authnContext: new Uri("http://eidas.europa.eu/LoA/substantial"));
+            if (issuedAgo is { } ago)
+            {
+                // Zeitfenster in die Vergangenheit legen, bevor signiert wird (Signatur bleibt gültig).
+                var assertion = response.Saml2SecurityToken.Assertion;
+                assertion.Conditions.NotBefore = DateTime.UtcNow - ago;
+                assertion.Conditions.NotOnOrAfter = DateTime.UtcNow - ago + TimeSpan.FromMinutes(5);
+                foreach (var confirmation in assertion.Subject.SubjectConfirmations)
+                {
+                    confirmation.SubjectConfirmationData.NotOnOrAfter = assertion.Conditions.NotOnOrAfter;
+                }
+            }
 
             var binding = new Saml2PostBinding();
             binding.Bind(response);

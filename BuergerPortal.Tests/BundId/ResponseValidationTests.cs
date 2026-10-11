@@ -75,6 +75,16 @@ namespace BuergerPortal.Tests.BundId
         }
 
         [Fact]
+        public void Abgelaufene_Response_wird_abgelehnt()
+        {
+            // Gültig signiert, aber vor einer Stunde ausgestellt und nur 5 Minuten gültig (mitgeschnittene alte Antwort).
+            var expired = CreateResponse(issuedAgo: TimeSpan.FromHours(1));
+
+            var error = Assert.Throws<Saml2RequestException>(() => Validate(expired));
+            Assert.Contains("expired", error.Message);
+        }
+
+        [Fact]
         public void Gueltige_Response_ist_an_den_eigenen_ACS_und_die_eigene_Anfrage_gerichtet()
         {
             BundIdResponseChecks.EnsureAddressedTo(Validate(CreateResponse()), Acs, RequestId);
