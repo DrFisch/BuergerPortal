@@ -1,5 +1,6 @@
 ﻿
 using BuergerPortal.Web.Features.Antraege.Reisepass;
+using BuergerPortal.Web.Helper;
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
@@ -68,8 +69,8 @@ namespace BuergerPortal.Web.Controllers
                             TypText = t.text,
                             TypBadgeClass = t.badgeClass,
 
-                            Angelegt = x.CreatedUtc.ToLocalTime(),
-                            Eingereicht = x.SubmittedUtc?.ToLocalTime(),
+                            Angelegt = x.CreatedUtc.ToBerlin(),
+                            Eingereicht = x.SubmittedUtc?.ToBerlin(),
 
                             StatusText = s.text,
                             Status = x.Status,
@@ -94,8 +95,8 @@ namespace BuergerPortal.Web.Controllers
                             TypText = t.text,
                             TypBadgeClass = t.badgeClass,
 
-                            Angelegt = x.CreatedUtc.ToLocalTime(),
-                            Eingereicht = x.SubmittedUtc?.ToLocalTime(),
+                            Angelegt = x.CreatedUtc.ToBerlin(),
+                            Eingereicht = x.SubmittedUtc?.ToBerlin(),
 
                             StatusText = s.text,
                             Status = x.Status,
@@ -136,8 +137,8 @@ namespace BuergerPortal.Web.Controllers
                 Express = d.Express ?? false,
                 AltpassVorhanden = d.AltpassVorhanden ?? false,
                 Hinweis = d.Hinweis,
-                CreatedUtc = d.CreatedUtc.ToLocalTime(),
-                SubmittedUtc = d.SubmittedUtc?.ToLocalTime(),
+                CreatedUtc = d.CreatedUtc.ToBerlin(),
+                SubmittedUtc = d.SubmittedUtc?.ToBerlin(),
                 Email = d.Email,
                 Telefon = d.Telefon
             };
@@ -173,8 +174,8 @@ namespace BuergerPortal.Web.Controllers
                 BadgeClass = map.badge,
                 ProgressPercent = map.progress,
 
-                CreatedUtc = d.CreatedUtc.ToLocalTime(),
-                SubmittedUtc = d.SubmittedUtc?.ToLocalTime(),
+                CreatedUtc = d.CreatedUtc.ToBerlin(),
+                SubmittedUtc = d.SubmittedUtc?.ToBerlin(),
 
                 Email = d.Email,
                 Telefon = d.Telefon,
