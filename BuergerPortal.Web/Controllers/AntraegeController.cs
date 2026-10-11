@@ -126,6 +126,7 @@ namespace BuergerPortal.Web.Controllers
             if (d is null) return NotFound();
 
             var map = AntragStatusUi.Map(d.Status);
+            var verlauf = await VerlaufAsync(client, id, ct);
             var vm = new AntragDetailVm
             {
                 Id = d.Id,
@@ -139,6 +140,8 @@ namespace BuergerPortal.Web.Controllers
                 Hinweis = d.Hinweis,
                 CreatedUtc = d.CreatedUtc.ToBerlin(),
                 SubmittedUtc = d.SubmittedUtc?.ToBerlin(),
+                InBearbeitungSeit = verlauf.InBearbeitung,
+                AbgeschlossenAm = verlauf.Abgeschlossen,
                 Email = d.Email,
                 Telefon = d.Telefon
             };
@@ -162,7 +165,8 @@ namespace BuergerPortal.Web.Controllers
             var d = await res.Content.ReadFromJsonAsync<SperrmuellDetailResponse>(cancellationToken: ct);
             if (d is null) return NotFound();
 
-            var map = AntragStatusUi.Map(d.Status); 
+            var map = AntragStatusUi.Map(d.Status);
+            var verlauf = await VerlaufAsync(client, id, ct);
 
             var vm = new SperrmuellAntragDetailVm
             {
@@ -176,6 +180,8 @@ namespace BuergerPortal.Web.Controllers
 
                 CreatedUtc = d.CreatedUtc.ToBerlin(),
                 SubmittedUtc = d.SubmittedUtc?.ToBerlin(),
+                InBearbeitungSeit = verlauf.InBearbeitung,
+                AbgeschlossenAm = verlauf.Abgeschlossen,
 
                 Email = d.Email,
                 Telefon = d.Telefon,
@@ -194,5 +200,21 @@ namespace BuergerPortal.Web.Controllers
 
             return View("SperrmuellAntragDetail", vm);
         }
+
+        // Zeitleiste: wann der Antrag in Bearbeitung ging und wann er abgeschlossen wurde (Statusverlauf der API, in
+        // deutscher Zeit). Ältere Anträge haben keinen Verlauf – dann bleiben die Felder leer.
+        private static async Task<(DateTime? InBearbeitung, DateTime? Abgeschlossen)> VerlaufAsync(HttpClient client, Guid id,
+            CancellationToken ct)
+        {
+            var res = await client.GetAsync($"api/antraege/{id}/verlauf", ct);
+            if (!res.IsSuccessStatusCode) return (null, null);
+            var eintraege = await res.Content.ReadFromJsonAsync<List<VerlaufEintrag>>(cancellationToken: ct) ?? [];
+            DateTime? Zeit(params int[] status) =>
+                eintraege.LastOrDefault(e => status.Contains(e.Status)) is { } e ? e.ZeitpunktUtc.ToBerlin() : null;
+            return (Zeit((int)AntragStatusUi.AntragStatus.InPruefung),
+                Zeit((int)AntragStatusUi.AntragStatus.Genehmigt, (int)AntragStatusUi.AntragStatus.Abgelehnt));
+        }
+
+        private sealed record VerlaufEintrag(int Status, DateTime ZeitpunktUtc);
     }
 }

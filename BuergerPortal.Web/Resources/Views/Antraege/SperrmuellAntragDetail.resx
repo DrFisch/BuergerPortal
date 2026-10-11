@@ -109,4 +109,7 @@
 	<data name="SperrmuellDetail_Field_DesiredDate" xml:space="preserve">
     <value>Wunschtermin</value>
   </data>
+  <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
+    <value>Simulation: Die Bearbeitung läuft automatisch – nach etwa 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“. Jede Änderung kommt als Statusmeldung in Ihr BundID-Postfach.</value>
+  </data>
 </root>

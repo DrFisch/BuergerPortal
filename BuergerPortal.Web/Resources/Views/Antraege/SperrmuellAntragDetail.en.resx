@@ -109,4 +109,7 @@
 	<data name="SperrmuellDetail_Field_DesiredDate" xml:space="preserve">
     <value>Requested collection date</value>
   </data>
+  <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
+    <value>Simulation: processing runs automatically – after about 2 minutes "in progress", after another 5 minutes "completed". Every change arrives as a status message in your BundID mailbox.</value>
+  </data>
 </root>

@@ -90,4 +90,7 @@
 	<data name="No" xml:space="preserve">
     <value>Nein</value>
   </data>
+  <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
+    <value>Simulation: Die Bearbeitung läuft automatisch – nach etwa 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“. Jede Änderung kommt als Statusmeldung in Ihr BundID-Postfach.</value>
+  </data>
 </root>

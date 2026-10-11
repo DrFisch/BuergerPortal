@@ -20,6 +20,9 @@
         // Zeitpunkte
         public DateTime CreatedUtc { get; set; }
         public DateTime? SubmittedUtc { get; set; }
+        // Zeitleiste: Zeitpunkte aus dem Statusverlauf der API (deutsche Zeit); bei älteren Anträgen ohne Verlauf leer
+        public DateTime? InBearbeitungSeit { get; set; }
+        public DateTime? AbgeschlossenAm { get; set; }
 
         // Adresse
         public string Strasse { get; set; } = string.Empty;

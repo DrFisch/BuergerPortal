@@ -117,7 +117,7 @@
                             <div class="tl-content">
                                 <div class="fw-bold">@L["ApplicationDetails_Timeline_Review"]</div>
                                 <div class="small text-muted">
-                                    @(Model.ProgressPercent >= 70 ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"] : L["ApplicationDetails_Timeline_Pending"])
+                                    @(Model.InBearbeitungSeit?.ToString("dd.MM.yyyy HH:mm") ?? (Model.ProgressPercent >= 70 ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"].Value : L["ApplicationDetails_Timeline_Pending"].Value))
                                 </div>
                             </div>
                         </div>
@@ -127,11 +127,17 @@
                             <div class="tl-content">
                                 <div class="fw-bold">@L["ApplicationDetails_Timeline_Completed"]</div>
                                 <div class="small text-muted">
-                                    @(Model.ProgressPercent >= 100 ? L["ApplicationDetails_Timeline_Completed_Done"] : L["ApplicationDetails_Timeline_Pending"])
+                                    @(Model.AbgeschlossenAm?.ToString("dd.MM.yyyy HH:mm") ?? (Model.ProgressPercent >= 100 ? L["ApplicationDetails_Timeline_Completed_Done"].Value : L["ApplicationDetails_Timeline_Pending"].Value))
                                 </div>
                             </div>
                         </div>
                     </div>
+                    @if (Model.SubmittedUtc.HasValue && Model.ProgressPercent < 100)
+                    {
+                        <p class="small text-muted mt-3 mb-0" id="simulationHinweis">
+                            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>@L["ApplicationDetails_Timeline_SimulationHint"]
+                        </p>
+                    }
                 </div>
             </div>
         </div>
