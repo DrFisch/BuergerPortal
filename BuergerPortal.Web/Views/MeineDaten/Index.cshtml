@@ -168,7 +168,8 @@
                 </h2>
                 <div class="card-body">
                     <p class="small">@L["MeineDaten_LetzteAnmeldungenText"]</p>
-                    <div class="table-responsive">
+                    @* Auf dem Handy waagrecht scrollbar: per Tastatur erreichbar und benannt (WCAG 2.1.1) *@
+                    <div class="table-responsive" tabindex="0" role="region" aria-labelledby="md-anmeldungen">
                         <table class="table table-sm mb-0">
                             <thead>
                                 <tr><th scope="col">@L["MeineDaten_Zeitpunkt"]</th><th scope="col">@L["MeineDaten_TrustLevel"]</th><th scope="col">@L["MeineDaten_IdentificationMethod"]</th></tr>

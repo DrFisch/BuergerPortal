@@ -113,6 +113,7 @@ namespace BuergerPortal.Tests.Auth
 
             Assert.Contains("Was geprüft wurde", html);
             Assert.Contains("Empfänger (Destination, Recipient)", html);
+            Assert.Contains("tabindex=\"0\" role=\"region\" aria-labelledby=\"inspektor-pruefungen\"", html);   // per Tastatur scrollbar
             Assert.Contains("bundid_bpk2", html);
             Assert.Contains("BUND…-T01", html);
             Assert.DoesNotContain("BUNDIDSIM-T01", html);

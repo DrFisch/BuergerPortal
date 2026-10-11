@@ -43,12 +43,13 @@
             <dd class="col-sm-8 col-lg-9">gefordert @Niveau(inspection.RequestedLevel), erreicht <strong>@Niveau(inspection.ReachedLevel)</strong></dd>
         </dl>
 
-        <h2 class="h5 mt-4">1. Was geprüft wurde</h2>
+        <h2 class="h5 mt-4" id="inspektor-pruefungen">1. Was geprüft wurde</h2>
         <p class="small text-muted">
             Alle Prüfungen sind bestanden – sonst wäre die Anmeldung abgelehnt worden und Sie hätten eine Fehlerseite gesehen.
             „ITfoxtec“ ist die SAML-Bibliothek, „eigener Code“ ergänzt, was sie nicht selbst prüft.
         </p>
-        <div class="table-responsive">
+        @* Waagrecht scrollbare Tabellen: per Tastatur erreichbar und benannt (WCAG 2.1.1) *@
+        <div class="table-responsive" tabindex="0" role="region" aria-labelledby="inspektor-pruefungen">
             <table class="table table-sm align-top inspektor-tabelle">
                 <thead>
                     <tr><th scope="col"><span class="visually-hidden">Ergebnis</span></th><th scope="col">Prüfung</th><th scope="col">Erwartet</th><th scope="col">Empfangen</th><th scope="col">Geprüft durch</th></tr>
@@ -68,12 +69,12 @@
             </table>
         </div>
 
-        <h2 class="h5 mt-4">2. Vom SAML-Attribut zum Claim</h2>
+        <h2 class="h5 mt-4" id="inspektor-attribute">2. Vom SAML-Attribut zum Claim</h2>
         <p class="small text-muted">
             Die BundID überträgt Angaben als Attribute mit OID-Namen. Der Auth-Server übersetzt sie in OpenID-Connect-Claims
             für das Portal. Dauerhaft gespeichert werden nur bPK2, Postkorb-Handle, Niveau und der Zeitpunkt der Anmeldung.
         </p>
-        <div class="table-responsive">
+        <div class="table-responsive" tabindex="0" role="region" aria-labelledby="inspektor-attribute">
             <table class="table table-sm align-top inspektor-tabelle">
                 <thead>
                     <tr><th scope="col">SAML-Attribut</th><th scope="col">Wert</th><th scope="col">Claim</th><th scope="col">Verwendung</th></tr>
