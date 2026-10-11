@@ -16,7 +16,8 @@ namespace AuthenticationServer.Controllers
     [AllowAnonymous]
     [Route("bundid")]
     public class BundIdController(BundIdSamlService saml, BundIdUserService userService,
-        SignInManager<ApplicationUser> signInManager, ILogger<BundIdController> logger) : Controller
+        SignInManager<ApplicationUser> signInManager, BundIdInspectionStore inspectionStore,
+        ILogger<BundIdController> logger) : Controller
     {
         // Startet die Anmeldung: AuthnRequest an die BundID (HTTP-POST-Binding = Formular mit Auto-Submit).
         // level = gefordertes Mindest-Vertrauensniveau (STORK-QAA-Level 1, 3 oder 4),
@@ -63,6 +64,11 @@ namespace AuthenticationServer.Controllers
 
                 // Anmeldung am Auth-Server: Identity-Sitzung mit den BundID-Daten als Claims (nur für diese Sitzung).
                 await signInManager.SignInWithClaimsAsync(user, isPersistent: false, attributes.ToClaims());
+                // SAML-Inspektor: Prüfprotokoll für einige Minuten diesem Browser und Konto zuordnen.
+                if (result.Inspection != null)
+                {
+                    inspectionStore.Save(Response, user.Id, result.Inspection);
+                }
                 logger.LogInformation("BundID-Login: Konto {UserId} ({Status}), Niveau {Level}", user.Id,
                     created ? "neu" : "bekannt", attributes.TrustLevel);
             }

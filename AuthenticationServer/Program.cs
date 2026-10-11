@@ -139,6 +139,10 @@ builder.Services.ConfigureApplicationCookie(o =>
 // ---------- BundID (SAML) ----------
 builder.Services.AddBundIdServiceProvider(builder.Configuration);
 builder.Services.AddScoped<BundIdUserService>();
+// SAML-Inspektor: Prüfprotokoll der letzten Anmeldung für einige Minuten (standardmäßig an, abschaltbar)
+builder.Services.Configure<BundIdInspektorOptions>(builder.Configuration.GetSection(BundIdInspektorOptions.SectionName));
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<BundIdInspectionStore>();
 // Die BundID-Claims stecken nur in der Sitzung (nicht in der DB). Bei der regelmäßigen Prüfung des
 // Security-Stamps baut Identity die Sitzung neu auf – dabei die BundID-Claims übernehmen.
 builder.Services.Configure<SecurityStampValidatorOptions>(o => o.OnRefreshingPrincipal = context =>
