@@ -111,8 +111,11 @@ public static class PortalSession
         }
     }
 
-    /// <summary>Name des Sitzungscookies (Standard des Cookie-Schemas, bei Größe in Teile C1, C2 … aufgeteilt).</summary>
-    public const string CookieName = ".AspNetCore.Cookies";
+    /// <summary>
+    /// Name des Sitzungscookies (bei Größe in Teile C1, C2 … aufgeteilt). Präfix <c>__Host-</c>: Der Browser nimmt das
+    /// Cookie nur mit Secure, Path=/ und ohne Domain an – keine andere Subdomain kann es setzen oder überschreiben (X5).
+    /// </summary>
+    public const string CookieName = "__Host-bp-sitzung";
 
     /// <summary>
     /// Ist die Sitzung abgelaufen (statt nie begonnen oder abgemeldet)? Entweder hat dieser Aufruf sie beendet, oder der

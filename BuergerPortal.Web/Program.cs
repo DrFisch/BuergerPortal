@@ -24,6 +24,13 @@ builder.Services
     .AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
+// Antiforgery-Cookie mit Präfix __Host- (nur Secure, Path=/, ohne Domain): Eine andere Subdomain kann kein eigenes
+// Token unterschieben (X5).
+builder.Services.AddAntiforgery(o =>
+{
+    o.Cookie.Name = "__Host-bp-antiforgery";
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 var supportedCultures = new[] { "de", "en" };
 builder.Services.Configure<RequestLocalizationOptions>(opts =>
@@ -130,6 +137,7 @@ builder.Services
         o.AccessDeniedPath = "/Auth/LoginRequired";
 
         // WICHTIG FÜR HTTPS:
+        o.Cookie.Name = BuergerPortal.Web.Services.PortalSession.CookieName;
         o.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
         o.Cookie.SameSite = SameSiteMode.Lax;
 
