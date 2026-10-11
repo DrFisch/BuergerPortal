@@ -60,12 +60,16 @@ namespace BuergerPortal.Api.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Submit([FromRoute] Guid id, CancellationToken ct)
+        public async Task<IActionResult> Submit([FromRoute] Guid id, [FromServices] IAntragStatusService status,
+            CancellationToken ct)
         {
             var userId = GetUserIdOrThrow();
             var result = await _service.SubmitAsync(id, userId, ct);
 
             if (!result.IsSuccess) return ToProblem(result);
+
+            // Zeitleiste und spätere Statusmeldungen: Einreichen festhalten, Postkorb-Handle aus der Anmeldung merken.
+            await status.EingereichtAsync(id, User.FindFirstValue(PostkorbBenachrichtigung.PostkorbHandleClaim), ct);
 
             // Eingangsbestätigung ins BundID-Postfach (Niveau "normal", wie die Anmeldung selbst).
             var antrag = await _service.GetAsync(id, userId, ct);
