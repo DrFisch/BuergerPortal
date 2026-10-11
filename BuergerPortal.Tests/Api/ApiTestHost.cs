@@ -51,6 +51,7 @@ namespace BuergerPortal.Tests.Api
                 ["Database:MigrateOnStartup"] = "false",
                 // Tests rufen die simulierte Bearbeitung gezielt auf (RunOnceAsync), nicht im Takt
                 ["AntragSimulation:Enabled"] = "false",
+                ["TerminErinnerung:Enabled"] = "false",
             };
             foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
             {

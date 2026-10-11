@@ -65,6 +65,11 @@ builder.Services.Configure<BuergerPortal.Api.Antraege.AntragSimulationOptions>(
     builder.Configuration.GetSection(BuergerPortal.Api.Antraege.AntragSimulationOptions.Section));
 builder.Services.AddSingleton<BuergerPortal.Api.Antraege.AntragBearbeitungSimulation>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BuergerPortal.Api.Antraege.AntragBearbeitungSimulation>());
+// Erinnerung vor dem Termin ins Postfach und als Benachrichtigung (Postkorb/TerminErinnerungDienst.cs)
+builder.Services.Configure<BuergerPortal.Api.Postkorb.TerminErinnerungOptions>(
+    builder.Configuration.GetSection(BuergerPortal.Api.Postkorb.TerminErinnerungOptions.Section));
+builder.Services.AddSingleton<BuergerPortal.Api.Postkorb.TerminErinnerungDienst>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<BuergerPortal.Api.Postkorb.TerminErinnerungDienst>());
 
 // -------------------------------------------------------
 // 2. Authentication / Authorization (JWT gegen Auth-Server)
