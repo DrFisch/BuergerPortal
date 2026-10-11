@@ -18,6 +18,8 @@ namespace BuergerPortal.Application.Interfaces.BusinessServices
         Task<Result<Guid>> CancelAsync(Guid id, Guid currentUserId, CancellationToken ct);
         Task<Result<Guid>> DeleteAsync(Guid id, Guid currentUserId, CancellationToken ct); // optional (Hard-Delete)
         Task<AppointmentListItemDto?> GetByIdAsync(Guid id, Guid currentUserId, CancellationToken ct);
+        // Einchecken im Bürgeramt (QR-Code): ohne Personenbezug – nur Leistung, Ort, Zeit und Status, kein Antrag.
+        Task<AppointmentListItemDto?> GetForCheckinAsync(Guid id, CancellationToken ct);
         Task<Result<Guid>> UpdateLocationAsync(Guid id, Guid currentUserId, LocationType newLocation, CancellationToken ct);
     }
 }

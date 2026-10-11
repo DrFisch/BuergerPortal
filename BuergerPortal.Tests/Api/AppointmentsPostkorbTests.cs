@@ -52,6 +52,7 @@ namespace BuergerPortal.Tests.Api
             public Task<Result<Guid>> CancelAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();
             public Task<Result<Guid>> DeleteAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();
             public Task<AppointmentListItemDto?> GetByIdAsync(Guid id, Guid currentUserId, CancellationToken ct) => throw new NotImplementedException();
+            public Task<AppointmentListItemDto?> GetForCheckinAsync(Guid id, CancellationToken ct) => throw new NotImplementedException();
             public Task<Result<Guid>> UpdateLocationAsync(Guid id, Guid currentUserId, LocationType newLocation, CancellationToken ct) => throw new NotImplementedException();
         }
 

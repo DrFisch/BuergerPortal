@@ -182,6 +182,22 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
             };
         }
 
+        public async Task<AppointmentListItemDto?> GetForCheckinAsync(Guid id, CancellationToken ct)
+        {
+            var appt = await _repo.GetByIdAsync(id, ct);
+            if (appt is null) return null;
+
+            return new AppointmentListItemDto
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = appt.StartUtc,
+                EndUtc = appt.EndUtc,
+                Cancelled = appt.Status == AppointmentStatus.Cancelled,
+            };
+        }
+
         public async Task<Result<Guid>> UpdateLocationAsync(Guid id, Guid currentUserId, LocationType newLocation, CancellationToken ct)
         {
             var appt = await _repo.GetByIdAsync(id, ct);

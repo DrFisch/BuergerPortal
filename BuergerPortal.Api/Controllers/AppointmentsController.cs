@@ -160,6 +160,29 @@ namespace BuergerPortal.Api.Controllers
             });
         }
 
+        // Einchecken im Bürgeramt: Das Portal ruft das nach dem Scannen des QR-Codes auf, nachdem es den geschützten
+        // Link geprüft hat. Ohne Anmeldung, aber ohne Personenbezug (keine Person, kein Antrag); die API hat keine
+        // öffentliche Adresse, und die Termin-ID ist nicht zu erraten.
+        [HttpGet("{id:guid}/checkin")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(AppointmentListItemResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentListItemResponse>> GetForCheckin(Guid id, CancellationToken ct)
+        {
+            var appt = await _svc.GetForCheckinAsync(id, ct);
+            if (appt is null) return NotFound();
+
+            return Ok(new AppointmentListItemResponse
+            {
+                Id = appt.Id,
+                Service = appt.Service,
+                Location = appt.Location,
+                StartUtc = DateTime.SpecifyKind(appt.StartUtc, DateTimeKind.Utc),
+                EndUtc = DateTime.SpecifyKind(appt.EndUtc, DateTimeKind.Utc),
+                Cancelled = appt.Cancelled,
+            });
+        }
+
         [HttpGet("busy")]
         [ProducesResponseType(typeof(IEnumerable<BusySlotResponse>), StatusCodes.Status200OK)]
         // location: nur Termine an diesem Standort (ohne Angabe wie bisher alle Standorte)
