@@ -50,9 +50,19 @@ builder.Services.Configure<RequestLocalizationOptions>(opts =>
 var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
 if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
 {
-    builder.Services.AddDataProtection()
+    var dataProtection = builder.Services.AddDataProtection()
         .SetApplicationName("BuergerPortal.Web")
         .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+    // Schlüssel verschlüsselt ablegen, wenn ein Zertifikat konfiguriert ist (Betrieb, X4); lokal unverändert.
+    // UnprotectKeysWithAnyCertificate: Das Zertifikat kommt aus einer Datei, nicht aus dem Zertifikatspeicher.
+    var dpCertificatePath = builder.Configuration["DataProtection:CertificatePath"];
+    if (!string.IsNullOrWhiteSpace(dpCertificatePath))
+    {
+        var dpCertificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12FromFile(
+            dpCertificatePath, builder.Configuration["DataProtection:CertificatePassword"],
+            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.EphemeralKeySet);
+        dataProtection.ProtectKeysWithCertificate(dpCertificate).UnprotectKeysWithAnyCertificate(dpCertificate);
+    }
 }
 
 // Sitzungsdaten auf dem Server, im Cookie nur eine Kennung (Services/FileTicketStore.cs): im Container neben den

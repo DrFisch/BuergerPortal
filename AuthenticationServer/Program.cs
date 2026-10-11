@@ -159,8 +159,18 @@ builder.Services.AddAuthRateLimiting(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddDataProtection()
+var dataProtection = builder.Services.AddDataProtection()
     .PersistKeysToDbContext<ApplicationDbContext>();
+// Schlüssel verschlüsselt ablegen, wenn ein Zertifikat konfiguriert ist (Betrieb, X4); lokal unverändert.
+// UnprotectKeysWithAnyCertificate: Das Zertifikat kommt aus einer Datei, nicht aus dem Zertifikatspeicher.
+var dpCertificatePath = builder.Configuration["DataProtection:CertificatePath"];
+if (!string.IsNullOrWhiteSpace(dpCertificatePath))
+{
+    var dpCertificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12FromFile(
+        dpCertificatePath, builder.Configuration["DataProtection:CertificatePassword"],
+        System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.EphemeralKeySet);
+    dataProtection.ProtectKeysWithCertificate(dpCertificate).UnprotectKeysWithAnyCertificate(dpCertificate);
+}
 
 var app = builder.Build();
 
