@@ -174,8 +174,10 @@ namespace BuergerPortal.BundId
                 [BundIdOids.LocalityName] = ("address.locality", Address),
                 [BundIdOids.Country] = ("address.country", Address),
                 [BundIdOids.EidCitizenQaaLevel] = (BundIdClaimTypes.TrustLevel,
-                    "mit dem AuthnContextClassRef verglichen (der niedrigere Wert gilt); " + BothTokens + ", gespeichert"),
-                [BundIdOids.AssertionProvedBy] = (BundIdClaimTypes.IdentificationMethod, IdToken),
+                    "mit dem AuthnContextClassRef verglichen (der niedrigere Wert gilt); " + BothTokens
+                    + ", gespeichert (auch in den letzten fünf Anmeldungen)"),
+                [BundIdOids.AssertionProvedBy] = (BundIdClaimTypes.IdentificationMethod,
+                    IdToken + ", in den letzten fünf Anmeldungen gespeichert"),
                 [Normalize(options.PostkorbHandleAttribute)] = (BundIdClaimTypes.PostkorbHandle, BothTokens + ", gespeichert"),
             };
             mapping = mapping.ToDictionary(e => Normalize(e.Key), e => e.Value);

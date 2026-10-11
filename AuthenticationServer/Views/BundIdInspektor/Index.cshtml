@@ -72,7 +72,8 @@
         <h2 class="h5 mt-4" id="inspektor-attribute">2. Vom SAML-Attribut zum Claim</h2>
         <p class="small text-muted">
             Die BundID überträgt Angaben als Attribute mit OID-Namen. Der Auth-Server übersetzt sie in OpenID-Connect-Claims
-            für das Portal. Dauerhaft gespeichert werden nur bPK2, Postkorb-Handle, Niveau und der Zeitpunkt der Anmeldung.
+            für das Portal. Dauerhaft gespeichert werden nur bPK2, Postkorb-Handle, Niveau und die letzten fünf Anmeldungen
+            (Zeitpunkt, Niveau, Identifizierungsmittel – keine IP, kein Gerät).
         </p>
         <div class="table-responsive" tabindex="0" role="region" aria-labelledby="inspektor-attribute">
             <table class="table table-sm align-top inspektor-tabelle">
