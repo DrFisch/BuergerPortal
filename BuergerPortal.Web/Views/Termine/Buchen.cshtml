@@ -8,8 +8,8 @@
 
 <div class="container py-4" style="max-width: 900px;">
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a asp-action="Index" asp-controller="Termine" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm">
-            <i class="bi bi-arrow-left"></i>
+        <a asp-action="Index" asp-controller="Termine" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm" aria-label="@T["BackAria"]">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
         </a>
         <h1 class="h3 fw-bold mb-0">@T["Title"]</h1>
     </div>
@@ -54,7 +54,7 @@
                     @if (!Model.RelatedAntragId.HasValue)
                     {
                         <div class="col-12">
-                            <label class="form-label fw-semibold">@T["Service"]</label>
+                            <label class="form-label fw-semibold" for="Service">@T["Service"]</label>
                             <select asp-for="Service" class="form-select form-select-lg rounded-3" asp-items="Html.GetEnumSelectList<ServiceType>()">
                                 <option value="">@T["SelectPlaceholder"]</option>
                             </select>
@@ -63,27 +63,27 @@
                     }
 
                     <div class="col-12">
-                        <label class="form-label fw-semibold">@T["Location"]</label>
+                        <label class="form-label fw-semibold" for="locationSelect">@T["Location"]</label>
                         <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-geo-alt"></i></span>
+                            <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
                             <select asp-for="Location" class="form-select border-start-0" id="locationSelect" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
                         </div>
                         <span asp-validation-for="Location" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">@T["Date"]</label>
+                        <label class="form-label fw-semibold" for="dateInput">@T["Date"]</label>
                         <input asp-for="LocalDate" type="date" class="form-control form-control-lg rounded-3" id="dateInput" />
                         <span asp-validation-for="LocalDate" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">@T["Time"]</label>
+                        <label class="form-label fw-semibold" for="timeSelect">@T["Time"]</label>
                         <div class="input-group input-group-lg">
                             <select asp-for="LocalTime" class="form-select rounded-start-3" id="timeSelect"
                                     data-initial="@Model.LocalTime.ToString(@"hh\:mm")"></select>
-                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#kalenderModal">
-                                <i class="bi bi-calendar3"></i>
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#kalenderModal" aria-label="@T["CalendarOpenAria"]">
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
                             </button>
                         </div>
                         <small class="text-muted mt-1 d-block">@T["CalendarHint"]</small>
@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label fw-semibold">@T["Duration"]</label>
+                        <label class="form-label fw-semibold" for="durationSelect">@T["Duration"]</label>
                         <select asp-for="Duration" class="form-select form-select-lg rounded-3" id="durationSelect" asp-items="Html.GetEnumSelectList<DurationOption>()"></select>
                         <span asp-validation-for="Duration" class="text-danger small"></span>
                     </div>
@@ -137,7 +137,7 @@
             <div class="modal-body p-4">
                 <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
                     <div class="flex-grow-1" style="min-width: 200px;">
-                        <label class="form-label small fw-bold">@T["ModalDate"]</label>
+                        <label class="form-label small fw-bold" for="kalenderDate">@T["ModalDate"]</label>
                         <input type="date" id="kalenderDate" class="form-control">
                     </div>
                     <button class="btn btn-outline-primary mt-4" id="kalenderReload">

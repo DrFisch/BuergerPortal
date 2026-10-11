@@ -63,4 +63,10 @@
   <data name="Day_Error" xml:space="preserve">
     <value>Die freien Zeiten konnten nicht geladen werden. Bitte laden Sie die Seite neu.</value>
   </data>
+  <data name="BackAria" xml:space="preserve">
+    <value>Zurück zur Terminübersicht</value>
+  </data>
+  <data name="CalendarOpenAria" xml:space="preserve">
+    <value>Kalender mit freien Zeiten öffnen</value>
+  </data>
 </root>
