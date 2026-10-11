@@ -18,5 +18,9 @@ namespace BuergerPortal.Api.Contracts.Maengelmeldungen
 
         [MaxLength(500)]
         public string? AddressHint { get; set; }
+
+        // Optional: Foto (Base64) mit Typ image/jpeg, image/png oder image/webp, höchstens 2 MB (MangelFotoPruefung)
+        public string? FotoBase64 { get; set; }
+        public string? FotoContentType { get; set; }
     }
 }

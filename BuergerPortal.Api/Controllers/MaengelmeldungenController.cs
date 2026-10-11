@@ -35,6 +35,17 @@ namespace BuergerPortal.Api.Controllers
                 return ValidationProblem(ModelState);
             }
 
+            byte[]? foto = null;
+            if (!string.IsNullOrEmpty(req.FotoBase64))
+            {
+                if (!MangelFotoPruefung.TryDecode(req.FotoBase64, req.FotoContentType, out var daten, out var fehler))
+                {
+                    ModelState.AddModelError("Foto", fehler);
+                    return ValidationProblem(ModelState);
+                }
+                foto = daten;
+            }
+
             Guid? reporterUserId = null;
 
             
@@ -56,6 +67,10 @@ namespace BuergerPortal.Api.Controllers
             };
 
             _db.Maengelmeldungen.Add(entity);
+            if (foto != null)
+            {
+                _db.MaengelFotos.Add(new MangelFoto { MaengelmeldungId = entity.Id, ContentType = req.FotoContentType!, Daten = foto });
+            }
             await _db.SaveChangesAsync(ct);
 
             var resp = new CreateMaengelmeldungResponse
@@ -66,6 +81,32 @@ namespace BuergerPortal.Api.Controllers
             };
 
             return Created($"/api/maengelmeldungen/{entity.Id}", resp);
+        }
+
+        // Eigene Meldungen, neueste zuerst ("Meine Meldungen" im Portal)
+        [HttpGet("mine")]
+        public async Task<ActionResult<IReadOnlyList<MaengelmeldungResponse>>> GetMine(CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+            var meldungen = await _db.Maengelmeldungen.AsNoTracking()
+                .Where(x => x.ReporterUserId == userId)
+                .OrderByDescending(x => x.CreatedUtc)
+                .Select(x => new { Meldung = x, HatFoto = _db.MaengelFotos.Any(f => f.MaengelmeldungId == x.Id) })
+                .ToListAsync(ct);
+            return Ok(meldungen.Select(m => ToResponse(m.Meldung, m.HatFoto)).ToList());
+        }
+
+        // Foto der eigenen Meldung
+        [HttpGet("{id:guid}/foto")]
+        public async Task<IActionResult> GetFoto(Guid id, CancellationToken ct)
+        {
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+            var foto = await _db.MaengelFotos.AsNoTracking()
+                .Where(f => f.MaengelmeldungId == id && _db.Maengelmeldungen.Any(m => m.Id == id && m.ReporterUserId == userId))
+                .FirstOrDefaultAsync(ct);
+            if (foto is null) return NotFound();
+            Response.Headers.CacheControl = "private, max-age=3600";
+            return File(foto.Daten, foto.ContentType);
         }
 
         // Nur die eigene Meldung (sonst 404 – ob eine fremde Meldung existiert, verrät die API nicht).
