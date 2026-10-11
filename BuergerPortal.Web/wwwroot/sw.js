@@ -4,7 +4,9 @@
 // erscheint die Offline-Seite. Zwischengespeichert werden nur statische Dateien (CSS, JS, Bilder, Schriften).
 // Neue Cache-Version: Beim Aktivieren werden ältere Caches gelöscht – auch bp-v6, das noch HTML-Seiten enthielt.
 // v8: Offline-Seite ohne Inline-Skript (Content-Security-Policy). Seit 6.88 zusätzlich Benachrichtigungen (push, notificationclick).
-const CACHE_NAME = 'bp-static-v8';
+// v9: Teilen eines Fotos an den Mängelmelder (share_target, Cache bp-geteilt nur bis zur Übernahme ins Formular).
+const CACHE_NAME = 'bp-static-v9';
+const SHARE_CACHE = 'bp-geteilt';
 const OFFLINE_URL = '/offline.html';
 const PRECACHE = [
     OFFLINE_URL,
@@ -23,7 +25,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
     e.waitUntil(
         caches.keys()
-            .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+            .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME && k !== SHARE_CACHE).map(k => caches.delete(k))))
             .then(() => self.clients.claim())
     );
 });
@@ -37,6 +39,24 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', e => {
     const req = e.request;
     const url = new URL(req.url);
+
+    // Teilen (share_target im Manifest): Foto aus der Galerie an den Mängelmelder. Der Service Worker nimmt den POST an,
+    // legt das Bild kurz in den Cache bp-geteilt und öffnet das Formular; mangel-foto.js übernimmt es und löscht es dort.
+    // So braucht das Teilen weder Anmelde-Cookie noch Antiforgery-Token, und das Foto geht erst mit der Meldung zum Server.
+    if (req.method === 'POST' && url.origin === self.location.origin && url.pathname === '/Maengel/Teilen') {
+        e.respondWith((async () => {
+            try {
+                const daten = await req.formData();
+                const foto = daten.get('foto');
+                if (foto && foto.type && foto.type.startsWith('image/')) {
+                    const cache = await caches.open(SHARE_CACHE);
+                    await cache.put('/geteilt/foto', new Response(foto, { headers: { 'Content-Type': foto.type } }));
+                }
+            } catch (err) { /* ohne Foto weiter zum Formular */ }
+            return Response.redirect('/Maengel/Create?geteilt=1', 303);
+        })());
+        return;
+    }
 
     // Nur eigene GET-Anfragen; Anmeldung, API und Abfragen der Seiten (z. B. /Termine/Verfuegbarkeit) laufen ungestört.
     if (req.method !== 'GET' || url.origin !== self.location.origin) {

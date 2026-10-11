@@ -1,5 +1,6 @@
 ﻿using BuergerPortal.Web.Features.Maengel.ViewModels;
 using BuergerPortal.Web.Features.Maengel.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -33,6 +34,17 @@ namespace BuergerPortal.Web.Controllers
             if (!res.IsSuccessStatusCode) return NotFound();
             Response.Headers.CacheControl = "private, max-age=3600";
             return File(await res.Content.ReadAsByteArrayAsync(ct), res.Content.Headers.ContentType?.MediaType ?? "image/jpeg");
+        }
+
+        // Ziel von share_target, falls kein Service Worker läuft (der nimmt das Foto sonst selbst an, siehe sw.js):
+        // ohne Antiforgery-Token und Anmeldung erreichbar, verarbeitet nichts und führt zum Formular.
+        [HttpPost]
+        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
+        public IActionResult Teilen()
+        {
+            TempData["Meldung"] = "Bitte wählen Sie das Foto hier noch einmal aus.";
+            return RedirectToAction(nameof(Create));
         }
 
         [HttpGet]

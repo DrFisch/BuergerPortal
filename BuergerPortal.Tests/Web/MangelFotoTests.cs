@@ -161,5 +161,21 @@ namespace BuergerPortal.Tests.Web
             Assert.Equal(Jpeg, await foto.Content.ReadAsByteArrayAsync());
             Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync($"/Maengel/Foto/{Guid.NewGuid()}")).StatusCode);
         }
+
+        [Fact]
+        public async Task Teilen_ohne_Service_Worker_fuehrt_zum_Formular_Manifest_kennt_das_Ziel()
+        {
+            using var factory = new PortalFactory(new FakeApi());
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            var teilen = new MultipartFormDataContent { { new ByteArrayContent(Jpeg), "foto", "foto.jpg" } };
+
+            var response = await client.PostAsync("/Maengel/Teilen", teilen);
+            var manifest = await client.GetStringAsync("/manifest.webmanifest");
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal("/Maengel/Create", response.Headers.Location!.OriginalString);
+            Assert.Contains("\"share_target\"", manifest);
+            Assert.Contains("\"action\": \"/Maengel/Teilen\"", manifest);
+        }
     }
 }

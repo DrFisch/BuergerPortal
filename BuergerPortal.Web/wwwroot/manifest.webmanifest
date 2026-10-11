@@ -71,6 +71,21 @@
       "url": "/Maengel/Create"
     }
   ],
+  "share_target": {
+    "action": "/Maengel/Teilen",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "titel",
+      "text": "text",
+      "files": [
+        {
+          "name": "foto",
+          "accept": [ "image/jpeg", "image/png", "image/webp" ]
+        }
+      ]
+    }
+  },
   "screenshots": [
     {
       "src": "/screenshots/start-handy.jpg",
