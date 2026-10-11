@@ -52,7 +52,7 @@
 <body class="@(User.Identity?.IsAuthenticated == true ? "has-tabbar" : null)">
     @await Html.PartialAsync("_Navbar")
 
-    <main class="container py-4">
+    <main class="container py-4" id="hauptinhalt" tabindex="-1">
         @await Html.PartialAsync("_Meldungen")
         @RenderBody()
     </main>

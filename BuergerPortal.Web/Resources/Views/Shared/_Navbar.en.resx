@@ -109,4 +109,7 @@
   <data name="Discover" xml:space="preserve">
     <value>Discover the city</value>
   </data>
+  <data name="SkipToContent" xml:space="preserve">
+    <value>Skip to content</value>
+  </data>
 </root>

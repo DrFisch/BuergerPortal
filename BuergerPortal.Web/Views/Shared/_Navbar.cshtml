@@ -12,6 +12,9 @@
     string? AriaAktiv(params string[] names) => names.Contains(controller, StringComparer.OrdinalIgnoreCase) ? "page" : null;
 }
 
+@* Sprunglink: erstes Element für Tastatur und Screenreader, springt über die Navigation zum Inhalt (BITV 2.0, WCAG 2.4.1) *@
+<a class="visually-hidden-focusable bp-sprunglink" href="#hauptinhalt">@T["SkipToContent"]</a>
+
 @if (bundIdUser == null)
 {
     @* Ohne Anmeldung gibt es nur die Einstiegsseite – deshalb keine Links zu Leistungen, nur Anmelden und Theme. *@
