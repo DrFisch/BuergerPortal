@@ -67,6 +67,8 @@ if (-not $envValues["BPSIM_VAPID_PUBLIC_KEY"] -or -not $envValues["BPSIM_VAPID_P
     $envValues["BPSIM_VAPID_PRIVATE_KEY"] = $vapid[1]
     Write-Host "VAPID-Schlüsselpaar für Benachrichtigungen erzeugt (steht in der .env)."
 }
+# Passwort des Data-Protection-Zertifikats (X4): einmalig erzeugen und danach behalten
+if (-not $envValues["DATAPROTECTION_CERT_PASSWORD"]) { $envValues["DATAPROTECTION_CERT_PASSWORD"] = New-Secret 24 }
 Write-LfFile $cfg.ENV_FILE ($envValues.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" })
 
 # 2) OpenIddict-Zertifikate (Signatur, Verschlüsselung) – einmalig, selbstsigniert, 5 Jahre
@@ -83,6 +85,20 @@ foreach ($c in @(@("signing", "DigitalSignature"), @("encryption", "KeyEncipherm
         Remove-Item "Cert:\CurrentUser\My\$($cert.Thumbprint)"
         Write-Host "Zertifikat erzeugt: $pfx"
     }
+}
+# Zertifikat, mit dem Portal, Auth-Server und Postfach-Dienst ihre Data-Protection-Schlüssel verschlüsseln (X4) –
+# einmalig, 5 Jahre. Vorhandene Schlüssel bleiben lesbar; neue Schlüssel (alle 90 Tage) entstehen verschlüsselt.
+$dpDir = Join-Path $cfg.SECRETS_DIR "dataprotection"
+$dpPfx = Join-Path $dpDir "dataprotection.pfx"
+New-Item -ItemType Directory -Force $dpDir | Out-Null
+if (-not (Test-Path $dpPfx)) {
+    $cert = New-SelfSignedCertificate -Subject "CN=bpsim Data Protection" -KeyUsage KeyEncipherment -KeyAlgorithm RSA `
+        -KeyLength 2048 -KeyExportPolicy Exportable -CertStoreLocation Cert:\CurrentUser\My `
+        -NotAfter (Get-Date).AddYears(5) -Type Custom -ErrorAction Stop
+    $dpPassword = ConvertTo-SecureString $envValues["DATAPROTECTION_CERT_PASSWORD"] -AsPlainText -Force
+    Export-PfxCertificate -Cert $cert -FilePath $dpPfx -Password $dpPassword -ErrorAction Stop | Out-Null
+    Remove-Item "Cert:\CurrentUser\My\$($cert.Thumbprint)"
+    Write-Host "Zertifikat erzeugt: $dpPfx"
 }
 
 # 3) Images bauen (linux/amd64 für die VM)
@@ -111,15 +127,16 @@ Write-Host ("Archiv: {0:N0} MB" -f ((Get-Item $tgz).Length / 1MB))
 
 # 5) Dateien übertragen (Caddyfile und Compose-Datei mit LF-Zeilenenden)
 $rd = $cfg.REMOTE_DIR
-Invoke-VmSsh $cfg "sudo mkdir -p $rd/secrets/oidc && sudo chown -R `$(id -u):`$(id -g) $rd"
+Invoke-VmSsh $cfg "sudo mkdir -p $rd/secrets/oidc $rd/secrets/dataprotection && sudo chown -R `$(id -u):`$(id -g) $rd"
 foreach ($f in "compose.prod.yml", "Caddyfile") {
     Write-LfFile (Join-Path $work $f) ((Get-Content (Join-Path $PSScriptRoot $f) -Encoding UTF8) -replace "`r", "")
 }
 Copy-ToVm $cfg @((Join-Path $work "compose.prod.yml"), (Join-Path $work "Caddyfile")) "$rd/"
 Copy-ToVm $cfg @($cfg.ENV_FILE) "$rd/.env"
 Copy-ToVm $cfg @((Join-Path $oidcDir "signing.pfx"), (Join-Path $oidcDir "encryption.pfx")) "$rd/secrets/oidc/"
+Copy-ToVm $cfg @($dpPfx) "$rd/secrets/dataprotection/"
 # .env nur für den Betriebsbenutzer; Zertifikate für den Container-Benutzer (UID 1654) lesbar
-Invoke-VmSsh $cfg "chmod 600 $rd/.env && sudo chown 1654 $rd/secrets/oidc/*.pfx && sudo chmod 600 $rd/secrets/oidc/*.pfx"
+Invoke-VmSsh $cfg "chmod 600 $rd/.env && sudo chown 1654 $rd/secrets/oidc/*.pfx $rd/secrets/dataprotection/*.pfx && sudo chmod 600 $rd/secrets/oidc/*.pfx $rd/secrets/dataprotection/*.pfx"
 Write-Host "Übertrage Images ..."
 Copy-ToVm $cfg @($tgz) "$rd/"
 # Das Archiv enthält die Datei images.tar (Ausgabe von docker save) – direkt an docker load streamen.

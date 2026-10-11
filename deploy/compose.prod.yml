@@ -3,7 +3,7 @@
 #   docker compose -f compose.prod.yml --env-file .env up -d
 #
 # Werte (Domain, Passwörter, Schlüssel) stehen in .env neben dieser Datei – Vorlage: .env.example. Die .env und der
-# Ordner secrets/ (OpenIddict-Zertifikate) gehören NICHT ins Repository.
+# Ordner secrets/ (OpenIddict- und Data-Protection-Zertifikat) gehören NICHT ins Repository.
 #
 # Nur Caddy hat Ports nach außen (80, 443, 443/udp). Alle anderen Dienste sind nur im internen Netz erreichbar;
 # Caddy trägt die öffentlichen Hostnamen zusätzlich als Netzwerk-Alias, damit z. B. Web und API den Auth-Server intern
@@ -122,8 +122,12 @@ services:
       # SAML-Inspektor (auth.<domain>/bundid/inspektor): standardmäßig an, BPSIM_INSPEKTOR=false schaltet ab (404)
       BundId__Inspektor__Enabled: ${BPSIM_INSPEKTOR:-true}
       BundId__Inspektor__PortalUrl: https://${BPSIM_DOMAIN}
+      # Data-Protection-Schlüssel (Tabelle DataProtectionKeys) verschlüsselt ablegen (X4)
+      DataProtection__CertificatePath: /dpcert/dataprotection.pfx
+      DataProtection__CertificatePassword: ${DATAPROTECTION_CERT_PASSWORD:?DATAPROTECTION_CERT_PASSWORD fehlt}
     volumes:
       - ./secrets/oidc:/certs:ro
+      - ./secrets/dataprotection:/dpcert:ro
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -166,12 +170,15 @@ services:
       Postkorb__PostfachUrl: "https://bundid.${BPSIM_DOMAIN}/postfach/"
       Postkorb__Variante: ${BPSIM_POSTFACH:-simulator}
       DataProtection__KeysPath: /data/keys
+      DataProtection__CertificatePath: /dpcert/dataprotection.pfx
+      DataProtection__CertificatePassword: ${DATAPROTECTION_CERT_PASSWORD:?DATAPROTECTION_CERT_PASSWORD fehlt}
       # Content-Security-Policy des Portals: gleicher Schalter wie für die übrigen Hosts (Caddy)
       Csp__Header: ${BPSIM_CSP_HEADER:-Content-Security-Policy}
       # Link „SAML-Inspektor“ in „Meine Daten“ – gleicher Schalter wie im Auth-Server
       BundId__Inspektor__Enabled: ${BPSIM_INSPEKTOR:-true}
     volumes:
       - webkeys:/data/keys
+      - ./secrets/dataprotection:/dpcert:ro
     depends_on:
       auth:
         condition: service_started
@@ -193,10 +200,13 @@ services:
       BundId__AssertionConsumerServiceUrl: https://bundid.${BPSIM_DOMAIN}/postfach/bundid/acs
       BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
       DataProtection__KeysPath: /data/keys
+      DataProtection__CertificatePath: /dpcert/dataprotection.pfx
+      DataProtection__CertificatePassword: ${DATAPROTECTION_CERT_PASSWORD:?DATAPROTECTION_CERT_PASSWORD fehlt}
       Postfach__RuecksprungUrl: https://${BPSIM_DOMAIN}/
       Postfach__RuecksprungName: BürgerPortal
     volumes:
       - postkorbkeys:/data/keys
+      - ./secrets/dataprotection:/dpcert:ro
     networks:
       default:
         aliases:
