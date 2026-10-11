@@ -134,4 +134,10 @@
   <data name="Add_To_Calendar_Hint" xml:space="preserve">
     <value>Kalenderdatei (.ics) für iPhone, Android, Outlook und andere – mit Erinnerung eine Stunde vorher.</value>
   </data>
+  <data name="Checkin_Qr_Title" xml:space="preserve">
+    <value>QR-Code zum Einchecken</value>
+  </data>
+  <data name="Checkin_Qr_Hint" xml:space="preserve">
+    <value>Am Eingang des Bürgeramts vorzeigen. Der Code enthält keine persönlichen Daten und gilt bis einen Tag nach dem Termin.</value>
+  </data>
 </root>

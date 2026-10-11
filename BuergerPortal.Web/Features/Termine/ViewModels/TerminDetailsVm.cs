@@ -12,6 +12,10 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
         public bool Storniert { get; set; }
         public Guid? AntragId { get; set; }
 
+        // QR-Code zum Einchecken im Bürgeramt (nur gebuchte, nicht vergangene Termine)
+        public string? CheckinUrl { get; set; }
+        public string? CheckinQrSvg { get; set; }
+
         // Hilfseigenschaft für die Anzeige in der View
         public string ServiceName => Service.ToDisplayName();
     }

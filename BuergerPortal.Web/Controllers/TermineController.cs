@@ -5,6 +5,7 @@ using BuergerPortal.Web.Features.Termine.ViewModels;
 using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QRCoder;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -232,7 +233,7 @@ namespace BuergerPortal.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Details(Guid id, CancellationToken ct)
+        public async Task<IActionResult> Details(Guid id, [FromServices] TerminCheckinLink links, CancellationToken ct)
         {
             var client = _cf.CreateClient("BuergerPortalApi");
             var res = await client.GetAsync($"api/appointments/{id}", ct);
@@ -259,7 +260,22 @@ namespace BuergerPortal.Web.Controllers
                 AntragId = x.AntragId
             };
 
+            // QR-Code zum Einchecken im Bürgeramt – nur für gebuchte Termine, die noch nicht vorbei sind
+            if (!x.Cancelled && DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc) > DateTime.UtcNow)
+            {
+                vm.CheckinUrl = Url.Action(nameof(Einchecken), "Termine", new { id = links.Create(x.Id, x.EndUtc) }, Request.Scheme);
+                vm.CheckinQrSvg = QrSvg(vm.CheckinUrl!);
+            }
+
             return View(vm);
+        }
+
+        // QR-Code als SVG vom eigenen Server (kein fremdes Skript, passt zur Content-Security-Policy); skaliert per viewBox.
+        private static string QrSvg(string text)
+        {
+            using var generator = new QRCodeGenerator();
+            using var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.M);
+            return new SvgQRCode(data).GetGraphic(4, "#000000", "#ffffff", true, SvgQRCode.SizingMode.ViewBoxAttribute);
         }
         // „Zum Kalender hinzufügen“: der eigene Termin als Kalenderdatei (RFC 5545) mit Erinnerung eine Stunde vorher.
         // Die API liefert nur eigene Termine; stornierte gibt es nicht als Datei.

@@ -55,6 +55,16 @@
                         }
                     </div>
 
+                    @if (Model.CheckinQrSvg != null)
+                    {
+                        <div class="mb-5 text-center" id="checkinQr" data-url="@Model.CheckinUrl">
+                            <h4 class="h6 fw-bold mb-3"><i class="bi bi-qr-code me-1" aria-hidden="true"></i>@L["Checkin_Qr_Title"]</h4>
+                            @* Vom eigenen Server erzeugtes SVG (QRCoder), kein Benutzereingabe-Inhalt *@
+                            <div class="checkin-qr mx-auto" role="img" aria-label="@L["Checkin_Qr_Title"]">@Html.Raw(Model.CheckinQrSvg)</div>
+                            <p class="small text-muted mt-2 mb-0">@L["Checkin_Qr_Hint"]</p>
+                        </div>
+                    }
+
                     @* Formular zur Standort-Änderung (Update) *@
                     @if (!Model.Storniert)
                     {
@@ -126,6 +136,20 @@
 
         .card-header {
             transition: background-color 0.3s ease;
+        }
+
+        /* QR-Code immer schwarz auf weiß (auch im Dunkelmodus), damit Scanner ihn lesen */
+        .checkin-qr {
+            max-width: 220px;
+            background: #fff;
+            padding: .5rem;
+            border-radius: .75rem;
+        }
+
+        .checkin-qr svg {
+            display: block;
+            width: 100%;
+            height: auto;
         }
     </style>
 }

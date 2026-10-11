@@ -134,4 +134,10 @@
   <data name="Add_To_Calendar_Hint" xml:space="preserve">
     <value>Calendar file (.ics) for iPhone, Android, Outlook and others – with a reminder one hour before.</value>
   </data>
+  <data name="Checkin_Qr_Title" xml:space="preserve">
+    <value>QR code for check-in</value>
+  </data>
+  <data name="Checkin_Qr_Hint" xml:space="preserve">
+    <value>Show it at the entrance of the citizens' office. The code contains no personal data and is valid until one day after the appointment.</value>
+  </data>
 </root>

@@ -53,5 +53,32 @@ namespace BuergerPortal.Tests.Web
 
             Assert.Contains("data-status=\"Ungueltig\"", html);
         }
+
+        [Fact]
+        public async Task Termindetails_zeigen_QR_Code_der_zur_Einchecken_Seite_fuehrt()
+        {
+            using var factory = new TerminKalenderTests.PortalFactory();
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+            var html = await client.GetStringAsync($"/Termine/Details/{TerminKalenderTests.Gebucht}");
+            var url = System.Text.RegularExpressions.Regex.Match(html, "id=\"checkinQr\" data-url=\"([^\"]+)\"").Groups[1].Value;
+
+            Assert.Contains("<svg", html);
+            Assert.Contains("/Termine/Einchecken/", url);
+            var token = url[(url.LastIndexOf('/') + 1)..];
+            Assert.Equal(TerminKalenderTests.Gebucht, factory.Services.GetRequiredService<TerminCheckinLink>().Read(token));
+        }
+
+        [Fact]
+        public async Task Stornierter_Termin_ohne_QR_Code_und_ohne_Kalenderdatei()
+        {
+            using var factory = new TerminKalenderTests.PortalFactory();
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+            var html = await client.GetStringAsync($"/Termine/Details/{TerminKalenderTests.Storniert}");
+
+            Assert.DoesNotContain("checkinQr", html);
+            Assert.DoesNotContain("kalenderLink", html);
+        }
     }
 }
