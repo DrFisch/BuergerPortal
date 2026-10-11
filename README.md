@@ -47,6 +47,18 @@ Umschalten im Betrieb: `deploy/postfach-modus.ps1 -Modus simulator|dienst` (Nach
 die Seite („Angemeldet bleiben“). Das Access-Token wird solange per Refresh-Token erneuert. Die Sitzungsdaten liegen
 verschlüsselt auf dem Server, das Cookie enthält nur eine Kennung. Jede Anmeldung ist eine neue BundID-Anmeldung.
 
+## SAML-Inspektor („Blick unter die Haube“)
+
+Nach der Anmeldung zeigt `https://auth.<domain>/bundid/inspektor` (Link in „Meine Daten“) die gerade empfangene
+SAML-Response: jede Prüfung mit Soll, Ist und „geprüft durch“ (ITfoxtec oder eigener Code), jedes Attribut mit seinem
+Claim und das XML. Nur die eigene Anmeldung (gebunden an Browser **und** Konto), nur 5 Minuten im Arbeitsspeicher, keine
+Tokens; Signaturwert, Zertifikat und bPK2 gekürzt. Bausteine: `BuergerPortal.BundId/BundIdInspection.cs` (Protokoll),
+`AuthenticationServer/BundId/BundIdInspectionStore.cs` (Aufbewahrung), `Controllers/BundIdInspektorController.cs` (Seite).
+Standardmäßig an; `BPSIM_INSPEKTOR=false` (bzw. `BundId:Inspektor:Enabled=false`) schaltet Seite (404) und Link ab.
+
+Was ITfoxtec nicht selbst prüft, prüft `BundIdResponseChecks`: `Destination` und `Recipient` gegen die eigene
+ACS-Adresse und das `InResponseTo` der signierten Bearer-Bestätigung (SAML Profiles §4.1.4.3).
+
 ## Sicherheit
 
 | Was | Wie | Einstellung |
