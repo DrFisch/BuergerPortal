@@ -14,6 +14,9 @@
             <h1 class="h3 fw-bold mb-0">Mangel melden</h1>
             <p class="text-muted small mb-0">Schlagloch, defekte Laterne, wilder Müll – kurz beschreiben, den Ort auf der Karte wählen und gern ein Foto anhängen.</p>
         </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill ms-auto" id="meineMeldungenLink">
+            <i class="bi bi-list-check me-1" aria-hidden="true"></i>Meine Meldungen
+        </a>
     </div>
 
     @if (TempData["Meldung"] is string info)

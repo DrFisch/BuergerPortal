@@ -1,4 +1,5 @@
 ﻿using BuergerPortal.Web.Features.Maengel.ViewModels;
+using BuergerPortal.Web.Features.Maengel.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -11,6 +12,27 @@ namespace BuergerPortal.Web.Controllers
         public MaengelController(IHttpClientFactory cf)
         {
             _cf = cf;
+        }
+
+        // Meine Meldungen (nur die eigenen, mit Foto)
+        [HttpGet]
+        public async Task<IActionResult> Index(CancellationToken ct)
+        {
+            var res = await _cf.CreateClient("BuergerPortalApi").GetAsync("api/maengelmeldungen/mine", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            res.EnsureSuccessStatusCode();
+            var meldungen = await res.Content.ReadFromJsonAsync<List<MaengelmeldungResponse>>(cancellationToken: ct) ?? [];
+            return View(meldungen);
+        }
+
+        // Foto der eigenen Meldung (die API prüft den Besitz)
+        [HttpGet]
+        public async Task<IActionResult> Foto(Guid id, CancellationToken ct)
+        {
+            var res = await _cf.CreateClient("BuergerPortalApi").GetAsync($"api/maengelmeldungen/{id}/foto", ct);
+            if (!res.IsSuccessStatusCode) return NotFound();
+            Response.Headers.CacheControl = "private, max-age=3600";
+            return File(await res.Content.ReadAsByteArrayAsync(ct), res.Content.Headers.ContentType?.MediaType ?? "image/jpeg");
         }
 
         [HttpGet]

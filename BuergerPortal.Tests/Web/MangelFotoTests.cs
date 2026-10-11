@@ -144,5 +144,22 @@ namespace BuergerPortal.Tests.Web
             Assert.Contains("zu gro", WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync()));
             Assert.Empty(api.Bodies);
         }
+
+        [Fact]
+        public async Task Meine_Meldungen_mit_Foto_vom_eigenen_Server()
+        {
+            using var factory = new PortalFactory(new FakeApi());
+            var client = factory.CreateClient();
+
+            var html = await client.GetStringAsync("/Maengel");
+            var foto = await client.GetAsync($"/Maengel/Foto/{Meldung}");
+
+            Assert.Contains("Laterne defekt", html);
+            Assert.Contains($"src=\"/Maengel/Foto/{Meldung}\"", html);
+            Assert.Contains("11.10.2026, 10:00", html);   // deutsche Zeit
+            Assert.Equal("image/jpeg", foto.Content.Headers.ContentType!.MediaType);
+            Assert.Equal(Jpeg, await foto.Content.ReadAsByteArrayAsync());
+            Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync($"/Maengel/Foto/{Guid.NewGuid()}")).StatusCode);
+        }
     }
 }
