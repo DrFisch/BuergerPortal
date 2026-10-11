@@ -130,6 +130,8 @@ builder.Services.ConfigureApplicationCookie(o =>
 {
     o.ExpireTimeSpan = TimeSpan.FromHours(24);
     o.SlidingExpiration = false;
+    // Präfix __Host- (nur Secure, Path=/, ohne Domain): keine andere Subdomain kann das Cookie setzen (X5)
+    o.Cookie.Name = "__Host-bp-auth";
     o.Cookie.SameSite = SameSiteMode.None;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     // Ohne Sitzung geht es zur Anmeldung über die BundID (statt zur Passwort-Seite von Identity).
@@ -158,6 +160,11 @@ builder.Services.AddAuthRateLimiting(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddAntiforgery(o =>
+{
+    o.Cookie.Name = "__Host-bp-auth-antiforgery";
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 var dataProtection = builder.Services.AddDataProtection()
     .PersistKeysToDbContext<ApplicationDbContext>();
