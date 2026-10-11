@@ -72,3 +72,10 @@ bundid.{$BPSIM_DOMAIN} {
 		reverse_proxy bundid-simulator:8080
 	}
 }
+
+# Unbekannte Namen (die DNS-Wildcard *.bpsimulation zeigt auf die VM) auf Port 80: 404 statt Weiterleitung auf HTTPS,
+# wo mangels Zertifikat nur ein TLS-Fehler käme. Bekannte Namen leitet Caddy weiter auf HTTPS um; ACME-Prüfungen
+# beantwortet Caddy vor diesen Regeln (E-019).
+http:// {
+	respond "Unbekannte Adresse" 404
+}
