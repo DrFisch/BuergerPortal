@@ -119,6 +119,9 @@ services:
       BundId__AssertionConsumerServiceUrl: https://auth.${BPSIM_DOMAIN}/bundid/acs
       # Metadaten intern abrufen; darin stehen die öffentlichen Adressen des Simulators (für den Browser).
       BundId__IdpMetadataUrl: http://bundid-simulator:8080/saml/metadata
+      # SAML-Inspektor (auth.<domain>/bundid/inspektor): standardmäßig an, BPSIM_INSPEKTOR=false schaltet ab (404)
+      BundId__Inspektor__Enabled: ${BPSIM_INSPEKTOR:-true}
+      BundId__Inspektor__PortalUrl: https://${BPSIM_DOMAIN}
     volumes:
       - ./secrets/oidc:/certs:ro
     depends_on:
@@ -165,6 +168,8 @@ services:
       DataProtection__KeysPath: /data/keys
       # Content-Security-Policy des Portals: gleicher Schalter wie für die übrigen Hosts (Caddy)
       Csp__Header: ${BPSIM_CSP_HEADER:-Content-Security-Policy}
+      # Link „SAML-Inspektor“ in „Meine Daten“ – gleicher Schalter wie im Auth-Server
+      BundId__Inspektor__Enabled: ${BPSIM_INSPEKTOR:-true}
     volumes:
       - webkeys:/data/keys
     depends_on:
