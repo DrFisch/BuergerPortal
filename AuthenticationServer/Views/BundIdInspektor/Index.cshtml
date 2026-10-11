@@ -1,0 +1,117 @@
+@model BundIdInspektorViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "SAML-Inspektor";
+    ViewData["Breit"] = true;
+    var inspection = Model.Entry?.Inspection;
+
+    // SAML rechnet in UTC; angezeigt wird deutsche Zeit.
+    static string Berlin(DateTimeOffset time) =>
+        TimeZoneInfo.ConvertTimeBySystemTimeZoneId(time, "Europe/Berlin").ToString("dd.MM.yyyy, HH:mm:ss");
+    static string Niveau(int level) => level switch { >= 4 => "hoch", >= 3 => "substanziell", _ => "normal" };
+}
+
+<div class="auth-header">
+    <p class="text-uppercase small text-muted mb-1">BundID-Simulation · Blick unter die Haube</p>
+    <h1 class="h3 mb-1">SAML-Inspektor</h1>
+    <p class="text-muted mb-0">
+        Ihre letzte Anmeldung über die BundID – so, wie sie beim Auth-Server des BürgerPortals ankam, und was er geprüft hat.
+    </p>
+</div>
+
+<div class="p-4 pt-3">
+    @if (inspection == null)
+    {
+        <div class="alert alert-info" role="status">
+            <h2 class="h6">Gerade keine Anmeldung zu sehen</h2>
+            <p class="mb-0">
+                Der Inspektor zeigt nur Ihre eigene Anmeldung, nur in diesem Browser und nur @Model.MinutesVisible Minuten lang.
+                Melden Sie sich neu an, um die Antwort der BundID zu sehen.
+            </p>
+        </div>
+    }
+    else
+    {
+        <dl class="row small mb-0">
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Empfangen</dt>
+            <dd class="col-sm-8 col-lg-9">@Berlin(inspection.ReceivedUtc) Uhr · sichtbar bis @Berlin(Model.Entry!.VisibleUntil) Uhr</dd>
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Identity Provider</dt>
+            <dd class="col-sm-8 col-lg-9 text-break"><code>@inspection.Issuer</code></dd>
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Anfrage → Assertion</dt>
+            <dd class="col-sm-8 col-lg-9 text-break"><code>@inspection.RequestId</code> → <code>@inspection.AssertionId</code></dd>
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Vertrauensniveau</dt>
+            <dd class="col-sm-8 col-lg-9">gefordert @Niveau(inspection.RequestedLevel), erreicht <strong>@Niveau(inspection.ReachedLevel)</strong></dd>
+        </dl>
+
+        <h2 class="h5 mt-4">1. Was geprüft wurde</h2>
+        <p class="small text-muted">
+            Alle Prüfungen sind bestanden – sonst wäre die Anmeldung abgelehnt worden und Sie hätten eine Fehlerseite gesehen.
+            „ITfoxtec“ ist die SAML-Bibliothek, „eigener Code“ ergänzt, was sie nicht selbst prüft.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm align-top inspektor-tabelle">
+                <thead>
+                    <tr><th scope="col"><span class="visually-hidden">Ergebnis</span></th><th scope="col">Prüfung</th><th scope="col">Erwartet</th><th scope="col">Empfangen</th><th scope="col">Geprüft durch</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var check in inspection.Checks)
+                    {
+                        <tr>
+                            <td><span class="badge text-bg-success" title="bestanden">✓<span class="visually-hidden"> bestanden</span></span></td>
+                            <th scope="row" class="fw-normal"><strong>@check.Name</strong><div class="small text-muted">@check.Purpose</div></th>
+                            <td class="small text-break"><code>@check.Expected</code></td>
+                            <td class="small text-break"><code>@check.Actual</code></td>
+                            <td class="small">@check.CheckedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="h5 mt-4">2. Vom SAML-Attribut zum Claim</h2>
+        <p class="small text-muted">
+            Die BundID überträgt Angaben als Attribute mit OID-Namen. Der Auth-Server übersetzt sie in OpenID-Connect-Claims
+            für das Portal. Dauerhaft gespeichert werden nur bPK2, Postkorb-Handle, Niveau und der Zeitpunkt der Anmeldung.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm align-top inspektor-tabelle">
+                <thead>
+                    <tr><th scope="col">SAML-Attribut</th><th scope="col">Wert</th><th scope="col">Claim</th><th scope="col">Verwendung</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in inspection.Attributes)
+                    {
+                        <tr class="@(row.Claim == null ? "text-muted" : null)">
+                            <th scope="row" class="fw-normal small text-break">@(row.FriendlyName ?? "–")<div><code>@row.Name</code></div></th>
+                            <td class="small text-break">@string.Join(", ", row.Values)</td>
+                            <td class="small">@if (row.Claim != null) { <code>@row.Claim</code> } else { <span>–</span> }</td>
+                            <td class="small">@row.Usage</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="h5 mt-4">3. Die Response, wie sie ankam</h2>
+        <p class="small text-muted">
+            Dekodiert aus dem Formularfeld <code>SAMLResponse</code> (Base64, HTTP-POST-Binding). Gekürzt sind Signaturwert und
+            Zertifikat – die Anzeige ist damit keine einlösbare Assertion – und die bPK2; sonst unverändert.
+        </p>
+        <details open>
+            <summary class="small mb-2">XML ein-/ausklappen</summary>
+            <pre class="inspektor-xml bg-light border rounded p-3 small"><code>@inspection.ResponseXml</code></pre>
+        </details>
+        <p class="small text-muted mt-3 mb-0">
+            Danach stellt der Auth-Server dem Portal per OpenID Connect ein ID-Token und ein Access-Token aus – die zeigt der
+            Inspektor bewusst nicht.
+        </p>
+    }
+
+    @if (Model.PortalUrl != null)
+    {
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-primary" href="@Model.BackUrl">Zurück zum BürgerPortal</a>
+            <a class="btn btn-outline-secondary" href="@Model.NewLoginUrl">Neu mit BundID anmelden und ansehen</a>
+        </div>
+    }
+</div>

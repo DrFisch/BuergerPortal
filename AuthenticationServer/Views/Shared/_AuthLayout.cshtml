@@ -25,6 +25,19 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             overflow: hidden;
         }
+        /* breite Karte für Seiten mit Tabellen (SAML-Inspektor) */
+        .auth-card.auth-card-breit {
+            max-width: 1140px;
+        }
+        .inspektor-tabelle th, .inspektor-tabelle td {
+            min-width: 7rem;
+        }
+        .inspektor-xml {
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 36rem;
+            overflow: auto;
+        }
         .auth-header {
             background-color: #fff;
             padding: 20px 20px 0 20px;
@@ -43,7 +56,7 @@
     </style>
 </head>
 <body>
-    <div class="auth-card">
+    <div class="auth-card@(ViewData["Breit"] is true ? " auth-card-breit" : "")">
         @RenderBody()
     </div>
 
