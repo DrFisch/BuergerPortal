@@ -74,7 +74,7 @@
 }
 
 .bp-tab.active {
-    color: var(--bs-primary);
+    color: var(--bp-akzent);
     font-weight: 600;
 }
 
@@ -86,7 +86,7 @@
 
 /* Hauptmenue: aktiver Bereich */
 .navbar .nav-link.active {
-    color: var(--bs-primary);
+    color: var(--bp-akzent);
 }
 
 /* Hinweise der App unten, ueber der Tab-Leiste (Views/Shared/_AppHinweise.cshtml) */
@@ -109,4 +109,50 @@
     body.has-tabbar .bp-app-hinweise {
         bottom: calc(4.5rem + env(safe-area-inset-bottom));
     }
+}
+
+/* Barrierefreiheit (BITV 2.0 / WCAG 2.1 AA, Pruefung mit axe-core): Text braucht mindestens 4,5:1 Kontrast.
+   Das Bootstrap-Grau #6c757d (text-secondary, link-secondary, btn-outline-secondary) erreicht auf dem hellgrauen
+   Grund der Kopf- und Fusszeile nur 4,45:1, im Dunkelmodus 2,8:1; Bootstrap-Blau auf Hellgrau 4,3:1. */
+:root,
+[data-bs-theme="light"] {
+    --bs-secondary-rgb: 87, 94, 101;    /* #575e65: 6,2:1 auf #f8f9fa */
+    --bp-akzent: #0a58ca;               /* aktiver Menuepunkt und Tab: 6,1:1 auf #f8f9fa */
+}
+
+[data-bs-theme="dark"] {
+    --bs-secondary-rgb: 173, 181, 189;  /* #adb5bd: 6,4:1 auf #2b3035 */
+    --bp-akzent: #8bb9fe;               /* 6,6:1 auf #2b3035 */
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: rgb(var(--bs-secondary-rgb));
+    --bs-btn-border-color: rgb(var(--bs-secondary-rgb));
+    --bs-btn-hover-bg: rgb(var(--bs-secondary-rgb));
+    --bs-btn-hover-border-color: rgb(var(--bs-secondary-rgb));
+    --bs-btn-active-bg: rgb(var(--bs-secondary-rgb));
+    --bs-btn-active-border-color: rgb(var(--bs-secondary-rgb));
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    --bs-btn-hover-color: #212529;
+    --bs-btn-active-color: #212529;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: var(--bp-akzent);
+    --bs-btn-border-color: var(--bp-akzent);
+}
+
+/* Sprunglink fuer Tastatur und Screenreader (Views/Shared/_Navbar.cshtml) */
+.bp-sprunglink:focus {
+    position: fixed;
+    top: .5rem;
+    left: .5rem;
+    z-index: 1100;
+    padding: .5rem 1rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: 2px solid var(--bp-akzent);
+    border-radius: .375rem;
 }
