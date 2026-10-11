@@ -34,6 +34,7 @@ namespace BuergerPortal.Application
             services.AddScoped<IUserSettingsBusinessService, UserSettingsBusinessService>();
             services.AddScoped<ISperrmuellAntragBusinessService, SperrmuellAntragBusinessService>();
             services.AddScoped<IAntragStatusService, BuergerPortal.Application.Antraege.Status.AntragStatusService>();
+            services.AddScoped<BuergerPortal.Application.Appointments.Erinnerung.ITerminErinnerungService, BuergerPortal.Application.Appointments.Erinnerung.TerminErinnerungService>();
             services.AddScoped<IPoiBusinessService, PoiBusinessService>();
 
             //----------Validations---------

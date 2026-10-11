@@ -30,6 +30,7 @@ namespace BuergerPortal.Infrastructure
             services.AddScoped<IReisepassRepository, ReisepassRepository>();
             services.AddScoped<ISperrmuellRepository, SperrmuellRepository>();
             services.AddScoped<IAntragStatusRepository, AntragStatusRepository>();
+            services.AddScoped<BuergerPortal.Application.Appointments.Erinnerung.ITerminErinnerungRepository, TerminErinnerungRepository>();
             services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
             services.AddScoped<IPoiRepository, PoiRepository>();
             services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
