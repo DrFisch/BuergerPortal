@@ -23,6 +23,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Antrag> Antraege => Set<Antrag>();
         public DbSet<ReisepassAntrag> ReisepassAntraege => Set<ReisepassAntrag>();
         public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
+        public DbSet<AntragStatusEreignis> AntragStatusEreignisse => Set<AntragStatusEreignis>();
         public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
         public DbSet<PoiEntity> Pois => Set<PoiEntity>();
@@ -62,6 +63,19 @@ namespace BuergerPortal.Infrastructure.Persistence
             baseAntrag.Property(x => x.ApplicantUserId).IsRequired(); 
             baseAntrag.Property(x => x.RowVersion).IsRowVersion();
             baseAntrag.HasIndex(x => new { x.ApplicantUserId, x.Typ, x.Status });
+            baseAntrag.Property(x => x.PostkorbHandle).HasMaxLength(64);
+
+            // Statusverlauf je Antrag (Zeitleiste, Statusmeldungen ins Postfach)
+            var ereignis = b.Entity<AntragStatusEreignis>();
+            ereignis.ToTable("AntragStatusEreignisse");
+            ereignis.HasKey(x => x.Id);
+            ereignis.Property(x => x.Status).IsRequired();
+            ereignis.Property(x => x.ZeitpunktUtc).IsRequired();
+            ereignis.HasIndex(x => new { x.AntragId, x.ZeitpunktUtc });
+            ereignis.HasOne<Antrag>()
+                .WithMany()
+                .HasForeignKey(x => x.AntragId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             
             var pass = b.Entity<ReisepassAntrag>();

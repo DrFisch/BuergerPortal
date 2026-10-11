@@ -15,6 +15,10 @@ namespace BuergerPortal.Domain.Antrag.Entity
         public AntragStatus Status { get; set; } = AntragStatus.Entwurf;
         public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
         public DateTime? SubmittedUtc { get; set; }
+
+        // Postkorb-Handle aus der BundID-Anmeldung beim Einreichen – damit Statusmeldungen später ins BundID-Postfach
+        // gehen können, auch wenn die Person dann nicht angemeldet ist (wie ein Fachverfahren es zum Vorgang speichert).
+        public string? PostkorbHandle { get; set; }
         public byte[] RowVersion { get; set; } = default!;
     }
 }

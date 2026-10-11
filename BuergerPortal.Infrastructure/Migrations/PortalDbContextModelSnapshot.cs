@@ -34,6 +34,10 @@ namespace BuergerPortal.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PostkorbHandle")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -56,6 +60,28 @@ namespace BuergerPortal.Infrastructure.Migrations
                     b.ToTable("Antraege", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.AntragStatusEreignis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AntragId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ZeitpunktUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AntragId", "ZeitpunktUtc");
+
+                    b.ToTable("AntragStatusEreignisse", (string)null);
                 });
 
             modelBuilder.Entity("BuergerPortal.Domain.Appointments.Entity.Appointment", b =>
@@ -321,6 +347,15 @@ namespace BuergerPortal.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.ToTable("SperrmuellAntraege", (string)null);
+                });
+
+            modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.AntragStatusEreignis", b =>
+                {
+                    b.HasOne("BuergerPortal.Domain.Antrag.Entity.Antrag", null)
+                        .WithMany()
+                        .HasForeignKey("AntragId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BuergerPortal.Domain.Appointments.Entity.Appointment", b =>
