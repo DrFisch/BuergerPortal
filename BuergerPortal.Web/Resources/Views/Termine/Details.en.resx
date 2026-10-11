@@ -128,4 +128,10 @@
 	<data name="Termine_Status_Cancelled" xml:space="preserve">
     <value>Cancelled</value>
   </data>
+  <data name="Action_Add_To_Calendar" xml:space="preserve">
+    <value>Add to calendar</value>
+  </data>
+  <data name="Add_To_Calendar_Hint" xml:space="preserve">
+    <value>Calendar file (.ics) for iPhone, Android, Outlook and others – with a reminder one hour before.</value>
+  </data>
 </root>

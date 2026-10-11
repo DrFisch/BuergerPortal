@@ -128,4 +128,10 @@
 	<data name="Termine_Status_Cancelled" xml:space="preserve">
     <value>Storniert</value>
   </data>
+  <data name="Action_Add_To_Calendar" xml:space="preserve">
+    <value>Zum Kalender hinzufügen</value>
+  </data>
+  <data name="Add_To_Calendar_Hint" xml:space="preserve">
+    <value>Kalenderdatei (.ics) für iPhone, Android, Outlook und andere – mit Erinnerung eine Stunde vorher.</value>
+  </data>
 </root>

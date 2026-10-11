@@ -2,9 +2,11 @@
 using BuergerPortal.Web.Features.Termine;
 using BuergerPortal.Web.Features.Termine.Contracts;
 using BuergerPortal.Web.Features.Termine.ViewModels;
+using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace BuergerPortal.Web.Controllers
@@ -259,6 +261,34 @@ namespace BuergerPortal.Web.Controllers
 
             return View(vm);
         }
+        // „Zum Kalender hinzufügen“: der eigene Termin als Kalenderdatei (RFC 5545) mit Erinnerung eine Stunde vorher.
+        // Die API liefert nur eigene Termine; stornierte gibt es nicht als Datei.
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Kalender(Guid id, CancellationToken ct)
+        {
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var res = await client.GetAsync($"api/appointments/{id}", ct);
+            if (!res.IsSuccessStatusCode) return NotFound();
+
+            var x = await res.Content.ReadFromJsonAsync<AppointmentListItemResponse>(cancellationToken: ct);
+            if (x == null || x.Cancelled) return NotFound();
+
+            var startUtc = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc);
+            var ics = IcsCalendar.Create(new IcsEvent(
+                Uid: $"{x.Id}@{Request.Host.Host}",
+                StartUtc: startUtc,
+                EndUtc: DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
+                Summary: $"Termin im Bürgeramt: {x.Service.ToDisplayName()}",
+                Location: x.Location.ToDisplayName(),
+                Description: "Gebucht über das BürgerPortal (Studienprojekt, Simulation). Ändern oder stornieren im Portal.",
+                Url: Url.Action(nameof(Details), "Termine", new { id = x.Id }, Request.Scheme),
+                Reminder: TimeSpan.FromHours(1)), DateTime.UtcNow);
+
+            var startLocal = TimeZoneInfo.ConvertTimeFromUtc(startUtc, BerlinTz);
+            return File(Encoding.UTF8.GetBytes(ics), IcsCalendar.ContentType, $"termin-{startLocal:yyyy-MM-dd-HHmm}.ics");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]

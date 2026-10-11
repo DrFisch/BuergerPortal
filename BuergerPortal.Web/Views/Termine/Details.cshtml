@@ -46,6 +46,13 @@
                             <span><i class="bi bi-calendar3 me-1"></i> @Model.Datum.ToLongDateString()</span>
                             <span><i class="bi bi-clock me-1"></i> @Model.Uhrzeit @L["Clock"]</span>
                         </div>
+                        @if (!Model.Storniert)
+                        {
+                            <a asp-action="Kalender" asp-route-id="@Model.Id" class="btn btn-outline-primary rounded-pill mt-3" id="kalenderLink">
+                                <i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>@L["Action_Add_To_Calendar"]
+                            </a>
+                            <div class="form-text">@L["Add_To_Calendar_Hint"]</div>
+                        }
                     </div>
 
                     @* Formular zur Standort-Änderung (Update) *@
