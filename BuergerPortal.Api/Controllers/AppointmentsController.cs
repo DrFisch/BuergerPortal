@@ -53,7 +53,9 @@ namespace BuergerPortal.Api.Controllers
                 Location = req.Location,
                 StartUtc = req.StartUtc,
                 EndUtc = req.EndUtc,
-                AntragId=req.AntragId
+                AntragId=req.AntragId,
+                // Für die Erinnerung vor dem Termin (ohne angemeldete Person) das Postkorb-Handle merken
+                PostkorbHandle = User.FindFirst(PostkorbBenachrichtigung.PostkorbHandleClaim)?.Value,
             };
 
             var result = await _svc.BookAsync(dto, userId, ct);

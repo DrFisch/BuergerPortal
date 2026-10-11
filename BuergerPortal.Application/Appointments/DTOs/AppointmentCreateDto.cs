@@ -14,5 +14,7 @@ namespace BuergerPortal.Application.Appointments.DTOs
         public DateTime StartUtc { get; init; }
         public DateTime EndUtc { get; init; }
         public Guid? AntragId { get; set; }
+        // Aus dem Access-Token (nicht aus der Anfrage): Ziel der Erinnerung im BundID-Postfach
+        public string? PostkorbHandle { get; init; }
     }
 }

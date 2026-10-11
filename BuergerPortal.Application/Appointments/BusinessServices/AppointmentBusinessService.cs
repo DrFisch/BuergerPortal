@@ -79,7 +79,9 @@ namespace BuergerPortal.Application.Appointments.BusinessServices
                     EndUtc = dto.EndUtc,
                     UserId = currentUserId,
                     Status = AppointmentStatus.Booked,
-                    AntragId=dto.AntragId
+                    AntragId=dto.AntragId,
+                    PostkorbHandle = dto.PostkorbHandle,
+                    GebuchtUtc = _time.GetUtcNow().UtcDateTime,
                 };
                 await _repo.CreateAsync(entity, ct);
                 await lease.CommitAsync(ct);

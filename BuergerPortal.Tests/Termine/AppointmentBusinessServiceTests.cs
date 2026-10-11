@@ -98,6 +98,24 @@ namespace BuergerPortal.Tests.Termine
         }
 
         [Fact]
+        public async Task Buchung_merkt_Postkorb_Handle_und_Buchungszeitpunkt_fuer_die_Erinnerung()
+        {
+            var dto = new AppointmentCreateDto
+            {
+                Service = ServiceType.AllgemeineBeratung, Location = LocationType.BuergermtMitte,
+                StartUtc = new DateTime(2026, 10, 8, 7, 0, 0, DateTimeKind.Utc), EndUtc = new DateTime(2026, 10, 8, 7, 15, 0, DateTimeKind.Utc),
+                PostkorbHandle = "511fdf2b-70fc-3dd8-85a7-9ed9a9687910",
+            };
+
+            Assert.True((await Service.BookAsync(dto, Anna, default)).IsSuccess);
+
+            var termin = Assert.Single(_repo.Items);
+            Assert.Equal("511fdf2b-70fc-3dd8-85a7-9ed9a9687910", termin.PostkorbHandle);
+            Assert.Equal(Now.GetUtcNow().UtcDateTime, termin.GebuchtUtc);
+            Assert.Null(termin.ErinnerungGesendetUtc);
+        }
+
+        [Fact]
         public async Task Zweite_Person_kann_denselben_Termin_am_selben_Standort_nicht_buchen()
         {
             Assert.True((await Service.BookAsync(Dto(LocationType.BuergermtMitte, 9, 0, 30), Anna, default)).IsSuccess);
