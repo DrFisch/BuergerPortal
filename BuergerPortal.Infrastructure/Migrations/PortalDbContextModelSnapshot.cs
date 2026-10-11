@@ -179,9 +179,30 @@ namespace BuergerPortal.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUtc");
 
+                    b.HasIndex("ReporterUserId");
+
                     b.HasIndex("Status");
 
                     b.ToTable("Maengelmeldungen", (string)null);
+                });
+
+            modelBuilder.Entity("BuergerPortal.Domain.Maengel.MangelFoto", b =>
+                {
+                    b.Property<Guid>("MaengelmeldungId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<byte[]>("Daten")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("MaengelmeldungId");
+
+                    b.ToTable("MaengelFotos", (string)null);
                 });
 
             modelBuilder.Entity("BuergerPortal.Domain.Poi.Entity.PoiEntity", b =>
@@ -376,6 +397,15 @@ namespace BuergerPortal.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("AntragId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("BuergerPortal.Domain.Maengel.MangelFoto", b =>
+                {
+                    b.HasOne("BuergerPortal.Domain.Maengel.Maengelmeldung", null)
+                        .WithOne()
+                        .HasForeignKey("BuergerPortal.Domain.Maengel.MangelFoto", "MaengelmeldungId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.ReisepassAntrag", b =>

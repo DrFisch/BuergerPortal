@@ -25,6 +25,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
         public DbSet<AntragStatusEreignis> AntragStatusEreignisse => Set<AntragStatusEreignis>();
         public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
+        public DbSet<MangelFoto> MaengelFotos => Set<MangelFoto>();
         public DbSet<UserSettings> UserSettings { get; set; } = default!;
         public DbSet<PoiEntity> Pois => Set<PoiEntity>();
         public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
@@ -202,6 +203,15 @@ namespace BuergerPortal.Infrastructure.Persistence
             var mangel = b.Entity<Maengelmeldung>();
             mangel.ToTable("Maengelmeldungen");
             mangel.HasKey(x => x.Id);
+            mangel.HasIndex(x => x.ReporterUserId);
+
+            // Foto zur Meldung (höchstens eins, eigene Tabelle; mit der Meldung gelöscht)
+            var foto = b.Entity<MangelFoto>();
+            foto.ToTable("MaengelFotos");
+            foto.HasKey(x => x.MaengelmeldungId);
+            foto.Property(x => x.ContentType).HasMaxLength(32).IsRequired();
+            foto.Property(x => x.Daten).IsRequired();
+            foto.HasOne<Maengelmeldung>().WithOne().HasForeignKey<MangelFoto>(x => x.MaengelmeldungId).OnDelete(DeleteBehavior.Cascade);
 
             mangel.Property(x => x.CreatedUtc).IsRequired();
 
