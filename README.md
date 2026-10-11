@@ -97,8 +97,8 @@ ACS-Adresse und das `InResponseTo` der signierten Bearer-Bestätigung (SAML Prof
 - **Anträge:** Zeitleiste mit Zeitpunkten (eingereicht, in Bearbeitung, abgeschlossen; Tabelle
   `AntragStatusEreignisse`). Jede Statusänderung kommt als Nachricht ins BundID-Postfach (wie `CreateState` des
   echten Zentralen Bürgerpostfachs) und als Benachrichtigung. Die Bearbeitung durch die Behörde ist **simuliert**:
-  nach 2 bzw. 5 Minuten (`AntragSimulation:InBearbeitungNachMinuten`, `:AbschlussNachMinuten`, `:IntervallSekunden`,
-  `:Enabled`).
+  nach 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“ (`AntragSimulation:InBearbeitungNachMinuten`,
+  `:AbschlussNachMinuten`, `:IntervallSekunden`, `:Enabled`).
 - **Mängelmelder:** Karte und Standort, Foto aus Kamera oder Galerie – im Browser auf höchstens 1600 px verkleinert, dabei
   fallen die Metadaten (EXIF, GPS) weg; der Server prüft Typ (JPEG/PNG/WebP am Dateianfang) und Größe (2 MB). „Meine
   Meldungen“ mit Foto; Teilen aus der Galerie des Handys in die installierte App (`share_target`, der Service Worker
