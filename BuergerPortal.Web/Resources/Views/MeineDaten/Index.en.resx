@@ -187,4 +187,16 @@
 	<data name="MeineDaten_SessionOnly" xml:space="preserve">
 		<value>BundID provides your name, birth details, address and email address anew at every sign-in. The Citizen Portal keeps them only while you are signed in and discards them when you sign out. Details you submit yourself in an application are stored with that application.</value>
 	</data>
+  <data name="MeineDaten_Inspektor" xml:space="preserve">
+    <value>Under the hood: SAML inspector</value>
+  </data>
+  <data name="MeineDaten_InspektorText" xml:space="preserve">
+    <value>See what the BundID actually sent when you signed in: the SAML response, every security check performed by the BürgerPortal and which attribute becomes which claim. Only your own sign-in and only for a few minutes (page in German).</value>
+  </data>
+  <data name="MeineDaten_InspektorButton" xml:space="preserve">
+    <value>Open SAML inspector</value>
+  </data>
+  <data name="MeineDaten_InspektorNeu" xml:space="preserve">
+    <value>Sign in again and inspect</value>
+  </data>
 </root>

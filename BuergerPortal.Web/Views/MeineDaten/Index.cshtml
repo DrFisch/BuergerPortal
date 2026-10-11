@@ -141,6 +141,24 @@
         </div>
     }
 
+    @if (ViewData["InspektorUrl"] is string inspektorUrl)
+    {
+        <div class="col-12 col-lg-6">
+            <section class="card h-100 shadow-sm" aria-labelledby="md-inspektor">
+                <h2 class="card-header h6 fw-semibold" id="md-inspektor">
+                    <i class="bi bi-search me-1" aria-hidden="true"></i>@L["MeineDaten_Inspektor"]
+                </h2>
+                <div class="card-body">
+                    <p class="small">@L["MeineDaten_InspektorText"]</p>
+                    <a class="btn btn-outline-primary btn-sm" href="@inspektorUrl" id="inspektorLink">
+                        <i class="bi bi-code-square me-1" aria-hidden="true"></i>@L["MeineDaten_InspektorButton"]
+                    </a>
+                    <a class="btn btn-link btn-sm" asp-action="SamlInspektorNeu" data-sim-hinweis="login">@L["MeineDaten_InspektorNeu"]</a>
+                </div>
+            </section>
+        </div>
+    }
+
     <div class="col-12">
         <section class="card shadow-sm border-info-subtle" aria-labelledby="md-stored">
             <h2 class="card-header h6 fw-semibold" id="md-stored">

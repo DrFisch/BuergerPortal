@@ -187,4 +187,16 @@
 	<data name="MeineDaten_SessionOnly" xml:space="preserve">
 		<value>Name, Geburtsdaten, Anschrift und E-Mail-Adresse liefert die BundID bei jeder Anmeldung neu. Das BürgerPortal hält sie nur, solange Sie angemeldet sind; beim Abmelden werden sie verworfen. Angaben, die Sie selbst in einem Antrag absenden, werden mit dem Antrag gespeichert.</value>
 	</data>
+  <data name="MeineDaten_Inspektor" xml:space="preserve">
+    <value>Blick unter die Haube: SAML-Inspektor</value>
+  </data>
+  <data name="MeineDaten_InspektorText" xml:space="preserve">
+    <value>Sehen Sie, was die BundID bei Ihrer Anmeldung tatsächlich geschickt hat: die SAML-Antwort, jede Sicherheitsprüfung des BürgerPortals und welche Angabe zu welchem Claim wird. Nur Ihre eigene Anmeldung und nur wenige Minuten lang.</value>
+  </data>
+  <data name="MeineDaten_InspektorButton" xml:space="preserve">
+    <value>SAML-Inspektor öffnen</value>
+  </data>
+  <data name="MeineDaten_InspektorNeu" xml:space="preserve">
+    <value>Neu anmelden und ansehen</value>
+  </data>
 </root>
