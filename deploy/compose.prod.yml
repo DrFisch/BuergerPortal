@@ -23,6 +23,8 @@ x-dotnet: &dotnet
   environment: &dotnet-env
     ASPNETCORE_ENVIRONMENT: Production
     TZ: Europe/Berlin
+    # SQL-Befehle nur bei Warnungen/Fehlern loggen – Hintergrunddienste der API fragen regelmäßig ab
+    Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command: Warning
   depends_on:
     sqlserver:
       condition: service_healthy
