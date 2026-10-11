@@ -32,7 +32,8 @@ namespace BuergerPortal.Tests.Auth
 
         private static (BundIdInspectionStore Store, ManualTime Time) Create(bool enabled = true)
         {
-            var time = new ManualTime(new DateTimeOffset(2026, 10, 11, 9, 0, 0, TimeSpan.Zero));
+            // Start "jetzt": Der Cache selbst räumt mit der echten Uhr auf.
+            var time = new ManualTime(DateTimeOffset.UtcNow);
             var options = Options.Create(new BundIdInspektorOptions { Enabled = enabled, MinutesVisible = 5 });
             return (new BundIdInspectionStore(options, time), time);
         }

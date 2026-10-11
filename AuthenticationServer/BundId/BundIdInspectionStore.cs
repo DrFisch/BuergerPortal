@@ -27,9 +27,11 @@ namespace AuthenticationServer.BundId
                 return;
             }
             var key = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
-            var visibleUntil = time.GetUtcNow().AddMinutes(options.Value.MinutesVisible);
+            var visible = TimeSpan.FromMinutes(options.Value.MinutesVisible);
+            var visibleUntil = time.GetUtcNow().Add(visible);
+            // Der Cache räumt mit seiner eigenen Uhr auf (relativ), sichtbar ist nur bis VisibleUntil (TimeProvider).
             cache.Set(key, new Entry(userId, inspection, visibleUntil),
-                new MemoryCacheEntryOptions { AbsoluteExpiration = visibleUntil, Size = 1 });
+                new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = visible, Size = 1 });
             response.Cookies.Append(CookieName, key, new CookieOptions
             {
                 HttpOnly = true,
