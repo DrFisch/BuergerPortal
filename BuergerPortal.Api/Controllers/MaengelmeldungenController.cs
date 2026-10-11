@@ -10,6 +10,8 @@ namespace BuergerPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/maengelmeldungen")]
+    // Vorher ohne [Authorize]: GET {id} lieferte jede Meldung samt Melder-ID ohne Anmeldung (API nur intern erreichbar).
+    [Authorize]
     public sealed class MaengelmeldungenController : ControllerBase
     {
         private readonly PortalDbContext _db;
@@ -66,12 +68,22 @@ namespace BuergerPortal.Api.Controllers
             return Created($"/api/maengelmeldungen/{entity.Id}", resp);
         }
 
+        // Nur die eigene Meldung (sonst 404 – ob eine fremde Meldung existiert, verrät die API nicht).
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Maengelmeldung>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<MaengelmeldungResponse>> GetById(Guid id, CancellationToken ct)
         {
-            var e = await _db.Maengelmeldungen.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+            var e = await _db.Maengelmeldungen.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id && x.ReporterUserId == userId, ct);
             if (e is null) return NotFound();
-            return Ok(e);
+            return Ok(ToResponse(e, await _db.MaengelFotos.AnyAsync(f => f.MaengelmeldungId == id, ct)));
         }
+
+        private static MaengelmeldungResponse ToResponse(Maengelmeldung e, bool hatFoto) => new(e.Id,
+            DateTime.SpecifyKind(e.CreatedUtc, DateTimeKind.Utc), e.Titel, e.Beschreibung, e.Latitude, e.Longitude,
+            e.AddressHint, e.Status, hatFoto);
+
+        private bool TryGetUserId(out Guid userId) =>
+            Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"), out userId);
     }
 }
