@@ -30,6 +30,9 @@ namespace BuergerPortal.BundId
 
         public BundIdAttributes? Attributes { get; init; }
 
+        // Prüfprotokoll für den SAML-Inspektor (nur bei Success; null, falls es nicht erstellt werden konnte).
+        public BundIdInspection? Inspection { get; init; }
+
         // Verständlicher Text für die Fehlerseite (nur bei Failed).
         public string ErrorTitle { get; init; } = string.Empty;
         public string ErrorMessage { get; init; } = string.Empty;
@@ -176,6 +179,7 @@ namespace BuergerPortal.BundId
                     RequestedLevel = requestedLevel,
                     ReturnUrl = returnUrl,
                     Attributes = attributes,
+                    Inspection = CreateInspection(authnResponse, config, loginState, attributes),
                 };
             }
             catch (BundIdException ex)
@@ -189,6 +193,21 @@ namespace BuergerPortal.BundId
                 logger.LogWarning(ex, "Ungültige SAML-Response der BundID");
                 return Failed("Antwort der BundID ungültig",
                     "Die Antwort der BundID konnte nicht bestätigt werden. Bitte melden Sie sich erneut an.");
+            }
+        }
+
+        // Prüfprotokoll für den SAML-Inspektor. Ein Fehler dabei darf die Anmeldung nie verhindern.
+        private BundIdInspection? CreateInspection(Saml2AuthnResponse authnResponse, Saml2Configuration config,
+            BundIdLoginState loginState, BundIdAttributes attributes)
+        {
+            try
+            {
+                return BundIdInspection.Create(authnResponse, config, loginState, attributes, options.Value, DateTime.UtcNow);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Prüfprotokoll für den SAML-Inspektor nicht erstellt");
+                return null;
             }
         }
 
