@@ -96,8 +96,18 @@ namespace BuergerPortal.Infrastructure.Migrations
                     b.Property<DateTime>("EndUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ErinnerungGesendetUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("GebuchtUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Location")
                         .HasColumnType("int");
+
+                    b.Property<string>("PostkorbHandle")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -120,6 +130,8 @@ namespace BuergerPortal.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AntragId");
+
+                    b.HasIndex("ErinnerungGesendetUtc", "StartUtc");
 
                     b.HasIndex("Service", "StartUtc", "EndUtc");
 

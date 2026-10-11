@@ -47,6 +47,9 @@ namespace BuergerPortal.Infrastructure.Persistence
             // sinnvolle Indizes für Suche/Verfügbarkeit
             appt.HasIndex(x => new { x.Service, x.StartUtc, x.EndUtc });
             appt.HasIndex(x => x.AntragId);
+            appt.Property(x => x.PostkorbHandle).HasMaxLength(64);
+            // Terminerinnerung: noch nicht erinnerte Termine nach Beginn suchen
+            appt.HasIndex(x => new { x.ErinnerungGesendetUtc, x.StartUtc });
 
 
             appt.HasOne<Antrag>()

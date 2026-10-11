@@ -20,6 +20,12 @@ namespace BuergerPortal.Domain.Appointments.Entity
         //Antrag
         public Guid? AntragId { get; set; }          
 
+        // Erinnerung vor dem Termin (ins BundID-Postfach und als Benachrichtigung): Handle aus der Anmeldung beim Buchen,
+        // Buchungszeitpunkt (kurzfristige Buchungen brauchen keine Erinnerung) und wann erinnert wurde.
+        public string? PostkorbHandle { get; set; }
+        public DateTime? GebuchtUtc { get; set; }
+        public DateTime? ErinnerungGesendetUtc { get; set; }
+
 
         // Concurrency
         public byte[] RowVersion { get; set; } = default!;
