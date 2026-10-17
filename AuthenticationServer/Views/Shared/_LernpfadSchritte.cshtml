@@ -48,7 +48,6 @@
         margin: 0 0 1rem;
         padding: 0;
         list-style: none;
-        overflow-x: auto;
     }
 
     .bp-lern-schritte li {
@@ -98,6 +97,30 @@
         border-color: var(--bs-primary);
         background: var(--bs-primary);
         color: #fff;
+    }
+
+    /* Handy: kein seitliches Scrollen – nur der aktuelle Schritt mit Namen, die anderen als Nummer
+       (Namen bleiben für Screenreader lesbar) */
+    @@media (max-width: 767.98px) {
+        .bp-lern-schritte li {
+            flex: 0 0 auto;
+            min-width: 0;
+            padding: .35rem;
+        }
+
+        .bp-lern-schritte li.aktiv {
+            flex: 1 1 auto;
+            padding-right: .6rem;
+        }
+
+        .bp-lern-schritte li:not(.aktiv) .txt {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
     }
 
     .bp-lern-bahn {
