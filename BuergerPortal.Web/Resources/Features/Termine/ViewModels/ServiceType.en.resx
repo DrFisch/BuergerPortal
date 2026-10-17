@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Allgemeine Beratung" xml:space="preserve">
+		<value>General advice</value>
+	</data>
+	<data name="Dokumente und Ausweise" xml:space="preserve">
+		<value>Documents and ID cards</value>
+	</data>
+	<data name="Meldeangelegenheiten" xml:space="preserve">
+		<value>Registration of residence</value>
+	</data>
+	<data name="Rückfrage zu Antrag" xml:space="preserve">
+		<value>Question about an application</value>
+	</data>
+</root>

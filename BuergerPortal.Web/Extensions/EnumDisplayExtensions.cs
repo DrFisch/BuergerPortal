@@ -1,4 +1,5 @@
 ﻿using BuergerPortal.Web.Features.Termine.ViewModels;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -20,6 +21,11 @@ namespace BuergerPortal.Web.Extensions
             var attr = field?.GetCustomAttribute<DisplayAttribute>();
             return attr?.GetName() ?? value.ToString();
         }
+
+        // Übersetzter Anzeigename (Plan A9): Schlüssel ist der deutsche Display-Name, Englisch in
+        // Resources/Features/Termine/ViewModels/<Enum>.en.resx – dieselben Dateien nutzt Html.GetEnumSelectList.
+        public static string ToDisplayName(this Enum value, IStringLocalizerFactory localizerFactory)
+            => localizerFactory.Create(value.GetType())[value.ToDisplayName()].Value;
     }
 
 }

@@ -21,11 +21,13 @@ namespace BuergerPortal.Web.Controllers
 
         // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/TermineController.en.resx (Plan A9)
         private readonly IStringLocalizer<TermineController> _t;
+        private readonly IStringLocalizerFactory _lf;
 
-        public TermineController(IHttpClientFactory cf, IStringLocalizer<TermineController> t)
+        public TermineController(IHttpClientFactory cf, IStringLocalizer<TermineController> t, IStringLocalizerFactory lf)
         {
             _cf = cf;
             _t = t;
+            _lf = lf;
         }
 
         [HttpGet]
@@ -300,7 +302,7 @@ namespace BuergerPortal.Web.Controllers
                 Uid: $"{x.Id}@{Request.Host.Host}",
                 StartUtc: startUtc,
                 EndUtc: DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
-                Summary: _t["Termin im Bürgeramt: {0}", x.Service.ToDisplayName()].Value,
+                Summary: _t["Termin im Bürgeramt: {0}", x.Service.ToDisplayName(_lf)].Value,
                 Location: x.Location.ToDisplayName(),
                 Description: _t["Gebucht über das BürgerPortal (Studienprojekt, Simulation). Ändern oder stornieren im Portal."].Value,
                 Url: Url.Action(nameof(Details), "Termine", new { id = x.Id }, Request.Scheme),
