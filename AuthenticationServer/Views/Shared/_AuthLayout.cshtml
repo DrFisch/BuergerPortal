@@ -38,6 +38,60 @@
             max-height: 36rem;
             overflow: auto;
         }
+        /* Schalter „Zeilen umbrechen“ aus: lange Zeilen bleiben ganz, waagrecht scrollen (Plan A6) */
+        .inspektor-xml-rahmen:has(#inspektor-umbruch:not(:checked)) .inspektor-xml {
+            white-space: pre;
+            word-break: normal;
+        }
+        /* SAML-Inspektor auf dem Handy: jede Zeile als Karte, Werte mit Beschriftung aus data-label (Plan A6) */
+        @@media (max-width: 767.98px) {
+            .inspektor-tabelle thead {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+                white-space: nowrap;
+            }
+            .inspektor-tabelle, .inspektor-tabelle tbody {
+                display: block;
+            }
+            .inspektor-tabelle tr {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: .35rem .75rem;
+                padding: .75rem;
+                margin-bottom: .75rem;
+                border: 1px solid var(--bs-border-color);
+                border-radius: .75rem;
+            }
+            .table.inspektor-tabelle > :not(caption) > * > * {
+                display: block;
+                min-width: 0;
+                padding: 0;
+                border-bottom-width: 0;
+                box-shadow: none;
+            }
+            .inspektor-tabelle td:not(.inspektor-haken), .inspektor-tabelle tr > th:first-child {
+                grid-column: 1 / -1;
+            }
+            .inspektor-tabelle td[data-label]::before {
+                content: attr(data-label);
+                display: block;
+                font-size: .75rem;
+                font-weight: 600;
+                color: var(--bs-secondary-color);
+            }
+            .inspektor-tabelle tbody tr > th:first-child {
+                font-weight: 600 !important;
+            }
+        }
+        /* schmale Handys: weniger Rand um die Karte, mehr Platz für Inhalt */
+        @@media (max-width: 575.98px) {
+            body {
+                padding: 8px;
+            }
+        }
         .auth-header {
             background-color: #fff;
             padding: 20px 20px 0 20px;

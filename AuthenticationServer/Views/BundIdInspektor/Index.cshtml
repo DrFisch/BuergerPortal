@@ -48,21 +48,22 @@
             Alle Prüfungen sind bestanden – sonst wäre die Anmeldung abgelehnt worden und Sie hätten eine Fehlerseite gesehen.
             „ITfoxtec“ ist die SAML-Bibliothek, „eigener Code“ ergänzt, was sie nicht selbst prüft.
         </p>
-        @* Waagrecht scrollbare Tabellen: per Tastatur erreichbar und benannt (WCAG 2.1.1) *@
+        @* Waagrecht scrollbare Tabellen: per Tastatur erreichbar und benannt (WCAG 2.1.1). Auf dem Handy macht CSS aus jeder
+           Zeile eine Karte (data-label beschriftet die Werte, Plan A6); die Rollen halten die Tabelle für Screenreader. *@
         <div class="table-responsive" tabindex="0" role="region" aria-labelledby="inspektor-pruefungen">
-            <table class="table table-sm align-top inspektor-tabelle">
-                <thead>
-                    <tr><th scope="col"><span class="visually-hidden">Ergebnis</span></th><th scope="col">Prüfung</th><th scope="col">Erwartet</th><th scope="col">Empfangen</th><th scope="col">Geprüft durch</th></tr>
+            <table class="table table-sm align-top inspektor-tabelle" role="table">
+                <thead role="rowgroup">
+                    <tr role="row"><th scope="col" role="columnheader"><span class="visually-hidden">Ergebnis</span></th><th scope="col" role="columnheader">Prüfung</th><th scope="col" role="columnheader">Erwartet</th><th scope="col" role="columnheader">Empfangen</th><th scope="col" role="columnheader">Geprüft durch</th></tr>
                 </thead>
-                <tbody>
+                <tbody role="rowgroup">
                     @foreach (var check in inspection.Checks)
                     {
-                        <tr>
-                            <td><span class="badge text-bg-success" title="bestanden">✓<span class="visually-hidden"> bestanden</span></span></td>
-                            <th scope="row" class="fw-normal"><strong>@check.Name</strong><div class="small text-muted">@check.Purpose</div></th>
-                            <td class="small text-break"><code>@check.Expected</code></td>
-                            <td class="small text-break"><code>@check.Actual</code></td>
-                            <td class="small">@check.CheckedBy</td>
+                        <tr role="row">
+                            <td role="cell" class="inspektor-haken"><span class="badge text-bg-success" title="bestanden">✓<span class="visually-hidden"> bestanden</span></span></td>
+                            <th scope="row" role="rowheader" class="fw-normal"><strong>@check.Name</strong><div class="small text-muted">@check.Purpose</div></th>
+                            <td role="cell" class="small text-break" data-label="Erwartet"><code>@check.Expected</code></td>
+                            <td role="cell" class="small text-break" data-label="Empfangen"><code>@check.Actual</code></td>
+                            <td role="cell" class="small" data-label="Geprüft durch"><span class="badge rounded-pill text-bg-light border text-wrap text-start">@check.CheckedBy</span></td>
                         </tr>
                     }
                 </tbody>
@@ -76,18 +77,18 @@
             (Zeitpunkt, Niveau, Identifizierungsmittel – keine IP, kein Gerät).
         </p>
         <div class="table-responsive" tabindex="0" role="region" aria-labelledby="inspektor-attribute">
-            <table class="table table-sm align-top inspektor-tabelle">
-                <thead>
-                    <tr><th scope="col">SAML-Attribut</th><th scope="col">Wert</th><th scope="col">Claim</th><th scope="col">Verwendung</th></tr>
+            <table class="table table-sm align-top inspektor-tabelle" role="table">
+                <thead role="rowgroup">
+                    <tr role="row"><th scope="col" role="columnheader">SAML-Attribut</th><th scope="col" role="columnheader">Wert</th><th scope="col" role="columnheader">Claim</th><th scope="col" role="columnheader">Verwendung</th></tr>
                 </thead>
-                <tbody>
+                <tbody role="rowgroup">
                     @foreach (var row in inspection.Attributes)
                     {
-                        <tr class="@(row.Claim == null ? "text-muted" : null)">
-                            <th scope="row" class="fw-normal small text-break">@(row.FriendlyName ?? "–")<div><code>@row.Name</code></div></th>
-                            <td class="small text-break">@string.Join(", ", row.Values)</td>
-                            <td class="small">@if (row.Claim != null) { <code>@row.Claim</code> } else { <span>–</span> }</td>
-                            <td class="small">@row.Usage</td>
+                        <tr role="row" class="@(row.Claim == null ? "text-muted" : null)">
+                            <th scope="row" role="rowheader" class="fw-normal small text-break">@(row.FriendlyName ?? "–")<div><code>@row.Name</code></div></th>
+                            <td role="cell" class="small text-break" data-label="Wert">@string.Join(", ", row.Values)</td>
+                            <td role="cell" class="small" data-label="Claim">@if (row.Claim != null) { <code>@row.Claim</code> } else { <span>–</span> }</td>
+                            <td role="cell" class="small" data-label="Verwendung">@row.Usage</td>
                         </tr>
                     }
                 </tbody>
@@ -99,9 +100,14 @@
             Dekodiert aus dem Formularfeld <code>SAMLResponse</code> (Base64, HTTP-POST-Binding). Gekürzt sind Signaturwert und
             Zertifikat – die Anzeige ist damit keine einlösbare Assertion – und die bPK2; sonst unverändert.
         </p>
-        <details open>
+        @* Schalter „Zeilen umbrechen“ ohne Skript (CSP): CSS wertet den Haken per :has() aus, Plan A6 *@
+        <details open class="inspektor-xml-rahmen">
             <summary class="small mb-2">XML ein-/ausklappen</summary>
-            <pre class="inspektor-xml bg-light border rounded p-3 small"><code>@inspection.ResponseXml</code></pre>
+            <div class="form-check form-switch small mb-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="inspektor-umbruch" checked />
+                <label class="form-check-label" for="inspektor-umbruch">Zeilen umbrechen</label>
+            </div>
+            <pre class="inspektor-xml bg-light border rounded p-3 small" tabindex="0" role="region" aria-label="SAML-Response (XML)"><code>@inspection.ResponseXml</code></pre>
         </details>
         <p class="small text-muted mt-3 mb-0">
             Danach stellt der Auth-Server dem Portal per OpenID Connect ein ID-Token und ein Access-Token aus – die zeigt der
