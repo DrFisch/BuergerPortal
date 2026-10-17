@@ -131,4 +131,22 @@
 	<data name="Location_Sued_Address" xml:space="preserve">
     <value>Südkai 12, 12349 Beispielstadt</value>
   </data>
+  <data name="Locations_Heading" xml:space="preserve">
+    <value>Unsere Bürgerämter</value>
+  </data>
+  <data name="Locations_Weekdays" xml:space="preserve">
+    <value>Werktags:</value>
+  </data>
+  <data name="Locations_Hours" xml:space="preserve">
+    <value>{0} – {1} Uhr</value>
+  </data>
+  <data name="Locations_MonTueThu" xml:space="preserve">
+    <value>Mo, Di, Do</value>
+  </data>
+  <data name="Locations_Wednesday" xml:space="preserve">
+    <value>Mittwoch</value>
+  </data>
+  <data name="Locations_Friday" xml:space="preserve">
+    <value>Freitag</value>
+  </data>
 </root>

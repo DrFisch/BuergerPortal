@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @{
-    ViewData["Title"] = T["Standorte & Öffnungszeiten"];
+    ViewData["Title"] = T["Page_Title"];
 }
 
 <div class="container py-5">
@@ -9,7 +9,7 @@
         <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm">
             <i class="bi bi-arrow-left"></i>
         </a>
-        <h1 class="h3 mb-0 fw-bold">Unsere Bürgerämter</h1>
+        <h1 class="h3 mb-0 fw-bold">@T["Locations_Heading"]</h1>
     </div>
 
     <div class="row g-4">
@@ -37,7 +37,7 @@
                         </div>
 
                         <div class="mb-3 p-2 rounded-3 bg-body shadow-sm border border-light-subtle">
-                            <h6 class="small fw-bold text-uppercase text-muted mb-1">Anschrift</h6>
+                            <h6 class="small fw-bold text-uppercase text-muted mb-1">@T["Address_Label"]</h6>
                             <p class="small mb-0 text-secondary">
                                 <i class="bi bi-geo-alt-fill me-1"></i> @loc.Adresse
                             </p>
@@ -45,23 +45,23 @@
 
                         <div class="mb-3">
                             <h6 class="small fw-bold text-uppercase text-muted">@T["Locations_Consultation_Title"]</h6>
-                            <p class="mb-0">Werktags: <span class="fw-semibold">08:00 – 12:00 Uhr</span></p>
+                            <p class="mb-0">@T["Locations_Weekdays"] <span class="fw-semibold">@T["Locations_Hours", "08:00", "12:00"]</span></p>
                             <small class="text-muted text-italic">@T["Locations_Consultation_Note"]</small>
                         </div>
 
                         <div class="mb-4 flex-grow-1">
                             <h6 class="small fw-bold text-uppercase text-muted">@T["Locations_Gate_Title"]</h6>
                             <div class="d-flex justify-content-between border-bottom border-secondary-subtle py-1">
-                                <span>Mo, Di, Do</span>
-                                <span class="fw-semibold text-success">08:00 – 16:00 Uhr</span>
+                                <span>@T["Locations_MonTueThu"]</span>
+                                <span class="fw-semibold text-success">@T["Locations_Hours", "08:00", "16:00"]</span>
                             </div>
                             <div class="d-flex justify-content-between py-1 border-bottom border-secondary-subtle">
-                                <span>Mittwoch</span>
-                                <span class="fw-semibold">08:00 – 12:00 Uhr</span>
+                                <span>@T["Locations_Wednesday"]</span>
+                                <span class="fw-semibold">@T["Locations_Hours", "08:00", "12:00"]</span>
                             </div>
                             <div class="d-flex justify-content-between py-1">
-                                <span>Freitag</span>
-                                <span class="fw-semibold">08:00 – 12:00 Uhr</span>
+                                <span>@T["Locations_Friday"]</span>
+                                <span class="fw-semibold">@T["Locations_Hours", "08:00", "12:00"]</span>
                             </div>
                         </div>
 

@@ -131,4 +131,22 @@
 	<data name="Location_Sued_Address" xml:space="preserve">
     <value>South Quay 12, 12349 Harbour District</value>
   </data>
+  <data name="Locations_Heading" xml:space="preserve">
+    <value>Our citizens' offices</value>
+  </data>
+  <data name="Locations_Weekdays" xml:space="preserve">
+    <value>Working days:</value>
+  </data>
+  <data name="Locations_Hours" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="Locations_MonTueThu" xml:space="preserve">
+    <value>Mon, Tue, Thu</value>
+  </data>
+  <data name="Locations_Wednesday" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Locations_Friday" xml:space="preserve">
+    <value>Friday</value>
+  </data>
 </root>
