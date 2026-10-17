@@ -7,125 +7,179 @@
 
 @{
     ViewData["Title"] = L["Termine_Title"];
+    // Übersicht: der nächste Termin groß oben, weitere anstehende darunter; vergangene und stornierte über den Filter.
+    // Jede Karte steht in einem .appointment-container (Filter blendet mit d-none aus, Browser-Tests zählen daran).
+    var termine = Model?.Termine ?? new();
+    var anstehend = termine.Where(t => !t.Storniert && !t.Vergangen).OrderBy(t => t.Start).ToList();
+    var vergangen = termine.Where(t => !t.Storniert && t.Vergangen).OrderByDescending(t => t.Start).ToList();
+    var storniert = termine.Where(t => t.Storniert).OrderByDescending(t => t.Start).ToList();
+    var naechster = anstehend.FirstOrDefault();
+    var heute = (Model?.Heute ?? DateTime.Today).Date;
+    string Relativ(DateTime tag) => (tag.Date - heute).Days switch
+    {
+        <= 0 => L["Rel_Today"].Value,
+        1 => L["Rel_Tomorrow"].Value,
+        var n => string.Format(L["Rel_InDays"].Value, n),
+    };
+
+    // Kompakte Karte für weitere, vergangene und stornierte Termine
+    async Task Karte(TerminListItemVm t)
+    {
+        var isPast = !t.Storniert && t.Vergangen;
+        <div class="card bp-terminkarte h-100 @(t.Storniert ? "storniert" : "")">
+            <div class="card-body d-flex gap-3">
+                <div class="bp-datum" aria-hidden="true">
+                    <span class="wt">@t.Datum.ToString("ddd")</span>
+                    <span class="tg">@t.Datum.ToString("dd")</span>
+                    <span class="mo">@t.Datum.ToString("MMM")</span>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h2 class="h6 fw-bold mb-1 text-break @(t.Storniert ? "text-decoration-line-through text-body-secondary" : "")">@t.Service.ToDisplayName(LF)</h2>
+                        @if (t.Storniert)
+                        {
+                            <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis border border-danger-subtle">@L["Termine_Status_Cancelled"]</span>
+                        }
+                        else if (isPast)
+                        {
+                            <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle">@L["Termine_Status_Past"]</span>
+                        }
+                    </div>
+                    <ul class="list-unstyled small mb-2 bp-fakten">
+                        <li><span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>@t.Datum.ToString("dddd, dd.MM.yyyy")</span></li>
+                        <li><i class="bi bi-clock me-1" aria-hidden="true"></i>@t.Uhrzeit @L["Termine_Clock"]</li>
+                        <li><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>@t.Location.ToDisplay()</li>
+                    </ul>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">@L["Termine_Action_ViewDetails"]</a>
+                        @if (!t.Storniert && !isPast)
+                        {
+                            <form method="post" asp-action="Stornieren"
+                                  data-confirm="@L["Termine_Cancel_Confirm", t.Service.ToDisplayName(LF), t.Datum.ToString("dd.MM.yyyy"), t.Uhrzeit]">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.Id" />
+                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none fw-semibold">@L["Termine_Action_Cancel"]</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
-<div class="container py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-5">
+<div class="container py-4 bp-termine">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
         <div>
             <h1 class="h3 mb-1 fw-bold">@L["Termine_Heading"]</h1>
-            <p class="text-secondary mb-0 small">@L["Termine_IntroText"]</p>
+            <p class="text-body-secondary mb-0 small">@L["Termine_IntroText"]</p>
         </div>
-
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            @* Toggle: Storniert *@
-            <div class="form-check form-switch custom-switch d-flex align-items-center gap-2 m-0 p-0 me-3">
-                <input class="form-check-input ms-0" type="checkbox" id="showCancelledToggle" style="cursor:pointer;">
-                <label class="form-check-label small fw-semibold text-secondary" for="showCancelledToggle" style="cursor:pointer;">
-                    @L["Termine_ShowCancelled_Label"]
-                </label>
-            </div>
-
-            @* Toggle: Vergangen *@
-            <div class="form-check form-switch custom-switch d-flex align-items-center gap-2 m-0 p-0 me-3">
-                <input class="form-check-input ms-0" type="checkbox" id="showPastToggle" style="cursor:pointer;">
-                <label class="form-check-label small fw-semibold text-secondary" for="showPastToggle" style="cursor:pointer;">
-                    @L["Termine_ShowPast_Label"]
-                </label>
-            </div>
-
-            <a asp-action="Buchen" class="btn btn-primary rounded-pill px-3 py-2 fw-semibold shadow-sm d-inline-flex align-items-center">
-                <i class="bi bi-calendar-plus me-2 fs-6"></i>
-                <span class="small">@L["Termine_NewAppointment_Button"]</span>
-            </a>
-        </div>
+        <a asp-action="Buchen" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-inline-flex align-items-center justify-content-center">
+            <i class="bi bi-calendar-plus me-2" aria-hidden="true"></i>@L["Termine_NewAppointment_Button"]
+        </a>
     </div>
-
-    @{
-        // Anstehende Termine zuerst (nächster oben), danach vergangene und stornierte (neueste oben)
-        var termine = Model?.Termine ?? new();
-        var anstehend = termine.Where(t => !t.Storniert && !t.Vergangen).OrderBy(t => t.Start).ToList();
-        var uebrige = termine.Except(anstehend).OrderByDescending(t => t.Start).ToList();
-    }
-
-    @if (anstehend.Count == 0)
-    {
-        <div class="card border-0 bg-body-tertiary rounded-4 mb-4">
-            <div class="card-body text-center p-5">
-                <i class="bi bi-calendar2-x fs-1 text-secondary" aria-hidden="true"></i>
-                <p class="mt-3 mb-3">@L["Termine_Empty_Text"]</p>
-                <a asp-action="Buchen" class="btn btn-primary rounded-pill px-4">@L["Termine_Empty_Button"]</a>
-            </div>
-        </div>
-    }
 
     @if (termine.Count > 0)
     {
-        <div class="row g-4" id="appointmentGrid">
-            @foreach (var t in anstehend.Concat(uebrige))
-            {
-                var isPast = !t.Storniert && t.Vergangen;
+        @* Filter: Anstehend (Standard), Vergangen, Storniert – ohne Skript bleiben nur die anstehenden sichtbar *@
+        <div class="bp-segment mb-4" role="radiogroup" aria-label="@L["Filter_Aria"]">
+            <input type="radio" class="btn-check" name="terminFilter" id="filterAnstehend" value="anstehend" checked />
+            <label for="filterAnstehend">@L["Filter_Upcoming"] <span class="badge rounded-pill text-bg-light border ms-1">@anstehend.Count</span></label>
+            <input type="radio" class="btn-check" name="terminFilter" id="filterVergangen" value="vergangen" />
+            <label for="filterVergangen">@L["Filter_Past"] <span class="badge rounded-pill text-bg-light border ms-1">@vergangen.Count</span></label>
+            <input type="radio" class="btn-check" name="terminFilter" id="filterStorniert" value="storniert" />
+            <label for="filterStorniert">@L["Filter_Cancelled"] <span class="badge rounded-pill text-bg-light border ms-1">@storniert.Count</span></label>
+        </div>
+    }
 
-                @* Container mit Klassen für JS-Filterung *@
-                <div class="col-12 col-xl-6 appointment-container @(t.Storniert ? "is-cancelled d-none" : "") @(isPast ? "is-past d-none" : "")">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 appointment-card @(t.Storniert ? "cancelled-style" : "")">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="date-badge text-center p-2 rounded-3 @(t.Storniert ? "bg-secondary bg-opacity-10 text-secondary" : "bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25")">
-                                    <div class="small fw-bold text-uppercase" style="font-size: 0.7rem;">@t.Datum.ToString("ddd")</div>
-                                    <div class="h4 mb-0 fw-bold">@t.Datum.ToString("dd")</div>
-                                    <div class="small fw-bold text-uppercase" style="font-size: 0.7rem;">@t.Datum.ToString("MMM")</div>
-                                </div>
-
-                                <div>
-                                    @if (t.Storniert)
-                                    {
-                                        <span class="badge rounded-pill bg-danger text-white px-3 shadow-sm">
-                                            <i class="bi bi-x-octagon-fill me-1"></i> @L["Termine_Status_Cancelled"]
-                                        </span>
-                                    }
-                                    else if (isPast)
-                                    {
-                                        <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 px-3">@L["Termine_Status_Past"]</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 pulsate-dot">
-                                            <i class="bi bi-circle-fill me-1 small"></i> @L["Termine_Status_Active"]
-                                        </span>
-                                    }
-                                </div>
+    @* ---------- Anstehend ---------- *@
+    <div data-gruppe="anstehend">
+        @if (naechster == null)
+        {
+            <div class="card border-0 bg-body-tertiary rounded-4 mb-4">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-calendar2-x fs-1 text-secondary" aria-hidden="true"></i>
+                    <p class="mt-3 mb-3">@L["Termine_Empty_Text"]</p>
+                    <a asp-action="Buchen" class="btn btn-primary rounded-pill px-4">@L["Termine_Empty_Button"]</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="appointment-container mb-4">
+                <div class="card bp-naechster rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <span class="text-uppercase small fw-semibold text-primary-emphasis">@L["Next_Label"]</span>
+                            <span class="badge rounded-pill text-bg-primary px-3">@Relativ(naechster.Datum)</span>
+                        </div>
+                        <div class="d-flex gap-3 gap-md-4 align-items-start">
+                            <div class="bp-datum bp-datum-gross" aria-hidden="true">
+                                <span class="wt">@naechster.Datum.ToString("ddd")</span>
+                                <span class="tg">@naechster.Datum.ToString("dd")</span>
+                                <span class="mo">@naechster.Datum.ToString("MMM")</span>
                             </div>
-
-                            <div class="mb-4">
-                                <h2 class="h5 fw-bold mb-1 @(t.Storniert ? "text-decoration-line-through text-muted" : "")">
-                                    @t.Service.ToDisplayName(LF)
-                                </h2>
-                                <div class="d-flex flex-wrap gap-3 text-muted small">
-                                    <span><i class="bi bi-calendar3 me-1"></i> @t.Datum.ToString("dddd, dd.MM.yyyy")</span>
-                                    <span><i class="bi bi-clock me-1"></i> @t.Uhrzeit @L["Termine_Clock"]</span>
-                                    <span><i class="bi bi-geo-alt me-1"></i> @t.Location.ToDisplay()</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                    @L["Termine_Action_ViewDetails"]
-                                </a>
-
-                                @if (!t.Storniert && !isPast)
-                                {
-                                    <form method="post" asp-action="Stornieren" class="d-inline"
-                                          data-confirm="@L["Termine_Cancel_Confirm", t.Service.ToDisplayName(LF), t.Datum.ToString("dd.MM.yyyy"), t.Uhrzeit]">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@t.Id" />
-                                        <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none fw-bold p-0">
-                                            @L["Termine_Action_Cancel"]
-                                        </button>
-                                    </form>
-                                }
+                            <div class="flex-grow-1 min-w-0">
+                                <h2 class="h4 fw-bold mb-2 text-break">@naechster.Service.ToDisplayName(LF)</h2>
+                                <ul class="list-unstyled mb-0 bp-fakten">
+                                    <li><span><i class="bi bi-calendar3 me-2" aria-hidden="true"></i>@naechster.Datum.ToString("dddd, dd.MM.yyyy")</span></li>
+                                    <li><i class="bi bi-clock me-2" aria-hidden="true"></i>@naechster.Uhrzeit @L["Termine_Clock"]</li>
+                                    <li><i class="bi bi-geo-alt me-2" aria-hidden="true"></i>@naechster.Location.ToDisplay()</li>
+                                </ul>
                             </div>
                         </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
+                            <a asp-action="Details" asp-route-id="@naechster.Id" class="btn btn-primary rounded-pill px-4">
+                                @L["Termine_Action_ViewDetails"]
+                            </a>
+                            <a asp-action="Kalender" asp-route-id="@naechster.Id" class="btn btn-outline-primary rounded-pill px-3">
+                                <i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>@L["Action_Calendar"]
+                            </a>
+                            <form method="post" asp-action="Stornieren" class="ms-sm-auto"
+                                  data-confirm="@L["Termine_Cancel_Confirm", naechster.Service.ToDisplayName(LF), naechster.Datum.ToString("dd.MM.yyyy"), naechster.Uhrzeit]">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@naechster.Id" />
+                                <button type="submit" class="btn btn-link text-danger text-decoration-none fw-semibold px-2">
+                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>@L["Termine_Action_Cancel"]
+                                </button>
+                            </form>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            @if (anstehend.Count > 1)
+            {
+                <h2 class="h6 fw-bold text-body-secondary text-uppercase small mb-3">@L["More_Title"]</h2>
+                <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                    @foreach (var t in anstehend.Skip(1))
+                    {
+                        <div class="col appointment-container">
+                            @{ await Karte(t); }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    @* ---------- Vergangen und storniert (über den Filter) ---------- *@
+    @foreach (var (gruppe, liste, leer) in new[] { ("vergangen", vergangen, L["Empty_Past"].Value), ("storniert", storniert, L["Empty_Cancelled"].Value) })
+    {
+        <div data-gruppe="@gruppe" hidden>
+            @if (liste.Count == 0)
+            {
+                <p class="text-body-secondary">@leer</p>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                    @foreach (var t in liste)
+                    {
+                        <div class="col appointment-container d-none @(gruppe == "storniert" ? "is-cancelled" : "is-past")">
+                            @{ await Karte(t); }
+                        </div>
+                    }
                 </div>
             }
         </div>
@@ -134,18 +188,18 @@
 
 @section Scripts {
     <script>
-        function applyFilters() {
-            const showCancelled = document.getElementById('showCancelledToggle').checked;
-            const showPast = document.getElementById('showPastToggle').checked;
-
-            document.querySelectorAll('.is-cancelled').forEach(el => {
-                el.classList.toggle('d-none', !showCancelled);
+        // Filter: zeigt eine Gruppe; Karten anderer Gruppen bekommen d-none (zählbar für Tests)
+        document.querySelectorAll('input[name="terminFilter"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('[data-gruppe]').forEach(function (gruppe) {
+                    const sichtbar = gruppe.dataset.gruppe === radio.value;
+                    gruppe.hidden = !sichtbar;
+                    gruppe.querySelectorAll('.appointment-container').forEach(function (karte) {
+                        karte.classList.toggle('d-none', !sichtbar);
+                    });
+                });
             });
-
-            document.querySelectorAll('.is-past').forEach(el => {
-                el.classList.toggle('d-none', !showPast);
-            });
-        }
+        });
 
         // Stornieren nur nach Rückfrage
         document.querySelectorAll('form[data-confirm]').forEach(function (form) {
@@ -155,46 +209,123 @@
                 }
             });
         });
-
-        document.getElementById('showCancelledToggle').addEventListener('change', applyFilters);
-        document.getElementById('showPastToggle').addEventListener('change', applyFilters);
     </script>
 }
 
 @section Styles {
     <style>
-        .appointment-card {
-            transition: all 0.3s ease;
+        /* Nächster Termin: hervorgehoben mit Akzentkante */
+        .bp-naechster {
+            border: 1px solid var(--bs-primary-border-subtle);
+            border-left: .35rem solid var(--bs-primary);
+            background: linear-gradient(135deg, var(--bs-primary-bg-subtle) 0%, var(--bs-body-bg) 60%);
+            box-shadow: var(--bs-box-shadow-sm);
         }
 
-        .cancelled-style {
-            background-color: var(--bs-tertiary-bg) !important;
-            filter: grayscale(0.5);
-            border: 1px dashed var(--bs-border-color) !important;
+        /* Kalenderblatt (Wochentag, Tag, Monat) */
+        .bp-datum {
+            display: flex;
+            flex: 0 0 auto;
+            align-self: flex-start;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 3.6rem;
+            padding: .35rem 0;
+            border: 1px solid var(--bs-primary-border-subtle);
+            border-radius: .75rem;
+            background: var(--bs-body-bg);
+            line-height: 1.1;
         }
 
-        .pulsate-dot i {
-            animation: pulsate 2s infinite;
+        .bp-datum .wt, .bp-datum .mo {
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--bs-primary-text-emphasis);
         }
 
-        @@keyframes pulsate {
-            0% {
-                opacity: 1;
+        .bp-datum .tg {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .bp-datum-gross {
+            width: 4.6rem;
+            padding: .55rem 0;
+        }
+
+        .bp-datum-gross .tg {
+            font-size: 1.9rem;
+        }
+
+        .bp-fakten li {
+            margin-bottom: .25rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .bp-terminkarte {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: var(--bs-box-shadow-sm);
+        }
+
+        .bp-terminkarte.storniert {
+            background: var(--bs-tertiary-bg);
+            border: 1px dashed var(--bs-border-color);
+            box-shadow: none;
+        }
+
+        .bp-terminkarte.storniert .bp-datum {
+            border-color: var(--bs-border-color);
+        }
+
+        /* Filter: Umschalter wie auf der Buchungsseite */
+        .bp-segment {
+            display: inline-flex;
+            gap: .25rem;
+            padding: .25rem;
+            border-radius: 50rem;
+            background: var(--bs-tertiary-bg);
+        }
+
+        .bp-segment label {
+            display: flex;
+            align-items: center;
+            min-height: 2.25rem;
+            margin: 0;
+            padding: .35rem .9rem;
+            border-radius: 50rem;
+            font-size: .9rem;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        /* Handy: Filter über die ganze Breite, gleich breite Felder */
+        @@media (max-width: 575.98px) {
+            .bp-segment {
+                display: flex;
+                width: 100%;
             }
 
-            50% {
-                opacity: 0.4;
-            }
-
-            100% {
-                opacity: 1;
+            .bp-segment label {
+                flex: 1 1 0;
+                justify-content: center;
+                padding: .35rem .3rem;
+                font-size: .82rem;
             }
         }
 
-        .text-gradient {
-            background: linear-gradient(90deg, var(--bs-primary), #6f42c1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .bp-segment .btn-check:checked + label {
+            background: var(--bs-body-bg);
+            color: var(--bs-primary-text-emphasis);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+        }
+
+        .bp-segment .btn-check:focus-visible + label {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
         }
     </style>
 }

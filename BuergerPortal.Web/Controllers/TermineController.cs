@@ -60,6 +60,7 @@ namespace BuergerPortal.Web.Controllers
             var nowLocal = ToBerlin(DateTime.UtcNow);
             var vm = new TermineIndexVm
             {
+                Heute = nowLocal.Date,
                 Termine = apiItems.Select(x =>
                 {
                     var startLocal = ToBerlin(x.StartUtc);

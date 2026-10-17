@@ -5,6 +5,9 @@ namespace BuergerPortal.Web.Features.Termine.ViewModels
     public sealed class TermineIndexVm
     {
         public List<TerminListItemVm> Termine { get; set; } = new();
+
+        /// <summary>Heutiges Datum in Ortszeit (Europe/Berlin) – für „heute“, „morgen“, „in n Tagen“.</summary>
+        public DateTime Heute { get; set; } = DateTime.Today;
     }
 
     public sealed class TerminListItemVm

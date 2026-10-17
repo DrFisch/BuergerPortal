@@ -94,4 +94,40 @@
   <data name="Termine_Cancel_Confirm" xml:space="preserve">
     <value>Termin „{0}“ am {1} um {2} Uhr wirklich stornieren? Die Stornobestätigung kommt in Ihr BundID-Postfach.</value>
   </data>
+  <data name="Next_Label" xml:space="preserve">
+    <value>Ihr nächster Termin</value>
+  </data>
+  <data name="Rel_Today" xml:space="preserve">
+    <value>heute</value>
+  </data>
+  <data name="Rel_Tomorrow" xml:space="preserve">
+    <value>morgen</value>
+  </data>
+  <data name="Rel_InDays" xml:space="preserve">
+    <value>in {0} Tagen</value>
+  </data>
+  <data name="More_Title" xml:space="preserve">
+    <value>Weitere anstehende Termine</value>
+  </data>
+  <data name="Filter_Aria" xml:space="preserve">
+    <value>Termine filtern</value>
+  </data>
+  <data name="Filter_Upcoming" xml:space="preserve">
+    <value>Anstehend</value>
+  </data>
+  <data name="Filter_Past" xml:space="preserve">
+    <value>Vergangen</value>
+  </data>
+  <data name="Filter_Cancelled" xml:space="preserve">
+    <value>Storniert</value>
+  </data>
+  <data name="Empty_Past" xml:space="preserve">
+    <value>Keine vergangenen Termine.</value>
+  </data>
+  <data name="Empty_Cancelled" xml:space="preserve">
+    <value>Keine stornierten Termine.</value>
+  </data>
+  <data name="Action_Calendar" xml:space="preserve">
+    <value>In den Kalender</value>
+  </data>
 </root>
