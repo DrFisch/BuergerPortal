@@ -5,6 +5,7 @@ using BuergerPortal.Web.Features.Termine.ViewModels;
 using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using QRCoder;
 using System.Net;
 using System.Text;
@@ -18,9 +19,13 @@ namespace BuergerPortal.Web.Controllers
         private static readonly TimeZoneInfo BerlinTz =
         TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
 
-        public TermineController(IHttpClientFactory cf)
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/TermineController.en.resx (Plan A9)
+        private readonly IStringLocalizer<TermineController> _t;
+
+        public TermineController(IHttpClientFactory cf, IStringLocalizer<TermineController> t)
         {
             _cf = cf;
+            _t = t;
         }
 
         [HttpGet]
@@ -33,7 +38,7 @@ namespace BuergerPortal.Web.Controllers
             var res = await client.GetAsync("api/appointments/mine", ct);
             if (res.StatusCode == HttpStatusCode.Unauthorized)
             {
-                ViewBag.AuthNotice = "Bitte melde dich an, um deine Termine zu sehen und zu buchen.";
+                ViewBag.AuthNotice = _t["Bitte melden Sie sich an, um Ihre Termine zu sehen und zu buchen."].Value;
                 apiItems = new();
             }
             else
@@ -100,7 +105,7 @@ namespace BuergerPortal.Web.Controllers
             bool aligned = vm.LocalTime.TotalMinutes % 15 == 0 && vm.DurationMinutes % 15 == 0;
             if (!aligned)
             {
-                ModelState.AddModelError(nameof(vm.LocalTime), "Nur 15-Minuten-Takt erlaubt.");
+                ModelState.AddModelError(nameof(vm.LocalTime), _t["Nur 15-Minuten-Takt erlaubt."]);
                 return View(vm);
             }
 
@@ -130,12 +135,12 @@ namespace BuergerPortal.Web.Controllers
 
                 if (vm.RelatedAntragId.HasValue)
                 {
-                    TempData["AntragTerminOk"] = "Termin zum Antrag gebucht.";
+                    TempData["AntragTerminOk"] = _t["Termin zum Antrag gebucht."].Value;
                     return RedirectToAction("Antrag", "Antraege", new { id = vm.RelatedAntragId.Value });
                 }
 
                 // Erfolgsmeldung für die Terminübersicht (Anzeige in _Meldungen; ohne technische Termin-ID)
-                TempData["BookingSuccess"] = "Termin gebucht.";
+                TempData["BookingSuccess"] = _t["Termin gebucht."].Value;
 
                 // sonst zur Termin-Übersicht 
                 return RedirectToAction(nameof(Index));
@@ -160,7 +165,7 @@ namespace BuergerPortal.Web.Controllers
             if (problem?.Errors is { Count: > 0 } errors)
                 messages.AddRange(errors.SelectMany(e => e.Value));
             if (messages.Count == 0)
-                messages.Add("Die Buchung ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
+                messages.Add(_t["Die Buchung ist fehlgeschlagen. Bitte versuchen Sie es erneut."].Value);
 
             foreach (var message in messages.Distinct())
                 ModelState.AddModelError(string.Empty, message);
@@ -196,7 +201,7 @@ namespace BuergerPortal.Web.Controllers
         {
             if (id == Guid.Empty)
             {
-                TempData["BookingError"] = "Ungültige Termin-ID.";
+                TempData["BookingError"] = _t["Ungültige Termin-ID."].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -209,23 +214,23 @@ namespace BuergerPortal.Web.Controllers
                 
                 if (res.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    TempData["BookingError"] = "Nicht autorisiert. Bitte erneut anmelden.";
+                    TempData["BookingError"] = _t["Nicht autorisiert. Bitte erneut anmelden."].Value;
                     return RedirectToAction(nameof(Index));
                 }
 
                 if (!res.IsSuccessStatusCode)
                 {
                     var msg = await res.Content.ReadAsStringAsync(ct);
-                    TempData["BookingError"] = ProblemText(msg) ?? "Stornierung fehlgeschlagen.";
+                    TempData["BookingError"] = ProblemText(msg) ?? _t["Stornierung fehlgeschlagen."].Value;
                     return RedirectToAction(nameof(Index));
                 }
 
-                TempData["BookingSuccess"] = "Termin wurde storniert.";
+                TempData["BookingSuccess"] = _t["Termin wurde storniert."].Value;
                 TempData.MerkePostkorbStatus(res);
             }
             catch (Exception)
             {
-                TempData["BookingError"] = "Stornierung derzeit nicht möglich.";
+                TempData["BookingError"] = _t["Stornierung derzeit nicht möglich."].Value;
             }
 
             return RedirectToAction(nameof(Index));
@@ -240,7 +245,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["BookingError"] = "Termin konnte nicht geladen werden.";
+                TempData["BookingError"] = _t["Termin konnte nicht geladen werden."].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -295,9 +300,9 @@ namespace BuergerPortal.Web.Controllers
                 Uid: $"{x.Id}@{Request.Host.Host}",
                 StartUtc: startUtc,
                 EndUtc: DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc),
-                Summary: $"Termin im Bürgeramt: {x.Service.ToDisplayName()}",
+                Summary: _t["Termin im Bürgeramt: {0}", x.Service.ToDisplayName()].Value,
                 Location: x.Location.ToDisplayName(),
-                Description: "Gebucht über das BürgerPortal (Studienprojekt, Simulation). Ändern oder stornieren im Portal.",
+                Description: _t["Gebucht über das BürgerPortal (Studienprojekt, Simulation). Ändern oder stornieren im Portal."].Value,
                 Url: Url.Action(nameof(Details), "Termine", new { id = x.Id }, Request.Scheme),
                 Reminder: TimeSpan.FromHours(1)), DateTime.UtcNow);
 
@@ -350,7 +355,7 @@ namespace BuergerPortal.Web.Controllers
         {
             if (vm.Id == Guid.Empty)
             {
-                TempData["BookingError"] = "Ungültige Termin-ID.";
+                TempData["BookingError"] = _t["Ungültige Termin-ID."].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -362,13 +367,13 @@ namespace BuergerPortal.Web.Controllers
 
             if (res.IsSuccessStatusCode)
             {
-                TempData["BookingSuccess"] = "Standort wurde erfolgreich geändert.";
+                TempData["BookingSuccess"] = _t["Standort wurde erfolgreich geändert."].Value;
                 TempData.MerkePostkorbStatus(res);
                 return RedirectToAction(nameof(Index));
             }
 
             var errorMsg = await res.Content.ReadAsStringAsync(ct);
-            ModelState.AddModelError(string.Empty, ProblemText(errorMsg) ?? "Der Standort konnte nicht geändert werden.");
+            ModelState.AddModelError(string.Empty, ProblemText(errorMsg) ?? _t["Der Standort konnte nicht geändert werden."].Value);
 
             return View("Details", vm);
         }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Bitte melden Sie sich an, um Ihre Termine zu sehen und zu buchen." xml:space="preserve">
+		<value>Please sign in to see and book your appointments.</value>
+	</data>
+	<data name="Nur 15-Minuten-Takt erlaubt." xml:space="preserve">
+		<value>Only 15-minute steps are allowed.</value>
+	</data>
+	<data name="Termin zum Antrag gebucht." xml:space="preserve">
+		<value>Appointment for your application booked.</value>
+	</data>
+	<data name="Termin gebucht." xml:space="preserve">
+		<value>Appointment booked.</value>
+	</data>
+	<data name="Die Buchung ist fehlgeschlagen. Bitte versuchen Sie es erneut." xml:space="preserve">
+		<value>The booking failed. Please try again.</value>
+	</data>
+	<data name="Ungültige Termin-ID." xml:space="preserve">
+		<value>Invalid appointment ID.</value>
+	</data>
+	<data name="Nicht autorisiert. Bitte erneut anmelden." xml:space="preserve">
+		<value>Not authorised. Please sign in again.</value>
+	</data>
+	<data name="Stornierung fehlgeschlagen." xml:space="preserve">
+		<value>Cancellation failed.</value>
+	</data>
+	<data name="Termin wurde storniert." xml:space="preserve">
+		<value>Appointment cancelled.</value>
+	</data>
+	<data name="Stornierung derzeit nicht möglich." xml:space="preserve">
+		<value>Cancellation is currently not possible.</value>
+	</data>
+	<data name="Termin konnte nicht geladen werden." xml:space="preserve">
+		<value>The appointment could not be loaded.</value>
+	</data>
+	<data name="Termin im Bürgeramt: {0}" xml:space="preserve">
+		<value>Appointment at the citizens' office: {0}</value>
+	</data>
+	<data name="Gebucht über das BürgerPortal (Studienprojekt, Simulation). Ändern oder stornieren im Portal." xml:space="preserve">
+		<value>Booked via the Citizen Portal (student project, simulation). Change or cancel it in the portal.</value>
+	</data>
+	<data name="Standort wurde erfolgreich geändert." xml:space="preserve">
+		<value>Location changed successfully.</value>
+	</data>
+	<data name="Der Standort konnte nicht geändert werden." xml:space="preserve">
+		<value>The location could not be changed.</value>
+	</data>
+</root>
