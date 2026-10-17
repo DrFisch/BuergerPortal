@@ -112,4 +112,10 @@
   <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
     <value>Simulation: Die Bearbeitung läuft automatisch – nach etwa 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“. Jede Änderung kommt als Statusmeldung in Ihr BundID-Postfach.</value>
   </data>
+  <data name="SperrmuellDetail_Kind" xml:space="preserve">
+    <value>Sperrmüll-Antrag</value>
+  </data>
+  <data name="SperrmuellDetail_Pieces" xml:space="preserve">
+    <value>Stk.</value>
+  </data>
 </root>

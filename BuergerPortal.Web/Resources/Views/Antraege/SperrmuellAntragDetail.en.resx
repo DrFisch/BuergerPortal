@@ -112,4 +112,10 @@
   <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
     <value>Simulation: processing runs automatically – after about 2 minutes "in progress", after another 5 minutes "completed". Every change arrives as a status message in your BundID mailbox.</value>
   </data>
+  <data name="SperrmuellDetail_Kind" xml:space="preserve">
+    <value>Bulky waste application</value>
+  </data>
+  <data name="SperrmuellDetail_Pieces" xml:space="preserve">
+    <value>pcs.</value>
+  </data>
 </root>

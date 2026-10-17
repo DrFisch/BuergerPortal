@@ -13,7 +13,7 @@
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm">
             <i class="bi bi-arrow-left"></i>
         </a>
-        <h1 class="h3 fw-bold mb-0">Sperrmüll-Antrag – @L["ApplicationDetails_Heading"]</h1>
+        <h1 class="h3 fw-bold mb-0">@L["SperrmuellDetail_Kind"] – @L["ApplicationDetails_Heading"]</h1>
     </div>
 
     @if (TempData["AntragTerminOk"] is string bookedMsg)
@@ -100,7 +100,7 @@
                         {
                             <div class="col-sm-4 text-center">
                                 <label class="text-secondary x-small fw-bold text-uppercase d-block">@L["SperrmuellDetail_Field_Mattresses"]</label>
-                                <span class="fs-4 fw-bold">@Model.Matratzen</span> <span class="text-muted">Stk.</span>
+                                <span class="fs-4 fw-bold">@Model.Matratzen</span> <span class="text-muted">@L["SperrmuellDetail_Pieces"]</span>
                             </div>
                         }
                         @if (Model.Wunschzeit != default)
