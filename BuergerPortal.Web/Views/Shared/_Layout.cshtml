@@ -1,11 +1,12 @@
 ﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @using Microsoft.AspNetCore.Authentication
 <!DOCTYPE html>
 <html lang="@System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>@ViewData["Title"] – BürgerPortal</title>
+    <title>@ViewData["Title"] – @T["SiteName"]</title>
     <meta name="app-env" content="@Env.EnvironmentName" />
     @if (User.Identity?.IsAuthenticated == true)
     {
@@ -59,11 +60,11 @@
 
     <footer class="text-center text-muted small py-3 border-top">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <span>© @DateTime.UtcNow.Year Bürgerportal</span>
+            <span>© @DateTime.UtcNow.Year @T["FooterBrand"]</span>
             <div class="d-flex align-items-center gap-3">
                 @* d-inline-block py-1: Touch-Ziel mindestens 24 px hoch (WCAG 2.2, 2.5.8; Plan A8) *@
-                <a class="link-secondary link-underline-opacity-0 d-inline-block py-1" asp-controller="Home" asp-action="Impressum">Impressum</a>
-                <a class="link-secondary link-underline-opacity-0 d-inline-block py-1" asp-controller="Home" asp-action="Datenschutz">Datenschutz</a>
+                <a class="link-secondary link-underline-opacity-0 d-inline-block py-1" asp-controller="Home" asp-action="Impressum">@T["Imprint"]</a>
+                <a class="link-secondary link-underline-opacity-0 d-inline-block py-1" asp-controller="Home" asp-action="Datenschutz">@T["Privacy"]</a>
             </div>
         </div>
     </footer>

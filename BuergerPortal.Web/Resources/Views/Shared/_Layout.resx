@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="SiteName" xml:space="preserve">
+		<value>BürgerPortal</value>
+	</data>
+	<data name="FooterBrand" xml:space="preserve">
+		<value>Bürgerportal</value>
+	</data>
+	<data name="Imprint" xml:space="preserve">
+		<value>Impressum</value>
+	</data>
+	<data name="Privacy" xml:space="preserve">
+		<value>Datenschutz</value>
+	</data>
+</root>

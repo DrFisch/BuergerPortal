@@ -7,8 +7,12 @@
             btn.setAttribute('aria-pressed', String(isDark));
             const icon = btn.querySelector('i.js-theme-icon') || btn.querySelector('i');
             const text = btn.querySelector('.js-theme-text');
-            if (icon) icon.className = isDark ? 'bi bi-moon-stars me-1 js-theme-icon' : 'bi bi-brightness-high me-1 js-theme-icon';
-            if (text) text.textContent = isDark ? 'Dark' : 'Light';
+            // Nur das Symbol tauschen, Abstände (me-1/me-2) bleiben; Text aus data-text-dark/-light (übersetzt, Plan A9)
+            if (icon) {
+                icon.classList.toggle('bi-moon-stars', isDark);
+                icon.classList.toggle('bi-brightness-high', !isDark);
+            }
+            if (text) text.textContent = isDark ? (btn.dataset.textDark || 'Dark') : (btn.dataset.textLight || 'Light');
         });
     }
 
