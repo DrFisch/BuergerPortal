@@ -65,6 +65,14 @@ namespace BuergerPortal.BundId
         /// <exception cref="BundIdUnavailableException">Metadaten der BundID nicht abrufbar.</exception>
         public async Task<IActionResult> StartLoginAsync(HttpResponse response, int requestedLevel, string returnUrl,
             CancellationToken ct)
+            => (await PrepareLoginAsync(response, requestedLevel, returnUrl, ct)).ToActionResult();
+
+        /// <summary>
+        /// Erstellt den AuthnRequest (HTTP-POST-Binding) und merkt den Anmeldezustand. <see cref="StartLoginAsync"/>
+        /// schickt ihn sofort als Formular mit Auto-Submit ab; der Lernpfad des Auth-Servers zeigt ihn vorher an.
+        /// </summary>
+        public async Task<Saml2PostBinding> PrepareLoginAsync(HttpResponse response, int requestedLevel, string returnUrl,
+            CancellationToken ct)
         {
             var bundId = options.Value;
             Saml2Configuration config;
@@ -97,7 +105,7 @@ namespace BuergerPortal.BundId
 
             // Für die Prüfung der Response merken: Nur eine Antwort auf genau diesen Request wird akzeptiert.
             loginStateStore.Save(response, new BundIdLoginState(authnRequest.IdAsString, requestedLevel, returnUrl));
-            return binding.ToActionResult();
+            return binding;
         }
 
         /// <summary>
