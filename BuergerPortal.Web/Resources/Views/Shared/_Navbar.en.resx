@@ -112,4 +112,7 @@
   <data name="SkipToContent" xml:space="preserve">
     <value>Skip to content</value>
   </data>
+  <data name="LoginShort" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
 </root>
