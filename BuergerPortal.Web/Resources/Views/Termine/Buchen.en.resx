@@ -69,4 +69,70 @@
   <data name="CalendarOpenAria" xml:space="preserve">
     <value>Open calendar of free times</value>
   </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Four steps to your appointment at the citizens' office.</value>
+  </data>
+  <data name="Step_Service" xml:space="preserve">
+    <value>What is it about?</value>
+  </data>
+  <data name="Step_Location" xml:space="preserve">
+    <value>Which citizens' office?</value>
+  </data>
+  <data name="Step_Day" xml:space="preserve">
+    <value>On which day?</value>
+  </data>
+  <data name="Step_Time" xml:space="preserve">
+    <value>Time and duration</value>
+  </data>
+  <data name="OtherDate" xml:space="preserve">
+    <value>Other date:</value>
+  </data>
+  <data name="DayView" xml:space="preserve">
+    <value>Day view</value>
+  </data>
+  <data name="DayStripAria" xml:space="preserve">
+    <value>The next two weeks</value>
+  </data>
+  <data name="Slots_Loading" xml:space="preserve">
+    <value>Loading free times …</value>
+  </data>
+  <data name="Legend_Free" xml:space="preserve">
+    <value>free</value>
+  </data>
+  <data name="Summary_Title" xml:space="preserve">
+    <value>Your selection</value>
+  </data>
+  <data name="Summary_Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="Summary_Location" xml:space="preserve">
+    <value>Citizens' office</value>
+  </data>
+  <data name="Summary_When" xml:space="preserve">
+    <value>Appointment</value>
+  </data>
+  <data name="Summary_Empty" xml:space="preserve">
+    <value>not chosen yet</value>
+  </data>
+  <data name="Summary_Confirmation" xml:space="preserve">
+    <value>The confirmation goes to your BundID mailbox.</value>
+  </data>
+  <data name="Service_Missing" xml:space="preserve">
+    <value>Please choose your service first.</value>
+  </data>
+  <data name="Loc_1_Address" xml:space="preserve">
+    <value>Rathausplatz 1, 12345 Hof</value>
+  </data>
+  <data name="Loc_2_Address" xml:space="preserve">
+    <value>Nordpark Allee 42, 12347 Hof</value>
+  </data>
+  <data name="Loc_3_Address" xml:space="preserve">
+    <value>Südkai 12, 12349 Hof</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
 </root>

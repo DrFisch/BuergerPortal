@@ -69,4 +69,70 @@
   <data name="CalendarOpenAria" xml:space="preserve">
     <value>Kalender mit freien Zeiten öffnen</value>
   </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>In vier Schritten zu Ihrem Termin im Bürgeramt.</value>
+  </data>
+  <data name="Step_Service" xml:space="preserve">
+    <value>Worum geht es?</value>
+  </data>
+  <data name="Step_Location" xml:space="preserve">
+    <value>Welches Bürgeramt?</value>
+  </data>
+  <data name="Step_Day" xml:space="preserve">
+    <value>An welchem Tag?</value>
+  </data>
+  <data name="Step_Time" xml:space="preserve">
+    <value>Uhrzeit und Dauer</value>
+  </data>
+  <data name="OtherDate" xml:space="preserve">
+    <value>Anderes Datum:</value>
+  </data>
+  <data name="DayView" xml:space="preserve">
+    <value>Tagesansicht</value>
+  </data>
+  <data name="DayStripAria" xml:space="preserve">
+    <value>Die nächsten zwei Wochen</value>
+  </data>
+  <data name="Slots_Loading" xml:space="preserve">
+    <value>Freie Zeiten werden geladen …</value>
+  </data>
+  <data name="Legend_Free" xml:space="preserve">
+    <value>frei</value>
+  </data>
+  <data name="Summary_Title" xml:space="preserve">
+    <value>Ihre Auswahl</value>
+  </data>
+  <data name="Summary_Service" xml:space="preserve">
+    <value>Anliegen</value>
+  </data>
+  <data name="Summary_Location" xml:space="preserve">
+    <value>Bürgeramt</value>
+  </data>
+  <data name="Summary_When" xml:space="preserve">
+    <value>Termin</value>
+  </data>
+  <data name="Summary_Empty" xml:space="preserve">
+    <value>noch nicht gewählt</value>
+  </data>
+  <data name="Summary_Confirmation" xml:space="preserve">
+    <value>Die Bestätigung kommt in Ihr BundID-Postfach.</value>
+  </data>
+  <data name="Service_Missing" xml:space="preserve">
+    <value>Bitte wählen Sie zuerst Ihr Anliegen.</value>
+  </data>
+  <data name="Loc_1_Address" xml:space="preserve">
+    <value>Rathausplatz 1, 12345 Hof</value>
+  </data>
+  <data name="Loc_2_Address" xml:space="preserve">
+    <value>Nordpark Allee 42, 12347 Hof</value>
+  </data>
+  <data name="Loc_3_Address" xml:space="preserve">
+    <value>Südkai 12, 12349 Hof</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Morgen</value>
+  </data>
 </root>

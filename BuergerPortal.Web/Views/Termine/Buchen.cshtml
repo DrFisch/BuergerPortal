@@ -1,147 +1,223 @@
 ﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
+@using BuergerPortal.Web.Extensions
 @using BuergerPortal.Web.Features.Termine
 @using BuergerPortal.Web.Features.Termine.ViewModels
 @model BuchenVm
 @{
     ViewData["Title"] = T["Title"];
+    // Buchung in vier Schritten – Anliegen, Bürgeramt, Tag, Uhrzeit und Dauer – mit einer Zusammenfassung: am Computer
+    // mitlaufend rechts, auf dem Handy nach dem letzten Schritt. Die Felder heißen wie im BuchenVm (Service, Location,
+    // LocalDate, LocalTime, Duration); die Uhrzeiten erzeugt das Skript aus der Verfügbarkeit des Tages.
+    var services = new[]
+    {
+        (Typ: ServiceType.AllgemeineBeratung, Icon: "bi-chat-dots"),
+        (Typ: ServiceType.DokumenteUndAusweise, Icon: "bi-person-vcard"),
+        (Typ: ServiceType.Meldeangelegenheiten, Icon: "bi-house-door"),
+        (Typ: ServiceType.AntragRueckfrage, Icon: "bi-question-circle"),
+    };
+    var locations = new[] { LocationType.BuergermtMitte, LocationType.BuergermtNord, LocationType.BuergermtSued };
+    var durations = new[] { DurationOption.Min15, DurationOption.Min30, DurationOption.Min45 };
 }
 
-<div class="container py-4" style="max-width: 900px;">
+<div class="container py-4 bp-buchen">
     <div class="d-flex align-items-center gap-3 mb-4">
         <a asp-action="Index" asp-controller="Termine" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm" aria-label="@T["BackAria"]">
             <i class="bi bi-arrow-left" aria-hidden="true"></i>
         </a>
-        <h1 class="h3 fw-bold mb-0">@T["Title"]</h1>
+        <div>
+            <h1 class="h3 fw-bold mb-0">@T["Title"]</h1>
+            <p class="text-body-secondary small mb-0">@T["Subtitle"]</p>
+        </div>
     </div>
 
-    <form asp-action="Buchen" method="post" id="appointmentForm" class="vstack gap-4">
+    <form asp-action="Buchen" method="post" id="appointmentForm">
         @Html.AntiForgeryToken()
         <input asp-for="RelatedAntragId" type="hidden" />
 
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center gap-3">
-                <i class="bi bi-exclamation-octagon-fill fs-4"></i>
-                <div asp-validation-summary="All" class="mb-0 small"></div>
-            </div>
-        }
+        <div class="row g-4">
+            <div class="col-lg-8 vstack gap-3">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center gap-3 mb-0">
+                        <i class="bi bi-exclamation-octagon-fill fs-4" aria-hidden="true"></i>
+                        <div asp-validation-summary="All" class="mb-0 small"></div>
+                    </div>
+                }
 
-        @if (Model.RelatedAntragId.HasValue)
-        {
-            <div class="card border-0 bg-primary-subtle rounded-4 shadow-sm mb-2">
-                <div class="card-body d-flex align-items-center justify-content-between p-3 flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-primary text-white rounded-3 p-2 d-flex">
-                            <i class="bi bi-link-45deg fs-4"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-primary-emphasis">@T["LinkedToApplication"]</div>
-                            <div class="small opacity-75">@T["ApplicationId"]: <code class="bg-white bg-opacity-50 px-1 rounded">@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code></div>
+                @if (Model.RelatedAntragId.HasValue)
+                {
+                    <div class="card border-0 bg-primary-subtle rounded-4 shadow-sm">
+                        <div class="card-body d-flex align-items-center justify-content-between p-3 flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary text-white rounded-3 p-2 d-flex">
+                                    <i class="bi bi-link-45deg fs-4" aria-hidden="true"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-primary-emphasis">@T["LinkedToApplication"]</div>
+                                    <div class="small opacity-75">@T["ApplicationId"]: <code class="bg-white bg-opacity-50 px-1 rounded">@Model.RelatedAntragId.Value.ToString().Substring(0, 8)</code></div>
+                                </div>
+                            </div>
+                            <div class="readonly-pill shadow-sm bg-body">
+                                <i class="bi bi-shield-check text-primary me-1" aria-hidden="true"></i> @T["RelatedService"]
+                            </div>
                         </div>
                     </div>
-                    <div class="readonly-pill shadow-sm bg-body">
-                        <i class="bi bi-shield-check text-primary me-1"></i> @T["RelatedService"]
-                    </div>
-                </div>
-            </div>
-            <input asp-for="Service" type="hidden" />
-        }
-
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-body p-4 p-md-5">
-                <div class="row g-4">
-
-                    @if (!Model.RelatedAntragId.HasValue)
-                    {
-                        <div class="col-12">
-                            <label class="form-label fw-semibold" for="Service">@T["Service"]</label>
-                            <select asp-for="Service" class="form-select form-select-lg rounded-3" asp-items="Html.GetEnumSelectList<ServiceType>()">
-                                <option value="">@T["SelectPlaceholder"]</option>
-                            </select>
+                    <input asp-for="Service" type="hidden" data-text="@(Model.Service?.ToDisplayName(LF))" />
+                }
+                else
+                {
+                    @* Schritt: Anliegen *@
+                    <section class="card bp-schritt">
+                        <div class="card-body">
+                            <h2 class="h6 bp-schritt-titel" id="schrittAnliegen">@T["Step_Service"]</h2>
+                            <div class="row row-cols-1 row-cols-sm-2 g-2" role="radiogroup" aria-labelledby="schrittAnliegen">
+                                @foreach (var s in services)
+                                {
+                                    var nr = (int)s.Typ;
+                                    var name = s.Typ.ToDisplayName(LF);
+                                    <div class="col">
+                                        <input type="radio" class="btn-check" name="Service" id="svc-@nr" value="@nr" autocomplete="off"
+                                               data-text="@name" checked="@(Model.Service == s.Typ)" />
+                                        <label class="bp-kachel" for="svc-@nr">
+                                            <i class="bi @s.Icon" aria-hidden="true"></i><span>@name</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
                             <span asp-validation-for="Service" class="text-danger small"></span>
+                            <div id="serviceHint" class="text-danger small mt-2" role="alert" hidden>@T["Service_Missing"]</div>
                         </div>
-                    }
+                    </section>
+                }
 
-                    <div class="col-12">
-                        <label class="form-label fw-semibold" for="locationSelect">@T["Location"]</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-body text-secondary border-end-0"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
-                            <select asp-for="Location" class="form-select border-start-0" id="locationSelect" asp-items="Html.GetEnumSelectList<LocationType>()"></select>
+                @* Schritt: Bürgeramt *@
+                <section class="card bp-schritt">
+                    <div class="card-body">
+                        <h2 class="h6 bp-schritt-titel" id="schrittOrt">@T["Step_Location"]</h2>
+                        <div class="row row-cols-1 row-cols-md-3 g-2" role="radiogroup" aria-labelledby="schrittOrt">
+                            @foreach (var l in locations)
+                            {
+                                var nr = (int)l;
+                                var name = l.ToDisplayName(LF);
+                                <div class="col">
+                                    <input type="radio" class="btn-check" name="Location" id="loc-@nr" value="@nr" autocomplete="off"
+                                           data-text="@name" checked="@(Model.Location == l)" />
+                                    <label class="bp-kachel" for="loc-@nr">
+                                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                        <span>
+                                            <span class="d-block">@name</span>
+                                            <span class="d-block small text-body-secondary fw-normal">@T[$"Loc_{nr}_Address"]</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            }
                         </div>
                         <span asp-validation-for="Location" class="text-danger small"></span>
                     </div>
+                </section>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold" for="dateInput">@T["Date"]</label>
-                        <input asp-for="LocalDate" type="date" class="form-control form-control-lg rounded-3" id="dateInput" />
-                        <span asp-validation-for="LocalDate" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold" for="timeSelect">@T["Time"]</label>
-                        <div class="input-group input-group-lg">
-                            <select asp-for="LocalTime" class="form-select rounded-start-3" id="timeSelect"
-                                    data-initial="@Model.LocalTime.ToString(@"hh\:mm")"></select>
-                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#kalenderModal" aria-label="@T["CalendarOpenAria"]">
-                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                @* Schritt: Tag – die nächsten zwei Wochen als Leiste, jedes andere Datum über das Datumsfeld *@
+                <section class="card bp-schritt">
+                    <div class="card-body">
+                        <h2 class="h6 bp-schritt-titel" id="schrittTag">@T["Step_Day"]</h2>
+                        <div class="bp-tage" id="dayStrip" role="group" aria-label="@T["DayStripAria"]"></div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                            <label class="small text-body-secondary mb-0" for="dateInput">@T["OtherDate"]</label>
+                            <input asp-for="LocalDate" type="date" class="form-control form-control-sm w-auto" id="dateInput" />
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#kalenderModal">
+                                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>@T["DayView"]
                             </button>
                         </div>
-                        <small class="text-muted mt-1 d-block">@T["CalendarHint"]</small>
-                        <span asp-validation-for="LocalTime" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label fw-semibold" for="durationSelect">@T["Duration"]</label>
-                        <select asp-for="Duration" class="form-select form-select-lg rounded-3" id="durationSelect" asp-items="Html.GetEnumSelectList<DurationOption>()"></select>
-                        <span asp-validation-for="Duration" class="text-danger small"></span>
-                    </div>
-
-                    @* Hinweis zum gewählten Tag (geschlossen, ausgebucht, verschoben) – gefüllt von der Verfügbarkeitsabfrage *@
-                    <div class="col-12" id="dayNoteBox" hidden>
-                        <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-0 rounded-4" role="status">
-                            <i class="bi bi-calendar-x" aria-hidden="true"></i>
-                            <span id="dayNote" class="flex-grow-1"></span>
-                            <button type="button" class="btn btn-sm btn-outline-dark" id="nextFreeDay">@T["Day_SearchNext"]</button>
+                        <span asp-validation-for="LocalDate" class="text-danger small"></span>
+                        @* Hinweis zum gewählten Tag (geschlossen, ausgebucht, verschoben) – gefüllt von der Verfügbarkeitsabfrage *@
+                        <div id="dayNoteBox" class="mt-3" hidden>
+                            <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-0 rounded-4" role="status">
+                                <span class="d-flex align-items-start gap-2 flex-grow-1">
+                                    <i class="bi bi-calendar-x" aria-hidden="true"></i>
+                                    <span id="dayNote"></span>
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-dark" id="nextFreeDay">@T["Day_SearchNext"]</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="alert alert-info border-0 rounded-4 mt-5 mb-0 d-flex gap-3 align-items-center">
-                    <i class="bi bi-info-circle-fill fs-4 opacity-50"></i>
-                    <div class="small">
-                        <div class="fw-bold">@T["OpeningHoursLabel"]</div>
-                        <div>@T["OpeningHoursDetail"]</div>
+                @* Schritt: Uhrzeit und Dauer *@
+                <section class="card bp-schritt">
+                    <div class="card-body">
+                        <h2 class="h6 bp-schritt-titel" id="schrittZeit">@T["Step_Time"]</h2>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="small fw-semibold" id="dauerTitel">@T["Duration"]</span>
+                            <div class="bp-segment" role="radiogroup" aria-labelledby="dauerTitel">
+                                @foreach (var d in durations)
+                                {
+                                    var minuten = (int)d;
+                                    <input type="radio" class="btn-check" name="Duration" id="dur-@minuten" value="@minuten" autocomplete="off"
+                                           checked="@(Model.Duration == d)" />
+                                    <label for="dur-@minuten">@d.ToDisplayName(LF)</label>
+                                }
+                            </div>
+                        </div>
+                        <div class="small fw-semibold mb-2" id="zeitTitel">@T["Time"]</div>
+                        <div id="timeSlots" class="bp-zeiten" role="radiogroup" aria-labelledby="zeitTitel"
+                             data-initial="@Model.LocalTime.ToString(@"hh\:mm")">
+                            <span class="small text-body-secondary">@T["Slots_Loading"]</span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-3 small text-body-secondary mt-3" aria-hidden="true">
+                            <span><span class="bp-punkt frei"></span>@T["Legend_Free"]</span>
+                            <span><span class="bp-punkt vergeben"></span>@T["Slot_Taken"]</span>
+                            <span><span class="bp-punkt eigen"></span>@T["Slot_Own"]</span>
+                        </div>
+                        <span asp-validation-for="LocalTime" class="text-danger small"></span>
                     </div>
-                </div>
+                </section>
             </div>
 
-            <div class="p-4 d-flex justify-content-between align-items-center bg-body border-top border-light-subtle">
-                <div class="text-muted small d-none d-md-block">
-                   
-                </div>
-                <button type="submit" id="submitBooking" class="btn btn-primary btn-lg rounded-pill px-5 shadow fw-bold transition-all hover-lift">
-                    @T["BookAppointment"] <i class="bi bi-arrow-right-short ms-2"></i>
-                </button>
+            @* Zusammenfassung: am Computer mitlaufend (sticky), auf dem Handy nach Schritt 4 *@
+            <div class="col-lg-4">
+                <aside class="card bp-schritt bp-zusammenfassung" aria-labelledby="zusammenfassungTitel">
+                    <div class="card-body">
+                        <h2 class="h6 fw-bold mb-3" id="zusammenfassungTitel">@T["Summary_Title"]</h2>
+                        <dl class="bp-auswahl mb-3">
+                            <dt>@T["Summary_Service"]</dt>
+                            <dd id="sumService" class="leer">@T["Summary_Empty"]</dd>
+                            <dt>@T["Summary_Location"]</dt>
+                            <dd id="sumLocation" class="leer">@T["Summary_Empty"]</dd>
+                            <dt>@T["Summary_When"]</dt>
+                            <dd id="sumWhen" class="leer">@T["Summary_Empty"]</dd>
+                        </dl>
+                        <button type="submit" id="submitBooking" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold">
+                            @T["BookAppointment"] <i class="bi bi-arrow-right-short ms-1" aria-hidden="true"></i>
+                        </button>
+                        <p class="small text-body-secondary mt-3 mb-2">
+                            <i class="bi bi-envelope-check me-1" aria-hidden="true"></i>@T["Summary_Confirmation"]
+                        </p>
+                        <p class="small text-body-secondary mb-0">
+                            <i class="bi bi-clock me-1" aria-hidden="true"></i>@T["OpeningHoursDetail"]
+                        </p>
+                    </div>
+                </aside>
             </div>
         </div>
     </form>
 </div>
 
-<div class="modal fade" id="kalenderModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="kalenderModal" tabindex="-1" aria-labelledby="kalenderTitel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">@T["ModalTitle"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h2 class="modal-title h5 fw-bold" id="kalenderTitel">@T["ModalTitle"]</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+                <div class="d-flex align-items-end gap-3 mb-4 flex-wrap">
                     <div class="flex-grow-1" style="min-width: 200px;">
                         <label class="form-label small fw-bold" for="kalenderDate">@T["ModalDate"]</label>
                         <input type="date" id="kalenderDate" class="form-control">
                     </div>
-                    <button class="btn btn-outline-primary mt-4" id="kalenderReload">
-                        <i class="bi bi-arrow-clockwise"></i> @T["Reload"]
+                    <button type="button" class="btn btn-outline-primary" id="kalenderReload">
+                        <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> @T["Reload"]
                     </button>
                 </div>
                 <div class="d-flex gap-3 mb-3 small fw-medium flex-wrap">
@@ -155,8 +231,8 @@
                 <div id="calendarNote" class="alert alert-warning py-2 small" hidden></div>
                 <div id="dpCalendar" class="rounded-3 shadow-sm"></div>
             </div>
-            <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
-                <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">@T["Close"]</button>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">@T["Close"]</button>
             </div>
         </div>
     </div>
@@ -166,6 +242,265 @@
     <style>
         body {
             background-color: var(--bs-tertiary-bg);
+        }
+
+        /* Schritte mit Nummer (CSS-Zähler: ohne Anliegen-Schritt beim Termin zum Antrag zählt es von selbst richtig) */
+        .bp-buchen {
+            counter-reset: schritt;
+        }
+
+        .bp-schritt {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: var(--bs-box-shadow-sm);
+        }
+
+        .bp-schritt-titel {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .bp-schritt-titel::before {
+            counter-increment: schritt;
+            content: counter(schritt);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 1.75rem;
+            height: 1.75rem;
+            margin-right: .6rem;
+            border-radius: 50%;
+            background: var(--bs-primary);
+            color: #fff;
+            font-size: .85rem;
+        }
+
+        /* Auswahl-Kacheln (Anliegen, Bürgeramt): ganze Fläche antippbar */
+        .bp-kachel {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            height: 100%;
+            min-height: 3.25rem;
+            margin: 0;
+            padding: .8rem 1rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: .85rem;
+            background: var(--bs-body-bg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color .15s, background-color .15s, box-shadow .15s;
+        }
+
+        .bp-kachel > .bi {
+            font-size: 1.35rem;
+            color: var(--bs-primary);
+        }
+
+        .bp-kachel:hover {
+            border-color: var(--bs-primary-border-subtle);
+        }
+
+        .btn-check:checked + .bp-kachel {
+            border-color: var(--bs-primary);
+            background: var(--bs-primary-bg-subtle);
+            box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .25);
+        }
+
+        .btn-check:focus-visible + .bp-kachel,
+        .btn-check:focus-visible + .bp-zeit,
+        .btn-check:focus-visible + label {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+        }
+
+        /* Tage: waagrechte Leiste */
+        .bp-tage {
+            display: flex;
+            gap: .5rem;
+            overflow-x: auto;
+            padding: .15rem .1rem .4rem;
+            scroll-snap-type: x proximity;
+        }
+
+        .bp-tag {
+            flex: 0 0 auto;
+            width: 4.1rem;
+            padding: .45rem .25rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: .75rem;
+            background: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            line-height: 1.15;
+            text-align: center;
+            scroll-snap-align: start;
+        }
+
+        .bp-tag .wt, .bp-tag .mo {
+            display: block;
+            font-size: .72rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .bp-tag .tg {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .bp-tag.wochenende {
+            background: var(--bs-tertiary-bg);
+        }
+
+        .bp-tag[aria-pressed="true"] {
+            border-color: var(--bs-primary);
+            background: var(--bs-primary);
+            color: #fff;
+        }
+
+        .bp-tag[aria-pressed="true"] .wt, .bp-tag[aria-pressed="true"] .mo {
+            color: #fff;
+        }
+
+        /* Dauer: Umschalter */
+        .bp-segment {
+            display: inline-flex;
+            gap: .25rem;
+            padding: .25rem;
+            border-radius: 50rem;
+            background: var(--bs-tertiary-bg);
+        }
+
+        .bp-segment label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.25rem;
+            margin: 0;
+            padding: .35rem .9rem;
+            border-radius: 50rem;
+            font-size: .9rem;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        /* Handy: Umschalter über die ganze Breite, gleich breite Felder */
+        @@media (max-width: 575.98px) {
+            .bp-segment {
+                display: flex;
+                width: 100%;
+            }
+
+            .bp-segment label {
+                flex: 1 1 0;
+                padding: .35rem .4rem;
+                font-size: .85rem;
+            }
+        }
+
+        .bp-segment .btn-check:checked + label {
+            background: var(--bs-body-bg);
+            color: var(--bs-primary-text-emphasis);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+        }
+
+        /* Uhrzeiten: Raster aus antippbaren Feldern */
+        .bp-zeiten {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr));
+            gap: .5rem;
+        }
+
+        .bp-zeit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.9rem;
+            margin: 0;
+            padding: .4rem .25rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: .65rem;
+            background: var(--bs-body-bg);
+            font-weight: 600;
+            line-height: 1.1;
+            cursor: pointer;
+        }
+
+        .bp-zeit small {
+            font-size: .68rem;
+            font-weight: 400;
+        }
+
+        .btn-check:checked + .bp-zeit {
+            border-color: var(--bs-primary);
+            background: var(--bs-primary);
+            color: #fff;
+        }
+
+        .btn-check:disabled + .bp-zeit {
+            background: var(--bs-tertiary-bg);
+            color: var(--bs-secondary-color);
+            cursor: not-allowed;
+        }
+
+        .btn-check:disabled + .bp-zeit.eigen {
+            border-color: var(--bs-primary-border-subtle);
+            background: var(--bs-primary-bg-subtle);
+            color: var(--bs-primary-text-emphasis);
+        }
+
+        .bp-punkt {
+            display: inline-block;
+            width: .7rem;
+            height: .7rem;
+            margin-right: .35rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: .2rem;
+            vertical-align: -.05rem;
+        }
+
+        .bp-punkt.frei {
+            background: var(--bs-body-bg);
+        }
+
+        .bp-punkt.vergeben {
+            background: var(--bs-tertiary-bg);
+        }
+
+        .bp-punkt.eigen {
+            background: var(--bs-primary-bg-subtle);
+            border-color: var(--bs-primary-border-subtle);
+        }
+
+        /* Zusammenfassung */
+        .bp-auswahl dt {
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+        }
+
+        .bp-auswahl dd {
+            margin-bottom: .75rem;
+            font-weight: 600;
+        }
+
+        .bp-auswahl dd.leer {
+            font-weight: 400;
+            color: var(--bs-secondary-color);
+        }
+
+        @@media (min-width: 992px) {
+            .bp-zusammenfassung {
+                position: sticky;
+                top: 5rem;
+            }
         }
 
         .readonly-pill {
@@ -184,11 +519,6 @@
             min-height: 400px;
         }
 
-        .form-control-lg, .form-select-lg, .input-group-lg > .form-select {
-            font-size: 1rem;
-            padding: 0.75rem 1rem;
-        }
-
         /* DayPilot Overrides für Darkmode */
         [data-bs-theme="dark"] .calendar_default_main {
             background-color: #2b3035;
@@ -203,9 +533,9 @@
     <script src="~/lib/daypilot/daypilot-javascript.min.js" asp-append-version="true"></script>
 
     <script>
-        // Buchungsseite: Uhrzeiten aus der Verfügbarkeit des Tages am gewählten Standort (/Termine/Verfuegbarkeit).
-        // Vergebene, eigene und vergangene Zeiten sind nicht wählbar; geschlossene Tage (Wochenende, Feiertag,
-        // Vorlauf) zeigen den Grund. Die verbindliche Prüfung macht die API beim Buchen.
+        // Buchungsseite: Uhrzeiten aus der Verfügbarkeit des Tages am gewählten Bürgeramt (/Termine/Verfuegbarkeit) als
+        // Auswahlfelder (name="LocalTime"). Vergebene, eigene und vergangene Zeiten sind nicht wählbar; geschlossene Tage
+        // (Wochenende, Feiertag, Vorlauf) zeigen den Grund. Die verbindliche Prüfung macht die API beim Buchen.
         const TEXT = {
             taken: @Json.Serialize(T["Slot_Taken"].Value),
             own: @Json.Serialize(T["Slot_Own"].Value),
@@ -214,20 +544,31 @@
             moved: @Json.Serialize(T["Day_Moved"].Value),
             notFound: @Json.Serialize(T["Day_NotFound"].Value),
             calendarNotFree: @Json.Serialize(T["Calendar_NotFree"].Value),
-            error: @Json.Serialize(T["Day_Error"].Value)
+            error: @Json.Serialize(T["Day_Error"].Value),
+            empty: @Json.Serialize(T["Summary_Empty"].Value),
+            today: @Json.Serialize(T["Today"].Value),
+            tomorrow: @Json.Serialize(T["Tomorrow"].Value)
         };
+        const LOCALE = document.documentElement.lang === 'en' ? 'en-GB' : 'de-DE';
         const MAX_DAYS_AHEAD = 90;
+        const STRIP_DAYS = 14;
         const STEP_MIN = 15;
 
+        const form = document.getElementById('appointmentForm');
         const dateInput = document.getElementById('dateInput');
-        const locationSelect = document.getElementById('locationSelect');
-        const timeSelect = document.getElementById('timeSelect');
-        const durationSelect = document.getElementById('durationSelect');
+        const timeSlots = document.getElementById('timeSlots');
+        const dayStrip = document.getElementById('dayStrip');
         const submitButton = document.getElementById('submitBooking');
         const dayNoteBox = document.getElementById('dayNoteBox');
         const dayNote = document.getElementById('dayNote');
         const nextFreeDayButton = document.getElementById('nextFreeDay');
+        const serviceHint = document.getElementById('serviceHint');
         let currentDay = null;
+
+        const checked = name => form.querySelector(`input[name="${name}"]:checked`);
+        const locationValue = () => (checked('Location') || { value: '1' }).value;
+        const durationValue = () => parseInt((checked('Duration') || { value: '15' }).value, 10) || 15;
+        const timeValue = () => (checked('LocalTime') || {}).value || null;
 
         // Datum als JJJJ-MM-TT in Ortszeit (nicht toISOString: das rechnet in UTC und verschiebt den Tag)
         function ymd(d) {
@@ -253,11 +594,11 @@
             return ranges.some(r => start < minutes(r.end) && minutes(r.start) < end);
         }
         function german(s) {
-            return parseYmd(s).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+            return parseYmd(s).toLocaleDateString(LOCALE, { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
         async function loadDay(date) {
-            const res = await fetch(`/Termine/Verfuegbarkeit?date=${date}&location=${locationSelect.value}`,
+            const res = await fetch(`/Termine/Verfuegbarkeit?date=${date}&location=${locationValue()}`,
                 { headers: { 'X-Requested-With': 'fetch' }, credentials: 'same-origin' });
             if (res.status === 401) {
                 window.location.reload(); // Sitzung abgelaufen → Einstiegsseite mit Hinweis
@@ -271,7 +612,7 @@
 
         // Status je Startzeit für den Tag und die gewählte Dauer
         function slots(day) {
-            const dur = parseInt(durationSelect.value, 10) || 15;
+            const dur = durationValue();
             const open = minutes(day.opensAt), close = minutes(day.closesAt);
             const now = new Date();
             const isToday = day.date === ymd(now);
@@ -293,38 +634,100 @@
             dayNoteBox.hidden = false;
         }
 
+        // Tagesleiste: heute und die nächsten 13 Tage; Wochenenden heller (der genaue Grund kommt aus der Abfrage)
+        function buildStrip() {
+            const today = ymd(new Date());
+            for (let i = 0; i < STRIP_DAYS; i++) {
+                const date = addDays(today, i);
+                const d = parseYmd(date);
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'bp-tag' + (d.getDay() === 0 || d.getDay() === 6 ? ' wochenende' : '');
+                b.dataset.date = date;
+                const wt = i === 0 ? TEXT.today : i === 1 ? TEXT.tomorrow : d.toLocaleDateString(LOCALE, { weekday: 'short' });
+                b.setAttribute('aria-label', d.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' }));
+                b.innerHTML = '<span class="wt"></span><span class="tg"></span><span class="mo"></span>';
+                b.querySelector('.wt').textContent = wt;
+                b.querySelector('.tg').textContent = d.getDate();
+                b.querySelector('.mo').textContent = d.toLocaleDateString(LOCALE, { month: 'short' });
+                b.addEventListener('click', () => {
+                    dateInput.value = date;
+                    refresh();
+                });
+                dayStrip.appendChild(b);
+            }
+        }
+
+        function markStrip() {
+            dayStrip.querySelectorAll('.bp-tag').forEach(b => {
+                const active = b.dataset.date === dateInput.value;
+                b.setAttribute('aria-pressed', active ? 'true' : 'false');
+                // nur die Leiste waagrecht verschieben, nicht die Seite
+                if (active) dayStrip.scrollLeft = Math.max(0, b.offsetLeft - dayStrip.offsetLeft - 8);
+            });
+        }
+
+        function updateSummary() {
+            const set = (id, text) => {
+                const el = document.getElementById(id);
+                el.textContent = text || TEXT.empty;
+                el.classList.toggle('leer', !text);
+            };
+            const service = checked('Service') || form.querySelector('input[type="hidden"][name="Service"]');
+            set('sumService', service ? service.dataset.text : null);
+            const location = checked('Location');
+            set('sumLocation', location ? location.dataset.text : null);
+            const time = timeValue();
+            set('sumWhen', time && dateInput.value
+                ? `${german(dateInput.value)}, ${time}–${hhmm(minutes(time) + durationValue())}` : null);
+            submitButton.disabled = !time;
+        }
+
         function render(day, keep) {
             currentDay = day;
-            timeSelect.innerHTML = '';
+            timeSlots.innerHTML = '';
             dayNoteBox.hidden = true;
+            markStrip();
             if (day.closedReason) {
-                timeSelect.disabled = true;
-                submitButton.disabled = true;
                 showNote(day.closedReason, true);
+                updateSummary();
                 return;
             }
             const list = slots(day);
             for (const s of list) {
-                const opt = document.createElement('option');
-                opt.value = s.time;
-                opt.disabled = s.state !== 'free';
-                opt.textContent = s.state === 'free' ? s.time : `${s.time} – ${TEXT[s.state]}`;
-                timeSelect.appendChild(opt);
+                const id = 'slot-' + s.time.replace(':', '-');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.className = 'btn-check';
+                input.name = 'LocalTime';
+                input.id = id;
+                input.value = s.time;
+                input.disabled = s.state !== 'free';
+                const label = document.createElement('label');
+                label.className = 'bp-zeit' + (s.state === 'own' ? ' eigen' : '');
+                label.htmlFor = id;
+                label.textContent = s.time;
+                if (s.state !== 'free') {
+                    const why = document.createElement('small');
+                    why.textContent = TEXT[s.state];
+                    label.appendChild(why);
+                }
+                timeSlots.append(input, label);
             }
             const free = list.filter(s => s.state === 'free');
-            timeSelect.disabled = free.length === 0;
-            submitButton.disabled = free.length === 0;
             if (free.length === 0) {
                 showNote(TEXT.noFree, true);
-                return;
+            } else {
+                const pick = free.some(s => s.time === keep) ? keep : free[0].time;
+                document.getElementById('slot-' + pick.replace(':', '-')).checked = true;
             }
-            timeSelect.value = free.some(s => s.time === keep) ? keep : free[0].time;
+            updateSummary();
         }
 
         async function refresh(keep) {
             try {
                 const day = await loadDay(dateInput.value);
-                if (day) render(day, keep ?? timeSelect.value);
+                if (day) render(day, keep ?? timeValue());
             } catch (e) {
                 showNote(TEXT.error, false);
             }
@@ -368,7 +771,9 @@
             dateInput.min = today;
             dateInput.max = addDays(today, MAX_DAYS_AHEAD);
             if (!dateInput.value || dateInput.value < today) dateInput.value = today;
-            const keep = timeSelect.dataset.initial;
+            buildStrip();
+            updateSummary();
+            const keep = timeSlots.dataset.initial;
             // Beim ersten Aufruf direkt einen Tag mit freien Zeiten vorschlagen (z. B. wenn morgen Samstag ist)
             loadDay(dateInput.value).then(day => {
                 if (!day) return;
@@ -378,9 +783,26 @@
         })();
 
         dateInput.addEventListener('change', () => refresh());
-        locationSelect.addEventListener('change', () => refresh());
-        durationSelect.addEventListener('change', () => { if (currentDay) render(currentDay, timeSelect.value); });
+        form.querySelectorAll('input[name="Location"]').forEach(r => r.addEventListener('change', () => { updateSummary(); refresh(); }));
+        form.querySelectorAll('input[name="Duration"]').forEach(r => r.addEventListener('change', () => { if (currentDay) render(currentDay, timeValue()); }));
+        form.querySelectorAll('input[name="Service"]').forEach(r => r.addEventListener('change', () => {
+            if (serviceHint) serviceHint.hidden = true;
+            updateSummary();
+        }));
+        timeSlots.addEventListener('change', updateSummary);
         nextFreeDayButton.addEventListener('click', () => jumpToNextFree(false));
+
+        // Ohne Anliegen nicht absenden: Hinweis am ersten Schritt statt eines Umwegs über den Server
+        form.addEventListener('submit', e => {
+            const needsService = form.querySelector('input[type="radio"][name="Service"]') && !checked('Service');
+            if (needsService) {
+                e.preventDefault();
+                serviceHint.hidden = false;
+                const first = form.querySelector('input[name="Service"]');
+                first.closest('section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                first.focus({ preventScroll: true });
+            }
+        });
 
         // --- Kalender (Tagesansicht): gleiche Verfügbarkeit, nur freie Zeiten übernehmen ---
         (function initCalendar() {
@@ -389,7 +811,7 @@
             const calendarNote = document.getElementById('calendarNote');
             let calDay = null;
             dp.viewType = "Day";
-            dp.locale = "de-de";
+            dp.locale = LOCALE === 'en-GB' ? "en-gb" : "de-de";
             dp.cellDuration = 15;
             dp.businessBeginsHour = 8;
             dp.businessEndsHour = 12;
