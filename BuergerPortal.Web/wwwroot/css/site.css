@@ -84,6 +84,26 @@
     }
 }
 
+/* Tab "Konto" ist ein Knopf (oeffnet das Konto-Blatt): sieht aus wie die Links der Leiste */
+button.bp-tab {
+    border: 0;
+    background: none;
+}
+
+/* Konto-Blatt von unten (Views/Shared/_TabLeiste.cshtml): so hoch wie der Inhalt, runde Ecken oben */
+.bp-konto-blatt {
+    --bs-offcanvas-height: auto;
+    max-height: 85vh;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bp-konto-blatt .list-group-item {
+    padding-top: .85rem;
+    padding-bottom: .85rem;
+}
+
 /* Hauptmenue: aktiver Bereich */
 .navbar .nav-link.active {
     color: var(--bp-akzent);

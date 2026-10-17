@@ -1,12 +1,18 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Configuration.IConfiguration Config
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
 @*
-    Tab-Leiste am unteren Rand auf kleinen Bildschirmen (Handy, installierte App): die wichtigsten Bereiche mit einem
-    Tipp erreichbar. Auf dem Desktop übernimmt das Hauptmenü oben.
+    Tab-Leiste am unteren Rand auf kleinen Bildschirmen (Handy, installierte App): Start, Termine, Anträge, Postfach und
+    Konto – höchstens fünf Tabs wie in Handy-Apps üblich (Entscheidung Lukas 2026-10-17, E-022). „Konto“ öffnet ein Blatt
+    von unten (Bootstrap-Offcanvas) mit allem, was am Desktop im Konto-Menü oben steht; es ersetzt den Menü-Knopf.
+    „Mangel melden“ steht im Blatt und als erste Schnellaktion auf der Startseite. Auf dem Desktop übernimmt das
+    Hauptmenü oben.
 *@
 @{
     var controller = ViewContext.RouteData.Values["controller"] as string ?? "";
     var postfachUrl = Config["Postkorb:PostfachUrl"];
+    var bundIdUser = CurrentUser.GetBundIdUser();
+    var levelBadge = bundIdUser is { TrustLevel: >= 3 } ? "text-bg-success" : "text-bg-secondary";
     string Aktiv(params string[] names) => names.Contains(controller, StringComparer.OrdinalIgnoreCase) ? "active" : "";
 }
 <nav class="bp-tabbar d-lg-none border-top bg-body-tertiary" aria-label="@T["Label"]">
@@ -19,13 +25,63 @@
     <a class="bp-tab @Aktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" asp-controller="Antraege" asp-action="Index">
         <i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>@T["Applications"]</span>
     </a>
-    <a class="bp-tab @Aktiv("Maengel")" asp-controller="Maengel" asp-action="Create">
-        <i class="bi bi-exclamation-octagon" aria-hidden="true"></i><span>@T["Issues"]</span>
-    </a>
     @if (!string.IsNullOrWhiteSpace(postfachUrl))
     {
         <a class="bp-tab" href="@postfachUrl" data-sim-hinweis="postfach">
             <i class="bi bi-envelope-paper" aria-hidden="true"></i><span>@T["Mailbox"]</span>
         </a>
     }
+    <button type="button" class="bp-tab @Aktiv("MeineDaten", "Settings", "Maengel", "Entdecken")"
+            data-bs-toggle="offcanvas" data-bs-target="#bpKontoBlatt" aria-controls="bpKontoBlatt">
+        <i class="bi bi-person-circle" aria-hidden="true"></i><span>@T["Account"]</span>
+    </button>
 </nav>
+
+<div class="offcanvas offcanvas-bottom bp-konto-blatt d-lg-none" tabindex="-1" id="bpKontoBlatt" aria-labelledby="bpKontoBlattTitel">
+    <div class="offcanvas-header pb-2">
+        <div class="text-truncate">
+            <h2 class="offcanvas-title h5 mb-1 text-truncate" id="bpKontoBlattTitel">@(bundIdUser?.DisplayName ?? T["Account"].Value)</h2>
+            @if (bundIdUser is { IsBundIdLogin: true })
+            {
+                <div class="small text-body-secondary">
+                    <i class="bi bi-shield-check me-1" aria-hidden="true"></i>@T["SignedInWithBundId"]
+                    @if (bundIdUser.TrustLevel > 0)
+                    {
+                        <span class="badge @levelBadge ms-1">@T[$"Level_{bundIdUser.TrustLevel}_Name"]</span>
+                    }
+                </div>
+            }
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="@T["Close"]"></button>
+    </div>
+    <div class="offcanvas-body pt-0">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" asp-controller="MeineDaten" asp-action="Index">
+                <i class="bi bi-person-vcard me-2" aria-hidden="true"></i>@T["MyData"]
+            </a>
+            <a class="list-group-item list-group-item-action" asp-controller="Settings" asp-action="Index">
+                <i class="bi bi-gear me-2" aria-hidden="true"></i>@T["Settings"]
+            </a>
+            <a class="list-group-item list-group-item-action" asp-controller="Maengel" asp-action="Create">
+                <i class="bi bi-exclamation-octagon me-2" aria-hidden="true"></i>@T["ReportIssue"]
+            </a>
+            <a class="list-group-item list-group-item-action" asp-controller="Maengel" asp-action="Index">
+                <i class="bi bi-card-checklist me-2" aria-hidden="true"></i>@T["MyReports"]
+            </a>
+            <a class="list-group-item list-group-item-action" asp-controller="Entdecken" asp-action="Index">
+                <i class="bi bi-compass me-2" aria-hidden="true"></i>@T["Discover"]
+            </a>
+            @* Farbschema (wwwroot/js/theme.js) und „App installieren“ (wwwroot/pwa-install.js; in der installierten App ausgeblendet) *@
+            <button type="button" class="list-group-item list-group-item-action js-theme-toggle" aria-pressed="false"
+                    aria-label="@T["ThemeToggleAria"]">
+                <i class="bi bi-moon-stars me-2 js-theme-icon" aria-hidden="true"></i><span class="js-theme-text">@T["ThemeLight"]</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-pwa-install>
+                <i class="bi bi-download me-2" aria-hidden="true"></i>@T["InstallApp"]
+            </button>
+            <a class="list-group-item list-group-item-action text-danger" asp-controller="Account" asp-action="Logout">
+                <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>@T["Logout"]
+            </a>
+        </div>
+    </div>
+</div>

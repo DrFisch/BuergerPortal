@@ -25,10 +25,58 @@
 	<data name="Applications" xml:space="preserve">
 		<value>Applications</value>
 	</data>
-	<data name="Issues" xml:space="preserve">
-		<value>Report</value>
-	</data>
 	<data name="Mailbox" xml:space="preserve">
 		<value>Mailbox</value>
 	</data>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="SignedInWithBundId" xml:space="preserve">
+    <value>Signed in with BundID</value>
+  </data>
+  <data name="Level_0_Name" xml:space="preserve">
+    <value>unknown</value>
+  </data>
+  <data name="Level_1_Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="Level_3_Name" xml:space="preserve">
+    <value>substantial</value>
+  </data>
+  <data name="Level_4_Name" xml:space="preserve">
+    <value>high</value>
+  </data>
+  <data name="MyData" xml:space="preserve">
+    <value>My data</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ReportIssue" xml:space="preserve">
+    <value>Report an issue</value>
+  </data>
+  <data name="MyReports" xml:space="preserve">
+    <value>My reports</value>
+  </data>
+  <data name="Discover" xml:space="preserve">
+    <value>Discover the city</value>
+  </data>
+  <data name="ThemeToggleAria" xml:space="preserve">
+    <value>Toggle colour scheme</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="InstallApp" xml:space="preserve">
+    <value>Install app</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
 </root>
