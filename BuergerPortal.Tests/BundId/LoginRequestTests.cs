@@ -49,6 +49,42 @@ namespace BuergerPortal.Tests.BundId
             Assert.Contains("samesite=none", setCookie, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public async Task Lernpfad_zeigt_genau_den_AuthnRequest_der_im_Formular_steht()
+        {
+            // Lernpfad Schritt 2: Anzeige und gesendete Nachricht müssen dieselben sein (AuthenticationServer/BundId/Lernpfad.cs)
+            var service = CreateService(forceAuthn: true, pathBase: "");
+            var binding = await service.PrepareLoginAsync(new DefaultHttpContext().Response, 3,
+                "/connect/authorize?client_id=mvc_web&bpsim_lernpfad=1", CancellationToken.None);
+
+            var gesendet = Encoding.UTF8.GetString(Convert.FromBase64String(AuthenticationServer.BundId.Lernpfad.SamlRequest(binding)));
+            Assert.Equal(binding.XmlDocument.OuterXml, gesendet);
+
+            var daten = AuthenticationServer.BundId.Lernpfad.Lies(binding.XmlDocument);
+            Assert.Equal(SsoUrl, daten.Destination);
+            Assert.Equal("https://sp.example.test/bundid/metadata", daten.Issuer);
+            Assert.Equal("https://sp.example.test/bundid/acs", daten.AssertionConsumerServiceUrl);
+            Assert.Equal("STORK-QAA-Level-3", daten.Level);
+            Assert.True(daten.ForceAuthn);
+            Assert.StartsWith("_", daten.Id);
+            Assert.Contains("<samlp:AuthnRequest", AuthenticationServer.BundId.Lernpfad.Eingerueckt(binding.XmlDocument));
+        }
+
+        private static BundIdSamlService CreateService(bool forceAuthn, string pathBase)
+        {
+            var options = Options.Create(new BundIdOptions
+            {
+                SpEntityId = "https://sp.example.test/bundid/metadata",
+                AssertionConsumerServiceUrl = "https://sp.example.test" + pathBase + "/bundid/acs",
+                IdpMetadataUrl = IdpEntityId,
+                ForceAuthn = forceAuthn,
+            });
+            var configuration = new BundIdSamlConfigurationProvider(options, new MetadataClientFactory(),
+                new BundIdTokenReplayCache(), NullLogger<BundIdSamlConfigurationProvider>.Instance);
+            return new BundIdSamlService(options, configuration,
+                new BundIdLoginStateStore(new EphemeralDataProtectionProvider()), NullLogger<BundIdSamlService>.Instance);
+        }
+
         private static async Task<(string Xml, string SetCookie)> StartLoginAsync(bool forceAuthn, string pathBase)
         {
             var options = Options.Create(new BundIdOptions
