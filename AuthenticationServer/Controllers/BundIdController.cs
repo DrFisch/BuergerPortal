@@ -31,6 +31,25 @@ namespace AuthenticationServer.Controllers
 
             try
             {
+                // Lernpfad (Schritt 2): den AuthnRequest erst zeigen, abgeschickt wird er von Hand mit demselben Formular
+                if (Lernpfad.IsActive(safeReturnUrl))
+                {
+                    var binding = await saml.PrepareLoginAsync(Response, requestedLevel, safeReturnUrl, ct);
+                    var daten = Lernpfad.Lies(binding.XmlDocument);
+                    Response.Headers.CacheControl = "no-store";
+                    return View("LernpfadAuthnRequest", new LernpfadAuthnRequestViewModel
+                    {
+                        Destination = daten.Destination,
+                        SamlRequest = Lernpfad.SamlRequest(binding),
+                        Xml = Lernpfad.Eingerueckt(binding.XmlDocument),
+                        RequestId = daten.Id,
+                        Issuer = daten.Issuer,
+                        AssertionConsumerServiceUrl = daten.AssertionConsumerServiceUrl,
+                        RequestedLevel = daten.Level,
+                        ForceAuthn = daten.ForceAuthn,
+                        CancelUrl = Url.Action(nameof(Cancel), new { returnUrl = safeReturnUrl }) ?? "/",
+                    });
+                }
                 return await saml.StartLoginAsync(Response, requestedLevel, safeReturnUrl, ct);
             }
             catch (BundIdUnavailableException)
@@ -56,10 +75,11 @@ namespace AuthenticationServer.Controllers
             }
 
             var attributes = result.Attributes!;
+            var created = false;
             try
             {
                 // Konto über die bPK2 wiedererkennen oder beim ersten Login anlegen.
-                var (user, created) = await userService.FindOrCreateAsync(attributes, ct);
+                (var user, created) = await userService.FindOrCreateAsync(attributes, ct);
                 await userService.UpdateLoginDataAsync(user, attributes);
 
                 // Anmeldung am Auth-Server: Identity-Sitzung mit den BundID-Daten als Claims (nur für diese Sitzung).
@@ -76,6 +96,17 @@ namespace AuthenticationServer.Controllers
             {
                 logger.LogWarning(ex, "BundID-Anmeldung abgelehnt");
                 return LoginError("Anmeldung nicht möglich", ex.Message, result.RequestedLevel, result.ReturnUrl);
+            }
+            // Lernpfad (Schritt 4): angemeldet – erst zeigen, was ankam und geprüft wurde, dann weiter zum Portal
+            if (Lernpfad.IsActive(result.ReturnUrl))
+            {
+                Response.Headers.CacheControl = "no-store";
+                return View("LernpfadResponse", new LernpfadResponseViewModel
+                {
+                    Inspection = result.Inspection,
+                    ContinueUrl = result.ReturnUrl,
+                    AccountCreated = created,
+                });
             }
             return LocalRedirect(result.ReturnUrl);
         }

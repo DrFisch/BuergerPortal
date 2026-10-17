@@ -1,0 +1,109 @@
+@model LernpfadResponseViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Lernpfad – Schritt 4";
+    ViewData["Breit"] = true;
+    // Lernpfad Schritt 4 (BundId/Lernpfad.cs): Die Response ist angekommen, geprüft und die Person angemeldet. Die
+    // Tabellen nutzen die Darstellung des SAML-Inspektors (auf dem Handy als Karten, CSS in _AuthLayout).
+    var inspection = Model.Inspection;
+    static string Niveau(int level) => level switch { >= 4 => "hoch", >= 3 => "substanziell", _ => "normal" };
+}
+
+<div class="auth-header">
+    <p class="text-uppercase small text-muted mb-1">BundID-Simulation · Lernpfad</p>
+    <h1 class="h3 mb-1">Schritt 4 von 5: Die Antwort der BundID ist geprüft</h1>
+    <p class="text-muted mb-0">
+        Die BundID hat ihre <strong>signierte SAML-Response</strong> über Ihren Browser an den Assertion Consumer Service
+        des Anmeldedienstes geschickt (HTTP-POST an <code>/bundid/acs</code>). Der Anmeldedienst hat sie geprüft, Sie an
+        der <strong>bPK2</strong> @(Model.AccountCreated ? "erstmals erkannt und ein Konto angelegt" : "wiedererkannt") und
+        Sie bei sich angemeldet.
+    </p>
+</div>
+
+<div class="p-4 pt-3">
+    <partial name="_LernpfadSchritte" model="4" />
+
+    @if (inspection == null)
+    {
+        <p class="alert alert-secondary">Das Prüfprotokoll ist für diese Anmeldung nicht verfügbar – angemeldet sind Sie trotzdem.</p>
+    }
+    else
+    {
+        <dl class="row small mb-0">
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Identity Provider</dt>
+            <dd class="col-sm-8 col-lg-9 text-break"><code>@inspection.Issuer</code></dd>
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Anfrage → Assertion</dt>
+            <dd class="col-sm-8 col-lg-9 text-break"><code>@inspection.RequestId</code> → <code>@inspection.AssertionId</code></dd>
+            <dt class="col-sm-4 col-lg-3 text-muted fw-normal">Vertrauensniveau</dt>
+            <dd class="col-sm-8 col-lg-9">gefordert @Niveau(inspection.RequestedLevel), erreicht <strong>@Niveau(inspection.ReachedLevel)</strong></dd>
+        </dl>
+
+        <h2 class="h5 mt-4" id="lern-pruefungen">Was geprüft wurde – jede Zeile muss stimmen</h2>
+        <p class="small text-muted">
+            Schlägt nur eine Prüfung fehl, wird die Antwort abgelehnt und Sie sehen eine Fehlerseite statt dieser Seite.
+            „ITfoxtec“ ist die SAML-Bibliothek, „eigener Code“ ergänzt, was sie nicht selbst prüft.
+        </p>
+        <div class="table-responsive" tabindex="0" role="region" aria-labelledby="lern-pruefungen">
+            <table class="table table-sm align-top inspektor-tabelle" role="table">
+                <thead role="rowgroup">
+                    <tr role="row"><th scope="col" role="columnheader"><span class="visually-hidden">Ergebnis</span></th><th scope="col" role="columnheader">Prüfung</th><th scope="col" role="columnheader">Erwartet</th><th scope="col" role="columnheader">Empfangen</th><th scope="col" role="columnheader">Geprüft durch</th></tr>
+                </thead>
+                <tbody role="rowgroup">
+                    @foreach (var check in inspection.Checks)
+                    {
+                        <tr role="row">
+                            <td role="cell" class="inspektor-haken"><span class="badge text-bg-success" title="bestanden">✓<span class="visually-hidden"> bestanden</span></span></td>
+                            <th scope="row" role="rowheader" class="fw-normal"><strong>@check.Name</strong><div class="small text-muted">@check.Purpose</div></th>
+                            <td role="cell" class="small text-break" data-label="Erwartet"><code>@check.Expected</code></td>
+                            <td role="cell" class="small text-break" data-label="Empfangen"><code>@check.Actual</code></td>
+                            <td role="cell" class="small" data-label="Geprüft durch"><span class="badge rounded-pill text-bg-light border text-wrap text-start">@check.CheckedBy</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="h5 mt-4" id="lern-attribute">Vom SAML-Attribut zum Claim</h2>
+        <p class="small text-muted">
+            Die Assertion enthält Ihre Angaben als Attribute mit OID-Namen. Der Anmeldedienst übersetzt sie in Claims für
+            das Portal (Schritt 5). Dauerhaft gespeichert werden nur bPK2, Postkorb-Handle, Niveau und die letzten
+            Anmeldungen.
+        </p>
+        <div class="table-responsive" tabindex="0" role="region" aria-labelledby="lern-attribute">
+            <table class="table table-sm align-top inspektor-tabelle" role="table">
+                <thead role="rowgroup">
+                    <tr role="row"><th scope="col" role="columnheader">SAML-Attribut</th><th scope="col" role="columnheader">Wert</th><th scope="col" role="columnheader">Claim</th></tr>
+                </thead>
+                <tbody role="rowgroup">
+                    @foreach (var row in inspection.Attributes)
+                    {
+                        <tr role="row" class="@(row.Claim == null ? "text-muted" : null)">
+                            <th scope="row" role="rowheader" class="fw-normal small text-break">@(row.FriendlyName ?? "–")<div><code>@row.Name</code></div></th>
+                            <td role="cell" class="small text-break" data-label="Wert">@string.Join(", ", row.Values)</td>
+                            <td role="cell" class="small" data-label="Claim">@if (row.Claim != null) { <code>@row.Claim</code> } else { <span>–</span> }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <details class="inspektor-xml-rahmen mb-3">
+            <summary class="small mb-2">Die Response als XML ansehen (Signaturwert, Zertifikat und bPK2 gekürzt)</summary>
+            <div class="form-check form-switch small mb-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="inspektor-umbruch" checked />
+                <label class="form-check-label" for="inspektor-umbruch">Zeilen umbrechen</label>
+            </div>
+            <pre class="inspektor-xml bg-light border rounded p-3 small" tabindex="0" role="region" aria-label="SAML-Response (XML)"><code>@inspection.ResponseXml</code></pre>
+        </details>
+    }
+
+    <div class="alert alert-info small">
+        <strong>Gleich (Schritt 5):</strong> Der Anmeldedienst beantwortet jetzt die OpenID-Connect-Anfrage des Portals
+        aus Schritt 1: Er schickt Ihren Browser mit einem einmaligen Code zum Portal; das Portal tauscht den Code direkt
+        beim Anmeldedienst gegen ID-, Access- und Refresh-Token.
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <a class="btn btn-primary btn-lg" href="@Model.ContinueUrl" id="lernZumPortal">Weiter zum Portal (Schritt 5)</a>
+    </div>
+</div>

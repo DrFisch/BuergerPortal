@@ -1,0 +1,70 @@
+@model LernpfadAuthnRequestViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Lernpfad – Schritt 2";
+    ViewData["Breit"] = true;
+    // Lernpfad Schritt 2 (BundId/Lernpfad.cs): der AuthnRequest, bevor er abgeschickt wird. Das Formular unten ist
+    // dasselbe, das sonst per Skript sofort abgeht (HTTP-POST-Binding) – hier schickt man es von Hand ab.
+    var niveau = Model.RequestedLevel switch
+    {
+        var l when l.EndsWith("Level-4") || l.EndsWith("/high") => "hoch",
+        var l when l.EndsWith("Level-3") || l.EndsWith("/substantial") => "substanziell",
+        _ => "normal",
+    };
+}
+
+<div class="auth-header">
+    <p class="text-uppercase small text-muted mb-1">BundID-Simulation · Lernpfad</p>
+    <h1 class="h3 mb-1">Schritt 2 von 5: Der Anmeldedienst fragt die BundID</h1>
+    <p class="text-muted mb-0">
+        Das Portal hat Ihren Browser hierher geschickt (OpenID Connect). Der Anmeldedienst ist bei der BundID als
+        <strong>Service Provider</strong> eingetragen und spricht mit ihr <strong>SAML 2.0</strong>: Er schreibt eine
+        Anmeldeanfrage (AuthnRequest) und schickt sie über Ihren Browser an die BundID.
+    </p>
+</div>
+
+<div class="p-4 pt-3">
+    <partial name="_LernpfadSchritte" model="2" />
+
+    <h2 class="h5">Was in der Anfrage steht</h2>
+    <dl class="row small">
+        <dt class="col-sm-4 text-muted fw-normal">Ziel (Destination)</dt>
+        <dd class="col-sm-8 text-break"><code>@Model.Destination</code> – SSO-Adresse aus den Metadaten der BundID</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Request-ID</dt>
+        <dd class="col-sm-8 text-break"><code>@Model.RequestId</code> – merkt sich der Anmeldedienst 10 Minuten (Cookie <code>bundid_login</code>); nur eine Antwort mit genau dieser <code>InResponseTo</code> wird angenommen</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Aussteller (Issuer)</dt>
+        <dd class="col-sm-8 text-break"><code>@Model.Issuer</code> – EntityID des Anmeldedienstes; unter ihr kennt ihn die BundID</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Antwort an (ACS)</dt>
+        <dd class="col-sm-8 text-break"><code>@Model.AssertionConsumerServiceUrl</code> – Assertion Consumer Service, Binding HTTP-POST</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Gefordertes Niveau</dt>
+        <dd class="col-sm-8"><code>@Model.RequestedLevel</code> (mindestens „@niveau“, <code>RequestedAuthnContext</code>, Vergleich <code>minimum</code>)</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Neue Identifizierung</dt>
+        <dd class="col-sm-8">@(Model.ForceAuthn ? "ja – ForceAuthn=\"true\", eine bestehende BundID-Sitzung zählt nicht" : "nein – eine bestehende BundID-Sitzung darf genutzt werden")</dd>
+        <dt class="col-sm-4 text-muted fw-normal">Signatur</dt>
+        <dd class="col-sm-8">keine – die BundID verlangt laut ihren Metadaten keine signierten Anfragen; geschützt wird die <em>Antwort</em></dd>
+    </dl>
+
+    <details class="inspektor-xml-rahmen mb-3">
+        <summary class="small mb-2">AuthnRequest als XML ansehen</summary>
+        <div class="form-check form-switch small mb-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="inspektor-umbruch" checked />
+            <label class="form-check-label" for="inspektor-umbruch">Zeilen umbrechen</label>
+        </div>
+        <pre class="inspektor-xml bg-light border rounded p-3 small" tabindex="0" role="region" aria-label="AuthnRequest (XML)"><code>@Model.Xml</code></pre>
+        <p class="small text-muted mb-0">Im Formular steht dieselbe Nachricht Base64-kodiert im Feld <code>SAMLRequest</code>.</p>
+    </details>
+
+    <div class="alert alert-info small">
+        <strong>Gleich bei der BundID (Schritt 3):</strong> Dort identifizieren Sie sich. In der Simulation geht das mit
+        „Anmelden als John Doe“ oder durch die Wahl einer Testperson und eines Identifizierungsmittels. Die echte BundID
+        würde hier z. B. den Online-Ausweis mit PIN verlangen. Danach schickt die BundID ihre Antwort über Ihren Browser an
+        den Anmeldedienst – dann geht es hier mit Schritt 4 weiter.
+    </div>
+
+    @* HTTP-POST-Binding: dasselbe Formular wie sonst, nur ohne Auto-Submit *@
+    <form method="post" action="@Model.Destination" class="d-flex flex-wrap align-items-center gap-2">
+        <input type="hidden" name="SAMLRequest" value="@Model.SamlRequest" />
+        <button type="submit" class="btn btn-primary btn-lg" id="lernAnBundId">An die BundID senden (Schritt 3)</button>
+        <a class="btn btn-link" href="@Model.CancelUrl">Abbrechen</a>
+    </form>
+</div>
