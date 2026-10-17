@@ -5,6 +5,7 @@ using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
 using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Net;
 
 namespace BuergerPortal.Web.Controllers
@@ -15,10 +16,15 @@ namespace BuergerPortal.Web.Controllers
         private readonly IHttpClientFactory _cf;
         private readonly HttpCurrentUserService _currentUser;
 
-        public SperrmuellAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser)
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/SperrmuellAntraegeController.en.resx (Plan A9)
+        private readonly IStringLocalizer<SperrmuellAntraegeController> _t;
+
+        public SperrmuellAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser,
+            IStringLocalizer<SperrmuellAntraegeController> t)
         {
             _cf = cf;
             _currentUser = currentUser;
+            _t = t;
         }
 
         [HttpGet]
@@ -46,7 +52,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (vm.Geburtsdatum is null)
             {
-                ModelState.AddModelError(nameof(vm.Geburtsdatum), "Bitte ein gültiges Datum wählen.");
+                ModelState.AddModelError(nameof(vm.Geburtsdatum), _t["Bitte ein gültiges Datum wählen."]);
                 return View("SperrmuellStep1", vm);
             }
 
@@ -72,7 +78,7 @@ namespace BuergerPortal.Web.Controllers
             var idObj = await res.Content.ReadFromJsonAsync<ApiIdResponse>(cancellationToken: ct);
             if (idObj is null || idObj.Id == Guid.Empty)
             {
-                ModelState.AddModelError(string.Empty, "Unerwartete Antwort der API.");
+                ModelState.AddModelError(string.Empty, _t["Unerwartete Antwort der API."]);
                 return View("SperrmuellStep1", vm);
             }
 
@@ -148,7 +154,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (vm.Wunschzeit is null)
             {
-                ModelState.AddModelError(nameof(vm.Wunschzeit), "Bitte ein gültiges Datum wählen.");
+                ModelState.AddModelError(nameof(vm.Wunschzeit), _t["Bitte ein gültiges Datum wählen."]);
                 return View("SperrmuellStep2", vm);
             }
 
@@ -156,7 +162,7 @@ namespace BuergerPortal.Web.Controllers
             var dayOfWeek = vm.Wunschzeit.Value.DayOfWeek;
             if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
             {
-                ModelState.AddModelError(nameof(vm.Wunschzeit), "Am Wochenende ist keine Abholung möglich. Bitte wählen Sie einen Werktag.");
+                ModelState.AddModelError(nameof(vm.Wunschzeit), _t["Am Wochenende ist keine Abholung möglich. Bitte wählen Sie einen Werktag."]);
                 return View("SperrmuellStep2", vm);
             }
 
@@ -190,7 +196,7 @@ namespace BuergerPortal.Web.Controllers
             if (!submit.IsSuccessStatusCode)
                 return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
-            TempData["AntragSuccess"] = "Sperrmüllantrag eingereicht.";
+            TempData["AntragSuccess"] = _t["Sperrmüllantrag eingereicht."].Value;
             TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
         }

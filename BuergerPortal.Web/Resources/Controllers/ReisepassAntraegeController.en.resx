@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Bitte ein gültiges Datum wählen." xml:space="preserve">
+		<value>Please choose a valid date.</value>
+	</data>
+	<data name="Unerwartete Antwort der API." xml:space="preserve">
+		<value>Unexpected response from the API.</value>
+	</data>
+	<data name="Sie sind jetzt mit dem Vertrauensniveau „substanziell“ angemeldet. Bitte reichen Sie den Antrag erneut ein." xml:space="preserve">
+		<value>You are now signed in with the trust level “substantial”. Please submit the application again.</value>
+	</data>
+	<data name="Reisepassantrag eingereicht." xml:space="preserve">
+		<value>Passport application submitted.</value>
+	</data>
+</root>

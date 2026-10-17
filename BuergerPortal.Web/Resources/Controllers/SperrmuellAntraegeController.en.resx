@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Bitte ein gültiges Datum wählen." xml:space="preserve">
+		<value>Please choose a valid date.</value>
+	</data>
+	<data name="Unerwartete Antwort der API." xml:space="preserve">
+		<value>Unexpected response from the API.</value>
+	</data>
+	<data name="Am Wochenende ist keine Abholung möglich. Bitte wählen Sie einen Werktag." xml:space="preserve">
+		<value>No collection at weekends. Please choose a weekday.</value>
+	</data>
+	<data name="Sperrmüllantrag eingereicht." xml:space="preserve">
+		<value>Bulky waste application submitted.</value>
+	</data>
+</root>

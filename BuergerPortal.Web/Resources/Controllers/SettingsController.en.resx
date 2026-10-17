@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Hinweis: Einstellungen lokal mit Standardwerten geladen (API nicht erreichbar)." xml:space="preserve">
+		<value>Note: settings loaded locally with default values (API not reachable).</value>
+	</data>
+	<data name="Einstellungen gespeichert." xml:space="preserve">
+		<value>Settings saved.</value>
+	</data>
+</root>

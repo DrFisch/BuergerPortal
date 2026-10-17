@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using System.Net;
 
 namespace BuergerPortal.Web.Controllers
@@ -12,9 +13,13 @@ namespace BuergerPortal.Web.Controllers
     public class SettingsController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        public SettingsController(IHttpClientFactory httpClientFactory)
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/SettingsController.en.resx (Plan A9)
+        private readonly IStringLocalizer<SettingsController> _t;
+
+        public SettingsController(IHttpClientFactory httpClientFactory, IStringLocalizer<SettingsController> t)
         {
             _httpClientFactory = httpClientFactory;
+            _t = t;
         }
 
         [HttpGet]
@@ -51,7 +56,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (dto.__ApiFallbackUsed) 
             { 
-                TempData["Saved"] = "Hinweis: Einstellungen lokal mit Standardwerten geladen (API nicht erreichbar)."; 
+                TempData["Saved"] = _t["Hinweis: Einstellungen lokal mit Standardwerten geladen (API nicht erreichbar)."].Value; 
             }
 
             return View("Index", vm);
@@ -129,7 +134,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (res.IsSuccessStatusCode || res.StatusCode == HttpStatusCode.NoContent)
             {
-                TempData["Saved"] = "Einstellungen gespeichert.";
+                TempData["Saved"] = _t["Einstellungen gespeichert."].Value;
                 SetClientCookies(payload.Theme, payload.Language);
                 return RedirectToAction(nameof(Index));
             }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Net;
 
 namespace BuergerPortal.Web.Controllers
@@ -17,10 +18,15 @@ namespace BuergerPortal.Web.Controllers
         private readonly IHttpClientFactory _cf;
         private readonly HttpCurrentUserService _currentUser;
 
-        public ReisepassAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser)
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/ReisepassAntraegeController.en.resx (Plan A9)
+        private readonly IStringLocalizer<ReisepassAntraegeController> _t;
+
+        public ReisepassAntraegeController(IHttpClientFactory cf, HttpCurrentUserService currentUser,
+            IStringLocalizer<ReisepassAntraegeController> t)
         {
             _cf = cf;
             _currentUser = currentUser;
+            _t = t;
         }
 
         [HttpGet]
@@ -47,7 +53,7 @@ namespace BuergerPortal.Web.Controllers
 
             if (vm.Geburtsdatum is null)
             {
-                ModelState.AddModelError(nameof(vm.Geburtsdatum), "Bitte ein gültiges Datum wählen.");
+                ModelState.AddModelError(nameof(vm.Geburtsdatum), _t["Bitte ein gültiges Datum wählen."]);
                 return View("ReisepassStep1", vm);
             }
 
@@ -73,7 +79,7 @@ namespace BuergerPortal.Web.Controllers
             var idObj = await res.Content.ReadFromJsonAsync<ApiIdResponse>(cancellationToken: ct);
             if (idObj is null || idObj.Id == Guid.Empty)
             {
-                ModelState.AddModelError(string.Empty, "Unerwartete Antwort der API.");
+                ModelState.AddModelError(string.Empty, _t["Unerwartete Antwort der API."]);
                 return View("ReisepassStep1", vm);
             }
 
@@ -136,8 +142,7 @@ namespace BuergerPortal.Web.Controllers
             // Die Angaben sind gespeichert; nach der erneuten Anmeldung geht es zurück zu Schritt 2.
             if (CurrentTrustLevel() < SubstantialLevel)
             {
-                TempData["AntragInfo"] = "Sie sind jetzt mit dem Vertrauensniveau „substanziell“ angemeldet. " +
-                                         "Bitte reichen Sie den Antrag erneut ein.";
+                TempData["AntragInfo"] = _t["Sie sind jetzt mit dem Vertrauensniveau „substanziell“ angemeldet. Bitte reichen Sie den Antrag erneut ein."].Value;
                 var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(ReisepassStep2), new { id }) };
                 properties.Items["acr_values"] = "STORK-QAA-Level-3";
                 return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
@@ -150,7 +155,7 @@ namespace BuergerPortal.Web.Controllers
             if (!submit.IsSuccessStatusCode)
                 return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, submit, ct));
 
-            TempData["AntragSuccess"] = "Reisepassantrag eingereicht.";
+            TempData["AntragSuccess"] = _t["Reisepassantrag eingereicht."].Value;
             TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
         }
