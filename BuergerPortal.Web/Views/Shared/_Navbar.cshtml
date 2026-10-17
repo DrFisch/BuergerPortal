@@ -62,33 +62,36 @@ else
 
         @* Am Desktop immer ausgeklappt (navbar-expand-lg); auf dem Handy ersetzt die Tab-Leiste dieses Menü *@
         <div id="mainNav" class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto ms-lg-4 gap-lg-1">
+            @* Zwischen 992 und 1199 px ohne Symbole vor den Menüpunkten, damit die Kopfzeile in eine Zeile passt *@
+            <ul class="navbar-nav me-auto ms-lg-3 ms-xl-4 gap-lg-1">
                 @* Leistungen: Hauptmenü am Desktop *@
                 <li class="nav-item">
-                    <a class="nav-link @Aktiv("Termine")" aria-current="@AriaAktiv("Termine")" asp-controller="Termine" asp-action="Index">
-                        <i class="bi bi-calendar3-range me-1"></i> @T["Card_Appointments"]
+                    <a class="nav-link text-nowrap @Aktiv("Termine")" aria-current="@AriaAktiv("Termine")" asp-controller="Termine" asp-action="Index">
+                        <i class="bi bi-calendar3-range me-1 d-none d-xl-inline-block" aria-hidden="true"></i> @T["Card_Appointments"]
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @Aktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" aria-current="@AriaAktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" asp-controller="Antraege" asp-action="Index">
-                        <i class="bi bi-file-earmark-text me-1"></i> @T["Card_Applications"]
+                    <a class="nav-link text-nowrap @Aktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" aria-current="@AriaAktiv("Antraege", "ReisepassAntraege", "SperrmuellAntraege")" asp-controller="Antraege" asp-action="Index">
+                        <i class="bi bi-file-earmark-text me-1 d-none d-xl-inline-block" aria-hidden="true"></i> @T["Card_Applications"]
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @Aktiv("Maengel")" aria-current="@AriaAktiv("Maengel")" asp-controller="Maengel" asp-action="Create">
-                        <i class="bi bi-exclamation-octagon me-1"></i> @T["Card_ReportIssue"]
+                    <a class="nav-link text-nowrap @Aktiv("Maengel")" aria-current="@AriaAktiv("Maengel")" asp-controller="Maengel" asp-action="Create">
+                        <i class="bi bi-exclamation-octagon me-1 d-none d-xl-inline-block" aria-hidden="true"></i> @T["Card_ReportIssue"]
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @Aktiv("Entdecken")" aria-current="@AriaAktiv("Entdecken")" asp-controller="Entdecken" asp-action="Index">
-                        <i class="bi bi-compass me-1"></i> @T["Discover"]
+                    <a class="nav-link text-nowrap @Aktiv("Entdecken")" aria-current="@AriaAktiv("Entdecken")" asp-controller="Entdecken" asp-action="Index">
+                        <i class="bi bi-compass me-1 d-none d-xl-inline-block" aria-hidden="true"></i> @T["Discover"]
                     </a>
                 </li>
 
-                @* immer sichtbar (außer in der installierten App): Browser-Dialog oder Anleitung je Gerät, wwwroot/pwa-install.js *@
+                @* immer sichtbar (außer in der installierten App): Browser-Dialog oder Anleitung je Gerät, wwwroot/pwa-install.js.
+                   Unter 1400 px nur das Symbol (mit Namen für Screenreader), damit die Kopfzeile einzeilig bleibt. *@
                 <li class="nav-item" data-pwa-install-item>
-                    <button type="button" class="nav-link btn btn-link w-100 text-start" data-pwa-install>
-                        <i class="bi bi-download me-1"></i> @T["InstallAppLink"]
+                    <button type="button" class="nav-link btn btn-link w-100 text-start text-nowrap" data-pwa-install
+                            title="@T["InstallAppLink"]" aria-label="@T["InstallAppLink"]">
+                        <i class="bi bi-download me-1" aria-hidden="true"></i><span class="d-none d-xxl-inline"> @T["InstallAppLink"]</span>
                     </button>
                 </li>
             </ul>
@@ -97,14 +100,15 @@ else
 
                 @if (bundIdUser != null)
                 {
-                    <li class="nav-item d-none d-lg-inline ms-lg-2">
-                        <span class="navbar-text">
+                    @* Begrüßung erst ab 1400 px – darunter steht der Name oben im Konto-Menü (Kopfzeile bleibt einzeilig) *@
+                    <li class="nav-item d-none d-xxl-inline ms-lg-2">
+                        <span class="navbar-text text-nowrap">
                             @T["HelloUser", bundIdUser.DisplayName]
                         </span>
                     </li>
 
                     <li class="nav-item dropdown ms-lg-2 d-none d-lg-block">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-nowrap" href="#"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-2"></i> @T["Account"]
                             @if (bundIdUser.TrustLevel > 0)
@@ -113,6 +117,7 @@ else
                             }
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text fw-semibold">@bundIdUser.DisplayName</span></li>
                             @if (bundIdUser.IsBundIdLogin)
                             {
                                 <li>
@@ -168,8 +173,8 @@ else
                             class="btn btn-sm btn-outline-secondary d-flex align-items-center js-theme-toggle"
                             aria-pressed="false"
                             aria-label="@T["ThemeToggleAria"]" data-text-light="@T["ThemeLight"]" data-text-dark="@T["ThemeDark"]">
-                        <i class="bi bi-moon-stars me-2 js-theme-icon"></i>
-                        <span class="js-theme-text">@T["ThemeLight"]</span>
+                        <i class="bi bi-moon-stars js-theme-icon"></i>
+                        <span class="js-theme-text d-none d-xxl-inline ms-2">@T["ThemeLight"]</span>
                     </button>
                 </li>
             </ul>
