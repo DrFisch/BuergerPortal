@@ -25,6 +25,8 @@ services:
       APP_SAML_SIGNING_PASSWORD: ${BUNDID_SIM_KEYSTORE_PASSWORD:-nur-lokal-dev}
       # Anmeldesitzung (Single Sign-on): Das Postfach übernimmt die BundID-Anmeldung des Portals.
       APP_SSO_ENABLED: "true"
+      # Kopfzeile des Simulators „Umgebung: …“ (Standard localDEV, Plan A2)
+      APP_ENV: Lokal (Entwicklung)
       # Postfach im Simulator (Variante „simulator“, siehe README): Oberfläche /postfach, Einlieferung
       # POST /api/v1/messages mit X-Api-Key. Schlüssel und Rücksprung nur für die lokale Entwicklung.
       APP_POSTFACH_ENABLED: "true"
