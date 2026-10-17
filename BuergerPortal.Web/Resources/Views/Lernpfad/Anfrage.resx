@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Lernpfad – Schritt 1</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Schritt 1 von 5: Das Portal fragt seinen Anmeldedienst</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>Das BürgerPortal spricht nicht selbst mit der BundID. Es schickt Ihren Browser mit einer OpenID-Connect-Anfrage zu seinem Anmeldedienst (Auth-Server) – erst der ist bei der BundID als Service Provider eingetragen und spricht SAML 2.0 mit ihr.</value>
+	</data>
+	<data name="Request_Title" xml:space="preserve">
+		<value>Die Anfrage, wie Ihr Browser sie gleich aufruft</value>
+	</data>
+	<data name="Request_Intro" xml:space="preserve">
+		<value>Authorization Code Flow mit PKCE (RFC 6749, RFC 7636, OpenID Connect Core 1.0). Zufallswerte sind gekürzt.</value>
+	</data>
+	<data name="Col_Parameter" xml:space="preserve">
+		<value>Parameter</value>
+	</data>
+	<data name="Col_Value" xml:space="preserve">
+		<value>Wert</value>
+	</data>
+	<data name="Col_Meaning" xml:space="preserve">
+		<value>Bedeutung</value>
+	</data>
+	<data name="Param_client_id" xml:space="preserve">
+		<value>Kennung des Portals beim Anmeldedienst.</value>
+	</data>
+	<data name="Param_redirect_uri" xml:space="preserve">
+		<value>Hierhin schickt der Anmeldedienst den Browser mit dem Code zurück – nur diese eingetragene Adresse ist erlaubt.</value>
+	</data>
+	<data name="Param_response_type" xml:space="preserve">
+		<value>„code“: Der Browser bekommt nur einen kurzlebigen Code, nie ein Token.</value>
+	</data>
+	<data name="Param_scope" xml:space="preserve">
+		<value>Welche Angaben das Portal möchte: openid (Anmeldung), profile, email, bundid (BundID-Daten), buergerportal_api (Zugriff auf die API), offline_access (Refresh-Token).</value>
+	</data>
+	<data name="Param_response_mode" xml:space="preserve">
+		<value>Wie der Code zurückkommt – form_post: als Formular statt in der Adresse.</value>
+	</data>
+	<data name="Param_nonce" xml:space="preserve">
+		<value>Zufallswert; muss im ID-Token wieder auftauchen – bindet das Token an genau diese Anmeldung.</value>
+	</data>
+	<data name="Param_state" xml:space="preserve">
+		<value>Geschützter Zustand des Portals (Rücksprungziel, PKCE-Geheimnis); schützt vor untergeschobenen Antworten (CSRF).</value>
+	</data>
+	<data name="Param_code_challenge" xml:space="preserve">
+		<value>SHA-256 eines Geheimnisses (code_verifier), das nur das Portal kennt (PKCE).</value>
+	</data>
+	<data name="Param_code_challenge_method" xml:space="preserve">
+		<value>S256: Die Challenge ist ein SHA-256-Hash.</value>
+	</data>
+	<data name="Param_prompt" xml:space="preserve">
+		<value>login: immer neu anmelden – der Anmeldedienst macht daraus ForceAuthn für die BundID.</value>
+	</data>
+	<data name="Param_acr_values" xml:space="preserve">
+		<value>Gefordertes Vertrauensniveau (Step-up), z. B. STORK-QAA-Level-3 = substanziell.</value>
+	</data>
+	<data name="Param_bpsim_lernpfad" xml:space="preserve">
+		<value>Nur in diesem Studienprojekt: Der Anmeldedienst zeigt Schritt 2 und 4 als Erklärseite.</value>
+	</data>
+	<data name="Param_x-client-SKU" xml:space="preserve">
+		<value>Kennung der verwendeten Bibliothek (Microsoft.IdentityModel), nur zur Information.</value>
+	</data>
+	<data name="Param_x-client-ver" xml:space="preserve">
+		<value>Version der Bibliothek, nur zur Information.</value>
+	</data>
+	<data name="Param_max_age" xml:space="preserve">
+		<value>Höchstalter einer bestehenden Anmeldung in Sekunden.</value>
+	</data>
+	<data name="Param_Other" xml:space="preserve">
+		<value>Weiterer Parameter der Anfrage.</value>
+	</data>
+	<data name="Why_Title" xml:space="preserve">
+		<value>Worauf es ankommt</value>
+	</data>
+	<data name="Why_Code" xml:space="preserve">
+		<value>Kein Token in der Adresszeile: Der Browser bekommt später nur einen einmaligen Code; die Tokens holt das Portal direkt beim Anmeldedienst (Schritt 5).</value>
+	</data>
+	<data name="Why_Pkce" xml:space="preserve">
+		<value>PKCE: Ein abgefangener Code nützt niemandem, weil beim Einlösen der passende code_verifier mitgeschickt werden muss.</value>
+	</data>
+	<data name="Why_State" xml:space="preserve">
+		<value>state und nonce binden Antwort und ID-Token an diese eine Anmeldung in diesem Browser.</value>
+	</data>
+	<data name="Why_Broker" xml:space="preserve">
+		<value>Der Anmeldedienst übersetzt zwischen OpenID Connect (nach innen) und SAML 2.0 (zur BundID) – so muss nur er die SAML-Prüfungen beherrschen.</value>
+	</data>
+	<data name="Continue" xml:space="preserve">
+		<value>Weiter zum Anmeldedienst (Schritt 2)</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Abbrechen</value>
+	</data>
+	<data name="TimeNote" xml:space="preserve">
+		<value>Lassen Sie sich Zeit, aber nicht zu viel: Die Anmeldung muss innerhalb von etwa 10 Minuten abgeschlossen sein.</value>
+	</data>
+</root>

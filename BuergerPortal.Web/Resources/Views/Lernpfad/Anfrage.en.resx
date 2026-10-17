@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Learning path – step 1</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Step 1 of 5: The portal asks its sign-in service</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>The Citizen Portal does not talk to BundID itself. It sends your browser with an OpenID Connect request to its sign-in service (auth server) – only that service is registered with BundID as a service provider and speaks SAML 2.0 with it.</value>
+	</data>
+	<data name="Request_Title" xml:space="preserve">
+		<value>The request your browser is about to send</value>
+	</data>
+	<data name="Request_Intro" xml:space="preserve">
+		<value>Authorization code flow with PKCE (RFC 6749, RFC 7636, OpenID Connect Core 1.0). Random values are shortened.</value>
+	</data>
+	<data name="Col_Parameter" xml:space="preserve">
+		<value>Parameter</value>
+	</data>
+	<data name="Col_Value" xml:space="preserve">
+		<value>Value</value>
+	</data>
+	<data name="Col_Meaning" xml:space="preserve">
+		<value>Meaning</value>
+	</data>
+	<data name="Param_client_id" xml:space="preserve">
+		<value>The portal's identifier at the sign-in service.</value>
+	</data>
+	<data name="Param_redirect_uri" xml:space="preserve">
+		<value>The sign-in service sends the browser back here with the code – only this registered address is allowed.</value>
+	</data>
+	<data name="Param_response_type" xml:space="preserve">
+		<value>“code”: the browser only gets a short-lived code, never a token.</value>
+	</data>
+	<data name="Param_scope" xml:space="preserve">
+		<value>Which data the portal asks for: openid (sign-in), profile, email, bundid (BundID data), buergerportal_api (API access), offline_access (refresh token).</value>
+	</data>
+	<data name="Param_response_mode" xml:space="preserve">
+		<value>How the code comes back – form_post: as a form instead of in the address.</value>
+	</data>
+	<data name="Param_nonce" xml:space="preserve">
+		<value>Random value; must reappear in the ID token – binds the token to exactly this sign-in.</value>
+	</data>
+	<data name="Param_state" xml:space="preserve">
+		<value>Protected state of the portal (return address, PKCE secret); protects against injected responses (CSRF).</value>
+	</data>
+	<data name="Param_code_challenge" xml:space="preserve">
+		<value>SHA-256 of a secret (code_verifier) that only the portal knows (PKCE).</value>
+	</data>
+	<data name="Param_code_challenge_method" xml:space="preserve">
+		<value>S256: the challenge is a SHA-256 hash.</value>
+	</data>
+	<data name="Param_prompt" xml:space="preserve">
+		<value>login: always sign in again – the sign-in service turns this into ForceAuthn for BundID.</value>
+	</data>
+	<data name="Param_acr_values" xml:space="preserve">
+		<value>Required trust level (step-up), e.g. STORK-QAA-Level-3 = substantial.</value>
+	</data>
+	<data name="Param_bpsim_lernpfad" xml:space="preserve">
+		<value>Only in this student project: the sign-in service shows steps 2 and 4 as explanation pages.</value>
+	</data>
+	<data name="Param_x-client-SKU" xml:space="preserve">
+		<value>Identifier of the library used (Microsoft.IdentityModel), for information only.</value>
+	</data>
+	<data name="Param_x-client-ver" xml:space="preserve">
+		<value>Version of the library, for information only.</value>
+	</data>
+	<data name="Param_max_age" xml:space="preserve">
+		<value>Maximum age of an existing sign-in in seconds.</value>
+	</data>
+	<data name="Param_Other" xml:space="preserve">
+		<value>Further parameter of the request.</value>
+	</data>
+	<data name="Why_Title" xml:space="preserve">
+		<value>What matters</value>
+	</data>
+	<data name="Why_Code" xml:space="preserve">
+		<value>No token in the address bar: the browser later only receives a one-time code; the portal fetches the tokens directly from the sign-in service (step 5).</value>
+	</data>
+	<data name="Why_Pkce" xml:space="preserve">
+		<value>PKCE: an intercepted code is useless, because redeeming it requires the matching code_verifier.</value>
+	</data>
+	<data name="Why_State" xml:space="preserve">
+		<value>state and nonce bind the response and the ID token to this one sign-in in this browser.</value>
+	</data>
+	<data name="Why_Broker" xml:space="preserve">
+		<value>The sign-in service translates between OpenID Connect (inside) and SAML 2.0 (towards BundID) – so only it has to master the SAML checks.</value>
+	</data>
+	<data name="Continue" xml:space="preserve">
+		<value>Continue to the sign-in service (step 2)</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancel</value>
+	</data>
+	<data name="TimeNote" xml:space="preserve">
+		<value>Take your time, but not too much: the sign-in has to be completed within about 10 minutes.</value>
+	</data>
+</root>

@@ -1,0 +1,59 @@
+@model BuergerPortal.Web.Features.Lernpfad.LernpfadAnfrageVm
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@{
+    ViewData["Title"] = T["Title"];
+    // Lernpfad Schritt 1: die OIDC-Anfrage, wie sie gleich zum Anmeldedienst geht (Controllers/LernpfadController.cs)
+}
+<div class="container py-4" style="max-width: 980px;">
+    <partial name="_LernpfadSchritte" model="1" />
+
+    <h1 class="h3 fw-bold">@T["Heading"]</h1>
+    <p class="lead fs-6">@T["Lead"]</p>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold">@T["Request_Title"]</h2>
+            <p class="small text-body-secondary mb-2">@T["Request_Intro"]</p>
+            <p class="mb-3"><code class="text-break">GET @Model.Endpunkt</code></p>
+            <div class="table-responsive" tabindex="0" role="region" aria-labelledby="lernParameter">
+                <table class="table table-sm align-top mb-0">
+                    <caption class="visually-hidden" id="lernParameter">@T["Request_Title"]</caption>
+                    <thead>
+                        <tr><th scope="col">@T["Col_Parameter"]</th><th scope="col">@T["Col_Value"]</th><th scope="col">@T["Col_Meaning"]</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.Parameter)
+                        {
+                            var erklaerung = T[$"Param_{p.Name}"];
+                            <tr>
+                                <th scope="row"><code>@p.Name</code></th>
+                                <td class="small text-break"><code>@p.Wert</code></td>
+                                <td class="small">@(erklaerung.IsResourceNotFound ? T["Param_Other"] : erklaerung)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold">@T["Why_Title"]</h2>
+            <ul class="mb-0">
+                <li>@T["Why_Code"]</li>
+                <li>@T["Why_Pkce"]</li>
+                <li>@T["Why_State"]</li>
+                <li>@T["Why_Broker"]</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <a class="btn btn-primary btn-lg rounded-pill px-4" href="@Model.WeiterUrl" id="lernWeiter">
+            @T["Continue"] <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
+        </a>
+        <a class="btn btn-link" href="/">@T["Cancel"]</a>
+    </div>
+    <p class="small text-body-secondary mt-3 mb-0"><i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>@T["TimeNote"]</p>
+</div>
