@@ -56,4 +56,10 @@
   <data name="StatusList_Empty_Button" xml:space="preserve">
     <value>Antrag stellen</value>
   </data>
+  <data name="StatusList_Section_Passport" xml:space="preserve">
+    <value>Reisepass-Anträge</value>
+  </data>
+  <data name="StatusList_Section_BulkyWaste" xml:space="preserve">
+    <value>Sperrmüll-Anträge</value>
+  </data>
 </root>

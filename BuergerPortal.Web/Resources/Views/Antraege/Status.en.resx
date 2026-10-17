@@ -56,4 +56,10 @@
   <data name="StatusList_Empty_Button" xml:space="preserve">
     <value>New application</value>
   </data>
+  <data name="StatusList_Section_Passport" xml:space="preserve">
+    <value>Passport applications</value>
+  </data>
+  <data name="StatusList_Section_BulkyWaste" xml:space="preserve">
+    <value>Bulky waste applications</value>
+  </data>
 </root>
