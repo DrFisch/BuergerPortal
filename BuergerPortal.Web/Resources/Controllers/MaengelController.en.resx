@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Bitte wählen Sie das Foto hier noch einmal aus." xml:space="preserve">
+		<value>Please choose the photo again here.</value>
+	</data>
+	<data name="Das Foto ist zu groß (höchstens 2 MB). Bitte ein kleineres wählen." xml:space="preserve">
+		<value>The photo is too large (2 MB at most). Please choose a smaller one.</value>
+	</data>
+	<data name="Bitte markieren Sie den Standort auf der Karte." xml:space="preserve">
+		<value>Please mark the location on the map.</value>
+	</data>
+	<data name="Fehler beim Senden der Mängelmeldung ({0}). Bitte später erneut versuchen." xml:space="preserve">
+		<value>Error sending the report ({0}). Please try again later.</value>
+	</data>
+	<data name="Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem." xml:space="preserve">
+		<value>Your report has been created. Thank you – the city will take care of the problem.</value>
+	</data>
+	<data name="Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem. Nummer: {0}" xml:space="preserve">
+		<value>Your report has been created. Thank you – the city will take care of the problem. Number: {0}</value>
+	</data>
+</root>

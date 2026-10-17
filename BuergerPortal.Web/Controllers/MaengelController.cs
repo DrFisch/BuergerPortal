@@ -2,6 +2,7 @@
 using BuergerPortal.Web.Features.Maengel.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Net;
 
 namespace BuergerPortal.Web.Controllers
@@ -9,10 +10,13 @@ namespace BuergerPortal.Web.Controllers
     public class MaengelController : Controller
     {
         private readonly IHttpClientFactory _cf;
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/MaengelController.en.resx (Plan A9)
+        private readonly IStringLocalizer<MaengelController> _t;
 
-        public MaengelController(IHttpClientFactory cf)
+        public MaengelController(IHttpClientFactory cf, IStringLocalizer<MaengelController> t)
         {
             _cf = cf;
+            _t = t;
         }
 
         // Meine Meldungen (nur die eigenen, mit Foto)
@@ -43,7 +47,7 @@ namespace BuergerPortal.Web.Controllers
         [IgnoreAntiforgeryToken]
         public IActionResult Teilen()
         {
-            TempData["Meldung"] = "Bitte wählen Sie das Foto hier noch einmal aus.";
+            TempData["Meldung"] = _t["Bitte wählen Sie das Foto hier noch einmal aus."].Value;
             return RedirectToAction(nameof(Create));
         }
 
@@ -67,7 +71,7 @@ namespace BuergerPortal.Web.Controllers
             {
                 if (vm.Foto.Length > 2 * 1024 * 1024)
                 {
-                    ModelState.AddModelError(nameof(vm.Foto), "Das Foto ist zu groß (höchstens 2 MB). Bitte ein kleineres wählen.");
+                    ModelState.AddModelError(nameof(vm.Foto), _t["Das Foto ist zu groß (höchstens 2 MB). Bitte ein kleineres wählen."]);
                     return View(vm);
                 }
                 using var stream = new MemoryStream();
@@ -77,8 +81,8 @@ namespace BuergerPortal.Web.Controllers
 
             if (vm.Latitude is null || vm.Longitude is null)
             {
-                ModelState.AddModelError(nameof(vm.Latitude), "Bitte markieren Sie den Standort auf der Karte.");
-                ModelState.AddModelError(nameof(vm.Longitude), "Bitte markieren Sie den Standort auf der Karte.");
+                ModelState.AddModelError(nameof(vm.Latitude), _t["Bitte markieren Sie den Standort auf der Karte."]);
+                ModelState.AddModelError(nameof(vm.Longitude), _t["Bitte markieren Sie den Standort auf der Karte."]);
                 return View(vm);
             }
 
@@ -132,7 +136,7 @@ namespace BuergerPortal.Web.Controllers
 
                 var message = await res.Content.ReadAsStringAsync(ct);
                 ModelState.AddModelError(string.Empty,
-                    $"Fehler beim Senden der Mängelmeldung ({(int)res.StatusCode}). Bitte später erneut versuchen.");
+                    _t["Fehler beim Senden der Mängelmeldung ({0}). Bitte später erneut versuchen.", (int)res.StatusCode]);
 
                 return View(vm);
             }
@@ -141,8 +145,8 @@ namespace BuergerPortal.Web.Controllers
             var created = await res.Content.ReadFromJsonAsync<CreateMaengelmeldungResponse>(cancellationToken: ct);
 
             TempData["Meldung"] = created is null
-                ? "Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem."
-                : $"Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem. Nummer: {created.Id.ToString()[..8]}";
+                ? _t["Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem."].Value
+                : _t["Mängelmeldung wurde erstellt. Die Stadt dankt Ihnen für den Hinweis und kümmert sich um das Problem. Nummer: {0}", created.Id.ToString()[..8]].Value;
 
             return RedirectToAction(nameof(Create));
         }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Bitte beschreiben Sie den Mangel." xml:space="preserve">
+		<value>Please describe the issue.</value>
+	</data>
+	<data name="Bitte geben Sie einen Titel an." xml:space="preserve">
+		<value>Please enter a title.</value>
+	</data>
+	<data name="Bitte markieren Sie den Standort auf der Karte." xml:space="preserve">
+		<value>Please mark the location on the map.</value>
+	</data>
+	<data name="Der Adresshinweis darf maximal 500 Zeichen lang sein." xml:space="preserve">
+		<value>The location hint may be at most 500 characters long.</value>
+	</data>
+	<data name="Der Titel darf maximal 200 Zeichen lang sein." xml:space="preserve">
+		<value>The title may be at most 200 characters long.</value>
+	</data>
+	<data name="Die Beschreibung darf maximal 4000 Zeichen lang sein." xml:space="preserve">
+		<value>The description may be at most 4000 characters long.</value>
+	</data>
+</root>
