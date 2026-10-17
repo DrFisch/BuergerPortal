@@ -51,9 +51,16 @@
                     </details>
                 </div>
                 <p class="text-body-secondary mt-2 mb-0">@L["NoRealData"]</p>
+                @* Lernpfad „Schritt für Schritt“ (Services/Lernpfad.cs): nur bei Anmeldung und Step-up *@
+                <p class="text-body-secondary mt-2 mb-0" data-sim-variante="login stepup">
+                    <i class="bi bi-mortarboard me-1" aria-hidden="true"></i>@L["LearnMode_Hint"]
+                </p>
             </div>
             <div class="modal-footer bp-sim-knoepfe">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
+                <button type="button" class="btn btn-outline-primary" data-sim-lernpfad data-sim-variante="login stepup">
+                    <i class="bi bi-mortarboard me-1" aria-hidden="true"></i>@L["LearnMode"]
+                </button>
                 <button type="button" class="btn btn-primary" data-sim-weiter>@L["Continue"]</button>
             </div>
         </div>

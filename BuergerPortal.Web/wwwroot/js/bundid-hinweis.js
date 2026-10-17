@@ -2,6 +2,8 @@
 // Ein Klick auf einen Anmelde-Link (/Account/Login) oder auf ein Element mit data-sim-hinweis="login|stepup|postfach"
 // öffnet den Dialog (Views/Shared/_SimulationsHinweis.cshtml). Erst „Weiter“ führt das eigentliche Ziel aus:
 // Links werden aufgerufen, Formular-Knöpfe senden ihr Formular (mit ihrem name/value) ab.
+// „Schritt für Schritt ansehen“ (Lernpfad) setzt vorher ein kurzlebiges Cookie; der OIDC-Handler des Portals liest es
+// beim Start der Anmeldung und zeigt dann jeden Schritt als Erklärseite (Services/Lernpfad.cs).
 (function () {
     const modalEl = document.getElementById('simHinweisModal');
     if (!modalEl || !window.bootstrap) {
@@ -9,6 +11,13 @@
     }
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     const weiter = modalEl.querySelector('[data-sim-weiter]');
+    const lernpfad = modalEl.querySelector('[data-sim-lernpfad]');
+
+    // 10 Minuten gültig, nur für dieses Portal (__Host-: Secure, Path=/, ohne Domain)
+    function lernpfadCookie(an) {
+        document.cookie = '__Host-bp-lernpfad=' + (an ? '1' : '') + '; Path=/; Max-Age=' + (an ? 600 : 0) +
+            '; Secure; SameSite=Lax';
+    }
     let ausfuehren = null;
 
     function hinweisTyp(el) {
@@ -64,14 +73,20 @@
         }
     });
 
-    weiter.addEventListener('click', function () {
+    function starten(mitLernpfad) {
         const ziel = ausfuehren;
         ausfuehren = null;
+        lernpfadCookie(mitLernpfad);
         modal.hide();
         if (ziel) {
             ziel();
         }
-    });
+    }
+
+    weiter.addEventListener('click', function () { starten(false); });
+    if (lernpfad) {
+        lernpfad.addEventListener('click', function () { starten(true); });
+    }
 
     modalEl.addEventListener('hidden.bs.modal', function () {
         ausfuehren = null;

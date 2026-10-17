@@ -76,4 +76,10 @@
   <data name="MoreInfo" xml:space="preserve">
     <value>Learn more: what happens there, and how would it work for real?</value>
   </data>
+  <data name="LearnMode" xml:space="preserve">
+    <value>Show step by step</value>
+  </data>
+  <data name="LearnMode_Hint" xml:space="preserve">
+    <value>Learning path: the sign-in stops at every step and shows what happens technically (OpenID Connect and SAML 2.0).</value>
+  </data>
 </root>
