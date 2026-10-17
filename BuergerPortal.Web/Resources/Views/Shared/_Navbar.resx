@@ -42,15 +42,15 @@
   </data>
 
 	<data name="ThemeToggleAria" xml:space="preserve">
-    <value>Theme umschalten</value>
+    <value>Farbschema umschalten</value>
   </data>
 
 	<data name="ThemeLight" xml:space="preserve">
-    <value>Light</value>
+    <value>Hell</value>
   </data>
 
 	<data name="ThemeDark" xml:space="preserve">
-    <value>Dark</value>
+    <value>Dunkel</value>
   </data>
 	<data name="InstallApp" xml:space="preserve">
   <value>App installieren</value>
