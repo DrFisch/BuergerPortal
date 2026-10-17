@@ -104,6 +104,25 @@ button.bp-tab {
     padding-bottom: .85rem;
 }
 
+/* Hinweis vor der Simulation (Views/Shared/_SimulationsHinweis.cshtml): aufklappbarer Teil, Knoepfe auf dem Handy untereinander */
+.bp-sim-mehr > summary {
+    color: var(--bp-akzent);
+    cursor: pointer;
+    min-height: 24px;
+}
+
+@media (max-width: 575.98px) {
+    .bp-sim-knoepfe {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .bp-sim-knoepfe > .btn {
+        width: 100%;
+        margin: .25rem 0;
+    }
+}
+
 /* Hauptmenue: aktiver Bereich */
 .navbar .nav-link.active {
     color: var(--bp-akzent);

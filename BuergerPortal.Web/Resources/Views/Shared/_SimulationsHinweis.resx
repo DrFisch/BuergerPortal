@@ -73,4 +73,7 @@
   <data name="Postfach_Step3" xml:space="preserve">
     <value>Mit „Zurück zum BürgerPortal“ kommen Sie wieder hierher.</value>
   </data>
+  <data name="MoreInfo" xml:space="preserve">
+    <value>Mehr erfahren: Was passiert dort, wie wäre es in echt?</value>
+  </data>
 </root>

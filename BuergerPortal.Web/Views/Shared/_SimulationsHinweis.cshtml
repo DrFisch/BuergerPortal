@@ -7,10 +7,12 @@
 @*
     Hinweis vor dem Wechsel zur BundID-Simulation: Die Person soll wissen, dass sie gleich auf ein Testsystem kommt, was
     dort passiert und wie es bei der echten BundID wäre. Gesteuert von wwwroot/js/bundid-hinweis.js; welche Blöcke
-    sichtbar sind, bestimmt data-sim-variante (login, stepup, postfach).
+    sichtbar sind, bestimmt data-sim-variante (login, stepup, postfach). „Was dort passiert“ und „In echt“ stehen in
+    einem aufklappbaren Teil (data-sim-mehr): am Computer offen, auf dem Handy zu – der Dialog füllt dort sonst den
+    ganzen Bildschirm (Plan A3). Der Hinweis „Simulation“ und die Einleitung bleiben immer sichtbar.
 *@
 <div class="modal fade" id="simHinweisModal" tabindex="-1" aria-labelledby="simHinweisTitel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title h5" id="simHinweisTitel">
@@ -24,27 +26,33 @@
                 <span class="badge text-bg-warning mb-2">@L["Badge"]</span>
                 <div data-sim-variante="login stepup">
                     <p>@L["Login_Intro"]</p>
-                    <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
-                    <ul class="mb-2">
-                        <li>@L["Login_Step1"]</li>
-                        <li>@L["Login_Step2"]</li>
-                    </ul>
                     <p class="alert alert-info py-2 mb-2" data-sim-variante="stepup">@L["StepUp_Note"]</p>
-                    <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Login_Real"]</p>
+                    <details class="bp-sim-mehr" data-sim-mehr open>
+                        <summary class="mb-2">@L["MoreInfo"]</summary>
+                        <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
+                        <ul class="mb-2">
+                            <li>@L["Login_Step1"]</li>
+                            <li>@L["Login_Step2"]</li>
+                        </ul>
+                        <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Login_Real"]</p>
+                    </details>
                 </div>
                 <div data-sim-variante="postfach">
                     <p>@L["Postfach_Intro"]</p>
-                    <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
-                    <ul class="mb-2">
-                        <li>@(postfachImSimulator ? L["Postfach_Step1_Simulator"] : L["Postfach_Step1"])</li>
-                        <li>@L["Postfach_Step2"]</li>
-                        <li>@L["Postfach_Step3"]</li>
-                    </ul>
-                    <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Postfach_Real"]</p>
+                    <details class="bp-sim-mehr" data-sim-mehr open>
+                        <summary class="mb-2">@L["MoreInfo"]</summary>
+                        <p class="fw-semibold mb-1">@L["WhatHappens"]</p>
+                        <ul class="mb-2">
+                            <li>@(postfachImSimulator ? L["Postfach_Step1_Simulator"] : L["Postfach_Step1"])</li>
+                            <li>@L["Postfach_Step2"]</li>
+                            <li>@L["Postfach_Step3"]</li>
+                        </ul>
+                        <p class="mb-0"><span class="fw-semibold">@L["InReality"]</span> @L["Postfach_Real"]</p>
+                    </details>
                 </div>
                 <p class="text-body-secondary mt-2 mb-0">@L["NoRealData"]</p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer bp-sim-knoepfe">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
                 <button type="button" class="btn btn-primary" data-sim-weiter>@L["Continue"]</button>
             </div>

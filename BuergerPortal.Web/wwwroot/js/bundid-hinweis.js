@@ -28,6 +28,11 @@
         modalEl.querySelectorAll('[data-sim-variante]').forEach(function (block) {
             block.hidden = !block.dataset.simVariante.split(' ').includes(typ);
         });
+        // „Was dort passiert“ / „In echt“: am Computer offen, auf dem Handy zugeklappt (Dialog sonst bildschirmfüllend)
+        const breit = !window.matchMedia || window.matchMedia('(min-width: 768px)').matches;
+        modalEl.querySelectorAll('[data-sim-mehr]').forEach(function (mehr) {
+            mehr.open = breit;
+        });
         ausfuehren = ziel;
         modal.show();
     }
