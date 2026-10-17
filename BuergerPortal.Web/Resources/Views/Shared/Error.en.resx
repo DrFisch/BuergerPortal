@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="NotFound_Title" xml:space="preserve">
+		<value>Page not found</value>
+	</data>
+	<data name="NotFound_Text" xml:space="preserve">
+		<value>This address does not exist (any longer) in the Citizen Portal.</value>
+	</data>
+	<data name="Forbidden_Title" xml:space="preserve">
+		<value>No access</value>
+	</data>
+	<data name="Forbidden_Text" xml:space="preserve">
+		<value>You do not have permission to view this page.</value>
+	</data>
+	<data name="Error_Title" xml:space="preserve">
+		<value>An error has occurred</value>
+	</data>
+	<data name="Error_Text" xml:space="preserve">
+		<value>Please try again in a moment.</value>
+	</data>
+	<data name="ToStart" xml:space="preserve">
+		<value>Go to the start page</value>
+	</data>
+	<data name="RequestId" xml:space="preserve">
+		<value>Error ID for enquiries:</value>
+	</data>
+</root>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="NotFound_Title" xml:space="preserve">
+		<value>Seite nicht gefunden</value>
+	</data>
+	<data name="NotFound_Text" xml:space="preserve">
+		<value>Die aufgerufene Adresse gibt es im BürgerPortal nicht (mehr).</value>
+	</data>
+	<data name="Forbidden_Title" xml:space="preserve">
+		<value>Kein Zugriff</value>
+	</data>
+	<data name="Forbidden_Text" xml:space="preserve">
+		<value>Für diese Seite fehlt Ihnen die Berechtigung.</value>
+	</data>
+	<data name="Error_Title" xml:space="preserve">
+		<value>Es ist ein Fehler aufgetreten</value>
+	</data>
+	<data name="Error_Text" xml:space="preserve">
+		<value>Bitte versuchen Sie es in einem Moment erneut.</value>
+	</data>
+	<data name="ToStart" xml:space="preserve">
+		<value>Zur Startseite</value>
+	</data>
+	<data name="RequestId" xml:space="preserve">
+		<value>Fehlerkennung für Rückfragen:</value>
+	</data>
+</root>
