@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Lernpfad – Schritt 5</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Schritt 5 von 5: Angemeldet – das Portal hat seine Tokens</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>Der Anmeldedienst hat Sie nach der geprüften BundID-Antwort angemeldet und das Portal informiert. Das Portal hat daraus seine eigene Sitzung gemacht.</value>
+	</data>
+	<data name="Flow_Title" xml:space="preserve">
+		<value>Was in diesem Schritt passiert ist</value>
+	</data>
+	<data name="Flow_Callback" xml:space="preserve">
+		<value>Der Anmeldedienst schickte Ihren Browser mit einem einmaligen Code und dem state per Formular an /signin-oidc des Portals (response_mode=form_post); das Portal prüfte state gegen sein Korrelations-Cookie.</value>
+	</data>
+	<data name="Flow_Token" xml:space="preserve">
+		<value>Das Portal löste den Code direkt beim Anmeldedienst ein (POST /connect/token, Server zu Server) – mit Client-Geheimnis und code_verifier (PKCE). Zurück kamen die Tokens unten.</value>
+	</data>
+	<data name="Flow_Validate" xml:space="preserve">
+		<value>Es prüfte das ID-Token: Signatur mit dem Schlüssel des Anmeldedienstes (JWKS), Aussteller, Zielgruppe (= Client-ID), Ablauf und nonce; danach holte es weitere Angaben am UserInfo-Endpunkt.</value>
+	</data>
+	<data name="Flow_Session" xml:space="preserve">
+		<value>Es legte seine Sitzung an (Cookie __Host-bp-sitzung, die Tokens bleiben auf dem Server). Ab jetzt ruft es die API mit dem Access-Token auf.</value>
+	</data>
+	<data name="Token_Title" xml:space="preserve">
+		<value>Was beim Code-Tausch ankam (ohne die Tokens selbst)</value>
+	</data>
+	<data name="Token_Received" xml:space="preserve">
+		<value>Erhalten</value>
+	</data>
+	<data name="Token_Alg" xml:space="preserve">
+		<value>Signatur des ID-Tokens</value>
+	</data>
+	<data name="Token_Iss" xml:space="preserve">
+		<value>Aussteller (iss)</value>
+	</data>
+	<data name="Token_Aud" xml:space="preserve">
+		<value>Zielgruppe (aud)</value>
+	</data>
+	<data name="Token_Time" xml:space="preserve">
+		<value>Ausgestellt → gültig bis</value>
+	</data>
+	<data name="Token_Nonce" xml:space="preserve">
+		<value>nonce geprüft</value>
+	</data>
+	<data name="Token_Level" xml:space="preserve">
+		<value>Vertrauensniveau (acr) · Mittel (amr)</value>
+	</data>
+	<data name="Yes" xml:space="preserve">
+		<value>ja</value>
+	</data>
+	<data name="No" xml:space="preserve">
+		<value>nein</value>
+	</data>
+	<data name="Claims_Title" xml:space="preserve">
+		<value>Was das Portal jetzt über Sie weiß</value>
+	</data>
+	<data name="Claims_Intro" xml:space="preserve">
+		<value>Aus der SAML-Assertion der BundID (Schritt 4) wurden Claims im ID-Token und am UserInfo-Endpunkt. Kennungen sind gekürzt.</value>
+	</data>
+	<data name="Col_Value" xml:space="preserve">
+		<value>Wert</value>
+	</data>
+	<data name="Recap_Title" xml:space="preserve">
+		<value>Der ganze Weg in einem Satz</value>
+	</data>
+	<data name="Recap_Text" xml:space="preserve">
+		<value>Portal → (OIDC) → Anmeldedienst → (SAML-AuthnRequest) → BundID identifiziert Sie → (signierte SAML-Response) → Anmeldedienst prüft und erkennt Sie an der bPK2 → (Code, dann Tokens) → Portal. Ihr Browser trägt alle Nachrichten außer dem Token-Tausch; vertraut wird nur Signaturen und fest eingetragenen Adressen.</value>
+	</data>
+	<data name="Done" xml:space="preserve">
+		<value>Fertig – weiter zum Portal</value>
+	</data>
+	<data name="Inspector" xml:space="preserve">
+		<value>Assertion im SAML-Inspektor ansehen</value>
+	</data>
+	<data name="BookNext" xml:space="preserve">
+		<value>Jetzt einen Termin buchen</value>
+	</data>
+</root>

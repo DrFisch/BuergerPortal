@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Learning path – step 5</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Step 5 of 5: Signed in – the portal has its tokens</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>After the checked BundID response, the sign-in service signed you in and informed the portal. The portal turned this into its own session.</value>
+	</data>
+	<data name="Flow_Title" xml:space="preserve">
+		<value>What happened in this step</value>
+	</data>
+	<data name="Flow_Callback" xml:space="preserve">
+		<value>The sign-in service sent your browser with a one-time code and the state as a form to the portal's /signin-oidc (response_mode=form_post); the portal checked the state against its correlation cookie.</value>
+	</data>
+	<data name="Flow_Token" xml:space="preserve">
+		<value>The portal redeemed the code directly at the sign-in service (POST /connect/token, server to server) with its client secret and the code_verifier (PKCE). The tokens below came back.</value>
+	</data>
+	<data name="Flow_Validate" xml:space="preserve">
+		<value>It validated the ID token: signature with the sign-in service's key (JWKS), issuer, audience (= client ID), expiry and nonce; then it fetched further data from the UserInfo endpoint.</value>
+	</data>
+	<data name="Flow_Session" xml:space="preserve">
+		<value>It created its session (cookie __Host-bp-sitzung; the tokens stay on the server). From now on it calls the API with the access token.</value>
+	</data>
+	<data name="Token_Title" xml:space="preserve">
+		<value>What arrived in the code exchange (without the tokens themselves)</value>
+	</data>
+	<data name="Token_Received" xml:space="preserve">
+		<value>Received</value>
+	</data>
+	<data name="Token_Alg" xml:space="preserve">
+		<value>Signature of the ID token</value>
+	</data>
+	<data name="Token_Iss" xml:space="preserve">
+		<value>Issuer (iss)</value>
+	</data>
+	<data name="Token_Aud" xml:space="preserve">
+		<value>Audience (aud)</value>
+	</data>
+	<data name="Token_Time" xml:space="preserve">
+		<value>Issued → valid until</value>
+	</data>
+	<data name="Token_Nonce" xml:space="preserve">
+		<value>nonce checked</value>
+	</data>
+	<data name="Token_Level" xml:space="preserve">
+		<value>Trust level (acr) · means (amr)</value>
+	</data>
+	<data name="Yes" xml:space="preserve">
+		<value>yes</value>
+	</data>
+	<data name="No" xml:space="preserve">
+		<value>no</value>
+	</data>
+	<data name="Claims_Title" xml:space="preserve">
+		<value>What the portal now knows about you</value>
+	</data>
+	<data name="Claims_Intro" xml:space="preserve">
+		<value>The BundID SAML assertion (step 4) became claims in the ID token and at the UserInfo endpoint. Identifiers are shortened.</value>
+	</data>
+	<data name="Col_Value" xml:space="preserve">
+		<value>Value</value>
+	</data>
+	<data name="Recap_Title" xml:space="preserve">
+		<value>The whole way in one sentence</value>
+	</data>
+	<data name="Recap_Text" xml:space="preserve">
+		<value>Portal → (OIDC) → sign-in service → (SAML AuthnRequest) → BundID identifies you → (signed SAML response) → sign-in service checks it and recognises you by the bPK2 → (code, then tokens) → portal. Your browser carries all messages except the token exchange; trust rests only on signatures and registered addresses.</value>
+	</data>
+	<data name="Done" xml:space="preserve">
+		<value>Done – continue to the portal</value>
+	</data>
+	<data name="Inspector" xml:space="preserve">
+		<value>View the assertion in the SAML inspector</value>
+	</data>
+	<data name="BookNext" xml:space="preserve">
+		<value>Book an appointment now</value>
+	</data>
+</root>
