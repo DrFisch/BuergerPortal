@@ -134,4 +134,19 @@
 	<data name="Cityplan_Placeholder_Hint" xml:space="preserve">
     <value>In einem produktiven System würde hier eine interaktive Karte (z.B. OpenStreetMap oder Google Maps) mit Live-Standorten angezeigt werden.</value>
   </data>
+  <data name="Cityplan_Places_Title" xml:space="preserve">
+    <value>Interessante Orte &amp; Adressen</value>
+  </data>
+  <data name="Cityplan_TouristInfo_Title" xml:space="preserve">
+    <value>Touristen-Info</value>
+  </data>
+  <data name="Cityplan_TouristInfo_Text" xml:space="preserve">
+    <value>Besuchen Sie unser Informationszentrum am Marktplatz für kostenlose Broschüren und persönliche Beratung zu Ihrem Aufenthalt.</value>
+  </data>
+  <data name="Cityplan_Arrival_Title" xml:space="preserve">
+    <value>Anreise</value>
+  </data>
+  <data name="Cityplan_Arrival_Text" xml:space="preserve">
+    <value>Beispielstadt ist ideal an das regionale Schienennetz angebunden. Alle Sehenswürdigkeiten im Zentrum sind fußläufig in max. 15 Minuten erreichbar.</value>
+  </data>
 </root>

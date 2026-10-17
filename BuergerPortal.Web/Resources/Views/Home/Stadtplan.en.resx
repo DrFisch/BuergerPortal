@@ -134,4 +134,19 @@
 	<data name="Cityplan_Placeholder_Hint" xml:space="preserve">
     <value>In a production system, an interactive map (e.g., OpenStreetMap or Google Maps) with live locations would be displayed here.</value>
   </data>
+  <data name="Cityplan_Places_Title" xml:space="preserve">
+    <value>Interesting places &amp; addresses</value>
+  </data>
+  <data name="Cityplan_TouristInfo_Title" xml:space="preserve">
+    <value>Tourist information</value>
+  </data>
+  <data name="Cityplan_TouristInfo_Text" xml:space="preserve">
+    <value>Visit our information centre on the market square for free brochures and personal advice about your stay.</value>
+  </data>
+  <data name="Cityplan_Arrival_Title" xml:space="preserve">
+    <value>Getting here</value>
+  </data>
+  <data name="Cityplan_Arrival_Text" xml:space="preserve">
+    <value>The example town is well connected to the regional rail network. All sights in the centre are within a 15-minute walk.</value>
+  </data>
 </root>

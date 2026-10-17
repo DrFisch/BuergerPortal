@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <h5 class="fw-bold mb-4">Interessante Orte & Adressen</h5>
+            <h5 class="fw-bold mb-4">@T["Cityplan_Places_Title"]</h5>
             <div class="row g-3">
                 @{
                     var pois = new[] {
@@ -64,9 +64,9 @@
 
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white mb-4">
-                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Touristen-Info</h6>
+                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2" aria-hidden="true"></i>@T["Cityplan_TouristInfo_Title"]</h6>
                 <p class="small opacity-75">
-                    Besuchen Sie unser Informationszentrum am Marktplatz für kostenlose Broschüren und persönliche Beratung zu Ihrem Aufenthalt.
+                    @T["Cityplan_TouristInfo_Text"]
                 </p>
                 <hr class="opacity-25">
                 <div class="small">
@@ -76,9 +76,9 @@
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-body">
-                <h6 class="fw-bold mb-2">Anreise</h6>
+                <h6 class="fw-bold mb-2">@T["Cityplan_Arrival_Title"]</h6>
                 <p class="small text-muted mb-0">
-                    Beispielstadt ist ideal an das regionale Schienennetz angebunden. Alle Sehenswürdigkeiten im Zentrum sind fußläufig in max. 15 Minuten erreichbar.
+                    @T["Cityplan_Arrival_Text"]
                 </p>
             </div>
         </div>
