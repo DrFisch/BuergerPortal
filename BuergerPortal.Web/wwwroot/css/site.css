@@ -123,6 +123,34 @@ button.bp-tab {
     }
 }
 
+/* Schnellzugriffe auf der Startseite (Handy, Views/Home/Index.cshtml): grosse Kacheln mit Symbol und Text */
+.bp-schnellzugriff {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    height: 100%;
+    min-height: 5.25rem;
+    padding: .75rem .25rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    font-size: .8rem;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+}
+
+.bp-schnellzugriff .bi {
+    font-size: 1.5rem;
+}
+
+.bp-schnellzugriff:active {
+    transform: scale(.97);
+}
+
 /* Hauptmenue: aktiver Bereich */
 .navbar .nav-link.active {
     color: var(--bp-akzent);

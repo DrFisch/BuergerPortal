@@ -369,4 +369,34 @@
   <data name="PWA_Later" xml:space="preserve">
     <value>Später</value>
   </data>
+  <data name="PWA_Inline_Short" xml:space="preserve">
+    <value>Als App installieren – schneller am Ziel</value>
+  </data>
+  <data name="PWA_Install_Short" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
+  <data name="Section_More" xml:space="preserve">
+    <value>Mehr für Sie</value>
+  </data>
+  <data name="Quick_ReportIssue" xml:space="preserve">
+    <value>Mangel melden</value>
+  </data>
+  <data name="Quick_BookAppointment" xml:space="preserve">
+    <value>Termin buchen</value>
+  </data>
+  <data name="Quick_Apply" xml:space="preserve">
+    <value>Antrag stellen</value>
+  </data>
+  <data name="Quick_MyData" xml:space="preserve">
+    <value>Meine Daten</value>
+  </data>
+  <data name="Quick_Mailbox" xml:space="preserve">
+    <value>Postfach</value>
+  </data>
+  <data name="Quick_MyReports" xml:space="preserve">
+    <value>Meine Meldungen</value>
+  </data>
+  <data name="Quick_Discover" xml:space="preserve">
+    <value>Entdecken</value>
+  </data>
 </root>
