@@ -1,0 +1,44 @@
+@* Englische Fassung von Impressum.cshtml (Plan A9); die View-Lokalisierung wählt sie bei Sprache „en“. Inhalt gleich halten. *@
+@{
+    ViewData["Title"] = "Legal notice";
+}
+
+<div class="container" style="max-width: 860px;">
+    <h1 class="h3 fw-bold mb-3">Legal notice</h1>
+
+    <div class="alert alert-warning d-flex gap-2" role="note">
+        <i class="bi bi-mortarboard" aria-hidden="true"></i>
+        <div>
+            <strong>Student project – not a service of any public authority.</strong>
+            This Citizen Portal is a sample application for signing in with BundID. There is no real town administration
+            behind it; appointments, applications and reports are not processed.
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5">Background</h2>
+            <p class="mb-2">
+                Created in the module “Key Technologies in Public Administration” of the master's programme in
+                Administrative Informatics at Hof University of Applied Sciences.
+            </p>
+            <p class="mb-0">
+                Sign-in uses a <strong>BundID simulator</strong> (fork of the simulator by the German Federal Employment
+                Agency, Apache License 2.0) with fictitious test persons – not the real BundID
+                (<a href="https://id.bund.de" target="_blank" rel="noopener">id.bund.de</a>). The BundID mailbox is a
+                replica as well.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h2 class="h5">Please note</h2>
+            <ul class="mb-0">
+                <li>Do not enter any real personal data.</li>
+                <li>Content such as news, places and opening hours are examples.</li>
+                <li>How the portal handles data is described under <a asp-controller="Home" asp-action="Datenschutz">Privacy</a>.</li>
+            </ul>
+        </div>
+    </div>
+</div>

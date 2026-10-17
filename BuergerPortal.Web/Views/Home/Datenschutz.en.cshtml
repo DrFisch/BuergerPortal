@@ -1,0 +1,129 @@
+@* Englische Fassung von Datenschutz.cshtml (Plan A9); die View-Lokalisierung wählt sie bei Sprache „en“. Inhalt gleich halten. *@
+@{
+    ViewData["Title"] = "Privacy";
+}
+
+<div class="container" style="max-width: 860px;">
+    <h1 class="h3 fw-bold mb-2">Privacy</h1>
+    <p class="text-muted">
+        Which data the Citizen Portal processes – as of this student project. All persons in the BundID simulator are
+        fictitious; please do not enter any real data.
+    </p>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-shield-check me-2" aria-hidden="true"></i>Signing in with BundID</h2>
+            <p>
+                When you sign in, BundID (here: the simulator) transmits your details to the portal: name, birth name, date
+                and place of birth, address, email address, the trust level reached, the means of identification, a
+                pseudonymous identifier (bPK2) and the mailbox handle (address of your BundID mailbox).
+            </p>
+            <p class="mb-1">Only what is needed to recognise you and to send you messages is <strong>stored
+                permanently</strong>:</p>
+            <ul>
+                <li>bPK2 (pseudonymous identifier, valid for this portal only),</li>
+                <li>mailbox handle,</li>
+                <li>the trust level last reached and the time of the last sign-in.</li>
+            </ul>
+            <p class="mb-0">
+                All other details are kept only in your session (encrypted cookie) and are discarded when you sign out or
+                when the session ends. You can see exactly what was transmitted and stored under “My data”.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-hourglass-split me-2" aria-hidden="true"></i>Session and cookies</h2>
+            <ul class="mb-0">
+                <li>The portal's <strong>session cookie</strong>: ends after 30 minutes without activity, at the latest
+                    8 hours after sign-in, or when you close the browser.</li>
+                <li><strong>Sign-in cookies</strong> of the sign-in service (auth server) and of the BundID simulator
+                    (sign-in session for the mailbox, 30 minutes).</li>
+                <li><strong>Settings</strong>: language and colour scheme (cookie or the browser's local storage),
+                    protection against forged forms (antiforgery cookie).</li>
+                <li>No advertising or analytics cookies.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-database me-2" aria-hidden="true"></i>What you enter yourself</h2>
+            <p class="mb-0">
+                Appointments (service, location, time), applications (your details in the form), issue reports
+                (description, location) and your settings are stored with your account. Confirmations are sent to your
+                BundID mailbox (simulation) and stored there. No emails are sent.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-phone me-2" aria-hidden="true"></i>App on your smartphone</h2>
+            <p>
+                The installable app stores only program files (layout, scripts, images) on the device, no pages containing
+                personal data. Without an internet connection only a notice appears.
+            </p>
+            <ul class="mb-0">
+                <li>If you choose <strong>“Later”</strong> on the “Install app” notice on the start page, the browser stores
+                    the time in local storage (<code>bpsim.pwa.hinweisSpaeter</code>) and does not show the notice for
+                    30 days. The value never leaves the device.</li>
+                <li>The portal generates the “Open on your phone” QR code itself; it contains only the portal's address.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3" id="benachrichtigungen">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-bell me-2" aria-hidden="true"></i>Notifications on your phone</h2>
+            <p>
+                Only if you switch them on under Settings → Notifications. Your browser then creates a subscription with its
+                vendor's push service (Chrome/Android: Google, Edge: Microsoft, Firefox: Mozilla, Safari/iPhone: Apple).
+                The portal stores with your account:
+            </p>
+            <ul>
+                <li>the address of this subscription at the push service and two keys of your browser for encryption,</li>
+                <li>the time at which you switched notifications on.</li>
+            </ul>
+            <p>
+                When a new message arrives in your BundID mailbox, the portal sends the title, subject and target (e.g.
+                <code>/Postfach</code>) to your device via the push service – <strong>end-to-end encrypted</strong>
+                (RFC 8291): the push service only sees that a message is coming for this device, not its content. You still
+                read the text of the message only in the mailbox. The subject appears on the lock screen unless you have
+                turned this off in your device settings.
+            </p>
+            <p class="mb-0">
+                The setting applies per device. <strong>Notifications stay switched on on the device when you sign
+                out</strong> – on a shared device, please switch them off first. If another person signs in on the device and
+                switches notifications on, they will only go to that person. Switching off (or revoking the permission in the
+                browser) deletes the subscription; subscriptions the push service no longer knows are deleted by the portal
+                on the next send.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-globe2 me-2" aria-hidden="true"></i>External services</h2>
+            <ul class="mb-0">
+                <li><strong>Maps</strong> (“Discover the town”, issue reporting): map tiles from OpenStreetMap or CARTO, the
+                    Leaflet map library via unpkg.com, address search via Nominatim (OpenStreetMap). These services receive
+                    your IP address and the map section or search term.</li>
+                <li><strong>Weather</strong>: the portal queries Open-Meteo with the town's coordinates – without any data
+                    about you.</li>
+                <li><strong>Google Maps</strong> opens only if you click the map link for a place.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h2 class="h5"><i class="bi bi-hdd-network me-2" aria-hidden="true"></i>Operation</h2>
+            <p class="mb-0">
+                All services and the database run in containers on a virtual machine in Google Cloud (region
+                us-central1, USA). Background of the project: <a asp-controller="Home" asp-action="Impressum">Legal notice</a>.
+            </p>
+        </div>
+    </div>
+</div>
