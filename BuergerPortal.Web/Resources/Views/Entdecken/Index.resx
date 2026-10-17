@@ -120,4 +120,16 @@
 	<data name="Map_Overview_Hof" xml:space="preserve">
     <value>Alle Orte in Hof auf der Karte</value>
   </data>
+  <data name="Filter_All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Places_Found" xml:space="preserve">
+    <value>Orte gefunden</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="City_Fallback" xml:space="preserve">
+    <value>Stadt Hof</value>
+  </data>
 </root>
