@@ -1,21 +1,22 @@
 ﻿@model BuergerPortal.Web.Features.Maengel.ViewModels.CreateMangelVm
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 
 @{
-    ViewData["Title"] = "Mängel melden";
+    ViewData["Title"] = T["Title"];
 }
 
 <div class="container py-4" style="max-width: 850px;">
     @* Kopf wie bei der Terminbuchung: zurück zur Startseite, Titel, kurzer Hinweis *@
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm" aria-label="Zurück">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm" aria-label="@T["Back"]">
             <i class="bi bi-arrow-left"></i>
         </a>
         <div>
-            <h1 class="h3 fw-bold mb-0">Mangel melden</h1>
-            <p class="text-muted small mb-0">Schlagloch, defekte Laterne, wilder Müll – kurz beschreiben, den Ort auf der Karte wählen und gern ein Foto anhängen.</p>
+            <h1 class="h3 fw-bold mb-0">@T["Heading"]</h1>
+            <p class="text-muted small mb-0">@T["Lead"]</p>
         </div>
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill ms-auto" id="meineMeldungenLink">
-            <i class="bi bi-list-check me-1" aria-hidden="true"></i>Meine Meldungen
+            <i class="bi bi-list-check me-1" aria-hidden="true"></i>@T["MyReports"]
         </a>
     </div>
 
@@ -43,49 +44,47 @@
 
                 <div class="row g-4">
                     <div class="col-12">
-                        <label asp-for="Titel" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Was ist passiert?</label>
-                        
-                            
-                            <input asp-for="Titel" class="form-control " placeholder="  z.B. Defekte Straßenlaterne, Schlagloch..." />
-                        
+                        <label asp-for="Titel" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">@T["Label_Title"]</label>
+                        <input asp-for="Titel" class="form-control" placeholder="@T["Placeholder_Title"]" />
                         <span asp-validation-for="Titel" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12">
-                        <label asp-for="Beschreibung" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Details zum Mangel</label>
+                        <label asp-for="Beschreibung" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">@T["Label_Description"]</label>
                         <textarea asp-for="Beschreibung" rows="4" class="form-control form-control-lg rounded-3"
-                                  placeholder="Beschreiben Sie den Mangel so genau wie möglich..."></textarea>
+                                  placeholder="@T["Placeholder_Description"]"></textarea>
                         <span asp-validation-for="Beschreibung" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12">
-                        <label asp-for="AddressHint" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Adress-Hinweis (optional)</label>
-                        
-                            
-                            <input asp-for="AddressHint" class="form-control  " placeholder="  z.B. Gegenüber der Bäckerei, im Hinterhof..." />
-                        
-                        <div class="form-text x-small mt-1 text-muted">Zusatzinfos helfen uns, den Ort leichter zu finden, falls GPS ungenau ist.</div>
+                        <label asp-for="AddressHint" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">@T["Label_AddressHint"]</label>
+                        <input asp-for="AddressHint" class="form-control" placeholder="@T["Placeholder_AddressHint"]" />
+                        <div class="form-text x-small mt-1 text-muted">@T["Help_AddressHint"]</div>
                     </div>
 
                     @* Foto (optional): wird im Browser verkleinert, die Kamera-Metadaten (z. B. GPS) fallen dabei weg – wwwroot/js/mangel-foto.js *@
                     <div class="col-12">
-                        <span class="form-label fw-bold text-secondary small text-uppercase tracking-wider d-block">Foto (optional)</span>
+                        <span class="form-label fw-bold text-secondary small text-uppercase tracking-wider d-block">@T["Label_Photo"]</span>
                         <div class="d-flex flex-wrap gap-2">
                             <label class="btn btn-outline-primary rounded-pill mb-0">
-                                <i class="bi bi-camera me-1" aria-hidden="true"></i>Foto aufnehmen
+                                <i class="bi bi-camera me-1" aria-hidden="true"></i>@T["Photo_Take"]
                                 <input type="file" accept="image/*" capture="environment" data-foto-quelle hidden />
                             </label>
                             <label class="btn btn-outline-secondary rounded-pill mb-0">
-                                <i class="bi bi-image me-1" aria-hidden="true"></i>Bild auswählen
+                                <i class="bi bi-image me-1" aria-hidden="true"></i>@T["Photo_Choose"]
                                 <input type="file" accept="image/*" data-foto-quelle hidden />
                             </label>
                         </div>
                         <input type="file" name="Foto" id="fotoUpload" accept="image/jpeg,image/png,image/webp" hidden />
                         <div id="fotoVorschauBox" class="mt-3" hidden>
-                            <img id="fotoVorschau" alt="Vorschau des Fotos" class="rounded-3 border" style="max-width: 240px; max-height: 240px;" />
-                            <button type="button" id="fotoEntfernen" class="btn btn-link btn-sm text-danger">Foto entfernen</button>
+                            <img id="fotoVorschau" alt="@T["Photo_PreviewAlt"]" class="rounded-3 border" style="max-width: 240px; max-height: 240px;" />
+                            <button type="button" id="fotoEntfernen" class="btn btn-link btn-sm text-danger">@T["Photo_Remove"]</button>
                         </div>
-                        <div id="fotoStatus" class="form-text x-small mt-1 text-muted" role="status"></div>
+                        @* Meldungen von wwwroot/js/mangel-foto.js – übersetzt über data-t-* (Plan A9) *@
+                        <div id="fotoStatus" class="form-text x-small mt-1 text-muted" role="status"
+                             data-t-auswahl="@T["Photo_Status_Choose"]" data-t-verkleinern="@T["Photo_Status_Resizing"]"
+                             data-t-angehaengt="@T["Photo_Status_Attached"].Value" data-t-fehler="@T["Photo_Status_Error"]"></div>
+                        @* .Value: Rohtext mit Platzhalter {0} – die Zahl setzt mangel-foto.js ein (sonst FormatException beim Ausgeben) *@
                         <span asp-validation-for="Foto" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -98,8 +97,8 @@
                                     <i class="bi bi-geo-alt-fill fs-4"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-primary-emphasis">Standort festlegen</div>
-                                    <div id="coordSummary" class="text-secondary small fw-medium">Noch kein Standort ausgewählt.</div>
+                                    <div class="fw-bold text-primary-emphasis">@T["Location_Heading"]</div>
+                                    <div id="coordSummary" class="text-secondary small fw-medium">@T["Location_None"]</div>
                                 </div>
                             </div>
 
@@ -108,7 +107,7 @@
                                 <input asp-for="Longitude" type="hidden" />
                                 <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold hover-lift"
                                         data-bs-toggle="modal" data-bs-target="#mapModal">
-                                    <i class="bi bi-map me-2"></i> Karte öffnen
+                                    <i class="bi bi-map me-2"></i> @T["Map_Open"]
                                 </button>
                             </div>
                         </div>
@@ -123,7 +122,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-bold hover-lift d-inline-flex align-items-center">
-                    <span>Mangel jetzt melden</span>
+                    <span>@T["Submit"]</span>
                 </button>
             </div>
         </div>
@@ -135,23 +134,23 @@
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header p-4">
                 <h5 class="modal-title fw-bold" id="mapModalLabel">
-                    <i class="bi bi-pin-map text-primary me-2"></i>Standort auf Karte wählen
+                    <i class="bi bi-pin-map text-primary me-2"></i>@T["Map_Title"]
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
             </div>
             <div class="modal-body p-4 pt-0">
                 <div class="row g-2 mb-4">
                     <div class="col-md-8">
                         <div class="input-group shadow-sm">
                             <span class="input-group-text bg-white border-end-0 text-secondary"><i class="bi bi-search"></i></span>
-                            <input type="text" id="mapSearchInput" class="form-control border-start-0 ps-0" placeholder="Ort, Straße oder Adresse suchen..." />
-                            <button class="btn btn-primary px-4 fw-bold" type="button" id="mapSearchBtn">Suchen</button>
+                            <input type="text" id="mapSearchInput" class="form-control border-start-0 ps-0" placeholder="@T["Map_SearchPlaceholder"]" aria-label="@T["Map_SearchPlaceholder"]" />
+                            <button class="btn btn-primary px-4 fw-bold" type="button" id="mapSearchBtn">@T["Map_Search"]</button>
                         </div>
                         <div id="searchStatus" class="x-small text-muted mt-1 ps-2"></div>
                     </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-outline-primary w-100 fw-bold h-100 shadow-sm" id="btnLocate">
-                            <i class="bi bi-crosshair me-2"></i> GPS nutzen
+                            <i class="bi bi-crosshair me-2"></i> @T["Map_UseGps"]
                         </button>
                     </div>
                 </div>
@@ -161,14 +160,14 @@
                 <div class="d-flex justify-content-between align-items-center mt-3 px-1 flex-wrap gap-2">
                     <div id="locStatusModal" class="small text-primary fw-bold"></div>
                     <div class="x-small text-secondary fw-medium">
-                        <i class="bi bi-info-circle me-1"></i> Karte klicken oder Marker ziehen, um den Ort exakt zu markieren.
+                        <i class="bi bi-info-circle me-1"></i> @T["Map_Hint"]
                     </div>
                 </div>
             </div>
             <div class="modal-footer bg-light p-4 rounded-bottom-4">
-                <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">@T["Cancel"]</button>
                 <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" data-bs-dismiss="modal">
-                    Standort übernehmen
+                    @T["Map_Apply"]
                 </button>
             </div>
         </div>
@@ -241,6 +240,14 @@
 
     <script>
         (function () {
+            // Texte des Skripts aus den Ressourcen (Deutsch/Englisch, Plan A9)
+            const TX = @Json.Serialize(new Dictionary<string, string>
+            {
+                ["none"] = T["Location_None"].Value, ["captured"] = T["Js_Captured"].Value, ["dragged"] = T["Js_Dragged"].Value,
+                ["clicked"] = T["Js_Clicked"].Value, ["noGps"] = T["Js_NoGps"].Value, ["locating"] = T["Js_Locating"].Value,
+                ["located"] = T["Js_Located"].Value, ["gpsError"] = T["Js_GpsError"].Value, ["searching"] = T["Js_Searching"].Value,
+                ["notFound"] = T["Js_NotFound"].Value, ["found"] = T["Js_Found"].Value, ["searchFailed"] = T["Js_SearchFailed"].Value,
+            });
             const latInput = document.querySelector('[name="Latitude"]');
             const lngInput = document.querySelector('[name="Longitude"]');
             const coordSummary = document.getElementById('coordSummary');
@@ -259,13 +266,13 @@
 
             function updateSummary(lat, lng) {
                 if (!lat || !lng) {
-                    coordSummary.innerHTML = "Noch kein Standort ausgewählt.";
+                    coordSummary.textContent = TX.none;
                     locStatusSummary.textContent = "";
                     return;
                 }
                 coordSummary.innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1">Lat: ${lat.toFixed(5)}</span>
                                           <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Lng: ${lng.toFixed(5)}</span>`;
-                locStatusSummary.textContent = "✓ Standort erfolgreich erfasst";
+                locStatusSummary.textContent = "✓ " + TX.captured;
             }
 
             function updateInputsAndSummary(lat, lng) {
@@ -289,13 +296,13 @@
                 marker.on('dragend', () => {
                     const pos = marker.getLatLng();
                     updateInputsAndSummary(pos.lat, pos.lng);
-                    locStatusModal.textContent = "Position durch Ziehen angepasst.";
+                    locStatusModal.textContent = TX.dragged;
                 });
 
                 map.on('click', (e) => {
                     marker.setLatLng(e.latlng);
                     updateInputsAndSummary(e.latlng.lat, e.latlng.lng);
-                    locStatusModal.textContent = "Position auf Karte gesetzt.";
+                    locStatusModal.textContent = TX.clicked;
                 });
             }
 
@@ -310,37 +317,37 @@
 
             btnLocate.addEventListener('click', () => {
                 if (!navigator.geolocation) {
-                    locStatusModal.textContent = "GPS nicht unterstützt.";
+                    locStatusModal.textContent = TX.noGps;
                     return;
                 }
-                locStatusModal.textContent = "Ermittle Standort...";
+                locStatusModal.textContent = TX.locating;
                 navigator.geolocation.getCurrentPosition((pos) => {
                     const { latitude: lat, longitude: lng } = pos.coords;
                     map.setView([lat, lng], 17);
                     marker.setLatLng([lat, lng]);
                     updateInputsAndSummary(lat, lng);
-                    locStatusModal.textContent = "Aktueller Standort übernommen.";
+                    locStatusModal.textContent = TX.located;
                 }, () => {
-                    locStatusModal.textContent = "Fehler: Zugriff verweigert oder Zeitüberschreitung.";
+                    locStatusModal.textContent = TX.gpsError;
                 }, { enableHighAccuracy: true });
             });
 
             function searchLocation() {
                 const query = searchInput.value.trim();
                 if (!query) return;
-                searchStatus.textContent = "Suche...";
+                searchStatus.textContent = TX.searching;
                 fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`)
                     .then(r => r.json())
                     .then(results => {
-                        if (!results.length) { searchStatus.textContent = "Nichts gefunden."; return; }
+                        if (!results.length) { searchStatus.textContent = TX.notFound; return; }
                         const { lat, lon, display_name } = results[0];
                         const l = parseFloat(lat), n = parseFloat(lon);
                         map.setView([l, n], 16);
                         marker.setLatLng([l, n]);
                         updateInputsAndSummary(l, n);
                         searchStatus.textContent = display_name;
-                        locStatusModal.textContent = "Standort gefunden.";
-                    }).catch(() => searchStatus.textContent = "Suche fehlgeschlagen.");
+                        locStatusModal.textContent = TX.found;
+                    }).catch(() => searchStatus.textContent = TX.searchFailed);
             }
 
             searchBtn.addEventListener('click', searchLocation);

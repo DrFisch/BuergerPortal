@@ -37,12 +37,17 @@
         return new File([blob], 'foto.jpg', { type: 'image/jpeg' });
     }
 
+    // Meldungen übersetzt aus data-t-* am Statusfeld (Views/Maengel/Create.cshtml, Plan A9); sonst Deutsch
+    function text(name, standard) {
+        return status.dataset['t' + name.charAt(0).toUpperCase() + name.slice(1)] || standard;
+    }
+
     async function uebernehmen(datei) {
         if (!datei || !datei.type.startsWith('image/')) {
-            status.textContent = 'Bitte ein Foto auswählen.';
+            status.textContent = text('auswahl', 'Bitte ein Foto auswählen.');
             return;
         }
-        status.textContent = 'Foto wird verkleinert …';
+        status.textContent = text('verkleinern', 'Foto wird verkleinert …');
         try {
             const klein = await verkleinern(datei);
             const transfer = new DataTransfer();
@@ -50,9 +55,10 @@
             upload.files = transfer.files;
             vorschau.src = URL.createObjectURL(klein);
             vorschauBox.hidden = false;
-            status.textContent = 'Foto angehängt (' + Math.round(klein.size / 1024) + ' KB, ohne Ortsangaben aus der Kamera).';
+            status.textContent = text('angehaengt', 'Foto angehängt ({0} KB, ohne Ortsangaben aus der Kamera).')
+                .replace('{0}', String(Math.round(klein.size / 1024)));
         } catch (e) {
-            status.textContent = 'Das Foto konnte nicht verarbeitet werden. Bitte ein anderes wählen.';
+            status.textContent = text('fehler', 'Das Foto konnte nicht verarbeitet werden. Bitte ein anderes wählen.');
         }
     }
 

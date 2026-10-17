@@ -1,22 +1,23 @@
 @using BuergerPortal.Web.Helper
 @model IReadOnlyList<BuergerPortal.Web.Features.Maengel.Contracts.MaengelmeldungResponse>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 
 @{
-    ViewData["Title"] = "Meine Meldungen";
+    ViewData["Title"] = T["Title"];
 }
 
 <div class="container py-4" style="max-width: 850px;">
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <div>
-            <h1 class="h3 fw-bold mb-0">Meine Meldungen</h1>
-            <p class="text-muted small mb-0">Ihre gemeldeten Mängel – nur Sie sehen diese Liste und die Fotos.</p>
+            <h1 class="h3 fw-bold mb-0">@T["Title"]</h1>
+            <p class="text-muted small mb-0">@T["Lead"]</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Neuen Mangel melden</a>
+        <a asp-action="Create" class="btn btn-primary rounded-pill"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>@T["New"]</a>
     </div>
 
     @if (Model.Count == 0)
     {
-        <div class="alert alert-info border-0 rounded-4" role="status">Sie haben noch keinen Mangel gemeldet.</div>
+        <div class="alert alert-info border-0 rounded-4" role="status">@T["Empty"]</div>
     }
 
     <div class="vstack gap-3" id="meineMeldungen">
@@ -26,15 +27,16 @@
                 <div class="card-body d-flex gap-3 align-items-start">
                     @if (m.HatFoto)
                     {
-                        <img src="@Url.Action("Foto", new { id = m.Id })" alt="Foto zur Meldung „@m.Titel“" class="rounded-3 border flex-shrink-0"
+                        <img src="@Url.Action("Foto", new { id = m.Id })" alt="@T["PhotoAlt", m.Titel]" class="rounded-3 border flex-shrink-0"
                              style="width: 96px; height: 96px; object-fit: cover;" loading="lazy" />
                     }
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between gap-2 flex-wrap">
                             <h2 class="h6 fw-bold mb-1">@m.Titel</h2>
-                            <span class="badge text-bg-secondary">@m.Status</span>
+                            @{ var status = T[$"Status_{m.Status}"]; }
+                            <span class="badge text-bg-secondary">@(status.IsResourceNotFound ? m.Status : status.Value)</span>
                         </div>
-                        <div class="small text-muted mb-1">gemeldet am @m.CreatedUtc.ToBerlin().ToString("dd.MM.yyyy, HH:mm") Uhr</div>
+                        <div class="small text-muted mb-1">@T["ReportedAt", m.CreatedUtc.ToBerlin().ToString("dd.MM.yyyy"), m.CreatedUtc.ToBerlin().ToString("HH:mm")]</div>
                         <p class="small mb-0">@m.Beschreibung</p>
                         @if (!string.IsNullOrWhiteSpace(m.AddressHint))
                         {

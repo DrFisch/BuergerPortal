@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Report an issue</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Back</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Report an issue</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>Pothole, broken street light, fly-tipping – describe it briefly, pick the spot on the map and attach a photo if you like.</value>
+	</data>
+	<data name="MyReports" xml:space="preserve">
+		<value>My reports</value>
+	</data>
+	<data name="Label_Title" xml:space="preserve">
+		<value>What happened?</value>
+	</data>
+	<data name="Placeholder_Title" xml:space="preserve">
+		<value>e.g. broken street light, pothole …</value>
+	</data>
+	<data name="Label_Description" xml:space="preserve">
+		<value>Details</value>
+	</data>
+	<data name="Placeholder_Description" xml:space="preserve">
+		<value>Describe the issue as precisely as possible …</value>
+	</data>
+	<data name="Label_AddressHint" xml:space="preserve">
+		<value>Location hint (optional)</value>
+	</data>
+	<data name="Placeholder_AddressHint" xml:space="preserve">
+		<value>e.g. opposite the bakery, in the back yard …</value>
+	</data>
+	<data name="Help_AddressHint" xml:space="preserve">
+		<value>Extra details help us find the spot if GPS is inaccurate.</value>
+	</data>
+	<data name="Label_Photo" xml:space="preserve">
+		<value>Photo (optional)</value>
+	</data>
+	<data name="Photo_Take" xml:space="preserve">
+		<value>Take photo</value>
+	</data>
+	<data name="Photo_Choose" xml:space="preserve">
+		<value>Choose picture</value>
+	</data>
+	<data name="Photo_PreviewAlt" xml:space="preserve">
+		<value>Photo preview</value>
+	</data>
+	<data name="Photo_Remove" xml:space="preserve">
+		<value>Remove photo</value>
+	</data>
+	<data name="Photo_Status_Choose" xml:space="preserve">
+		<value>Please choose a photo.</value>
+	</data>
+	<data name="Photo_Status_Resizing" xml:space="preserve">
+		<value>Resizing photo …</value>
+	</data>
+	<data name="Photo_Status_Attached" xml:space="preserve">
+		<value>Photo attached ({0} KB, without location data from the camera).</value>
+	</data>
+	<data name="Photo_Status_Error" xml:space="preserve">
+		<value>The photo could not be processed. Please choose another one.</value>
+	</data>
+	<data name="Location_Heading" xml:space="preserve">
+		<value>Set location</value>
+	</data>
+	<data name="Location_None" xml:space="preserve">
+		<value>No location selected yet.</value>
+	</data>
+	<data name="Map_Open" xml:space="preserve">
+		<value>Open map</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Report issue now</value>
+	</data>
+	<data name="Map_Title" xml:space="preserve">
+		<value>Choose location on the map</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Close</value>
+	</data>
+	<data name="Map_SearchPlaceholder" xml:space="preserve">
+		<value>Search for a place, street or address …</value>
+	</data>
+	<data name="Map_Search" xml:space="preserve">
+		<value>Search</value>
+	</data>
+	<data name="Map_UseGps" xml:space="preserve">
+		<value>Use GPS</value>
+	</data>
+	<data name="Map_Hint" xml:space="preserve">
+		<value>Click the map or drag the marker to mark the exact spot.</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancel</value>
+	</data>
+	<data name="Map_Apply" xml:space="preserve">
+		<value>Use this location</value>
+	</data>
+	<data name="Js_Captured" xml:space="preserve">
+		<value>Location captured</value>
+	</data>
+	<data name="Js_Dragged" xml:space="preserve">
+		<value>Position adjusted by dragging.</value>
+	</data>
+	<data name="Js_Clicked" xml:space="preserve">
+		<value>Position set on the map.</value>
+	</data>
+	<data name="Js_NoGps" xml:space="preserve">
+		<value>GPS not supported.</value>
+	</data>
+	<data name="Js_Locating" xml:space="preserve">
+		<value>Determining location …</value>
+	</data>
+	<data name="Js_Located" xml:space="preserve">
+		<value>Current location applied.</value>
+	</data>
+	<data name="Js_GpsError" xml:space="preserve">
+		<value>Error: access denied or timeout.</value>
+	</data>
+	<data name="Js_Searching" xml:space="preserve">
+		<value>Searching …</value>
+	</data>
+	<data name="Js_NotFound" xml:space="preserve">
+		<value>Nothing found.</value>
+	</data>
+	<data name="Js_Found" xml:space="preserve">
+		<value>Location found.</value>
+	</data>
+	<data name="Js_SearchFailed" xml:space="preserve">
+		<value>Search failed.</value>
+	</data>
+</root>

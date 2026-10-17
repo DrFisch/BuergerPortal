@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>My reports</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>Your reported issues – only you can see this list and the photos.</value>
+	</data>
+	<data name="New" xml:space="preserve">
+		<value>Report a new issue</value>
+	</data>
+	<data name="Empty" xml:space="preserve">
+		<value>You have not reported any issues yet.</value>
+	</data>
+	<data name="PhotoAlt" xml:space="preserve">
+		<value>Photo for the report “{0}”</value>
+	</data>
+	<data name="Status_Offen" xml:space="preserve">
+		<value>Open</value>
+	</data>
+	<data name="ReportedAt" xml:space="preserve">
+		<value>reported on {0} at {1}</value>
+	</data>
+</root>

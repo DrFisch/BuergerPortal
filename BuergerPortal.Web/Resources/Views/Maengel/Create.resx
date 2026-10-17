@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Mangel melden</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Zurück</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Mangel melden</value>
+	</data>
+	<data name="Lead" xml:space="preserve">
+		<value>Schlagloch, defekte Laterne, wilder Müll – kurz beschreiben, den Ort auf der Karte wählen und gern ein Foto anhängen.</value>
+	</data>
+	<data name="MyReports" xml:space="preserve">
+		<value>Meine Meldungen</value>
+	</data>
+	<data name="Label_Title" xml:space="preserve">
+		<value>Was ist passiert?</value>
+	</data>
+	<data name="Placeholder_Title" xml:space="preserve">
+		<value>z. B. defekte Straßenlaterne, Schlagloch …</value>
+	</data>
+	<data name="Label_Description" xml:space="preserve">
+		<value>Details zum Mangel</value>
+	</data>
+	<data name="Placeholder_Description" xml:space="preserve">
+		<value>Beschreiben Sie den Mangel so genau wie möglich …</value>
+	</data>
+	<data name="Label_AddressHint" xml:space="preserve">
+		<value>Adress-Hinweis (optional)</value>
+	</data>
+	<data name="Placeholder_AddressHint" xml:space="preserve">
+		<value>z. B. gegenüber der Bäckerei, im Hinterhof …</value>
+	</data>
+	<data name="Help_AddressHint" xml:space="preserve">
+		<value>Zusatzinfos helfen uns, den Ort leichter zu finden, falls GPS ungenau ist.</value>
+	</data>
+	<data name="Label_Photo" xml:space="preserve">
+		<value>Foto (optional)</value>
+	</data>
+	<data name="Photo_Take" xml:space="preserve">
+		<value>Foto aufnehmen</value>
+	</data>
+	<data name="Photo_Choose" xml:space="preserve">
+		<value>Bild auswählen</value>
+	</data>
+	<data name="Photo_PreviewAlt" xml:space="preserve">
+		<value>Vorschau des Fotos</value>
+	</data>
+	<data name="Photo_Remove" xml:space="preserve">
+		<value>Foto entfernen</value>
+	</data>
+	<data name="Photo_Status_Choose" xml:space="preserve">
+		<value>Bitte ein Foto auswählen.</value>
+	</data>
+	<data name="Photo_Status_Resizing" xml:space="preserve">
+		<value>Foto wird verkleinert …</value>
+	</data>
+	<data name="Photo_Status_Attached" xml:space="preserve">
+		<value>Foto angehängt ({0} KB, ohne Ortsangaben aus der Kamera).</value>
+	</data>
+	<data name="Photo_Status_Error" xml:space="preserve">
+		<value>Das Foto konnte nicht verarbeitet werden. Bitte ein anderes wählen.</value>
+	</data>
+	<data name="Location_Heading" xml:space="preserve">
+		<value>Standort festlegen</value>
+	</data>
+	<data name="Location_None" xml:space="preserve">
+		<value>Noch kein Standort ausgewählt.</value>
+	</data>
+	<data name="Map_Open" xml:space="preserve">
+		<value>Karte öffnen</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Mangel jetzt melden</value>
+	</data>
+	<data name="Map_Title" xml:space="preserve">
+		<value>Standort auf Karte wählen</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Schließen</value>
+	</data>
+	<data name="Map_SearchPlaceholder" xml:space="preserve">
+		<value>Ort, Straße oder Adresse suchen …</value>
+	</data>
+	<data name="Map_Search" xml:space="preserve">
+		<value>Suchen</value>
+	</data>
+	<data name="Map_UseGps" xml:space="preserve">
+		<value>GPS nutzen</value>
+	</data>
+	<data name="Map_Hint" xml:space="preserve">
+		<value>Karte klicken oder Marker ziehen, um den Ort exakt zu markieren.</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Abbrechen</value>
+	</data>
+	<data name="Map_Apply" xml:space="preserve">
+		<value>Standort übernehmen</value>
+	</data>
+	<data name="Js_Captured" xml:space="preserve">
+		<value>Standort erfolgreich erfasst</value>
+	</data>
+	<data name="Js_Dragged" xml:space="preserve">
+		<value>Position durch Ziehen angepasst.</value>
+	</data>
+	<data name="Js_Clicked" xml:space="preserve">
+		<value>Position auf Karte gesetzt.</value>
+	</data>
+	<data name="Js_NoGps" xml:space="preserve">
+		<value>GPS nicht unterstützt.</value>
+	</data>
+	<data name="Js_Locating" xml:space="preserve">
+		<value>Ermittle Standort …</value>
+	</data>
+	<data name="Js_Located" xml:space="preserve">
+		<value>Aktueller Standort übernommen.</value>
+	</data>
+	<data name="Js_GpsError" xml:space="preserve">
+		<value>Fehler: Zugriff verweigert oder Zeitüberschreitung.</value>
+	</data>
+	<data name="Js_Searching" xml:space="preserve">
+		<value>Suche …</value>
+	</data>
+	<data name="Js_NotFound" xml:space="preserve">
+		<value>Nichts gefunden.</value>
+	</data>
+	<data name="Js_Found" xml:space="preserve">
+		<value>Standort gefunden.</value>
+	</data>
+	<data name="Js_SearchFailed" xml:space="preserve">
+		<value>Suche fehlgeschlagen.</value>
+	</data>
+</root>
