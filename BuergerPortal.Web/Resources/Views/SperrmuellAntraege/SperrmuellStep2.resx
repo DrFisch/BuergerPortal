@@ -151,4 +151,13 @@
   <data name="AddressFromBundId" xml:space="preserve">
     <value>Als Abholadresse haben wir Ihre Anschrift aus der BundID vorgeschlagen. Bitte prüfen und bei Bedarf ändern.</value>
   </data>
+  <data name="SperrmuellStep2_PickupAddress" xml:space="preserve">
+    <value>Abholadresse</value>
+  </data>
+  <data name="SperrmuellStep2_Quantities" xml:space="preserve">
+    <value>Mengen &amp; Termin</value>
+  </data>
+  <data name="SperrmuellStep2_Pieces" xml:space="preserve">
+    <value>Stk.</value>
+  </data>
 </root>

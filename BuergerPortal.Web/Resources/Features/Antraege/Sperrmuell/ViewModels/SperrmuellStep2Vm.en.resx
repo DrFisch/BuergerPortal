@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Straße" xml:space="preserve">
+		<value>Street</value>
+	</data>
+	<data name="PLZ" xml:space="preserve">
+		<value>Postcode</value>
+	</data>
+	<data name="Ort" xml:space="preserve">
+		<value>City</value>
+	</data>
+	<data name="Holz (m³)" xml:space="preserve">
+		<value>Wood (m³)</value>
+	</data>
+	<data name="Sonstiges (m³)" xml:space="preserve">
+		<value>Other (m³)</value>
+	</data>
+	<data name="Matratzen (Anzahl)" xml:space="preserve">
+		<value>Mattresses (number)</value>
+	</data>
+	<data name="Wunschdatum" xml:space="preserve">
+		<value>Preferred date</value>
+	</data>
+	<data name="Hinweis für das Entsorgungsteam" xml:space="preserve">
+		<value>Note for the collection team</value>
+	</data>
+</root>

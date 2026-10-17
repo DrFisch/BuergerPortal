@@ -58,25 +58,25 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
 
                 <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt me-2 text-success"></i>Abholadresse</h5>
+                    <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt me-2 text-success" aria-hidden="true"></i>@L["SperrmuellStep2_PickupAddress"]</h5>
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="form-floating">
-                                <input asp-for="Strasse" class="form-control" placeholder="Straße" />
+                                <input asp-for="Strasse" class="form-control" placeholder="@Html.DisplayNameFor(m => m.Strasse)" />
                                 <label asp-for="Strasse"></label>
                                 <span asp-validation-for="Strasse" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input asp-for="PLZ" class="form-control" placeholder="PLZ" />
+                                <input asp-for="PLZ" class="form-control" placeholder="@Html.DisplayNameFor(m => m.PLZ)" />
                                 <label asp-for="PLZ"></label>
                                 <span asp-validation-for="PLZ" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="form-floating">
-                                <input asp-for="Ort" class="form-control" placeholder="Ort" />
+                                <input asp-for="Ort" class="form-control" placeholder="@Html.DisplayNameFor(m => m.Ort)" />
                                 <label asp-for="Ort"></label>
                                 <span asp-validation-for="Ort" class="text-danger small"></span>
                             </div>
@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4"><i class="bi bi-box-seam me-2 text-success"></i>Mengen & Termin</h5>
+                    <h5 class="fw-bold mb-4"><i class="bi bi-box-seam me-2 text-success" aria-hidden="true"></i>@L["SperrmuellStep2_Quantities"]</h5>
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
@@ -106,7 +106,7 @@
                             <label asp-for="Matratzen" class="form-label small fw-bold text-muted"></label>
                             <div class="input-group">
                                 <input asp-for="Matratzen" class="form-control" type="number" min="0" />
-                                <span class="input-group-text">Stk.</span>
+                                <span class="input-group-text">@L["SperrmuellStep2_Pieces"]</span>
                             </div>
                         </div>
                     </div>

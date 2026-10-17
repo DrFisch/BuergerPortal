@@ -151,4 +151,13 @@
   <data name="AddressFromBundId" xml:space="preserve">
     <value>We have suggested your address from BundID as the pick-up address. Please check it and change it if necessary.</value>
   </data>
+  <data name="SperrmuellStep2_PickupAddress" xml:space="preserve">
+    <value>Pickup address</value>
+  </data>
+  <data name="SperrmuellStep2_Quantities" xml:space="preserve">
+    <value>Quantities &amp; date</value>
+  </data>
+  <data name="SperrmuellStep2_Pieces" xml:space="preserve">
+    <value>pcs.</value>
+  </data>
 </root>
