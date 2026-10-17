@@ -151,6 +151,17 @@ button.bp-tab {
     transform: scale(.97);
 }
 
+/* Touch-Ziele mindestens 24 x 24 px (WCAG 2.2, Erfolgskriterium 2.5.8; Plan A8): Schalter 44 x 24 px statt 32 x 16 px */
+.form-switch .form-check-input {
+    width: 2.75em;
+    height: 1.5em;
+    margin-top: 0;
+}
+
+.form-switch .form-check-input + .form-check-label {
+    margin-left: .5em;
+}
+
 /* Hauptmenue: aktiver Bereich */
 .navbar .nav-link.active {
     color: var(--bp-akzent);
@@ -231,6 +242,11 @@ button.bp-tab {
 /* Dunkelmodus: Gruen-Text heller (Bootstrap-Gruen auf #212529: 3,4:1 -> #75b798: 6,6:1) */
 [data-bs-theme="dark"] .text-success {
     color: #75b798 !important;
+}
+
+/* Dunkelmodus: Rot-Text heller (Bootstrap-Rot auf #212529 3,4:1 -> #ea868f 6,1:1), z. B. "Abmelden" im Konto-Blatt */
+[data-bs-theme="dark"] .text-danger {
+    color: #ea868f !important;
 }
 
 /* Sprunglink fuer Tastatur und Screenreader (Views/Shared/_Navbar.cshtml) */
