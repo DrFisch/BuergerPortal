@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Vorname" xml:space="preserve">
+		<value>First name</value>
+	</data>
+	<data name="Nachname" xml:space="preserve">
+		<value>Last name</value>
+	</data>
+	<data name="Geburtsdatum" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="E-Mail (optional)" xml:space="preserve">
+		<value>Email (optional)</value>
+	</data>
+	<data name="Telefon (optional)" xml:space="preserve">
+		<value>Phone (optional)</value>
+	</data>
+</root>

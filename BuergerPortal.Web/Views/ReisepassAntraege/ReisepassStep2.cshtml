@@ -44,7 +44,7 @@
                             <div class="h5 mb-0 fw-bold">@Model.AntragstellerName</div>
                             @if (Model.Geburtsdatum.HasValue)
                             {
-                                <span class="text-secondary small">Geboren am @Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")</span>
+                                <span class="text-secondary small">@L["PassportStep2_BornOn", Model.Geburtsdatum.Value.ToString("dd.MM.yyyy")]</span>
                             }
                         </div>
                         <div class="ms-auto d-none d-sm-block">
@@ -61,23 +61,23 @@
 
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4">Zusätzliche Optionen</h5>
+                        <h5 class="fw-bold mb-4">@L["PassportStep2_Options"]</h5>
 
                         <div class="form-check form-switch p-3 border rounded-4 mb-3 transition-all option-box">
                             <input class="form-check-input float-end shadow-none" asp-for="Express" />
-                            <label class="form-check-label fw-bold d-block mb-1" asp-for="Express">Express-Herstellung</label>
-                            <p class="text-muted small mb-0 pe-5">Die Bearbeitungszeit verkürzt sich auf ca. 3-5 Werktage (zzgl. Gebühr).</p>
+                            <label class="form-check-label fw-bold d-block mb-1" asp-for="Express">@L["PassportStep2_Express"]</label>
+                            <p class="text-muted small mb-0 pe-5">@L["PassportStep2_Express_Hint"]</p>
                         </div>
 
                         <div class="form-check form-switch p-3 border rounded-4 mb-4 transition-all option-box">
                             <input class="form-check-input float-end shadow-none" asp-for="AltpassVorhanden" />
-                            <label class="form-check-label fw-bold d-block mb-1" asp-for="AltpassVorhanden">Alten Reisepass vorhanden</label>
-                            <p class="text-muted small mb-0 pe-5">Sie müssen Ihren alten Pass zur Entwertung bei der Abholung mitbringen.</p>
+                            <label class="form-check-label fw-bold d-block mb-1" asp-for="AltpassVorhanden">@L["PassportStep2_OldPassport"]</label>
+                            <p class="text-muted small mb-0 pe-5">@L["PassportStep2_OldPassport_Hint"]</p>
                         </div>
 
                         <div class="mt-2">
-                            <label asp-for="Hinweis" class="form-label fw-bold small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Zusatzhinweise für das Amt</label>
-                            <textarea asp-for="Hinweis" rows="3" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="Haben Sie weitere Anmerkungen zu Ihrem Antrag?"></textarea>
+                            <label asp-for="Hinweis" class="form-label fw-bold small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05rem;">@L["PassportStep2_Note"]</label>
+                            <textarea asp-for="Hinweis" rows="3" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="@L["PassportStep2_Note_Placeholder"]"></textarea>
                             <span asp-validation-for="Hinweis" class="text-danger small"></span>
                         </div>
                     </div>

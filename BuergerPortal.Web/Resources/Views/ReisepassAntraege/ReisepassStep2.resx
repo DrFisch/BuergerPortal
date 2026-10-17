@@ -60,4 +60,28 @@
 	<data name="PassportStep2_Submit" xml:space="preserve">
     <value>Jetzt einreichen</value>
   </data>
+  <data name="PassportStep2_BornOn" xml:space="preserve">
+    <value>Geboren am {0}</value>
+  </data>
+  <data name="PassportStep2_Options" xml:space="preserve">
+    <value>Zusätzliche Optionen</value>
+  </data>
+  <data name="PassportStep2_Express" xml:space="preserve">
+    <value>Express-Herstellung</value>
+  </data>
+  <data name="PassportStep2_Express_Hint" xml:space="preserve">
+    <value>Die Bearbeitungszeit verkürzt sich auf ca. 3-5 Werktage (zzgl. Gebühr).</value>
+  </data>
+  <data name="PassportStep2_OldPassport" xml:space="preserve">
+    <value>Alten Reisepass vorhanden</value>
+  </data>
+  <data name="PassportStep2_OldPassport_Hint" xml:space="preserve">
+    <value>Sie müssen Ihren alten Pass zur Entwertung bei der Abholung mitbringen.</value>
+  </data>
+  <data name="PassportStep2_Note" xml:space="preserve">
+    <value>Zusatzhinweise für das Amt</value>
+  </data>
+  <data name="PassportStep2_Note_Placeholder" xml:space="preserve">
+    <value>Haben Sie weitere Anmerkungen zu Ihrem Antrag?</value>
+  </data>
 </root>

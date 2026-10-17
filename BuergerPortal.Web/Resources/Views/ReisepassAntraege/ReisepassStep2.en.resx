@@ -60,4 +60,28 @@
 	<data name="PassportStep2_Submit" xml:space="preserve">
     <value>Submit now</value>
   </data>
+  <data name="PassportStep2_BornOn" xml:space="preserve">
+    <value>Born on {0}</value>
+  </data>
+  <data name="PassportStep2_Options" xml:space="preserve">
+    <value>Additional options</value>
+  </data>
+  <data name="PassportStep2_Express" xml:space="preserve">
+    <value>Express production</value>
+  </data>
+  <data name="PassportStep2_Express_Hint" xml:space="preserve">
+    <value>Processing time is reduced to approx. 3-5 working days (additional fee).</value>
+  </data>
+  <data name="PassportStep2_OldPassport" xml:space="preserve">
+    <value>Old passport available</value>
+  </data>
+  <data name="PassportStep2_OldPassport_Hint" xml:space="preserve">
+    <value>Please bring your old passport to be invalidated when you collect the new one.</value>
+  </data>
+  <data name="PassportStep2_Note" xml:space="preserve">
+    <value>Additional notes for the office</value>
+  </data>
+  <data name="PassportStep2_Note_Placeholder" xml:space="preserve">
+    <value>Do you have any further comments on your application?</value>
+  </data>
 </root>
