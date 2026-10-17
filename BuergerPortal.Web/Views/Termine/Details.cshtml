@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @model TerminDetailsVm
 @inject IViewLocalizer L
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
 
 @{
     ViewData["Title"] = L["Details_Title"];
@@ -41,7 +42,7 @@
                     @* Anzeige-Bereich (Read-Only) *@
                     <div class="mb-5 text-center">
                         <span class="badge bg-primary-subtle text-primary rounded-pill px-3 mb-2">@L["Appointment_Info"]</span>
-                        <h3 class="fw-bold display-6 mb-2">@Model.Service.ToDisplayName()</h3>
+                        <h3 class="fw-bold display-6 mb-2">@Model.Service.ToDisplayName(LF)</h3>
                         <div class="d-flex justify-content-center gap-3 text-muted">
                             <span><i class="bi bi-calendar3 me-1"></i> @Model.Datum.ToLongDateString()</span>
                             <span><i class="bi bi-clock me-1"></i> @Model.Uhrzeit @L["Clock"]</span>

@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @model TermineIndexVm
 @inject IViewLocalizer L
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
 
 @{
     ViewData["Title"] = L["Termine_Title"];
@@ -97,7 +98,7 @@
 
                             <div class="mb-4">
                                 <h2 class="h5 fw-bold mb-1 @(t.Storniert ? "text-decoration-line-through text-muted" : "")">
-                                    @t.Service.ToDisplayName()
+                                    @t.Service.ToDisplayName(LF)
                                 </h2>
                                 <div class="d-flex flex-wrap gap-3 text-muted small">
                                     <span><i class="bi bi-calendar3 me-1"></i> @t.Datum.ToString("dddd, dd.MM.yyyy")</span>
@@ -114,7 +115,7 @@
                                 @if (!t.Storniert && !isPast)
                                 {
                                     <form method="post" asp-action="Stornieren" class="d-inline"
-                                          data-confirm="@L["Termine_Cancel_Confirm", t.Service.ToDisplayName(), t.Datum.ToString("dd.MM.yyyy"), t.Uhrzeit]">
+                                          data-confirm="@L["Termine_Cancel_Confirm", t.Service.ToDisplayName(LF), t.Datum.ToString("dd.MM.yyyy"), t.Uhrzeit]">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@t.Id" />
                                         <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none fw-bold p-0">
