@@ -401,4 +401,19 @@
   <data name="Quick_Discover" xml:space="preserve">
     <value>Discover</value>
   </data>
+  <data name="Hero_NextAppointment_When" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Hero_NextAppointment_Location" xml:space="preserve">
+    <value>Location: {0}</value>
+  </data>
+  <data name="Hero_NextAppointment_Service" xml:space="preserve">
+    <value>Service: {0}</value>
+  </data>
+  <data name="Weather_Unavailable" xml:space="preserve">
+    <value>Weather data currently unavailable.</value>
+  </data>
+  <data name="Weather_Source" xml:space="preserve">
+    <value>Live data from Open-Meteo</value>
+  </data>
 </root>

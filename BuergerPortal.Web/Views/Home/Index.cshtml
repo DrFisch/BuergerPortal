@@ -1,6 +1,7 @@
 ﻿@model BuergerPortal.Web.Features.Home.ViewModels.HomeIndexVm
 @using BuergerPortal.Web.Extensions
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
 @inject Microsoft.Extensions.Configuration.IConfiguration Config
 @{
     ViewData["Title"] = T["Title"];
@@ -104,7 +105,7 @@
                             @if (Model?.NextAppointment is not null)
                             {
                                 <div class="fw-semibold">
-                                    @Model.NextAppointment.Datum.ToString("dd.MM.yyyy"), @Model.NextAppointment.Uhrzeit Uhr
+                                    @T["Hero_NextAppointment_When", Model.NextAppointment.Datum.ToString("dd.MM.yyyy"), Model.NextAppointment.Uhrzeit]
                                 </div>
                                 @if (!string.IsNullOrEmpty(Model.NextAppointment.Uhrzeit))
                                 {
@@ -112,8 +113,8 @@
                                     </div>
                                 }
                                 <div class="small text-muted">
-                                    Ort: @Model.NextAppointment.Location.ToDisplay()<br />
-                                    Beratung zu: @Model.NextAppointment.Service.ToDisplayName()
+                                    @T["Hero_NextAppointment_Location", Model.NextAppointment.Location.ToDisplay()]<br />
+                                    @T["Hero_NextAppointment_Service", Model.NextAppointment.Service.ToDisplayName(LF)]
                                 </div>
                             }
                             else
@@ -416,12 +417,12 @@
                         }
                         else
                         {
-                            <p class="card-text text-muted mb-0">Wetterdaten derzeit nicht verfügbar.</p>
+                            <p class="card-text text-muted mb-0">@T["Weather_Unavailable"]</p>
                         }
 
                         <div class="mt-auto pt-3">
                             <span class="small text-muted">
-                                <i class="bi bi-info-circle me-1"></i> Live-Daten von Open-Meteo
+                                <i class="bi bi-info-circle me-1" aria-hidden="true"></i> @T["Weather_Source"]
                             </span>
                         </div>
                     </div>

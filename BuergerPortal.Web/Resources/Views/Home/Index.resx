@@ -399,4 +399,19 @@
   <data name="Quick_Discover" xml:space="preserve">
     <value>Entdecken</value>
   </data>
+  <data name="Hero_NextAppointment_When" xml:space="preserve">
+    <value>{0}, {1} Uhr</value>
+  </data>
+  <data name="Hero_NextAppointment_Location" xml:space="preserve">
+    <value>Ort: {0}</value>
+  </data>
+  <data name="Hero_NextAppointment_Service" xml:space="preserve">
+    <value>Beratung zu: {0}</value>
+  </data>
+  <data name="Weather_Unavailable" xml:space="preserve">
+    <value>Wetterdaten derzeit nicht verfügbar.</value>
+  </data>
+  <data name="Weather_Source" xml:space="preserve">
+    <value>Live-Daten von Open-Meteo</value>
+  </data>
 </root>
