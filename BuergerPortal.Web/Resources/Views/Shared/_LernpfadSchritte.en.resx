@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Aria" xml:space="preserve">
+		<value>Learning path: sign-in progress</value>
+	</data>
+	<data name="Step1" xml:space="preserve">
+		<value>OIDC request</value>
+	</data>
+	<data name="Step2" xml:space="preserve">
+		<value>SAML AuthnRequest</value>
+	</data>
+	<data name="Step3" xml:space="preserve">
+		<value>Identification</value>
+	</data>
+	<data name="Step4" xml:space="preserve">
+		<value>SAML response</value>
+	</data>
+	<data name="Step5" xml:space="preserve">
+		<value>Tokens and session</value>
+	</data>
+	<data name="PartyPortal" xml:space="preserve">
+		<value>Citizen Portal</value>
+	</data>
+	<data name="PartyAuth" xml:space="preserve">
+		<value>Sign-in service</value>
+	</data>
+	<data name="PartyBundId" xml:space="preserve">
+		<value>BundID</value>
+	</data>
+	<data name="Arrow1" xml:space="preserve">
+		<value>OpenID Connect request via your browser</value>
+	</data>
+	<data name="Arrow2" xml:space="preserve">
+		<value>AuthnRequest via your browser (HTTP POST)</value>
+	</data>
+	<data name="Arrow3" xml:space="preserve">
+		<value>Choose person and means of identification</value>
+	</data>
+	<data name="Arrow4" xml:space="preserve">
+		<value>Signed response via your browser (HTTP POST)</value>
+	</data>
+	<data name="Arrow5" xml:space="preserve">
+		<value>Code via the browser, tokens server to server</value>
+	</data>
+</root>

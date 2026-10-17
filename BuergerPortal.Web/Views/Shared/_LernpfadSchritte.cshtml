@@ -1,0 +1,172 @@
+@model int
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@*
+    Lernpfad „Schritt für Schritt“: Fortschritt (5 Schritte) und darunter die drei Beteiligten mit dem Pfeil der
+    Nachricht, um die es gerade geht. Dieselbe Darstellung hat der Auth-Server (Schritt 2 und 4, eigene Kopie).
+    Model = aktueller Schritt (1–5).
+*@
+@{
+    // Spalten: 1 Portal, 2 Anmeldedienst (Auth-Server), 3 BundID
+    var (von, nach) = Model switch { 1 => (1, 2), 2 => (2, 3), 3 => (3, 3), 4 => (3, 2), _ => (2, 1) };
+    var links = Math.Min(von, nach);
+    var rechts = Math.Max(von, nach);
+    var richtung = von == nach ? "schleife" : nach > von ? "rechts" : "links";
+}
+<nav class="bp-lern mb-4" aria-label="@T["Aria"]">
+    <ol class="bp-lern-schritte">
+        @for (var i = 1; i <= 5; i++)
+        {
+            <li class="@(i < Model ? "erledigt" : i == Model ? "aktiv" : null)" aria-current="@(i == Model ? "step" : null)">
+                <span class="nr" aria-hidden="true">@(i < Model ? "✓" : i.ToString())</span>
+                <span class="txt">@T[$"Step{i}"]</span>
+            </li>
+        }
+    </ol>
+    <div class="bp-lern-bahn" role="img" aria-label="@T[$"Arrow{Model}"]">
+        <div class="teil @(links <= 1 && 1 <= rechts ? "beteiligt" : null)" style="grid-column: 1">
+            <i class="bi bi-window" aria-hidden="true"></i><span>@T["PartyPortal"]</span>
+        </div>
+        <div class="teil @(links <= 2 && 2 <= rechts ? "beteiligt" : null)" style="grid-column: 2">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i><span>@T["PartyAuth"]</span>
+        </div>
+        <div class="teil @(links <= 3 && 3 <= rechts ? "beteiligt" : null)" style="grid-column: 3">
+            <i class="bi bi-person-badge" aria-hidden="true"></i><span>@T["PartyBundId"]</span>
+        </div>
+        <div class="pfeil @richtung" style="grid-column: @links / @(rechts + 1)">
+            <span>@T[$"Arrow{Model}"]</span>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .bp-lern-schritte {
+        display: flex;
+        gap: .5rem;
+        margin: 0 0 1rem;
+        padding: 0;
+        list-style: none;
+        overflow-x: auto;
+    }
+
+    .bp-lern-schritte li {
+        display: flex;
+        flex: 1 1 0;
+        align-items: center;
+        gap: .45rem;
+        min-width: 7.5rem;
+        padding: .45rem .6rem;
+        border-radius: .75rem;
+        background: var(--bs-tertiary-bg);
+        color: var(--bs-secondary-color);
+        font-size: .8rem;
+        line-height: 1.2;
+    }
+
+    .bp-lern-schritte .nr {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 1.6rem;
+        height: 1.6rem;
+        border-radius: 50%;
+        background: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        font-weight: 700;
+    }
+
+    .bp-lern-schritte li.erledigt {
+        color: var(--bs-success-text-emphasis);
+    }
+
+    .bp-lern-schritte li.erledigt .nr {
+        border-color: var(--bs-success);
+        background: var(--bs-success);
+        color: #fff;
+    }
+
+    .bp-lern-schritte li.aktiv {
+        background: var(--bs-primary-bg-subtle);
+        color: var(--bs-primary-text-emphasis);
+        font-weight: 600;
+    }
+
+    .bp-lern-schritte li.aktiv .nr {
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
+        color: #fff;
+    }
+
+    .bp-lern-bahn {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: .5rem 1rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background: var(--bs-body-bg);
+        box-shadow: var(--bs-box-shadow-sm);
+    }
+
+    .bp-lern-bahn .teil {
+        grid-row: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .2rem;
+        padding: .6rem .25rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: .75rem;
+        font-size: .85rem;
+        font-weight: 600;
+        text-align: center;
+        color: var(--bs-secondary-color);
+    }
+
+    .bp-lern-bahn .teil .bi {
+        font-size: 1.4rem;
+    }
+
+    .bp-lern-bahn .teil.beteiligt {
+        border-color: var(--bs-primary);
+        color: var(--bs-body-color);
+    }
+
+    .bp-lern-bahn .teil.beteiligt .bi {
+        color: var(--bs-primary);
+    }
+
+    .bp-lern-bahn .pfeil {
+        grid-row: 2;
+        position: relative;
+        margin: .6rem 15% 0;
+        padding-top: .45rem;
+        border-top: 3px solid var(--bs-primary);
+        font-size: .8rem;
+        text-align: center;
+        color: var(--bs-primary-text-emphasis);
+    }
+
+    .bp-lern-bahn .pfeil.rechts::after, .bp-lern-bahn .pfeil.links::before {
+        content: "";
+        position: absolute;
+        top: -.55rem;
+        border: .45rem solid transparent;
+    }
+
+    .bp-lern-bahn .pfeil.rechts::after {
+        right: -.6rem;
+        border-left: .6rem solid var(--bs-primary);
+    }
+
+    .bp-lern-bahn .pfeil.links::before {
+        left: -.6rem;
+        border-right: .6rem solid var(--bs-primary);
+    }
+
+    .bp-lern-bahn .pfeil.schleife {
+        margin: .6rem 0 0;
+        padding: .35rem;
+        border: 2px dashed var(--bs-primary);
+        border-radius: .75rem;
+    }
+</style>

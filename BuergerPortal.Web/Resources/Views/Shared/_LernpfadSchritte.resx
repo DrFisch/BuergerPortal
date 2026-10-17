@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Aria" xml:space="preserve">
+		<value>Lernpfad: Fortschritt der Anmeldung</value>
+	</data>
+	<data name="Step1" xml:space="preserve">
+		<value>OIDC-Anfrage</value>
+	</data>
+	<data name="Step2" xml:space="preserve">
+		<value>SAML-AuthnRequest</value>
+	</data>
+	<data name="Step3" xml:space="preserve">
+		<value>Identifizierung</value>
+	</data>
+	<data name="Step4" xml:space="preserve">
+		<value>SAML-Response</value>
+	</data>
+	<data name="Step5" xml:space="preserve">
+		<value>Tokens und Sitzung</value>
+	</data>
+	<data name="PartyPortal" xml:space="preserve">
+		<value>BürgerPortal</value>
+	</data>
+	<data name="PartyAuth" xml:space="preserve">
+		<value>Anmeldedienst</value>
+	</data>
+	<data name="PartyBundId" xml:space="preserve">
+		<value>BundID</value>
+	</data>
+	<data name="Arrow1" xml:space="preserve">
+		<value>OpenID-Connect-Anfrage über Ihren Browser</value>
+	</data>
+	<data name="Arrow2" xml:space="preserve">
+		<value>AuthnRequest über Ihren Browser (HTTP-POST)</value>
+	</data>
+	<data name="Arrow3" xml:space="preserve">
+		<value>Person und Identifizierungsmittel wählen</value>
+	</data>
+	<data name="Arrow4" xml:space="preserve">
+		<value>signierte Response über Ihren Browser (HTTP-POST)</value>
+	</data>
+	<data name="Arrow5" xml:space="preserve">
+		<value>Code über den Browser, Tokens direkt Server zu Server</value>
+	</data>
+</root>
