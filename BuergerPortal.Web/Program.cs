@@ -243,6 +243,12 @@ builder.Services
                 // Jede Anmeldung im Portal ist eine neue BundID-Anmeldung (prompt=login → ForceAuthn): Eine noch
                 // bestehende Sitzung am Auth-Server meldet nach Abmeldung oder Zeitablauf nicht still wieder an.
                 ctx.ProtocolMessage.Prompt = OpenIdConnectPrompt.Login;
+
+                // Lernpfad „Schritt für Schritt“ (im Hinweis-Dialog gewählt): erst die Erklärseite zu Schritt 1
+                if (BuergerPortal.Web.Services.Lernpfad.IsRequested(ctx.Request))
+                {
+                    BuergerPortal.Web.Services.Lernpfad.ZurErklaerung(ctx);
+                }
             },
             OnRemoteFailure = ctx =>
             {
@@ -259,6 +265,8 @@ builder.Services
             {
                 // Sitzungscookie (endet mit dem Browser), Ablauf nach Inaktivität, Anmeldezeit für die Höchstdauer
                 BuergerPortal.Web.Services.PortalSession.Start(ctx.Properties!, DateTimeOffset.UtcNow);
+                // Lernpfad: was beim Code-Tausch ankam, für die Erklärseite zu Schritt 5
+                BuergerPortal.Web.Services.Lernpfad.TokensMerken(ctx);
                 return Task.CompletedTask;
             }
         };
