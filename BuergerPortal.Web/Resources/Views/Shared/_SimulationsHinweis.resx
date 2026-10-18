@@ -41,7 +41,7 @@
 		<value>Sie verlassen jetzt das BürgerPortal und kommen auf die Anmeldeseite eines BundID-Simulators – eines Testsystems, nicht der echten BundID.</value>
 	</data>
 	<data name="Login_Step1" xml:space="preserve">
-		<value>Sie wählen eine fiktive Testperson, ein Identifizierungsmittel (z. B. Benutzername, ELSTER, Online-Ausweis) und einen „fachlichen Kontext“ – derselbe Kontext bedeutet dieselbe Person.</value>
+		<value>Sie melden sich mit einem Tipp als fiktive Person „John Doe“ an oder wählen eine Testperson und ein Identifizierungsmittel (z. B. Benutzername, ELSTER, Online-Ausweis). Der „fachliche Kontext“ ist je Gerät vorbelegt – gleiche Testperson und gleicher Kontext bedeuten dasselbe Konto.</value>
 	</data>
 	<data name="Login_Step2" xml:space="preserve">
 		<value>Der Simulator schickt dem BürgerPortal eine digital signierte Bestätigung (SAML) mit den Daten der Testperson. Das BürgerPortal prüft sie und meldet Sie an.</value>

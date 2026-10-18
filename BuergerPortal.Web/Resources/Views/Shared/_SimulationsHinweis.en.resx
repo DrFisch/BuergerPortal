@@ -41,7 +41,7 @@
 		<value>You are now leaving the BürgerPortal for the sign-in page of a BundID simulator – a test system, not the real BundID.</value>
 	</data>
 	<data name="Login_Step1" xml:space="preserve">
-		<value>You choose a fictitious test person, an identification method (e.g. user name, ELSTER, online ID card) and a "business context" – the same context means the same person.</value>
+		<value>You sign in as the fictitious person "John Doe" with one tap, or choose a test person and an identification method (e.g. user name, ELSTER, online ID card). The "business context" is prefilled per device – the same test person and context mean the same account.</value>
 	</data>
 	<data name="Login_Step2" xml:space="preserve">
 		<value>The simulator sends the BürgerPortal a digitally signed confirmation (SAML) with the test person's data. The BürgerPortal verifies it and signs you in.</value>
