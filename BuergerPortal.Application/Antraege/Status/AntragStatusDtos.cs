@@ -11,4 +11,12 @@ namespace BuergerPortal.Application.Antraege.Status
     /// </summary>
     public sealed record AntragStatuswechsel(Guid AntragId, AntragTyp Typ, AntragStatus Status, DateTime ZeitpunktUtc,
         Guid ApplicantUserId, string? PostkorbHandle, string? Name, DateTime? WunschzeitUtc);
+
+    /// <summary>Ergebnis von „Entwurf verwerfen“ (fremde Anträge gelten als nicht gefunden).</summary>
+    public enum EntwurfVerwerfenErgebnis
+    {
+        Verworfen,
+        NichtGefunden,
+        KeinEntwurf,
+    }
 }

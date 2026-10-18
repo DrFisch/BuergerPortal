@@ -1,3 +1,4 @@
+using BuergerPortal.Application.Antraege.Status;
 using BuergerPortal.Domain.Antrag.Entity;
 using BuergerPortal.Domain.Antrag.Enums;
 
@@ -23,5 +24,10 @@ namespace BuergerPortal.Application.Interfaces.Repositories
         /// Statusverlauf) – für die simulierte Bearbeitung. Anträge ohne Verlauf (vor dieser Funktion eingereicht) nie.
         /// </summary>
         Task<IReadOnlyList<Antrag>> GetFaelligeAsync(AntragStatus status, DateTime vorUtc, CancellationToken ct);
+
+        /// <summary>
+        /// Eigenen Entwurf löschen (samt Verlauf). Eingereichte Anträge bleiben – sie gehören zum Vorgang der Behörde.
+        /// </summary>
+        Task<EntwurfVerwerfenErgebnis> EntwurfLoeschenAsync(Guid antragId, Guid userId, CancellationToken ct);
     }
 }

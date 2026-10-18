@@ -1,3 +1,4 @@
+using BuergerPortal.Application.Antraege.Status;
 using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Antrag.Entity;
 using BuergerPortal.Domain.Antrag.Enums;
@@ -47,5 +48,23 @@ namespace BuergerPortal.Infrastructure.Repositories
                             && db.AntragStatusEreignisse.Any(e => e.AntragId == a.Id && e.Status == status)
                             && db.AntragStatusEreignisse.Where(e => e.AntragId == a.Id).Max(e => e.ZeitpunktUtc) <= vorUtc)
                 .ToListAsync(ct);
+
+        public async Task<EntwurfVerwerfenErgebnis> EntwurfLoeschenAsync(Guid antragId, Guid userId, CancellationToken ct)
+        {
+            var antrag = await db.Antraege.FirstOrDefaultAsync(a => a.Id == antragId && a.ApplicantUserId == userId, ct);
+            if (antrag is null)
+            {
+                return EntwurfVerwerfenErgebnis.NichtGefunden;
+            }
+            if (antrag.Status != AntragStatus.Entwurf)
+            {
+                return EntwurfVerwerfenErgebnis.KeinEntwurf;
+            }
+            db.AntragStatusEreignisse.RemoveRange(db.AntragStatusEreignisse.Where(e => e.AntragId == antragId));
+            // TPT: entfernt die Zeile in "Antraege" und in der Tabelle der Antragsart
+            db.Antraege.Remove(antrag);
+            await db.SaveChangesAsync(ct);
+            return EntwurfVerwerfenErgebnis.Verworfen;
+        }
     }
 }

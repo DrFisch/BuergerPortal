@@ -45,6 +45,9 @@ namespace BuergerPortal.Application.Antraege.Status
             return wechsel;
         }
 
+        public Task<EntwurfVerwerfenErgebnis> EntwurfVerwerfenAsync(Guid antragId, Guid userId, CancellationToken ct) =>
+            repo.EntwurfLoeschenAsync(antragId, userId, ct);
+
         private static string? Name(Antrag antrag) => antrag switch
         {
             ReisepassAntrag r => $"{r.Name.Vorname} {r.Name.Nachname}",

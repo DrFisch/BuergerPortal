@@ -17,5 +17,8 @@ namespace BuergerPortal.Application.Interfaces.BusinessServices
         /// </summary>
         Task<IReadOnlyList<AntragStatuswechsel>> BearbeitungSimulierenAsync(TimeSpan bisInBearbeitung, TimeSpan bisAbschluss,
             CancellationToken ct);
+
+        /// <summary>Eigenen Entwurf verwerfen (nur Status „Entwurf“).</summary>
+        Task<EntwurfVerwerfenErgebnis> EntwurfVerwerfenAsync(Guid antragId, Guid userId, CancellationToken ct);
     }
 }
