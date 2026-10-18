@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Reisepass_Titel" xml:space="preserve">
+		<value>Apply for a passport</value>
+	</data>
+	<data name="Reisepass_Kurz" xml:space="preserve">
+		<value>New passport: we take your details from BundID, you only choose the options.</value>
+	</data>
+	<data name="Reisepass_Unterlagen" xml:space="preserve">
+		<value>appointment at the citizens' office (signature, fingerprints)|biometric passport photo|previous passport, if any</value>
+	</data>
+	<data name="Reisepass_Gebuehr" xml:space="preserve">
+		<value>€70 (under 24: €37.50), express €32 extra (§ 27 PassV)</value>
+	</data>
+	<data name="Sperrmuell_Titel" xml:space="preserve">
+		<value>Book a bulky waste pickup</value>
+	</data>
+	<data name="Sperrmuell_Kurz" xml:space="preserve">
+		<value>Pickup of furniture, wood and mattresses at your address – you choose the day.</value>
+	</data>
+	<data name="Sperrmuell_Unterlagen" xml:space="preserve">
+		<value>pickup address (suggested from BundID)|approximate volume in cubic metres|a working day as preferred date</value>
+	</data>
+	<data name="Sperrmuell_Gebuehr" xml:space="preserve">
+		<value>free of charge (assumption of the simulation)</value>
+	</data>
+	<data name="Niveau_1" xml:space="preserve">
+		<value>normal</value>
+	</data>
+	<data name="Niveau_3" xml:space="preserve">
+		<value>substantial</value>
+	</data>
+	<data name="Niveau_4" xml:space="preserve">
+		<value>high</value>
+	</data>
+</root>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Reisepass_Titel" xml:space="preserve">
+		<value>Reisepass beantragen</value>
+	</data>
+	<data name="Reisepass_Kurz" xml:space="preserve">
+		<value>Neuer Reisepass: Ihre Daten übernehmen wir aus der BundID, Sie wählen nur noch die Optionen.</value>
+	</data>
+	<data name="Reisepass_Unterlagen" xml:space="preserve">
+		<value>persönlicher Termin im Bürgeramt (Unterschrift, Fingerabdrücke)|biometrisches Passfoto|bisheriger Pass, falls vorhanden</value>
+	</data>
+	<data name="Reisepass_Gebuehr" xml:space="preserve">
+		<value>70 € (unter 24 Jahren 37,50 €), Express zusätzlich 32 € (§ 27 PassV)</value>
+	</data>
+	<data name="Sperrmuell_Titel" xml:space="preserve">
+		<value>Sperrmüll anmelden</value>
+	</data>
+	<data name="Sperrmuell_Kurz" xml:space="preserve">
+		<value>Abholung von Möbeln, Holz und Matratzen an Ihrer Adresse – Sie wählen den Wunschtag.</value>
+	</data>
+	<data name="Sperrmuell_Unterlagen" xml:space="preserve">
+		<value>Abholadresse (aus der BundID vorgeschlagen)|ungefähre Menge in Kubikmetern|ein Werktag als Wunschtag</value>
+	</data>
+	<data name="Sperrmuell_Gebuehr" xml:space="preserve">
+		<value>kostenlos (Annahme der Simulation)</value>
+	</data>
+	<data name="Niveau_1" xml:space="preserve">
+		<value>normal</value>
+	</data>
+	<data name="Niveau_3" xml:space="preserve">
+		<value>substanziell</value>
+	</data>
+	<data name="Niveau_4" xml:space="preserve">
+		<value>hoch</value>
+	</data>
+</root>
