@@ -36,6 +36,8 @@ namespace BuergerPortal.Tests.Web
             // Reisepass: Einreichen erst ab "substanziell" (API: TrustLevelPolicies.Substantial), Sperrmüll ab "normal"
             Assert.Equal(TrustLevel.Substantial, Leistungen.Von(Leistungen.Reisepass)!.Niveau);
             Assert.Equal(TrustLevel.Normal, Leistungen.Von(Leistungen.Sperrmuell)!.Niveau);
+            // Meldebescheinigung: erst ab "hoch" (TrustLevelPolicies.High)
+            Assert.Equal(TrustLevel.High, Leistungen.Von(Leistungen.Meldebescheinigung)!.Niveau);
             Assert.False(Leistungen.NiveauReicht(TrustLevel.Normal, TrustLevel.Substantial));
             Assert.True(Leistungen.NiveauReicht(TrustLevel.High, TrustLevel.Substantial));
             Assert.Null(Leistungen.Von(99));

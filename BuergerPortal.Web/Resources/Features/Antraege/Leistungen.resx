@@ -73,4 +73,22 @@
   <data name="Status_5" xml:space="preserve">
     <value>Abgelehnt</value>
   </data>
+  <data name="Meldebescheinigung_Titel" xml:space="preserve">
+    <value>Meldebescheinigung beantragen</value>
+  </data>
+  <data name="Meldebescheinigung_Kurz" xml:space="preserve">
+    <value>Nachweis Ihres Wohnsitzes, etwa für Arbeitgeber, Bank oder Behörden – kommt direkt in Ihr BundID-Postfach.</value>
+  </data>
+  <data name="Meldebescheinigung_Unterlagen" xml:space="preserve">
+    <value>Anmeldung mit dem Vertrauensniveau „hoch“ (z. B. Online-Ausweis)|Name, Geburtsdaten und Anschrift kommen aus Ihrer BundID|Art: einfach (Name und Anschrift) oder erweitert (mit Geburtsdaten)</value>
+  </data>
+  <data name="Meldebescheinigung_Gebuehr" xml:space="preserve">
+    <value>online gebührenfrei (wie beim Online-Dienst des Landes Berlin); im Bürgeramt je nach Kommune gebührenpflichtig</value>
+  </data>
+  <data name="Meldebescheinigung_GebuehrKurz" xml:space="preserve">
+    <value>online kostenlos</value>
+  </data>
+  <data name="Meldebescheinigung_Name" xml:space="preserve">
+    <value>Meldebescheinigung</value>
+  </data>
 </root>

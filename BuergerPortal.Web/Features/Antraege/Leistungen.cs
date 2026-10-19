@@ -14,7 +14,7 @@ namespace BuergerPortal.Web.Features.Antraege
     /// <summary>
     /// Leistungskatalog der Anträge (2026-10-18): Übersicht, Assistenten und Detailseiten lesen Symbol, nötiges
     /// BundID-Vertrauensniveau, Dauer und Gebühr von hier. Das Niveau ist dasselbe, das die API beim Einreichen prüft
-    /// (Reisepass: substanziell, TrustLevelPolicies) – die Übersicht sagt es also vorher, statt dass erst der Step-up
+    /// (Reisepass: substanziell, Meldebescheinigung: hoch, TrustLevelPolicies) – die Übersicht sagt es also vorher, statt dass erst der Step-up
     /// überrascht. Nicht statisch, weil die Texte über IStringLocalizer&lt;Leistungen&gt; kommen.
     /// </summary>
     public sealed class Leistungen
@@ -25,6 +25,7 @@ namespace BuergerPortal.Web.Features.Antraege
 
         public const int Reisepass = 1;
         public const int Sperrmuell = 2;
+        public const int Meldebescheinigung = 3;
 
         public static readonly IReadOnlyList<LeistungInfo> Alle =
         [
@@ -32,6 +33,9 @@ namespace BuergerPortal.Web.Features.Antraege
                 "ReisepassAntraege", "NeuerReisepass", "Antrag", "ReisepassStep2"),
             new(Sperrmuell, "Sperrmuell", "bi-truck", "success", TrustLevel.Normal, 3,
                 "SperrmuellAntraege", "NeuerSperrmuell", "SperrmuellAntrag", "SperrmuellStep2"),
+            // seit 2026-10-18: einzige Leistung mit Niveau "hoch" (API: TrustLevelPolicies.High)
+            new(Meldebescheinigung, "Meldebescheinigung", "bi-house-check", "info", TrustLevel.High, 2,
+                "MeldebescheinigungAntraege", "NeueMeldebescheinigung", "MeldebescheinigungAntrag", "MeldebescheinigungAngaben"),
         ];
 
         public static LeistungInfo? Von(int typ) => Alle.FirstOrDefault(l => l.Typ == typ);

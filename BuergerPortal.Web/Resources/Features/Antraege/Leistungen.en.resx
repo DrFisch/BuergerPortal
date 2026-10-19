@@ -73,4 +73,22 @@
   <data name="Status_5" xml:space="preserve">
     <value>Rejected</value>
   </data>
+  <data name="Meldebescheinigung_Titel" xml:space="preserve">
+    <value>Request a certificate of registration</value>
+  </data>
+  <data name="Meldebescheinigung_Kurz" xml:space="preserve">
+    <value>Proof of your residence, e.g. for employers, banks or authorities – delivered straight to your BundID mailbox.</value>
+  </data>
+  <data name="Meldebescheinigung_Unterlagen" xml:space="preserve">
+    <value>login with the trust level “high” (e.g. online ID card)|name, birth details and address come from your BundID|type: simple (name and address) or extended (with birth details)</value>
+  </data>
+  <data name="Meldebescheinigung_Gebuehr" xml:space="preserve">
+    <value>free of charge online (as with the State of Berlin online service); at the citizens' office fees depend on the municipality</value>
+  </data>
+  <data name="Meldebescheinigung_GebuehrKurz" xml:space="preserve">
+    <value>free online</value>
+  </data>
+  <data name="Meldebescheinigung_Name" xml:space="preserve">
+    <value>Certificate of registration</value>
+  </data>
 </root>
