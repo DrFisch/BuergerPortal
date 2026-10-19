@@ -1,278 +1,138 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.AntragDetailVm
+@using BuergerPortal.Web.Features.Antraege
 @using BuergerPortal.Web.Features.Termine.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using System.Globalization
 @inject IViewLocalizer L
-
+@inject IStringLocalizer<Leistungen> LK
+@inject IConfiguration Config
+@* Reisepass-Detail (2026-10-18): Kopf mit Status, „Nächste Schritte“ je Status (Termin buchen, abholen), Zeitleiste,
+   Angaben mit Gebühr, Kontakt, Postfach-Link und Druckansicht der Eingangsbestätigung. *@
 @{
-    ViewData["Title"] = L["ApplicationDetails_Title"];
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Reisepass)!;
+    var nummer = Model.Id.ToString("N")[..8].ToUpperInvariant();
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+    var gebuehr = Leistungen.ReisepassGebuehr(DateOnly.FromDateTime(Model.Geburtsdatum),
+        DateOnly.FromDateTime(Model.SubmittedUtc ?? Model.CreatedUtc), Model.Express);
+    var verlauf = new AntragVerlaufVm(Model.Status, Model.CreatedUtc, Model.SubmittedUtc, Model.InBearbeitungSeit, Model.AbgeschlossenAm);
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
 }
 
-<div class="container py-5">
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-circle shadow-sm">
-            <i class="bi bi-arrow-left"></i>
-        </a>
-        <h1 class="h3 fw-bold mb-0">@L["ApplicationDetails_Heading"]</h1>
-    </div>
+<div class="container ap-seite py-4 ap-farbe-primary">
+    <p class="ap-nicht-drucken mb-2">
+        <a asp-action="Status" class="small"><i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]</a>
+    </p>
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div class="flex-grow-1">
+            <h1 class="h3 fw-bold">@LK["Reisepass_Name"]</h1>
+            <p class="text-body-secondary mb-2">
+                @L["Number"] <strong>@nummer</strong>
+                @if (Model.SubmittedUtc is { } eingereicht)
+                {
+                    <span>· @L["SubmittedOn", eingereicht.ToString("d")]</span>
+                }
+            </p>
+            <span class="ap-status ap-status-@Model.Status" id="status">@LK[$"Status_{Model.Status}"]</span>
+        </div>
+    </header>
 
     @if (TempData["AntragTerminOk"] is string bookedMsg)
     {
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3">
-            <i class="bi bi-check-circle-fill fs-4"></i>
-            <div>@bookedMsg</div>
-        </div>
+        <div class="alert alert-success d-flex gap-2" role="status"><i class="bi bi-check-circle" aria-hidden="true"></i><div>@bookedMsg</div></div>
     }
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-uppercase tracking-wider small fw-bold text-secondary">@L["CurrentStatus"]</span>
-                <span class="badge badge-modern @Model.BadgeClass">@Model.StatusText</span>
-            </div>
-            <div class="progress rounded-pill mb-2" style="height: 12px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated"
-                     role="progressbar"
-                     style="width:@Model.ProgressPercent%"
-                     aria-valuenow="@Model.ProgressPercent"
-                     aria-valuemin="0"
-                     aria-valuemax="100"></div>
-            </div>
-            <div class="d-flex justify-content-between small text-muted">
-                <span>@L["Started"]</span>
-                <span>@Model.ProgressPercent% @L["Completed"]</span>
-            </div>
-        </div>
-    </div>
+    @* Nächste Schritte je Status *@
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hNaechste" id="naechsteSchritte">
+        <h2 id="hNaechste" class="h6 fw-bold mb-2">@L["Next_Heading"]</h2>
+        @switch (Model.Status)
+        {
+            case 1:
+                <p class="mb-2">@L["Next_Draft"]</p>
+                <a class="btn btn-primary" asp-controller="ReisepassAntraege" asp-action="ReisepassStep2" asp-route-id="@Model.Id">@L["Next_Draft_Button"]</a>
+                break;
+            case 2:
+            case 3:
+                <p class="mb-2">@L["Next_Appointment"]</p>
+                <a class="btn btn-primary ap-nicht-drucken" asp-controller="Termine" asp-action="Buchen"
+                   asp-route-service="@(ServiceType.DokumenteUndAusweise)" asp-route-antragId="@Model.Id">
+                    <i class="bi bi-calendar-plus" aria-hidden="true"></i> @L["Next_Appointment_Button"]
+                </a>
+                break;
+            case 4:
+                <p class="mb-0">@(Model.AltpassVorhanden ? L["Next_Ready_OldPass"] : L["Next_Ready"])</p>
+                break;
+            default:
+                <p class="mb-0">@L["Next_Rejected"]</p>
+                break;
+        }
+    </section>
 
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0">@L["ApplicationDetails_DataCardTitle"]</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-sm-6">
-                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_Applicant"]</label>
-                            <p class="fs-5 mb-0 fw-medium">@Model.Antragsteller</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_BirthDate"]</label>
-                            <p class="fs-5 mb-0 fw-medium">@Model.Geburtsdatum.ToString("dd.MM.yyyy")</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_Express"]</label>
-                            <p class="mb-0">
-                                @if (Model.Express)
-                                {
-                                    <span class="text-danger fw-bold"><i class="bi bi-lightning-fill me-1"></i>@L["Yes"]</span>
-                                }
-                                else
-                                {
-                                    <span>@L["No"]</span>
-                                }
-                            </p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_OldPass"]</label>
-                            <p class="mb-0">@((Model.AltpassVorhanden ? L["Yes"] : L["No"]))</p>
-                        </div>
-                        @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
-                        {
-                            <div class="col-12">
-                                <label class="text-secondary small fw-bold text-uppercase">@L["ApplicationDetails_Field_Note"]</label>
-                                <div class="p-3 bg-body-tertiary rounded-3 mt-1 small">@Model.Hinweis</div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+    <div class="row g-3">
+        <div class="col-12 col-lg-8">
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hVerlauf">
+                <h2 id="hVerlauf" class="h6 fw-bold mb-3">@L["Timeline_Heading"]</h2>
+                <partial name="_AntragVerlauf" model="verlauf" />
+            </section>
 
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0">@L["ApplicationDetails_Timeline_Title"]</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="modern-timeline">
-                        <div class="tl-item @(Model.CreatedUtc != default ? "active" : "")">
-                            <div class="tl-icon"><i class="bi bi-file-earmark-plus"></i></div>
-                            <div class="tl-content">
-                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Created"]</div>
-                                <div class="small text-muted">@Model.CreatedUtc.ToString("dd.MM.yyyy HH:mm")</div>
-                            </div>
-                        </div>
-
-                        <div class="tl-item @(Model.SubmittedUtc.HasValue ? "active" : "")">
-                            <div class="tl-icon"><i class="bi bi-send"></i></div>
-                            <div class="tl-content">
-                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Submitted"]</div>
-                                <div class="small text-muted">
-                                    @(Model.SubmittedUtc.HasValue? Model.SubmittedUtc.Value.ToString("dd.MM.yyyy HH:mm") : L["ApplicationDetails_Timeline_Submitted_NotYet"])
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tl-item @((Model.ProgressPercent >= 70) ? "active" : "")">
-                            <div class="tl-icon"><i class="bi bi-search"></i></div>
-                            <div class="tl-content">
-                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Review"]</div>
-                                <div class="small text-muted">
-                                    @(Model.InBearbeitungSeit?.ToString("dd.MM.yyyy HH:mm") ?? (Model.ProgressPercent >= 70 ? L["ApplicationDetails_Timeline_Review_InProgressOrDone"].Value : L["ApplicationDetails_Timeline_Pending"].Value))
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tl-item @((Model.ProgressPercent >= 100) ? "active" : "")">
-                            <div class="tl-icon"><i class="bi bi-check2-all"></i></div>
-                            <div class="tl-content">
-                                <div class="fw-bold">@L["ApplicationDetails_Timeline_Completed"]</div>
-                                <div class="small text-muted">
-                                    @(Model.AbgeschlossenAm?.ToString("dd.MM.yyyy HH:mm") ?? (Model.ProgressPercent >= 100 ? L["ApplicationDetails_Timeline_Completed_Done"].Value : L["ApplicationDetails_Timeline_Pending"].Value))
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @if (Model.SubmittedUtc.HasValue && Model.ProgressPercent < 100)
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hAngaben">
+                <h2 id="hAngaben" class="h6 fw-bold mb-3">@L["Data_Heading"]</h2>
+                <dl class="ap-angaben">
+                    <dt>@L["Applicant"]</dt>
+                    <dd>@Model.Antragsteller</dd>
+                    <dt>@L["Birthdate"]</dt>
+                    <dd>@Model.Geburtsdatum.ToString("d")</dd>
+                    <dt>@L["Express"]</dt>
+                    <dd>@(Model.Express ? L["Yes"] : L["No"])</dd>
+                    <dt>@L["OldPass"]</dt>
+                    <dd>@(Model.AltpassVorhanden ? L["Yes"] : L["No"])</dd>
+                    @if (!string.IsNullOrWhiteSpace(Model.Hinweis))
                     {
-                        <p class="small text-muted mt-3 mb-0" id="simulationHinweis">
-                            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>@L["ApplicationDetails_Timeline_SimulationHint"]
-                        </p>
+                        <dt>@L["Note"]</dt>
+                        <dd>@Model.Hinweis</dd>
+                    }
+                    <dt>@L["Fee"]</dt>
+                    <dd><strong>@Leistungen.Euro(gebuehr, CultureInfo.CurrentUICulture)</strong> <span class="small text-body-secondary">@L["Fee_Hint"]</span></dd>
+                </dl>
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hKontakt">
+                <h2 id="hKontakt" class="h6 fw-bold mb-3">@L["Contact_Heading"]</h2>
+                <dl class="ap-angaben ap-angaben-gestapelt mb-3">
+                    <dt>@L["Email"]</dt>
+                    <dd>@(string.IsNullOrEmpty(Model.Email) ? "–" : Model.Email)</dd>
+                    <dt>@L["Phone"]</dt>
+                    <dd>@(string.IsNullOrEmpty(Model.Telefon) ? "–" : Model.Telefon)</dd>
+                </dl>
+                <div class="d-grid gap-2 ap-nicht-drucken">
+                    @if (!string.IsNullOrWhiteSpace(postfachUrl) && Model.Status >= 2)
+                    {
+                        <a class="btn btn-outline-primary" href="@postfachUrl" data-sim-hinweis="postfach">
+                            <i class="bi bi-envelope-paper" aria-hidden="true"></i> @L["Postfach"]
+                        </a>
+                    }
+                    <a class="btn btn-outline-secondary" asp-controller="Termine" asp-action="Buchen"
+                       asp-route-service="@(ServiceType.AntragRueckfrage)" asp-route-antragId="@Model.Id">
+                        <i class="bi bi-chat-dots" aria-hidden="true"></i> @L["Question_Button"]
+                    </a>
+                    @if (Model.Status >= 2)
+                    {
+                        <button type="button" class="btn btn-outline-secondary" data-ap-drucken>
+                            <i class="bi bi-printer" aria-hidden="true"></i> @L["Print"]
+                        </button>
                     }
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 2rem;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">@L["ApplicationDetails_ContactCardTitle"]</h5>
-
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="icon-circle bg-primary-subtle text-primary">
-                            <i class="bi bi-envelope"></i>
-                        </div>
-                        <div class="overflow-hidden">
-                            <span class="text-secondary x-small d-block fw-bold text-uppercase">@L["ApplicationDetails_Email_Label"]</span>
-                            <span class="text-truncate d-block">@Model.Email</span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="icon-circle bg-success-subtle text-success">
-                            <i class="bi bi-telephone"></i>
-                        </div>
-                        <div>
-                            <span class="text-secondary x-small d-block fw-bold text-uppercase">@L["ApplicationDetails_Phone_Label"]</span>
-                            <span>@Model.Telefon</span>
-                        </div>
-                    </div>
-
-                    <hr class="my-4 opacity-50">
-
-                    <a class="btn btn-primary btn-sm rounded-pill w-100 fw-bold shadow-sm mb-3 text-nowrap"
-                       asp-controller="Termine"
-                       asp-action="Buchen"
-                       asp-route-service="@(ServiceType.AntragRueckfrage)"
-                       asp-route-antragId="@Model.Id">
-                        @L["ApplicationDetails_Appointment_Button"]
-                    </a>
-
-                    <p class="text-secondary x-small text-center mb-0 px-2">
-                        @L["ApplicationDetails_Appointment_Info"]
-                    </p>
-                </div>
-            </div>
+            </section>
         </div>
     </div>
 </div>
 
-@section Styles {
-    <style>
-        body {
-            background-color: var(--bs-tertiary-bg);
-        }
-
-        .badge-modern {
-            padding: 0.6em 1.2em;
-            border-radius: 50rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
-
-        .icon-circle {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .modern-timeline {
-            position: relative;
-            padding-left: 20px;
-        }
-
-            .modern-timeline::before {
-                content: '';
-                position: absolute;
-                left: 39px;
-                top: 0;
-                bottom: 0;
-                width: 2px;
-                background: var(--bs-border-color);
-                opacity: 0.5;
-            }
-
-        .tl-item {
-            position: relative;
-            display: flex;
-            gap: 25px;
-            padding-bottom: 30px;
-            z-index: 1;
-        }
-
-            .tl-item:last-child {
-                padding-bottom: 0;
-            }
-
-        .tl-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--bs-body-bg);
-            border: 2px solid var(--bs-border-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--bs-secondary-color);
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .tl-item.active .tl-icon {
-            background: var(--bs-success);
-            border-color: var(--bs-success);
-            color: white;
-            box-shadow: 0 0 0 5px var(--bs-success-bg-subtle);
-        }
-
-        .tl-item.active .tl-content .fw-bold {
-            color: var(--bs-emphasis-color);
-        }
-
-        .x-small {
-            font-size: 0.7rem;
-        }
-
-        .tracking-wider {
-            letter-spacing: 0.08em;
-        }
-
-        [data-bs-theme="dark"] .card {
-            background-color: var(--bs-body-bg);
-        }
-    </style>
+@section Scripts {
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
 }

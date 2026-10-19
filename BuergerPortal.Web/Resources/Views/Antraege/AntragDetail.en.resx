@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,84 +13,91 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="ApplicationDetails_Title" xml:space="preserve">
-    <value>Application – Details</value>
-  </data>
-	<data name="ApplicationDetails_Heading" xml:space="preserve">
-    <value>Passport application</value>
-  </data>
-
-	<data name="ApplicationDetails_DataCardTitle" xml:space="preserve">
-    <value>Application data</value>
-  </data>
-	<data name="ApplicationDetails_Field_Applicant" xml:space="preserve">
-    <value>Applicant</value>
-  </data>
-	<data name="ApplicationDetails_Field_BirthDate" xml:space="preserve">
-    <value>Date of birth</value>
-  </data>
-	<data name="ApplicationDetails_Field_Express" xml:space="preserve">
-    <value>Express</value>
-  </data>
-	<data name="ApplicationDetails_Field_OldPass" xml:space="preserve">
-    <value>Existing passport</value>
-  </data>
-	<data name="ApplicationDetails_Field_Note" xml:space="preserve">
-    <value>Note</value>
-  </data>
-
-	<data name="ApplicationDetails_Timeline_Title" xml:space="preserve">
-    <value>Timeline</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Created" xml:space="preserve">
-    <value>Created</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Submitted" xml:space="preserve">
-    <value>Submitted</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Submitted_NotYet" xml:space="preserve">
-    <value>not yet submitted</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Review" xml:space="preserve">
-    <value>Review</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Review_InProgressOrDone" xml:space="preserve">
-    <value>in progress / completed</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Pending" xml:space="preserve">
-    <value>pending</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Completed" xml:space="preserve">
-    <value>Completion</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Completed_Done" xml:space="preserve">
-    <value>completed</value>
-  </data>
-
-	<data name="ApplicationDetails_ContactCardTitle" xml:space="preserve">
-    <value>Contact &amp; actions</value>
-  </data>
-	<data name="ApplicationDetails_Email_Label" xml:space="preserve">
-    <value>Email</value>
-  </data>
-	<data name="ApplicationDetails_Phone_Label" xml:space="preserve">
-    <value>Phone</value>
-  </data>
-
-	<data name="ApplicationDetails_Appointment_Button" xml:space="preserve">
-    <value>Book clarification appointment</value>
-  </data>
-	<data name="ApplicationDetails_Appointment_Info" xml:space="preserve">
-    <value>You will be redirected to the appointment booking page (service preselected: “Application follow-up”).</value>
-  </data>
-
+	<data name="Back" xml:space="preserve">
+		<value>My applications</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="SubmittedOn" xml:space="preserve">
+		<value>submitted on {0}</value>
+	</data>
+	<data name="Next_Heading" xml:space="preserve">
+		<value>Next steps</value>
+	</data>
+	<data name="Next_Draft" xml:space="preserve">
+		<value>This application has not been sent yet.</value>
+	</data>
+	<data name="Next_Draft_Button" xml:space="preserve">
+		<value>Continue</value>
+	</data>
+	<data name="Next_Rejected" xml:space="preserve">
+		<value>The application was rejected. The reasons are in your BundID mailbox.</value>
+	</data>
+	<data name="Timeline_Heading" xml:space="preserve">
+		<value>Processing status</value>
+	</data>
+	<data name="Applicant" xml:space="preserve">
+		<value>Applicant</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Note</value>
+	</data>
+	<data name="Fee" xml:space="preserve">
+		<value>Fee</value>
+	</data>
+	<data name="Contact_Heading" xml:space="preserve">
+		<value>Contact and help</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Phone</value>
+	</data>
+	<data name="Postfach" xml:space="preserve">
+		<value>Messages in the BundID mailbox</value>
+	</data>
+	<data name="Question_Button" xml:space="preserve">
+		<value>Book an appointment for questions</value>
+	</data>
+	<data name="Print" xml:space="preserve">
+		<value>Print confirmation</value>
+	</data>
+	<data name="Title" xml:space="preserve">
+		<value>Passport application</value>
+	</data>
+	<data name="Next_Appointment" xml:space="preserve">
+		<value>For signature and fingerprints you need an appointment at the citizens' office. Bring a biometric passport photo.</value>
+	</data>
+	<data name="Next_Appointment_Button" xml:space="preserve">
+		<value>Book an appointment</value>
+	</data>
+	<data name="Next_Ready" xml:space="preserve">
+		<value>Your passport is ready for collection (simulation – no passport is produced).</value>
+	</data>
+	<data name="Next_Ready_OldPass" xml:space="preserve">
+		<value>Your passport is ready for collection (simulation – no passport is produced). Bring your old passport so it can be invalidated.</value>
+	</data>
+	<data name="Data_Heading" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="Express" xml:space="preserve">
+		<value>Express passport</value>
+	</data>
+	<data name="OldPass" xml:space="preserve">
+		<value>Old passport available</value>
+	</data>
 	<data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
+		<value>yes</value>
+	</data>
 	<data name="No" xml:space="preserve">
-    <value>No</value>
-  </data>
-  <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
-    <value>Simulation: processing runs automatically – after about 2 minutes "in progress", after another 5 minutes "completed". Every change arrives as a status message in your BundID mailbox.</value>
-  </data>
+		<value>no</value>
+	</data>
+	<data name="Fee_Hint" xml:space="preserve">
+		<value>(§ 27 PassV, payable at the citizens' office)</value>
+	</data>
 </root>
