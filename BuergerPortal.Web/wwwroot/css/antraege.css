@@ -24,7 +24,8 @@
 }
 
 .ap-farbe-info {
-    --ap-farbe: var(--bs-info);
+    /* dunkleres Petrol statt --bs-info: weiße Symbole (Zeitleiste, Schritte) bleiben auf beiden Themen lesbar */
+    --ap-farbe: #0b7285;
     --ap-farbe-hell: var(--bs-info-bg-subtle);
     --ap-farbe-text: var(--bs-info-text-emphasis);
 }
@@ -382,6 +383,81 @@
     }
 }
 
+/* Auswahlkarten (Radio), z. B. Art der Meldebescheinigung – die ganze Karte ist antippbar */
+.ap-wahl {
+    display: grid;
+    gap: .75rem;
+}
+
+@media (min-width: 576px) {
+    .ap-wahl {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.ap-wahl label {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .9rem;
+    cursor: pointer;
+}
+
+.ap-wahl label:has(input:checked) {
+    border-color: var(--ap-farbe, var(--bs-primary));
+    background-color: var(--ap-farbe-hell, var(--bs-tertiary-bg));
+    box-shadow: 0 0 0 .1rem var(--ap-farbe, var(--bs-primary));
+}
+
+.ap-wahl input {
+    flex-shrink: 0;
+    margin-top: .2rem;
+}
+
+/* Bescheinigung (Druckansicht): Blatt mit MUSTER-Kennzeichnung */
+.ap-blatt {
+    position: relative;
+    overflow: hidden;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .5rem;
+    background-color: var(--bs-body-bg);
+}
+
+@media (min-width: 768px) {
+    .ap-blatt {
+        padding: 3rem 3.5rem;
+    }
+}
+
+.ap-blatt::after {
+    content: attr(data-muster);
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-24deg);
+    font-size: clamp(3rem, 14vw, 7rem);
+    font-weight: 800;
+    letter-spacing: .3rem;
+    color: rgba(220, 53, 69, .12);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.ap-blatt-kopf {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--ap-farbe, var(--bs-primary));
+}
+
 /* Zeitleiste der Detailseite: Punkte mit Linie, erreichte Stufen in der Farbe der Leistung */
 .ap-verlauf {
     margin: 0;
@@ -537,6 +613,11 @@
 
     .ap-karte {
         border-color: #999;
+    }
+
+    .ap-blatt {
+        border: 0;
+        padding: 0;
     }
 }
 
