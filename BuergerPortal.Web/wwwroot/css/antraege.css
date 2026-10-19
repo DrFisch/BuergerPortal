@@ -353,8 +353,21 @@
     overflow-wrap: anywhere;
 }
 
+/* Handy und schmale Karten (Kontakt): Bezeichnung ueber dem Wert statt daneben */
+.ap-angaben-gestapelt {
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.ap-angaben-gestapelt dt {
+    font-size: .85rem;
+}
+
+.ap-angaben-gestapelt dd {
+    margin-bottom: .6rem;
+}
+
 @media (max-width: 575.98px) {
-    /* Handy: Bezeichnung ueber dem Wert statt daneben */
     .ap-angaben {
         grid-template-columns: 1fr;
         gap: 0;
@@ -367,6 +380,60 @@
     .ap-angaben dd {
         margin-bottom: .6rem;
     }
+}
+
+/* Zeitleiste der Detailseite: Punkte mit Linie, erreichte Stufen in der Farbe der Leistung */
+.ap-verlauf {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ap-verlauf li {
+    position: relative;
+    display: flex;
+    gap: .9rem;
+    padding-bottom: 1.1rem;
+}
+
+.ap-verlauf li::before {
+    content: "";
+    position: absolute;
+    top: 2.4rem;
+    bottom: .2rem;
+    left: 1.1rem;
+    width: 2px;
+    background-color: var(--bs-border-color);
+}
+
+.ap-verlauf li:last-child {
+    padding-bottom: 0;
+}
+
+.ap-verlauf li:last-child::before {
+    display: none;
+}
+
+.ap-verlauf-punkt {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+.ap-verlauf li.erreicht .ap-verlauf-punkt {
+    background-color: var(--ap-farbe, var(--bs-primary));
+    color: #fff;
+}
+
+/* Linie nur färben, wenn auch die nächste Stufe erreicht ist */
+.ap-verlauf li.erreicht:has(+ li.erreicht)::before {
+    background-color: var(--ap-farbe, var(--bs-primary));
 }
 
 /* Betrag */
@@ -460,6 +527,7 @@
 /* Druckansicht (Bestaetigung) */
 @media print {
     .bp-tabbar,
+    body > header.navbar,
     nav,
     footer,
     .ap-aktionen,

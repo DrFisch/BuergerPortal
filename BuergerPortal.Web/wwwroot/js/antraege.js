@@ -4,6 +4,7 @@
 //  - [data-ap-plus] / [data-ap-minus]: Mengen-Stepper für ein Zahlenfeld (data-ziel = id)
 //  - [data-ap-tag]: Tages-Chip setzt das Datumsfeld (data-ziel = id) und markiert sich
 //  - form[data-ap-bestaetigen]: Rückfrage vor dem Absenden (z. B. Entwurf verwerfen)
+//  - [data-ap-drucken]: Druckansicht der Detailseite (Eingangsbestätigung)
 (function () {
     'use strict';
 
@@ -39,6 +40,7 @@
         var plus = e.target.closest('[data-ap-plus]');
         var minus = e.target.closest('[data-ap-minus]');
         var tag = e.target.closest('[data-ap-tag]');
+        if (e.target.closest('[data-ap-drucken]')) window.print();
         if (plus) stepper(plus, 1);
         if (minus) stepper(minus, -1);
         if (tag) {
