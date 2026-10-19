@@ -46,4 +46,31 @@
 	<data name="Niveau_4" xml:space="preserve">
 		<value>hoch</value>
 	</data>
+  <data name="Reisepass_Name" xml:space="preserve">
+    <value>Antrag auf einen Reisepass</value>
+  </data>
+  <data name="Reisepass_GebuehrKurz" xml:space="preserve">
+    <value>ab 37,50 €</value>
+  </data>
+  <data name="Sperrmuell_Name" xml:space="preserve">
+    <value>Sperrmüll-Anmeldung</value>
+  </data>
+  <data name="Sperrmuell_GebuehrKurz" xml:space="preserve">
+    <value>kostenlos</value>
+  </data>
+  <data name="Status_1" xml:space="preserve">
+    <value>Entwurf</value>
+  </data>
+  <data name="Status_2" xml:space="preserve">
+    <value>Eingereicht</value>
+  </data>
+  <data name="Status_3" xml:space="preserve">
+    <value>In Bearbeitung</value>
+  </data>
+  <data name="Status_4" xml:space="preserve">
+    <value>Abgeschlossen</value>
+  </data>
+  <data name="Status_5" xml:space="preserve">
+    <value>Abgelehnt</value>
+  </data>
 </root>

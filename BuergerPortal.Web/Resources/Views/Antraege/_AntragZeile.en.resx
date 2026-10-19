@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Unknown" xml:space="preserve">
+		<value>Application</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="SubmittedOn" xml:space="preserve">
+		<value>submitted on {0}</value>
+	</data>
+	<data name="StartedOn" xml:space="preserve">
+		<value>started on {0}</value>
+	</data>
+	<data name="Continue" xml:space="preserve">
+		<value>continue</value>
+	</data>
+	<data name="Discard" xml:space="preserve">
+		<value>Discard</value>
+	</data>
+	<data name="Discard_Label" xml:space="preserve">
+		<value>Discard draft “{0}”</value>
+	</data>
+	<data name="Discard_Confirm" xml:space="preserve">
+		<value>Really discard this draft? Your entries will be deleted.</value>
+	</data>
+</root>

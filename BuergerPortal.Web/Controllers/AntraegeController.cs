@@ -1,12 +1,15 @@
 ﻿
+using BuergerPortal.Web.Features.Antraege;
 using BuergerPortal.Web.Features.Antraege.Reisepass;
 using BuergerPortal.Web.Helper;
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
 using BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.Contracts;
 using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels;
+using BuergerPortal.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Net;
 
 namespace BuergerPortal.Web.Controllers
@@ -14,15 +17,85 @@ namespace BuergerPortal.Web.Controllers
     public class AntraegeController : Controller
     {
         private readonly IHttpClientFactory _cf;
-        public AntraegeController(IHttpClientFactory cf)
+
+        // Meldungen: deutscher Text ist Schlüssel und Rückfall, Englisch in Resources/Controllers/AntraegeController.en.resx
+        private readonly IStringLocalizer<AntraegeController> _t;
+
+        public AntraegeController(IHttpClientFactory cf, IStringLocalizer<AntraegeController> t)
         {
             _cf = cf;
+            _t = t;
         }
 
-        public IActionResult Index()
+        // Übersicht (2026-10-18): eigene Anträge, angefangene Entwürfe und der Leistungskatalog mit Niveau, Gebühr, Dauer
+        [HttpGet]
+        public async Task<IActionResult> Index(CancellationToken ct)
         {
-            return View();
+            var antraege = await EigeneAntraegeAsync(ct);
+            if (antraege is null) return Challenge();
+
+            var user = BundIdUser.FromPrincipal(User);
+            return View(new AntraegeUebersichtVm
+            {
+                Antraege = antraege,
+                Niveau = user.TrustLevel,
+                Geburtsdatum = user.Birthdate,
+            });
         }
+
+        // Eigenen Entwurf verwerfen (eingereichte Anträge lehnt die API mit 409 ab)
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Verwerfen(Guid id, string? zurueck, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return BadRequest();
+            var res = await _cf.CreateClient("BuergerPortalApi").DeleteAsync($"api/antraege/{id}", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+
+            TempData[res.IsSuccessStatusCode ? "AntragSuccess" : "BookingError"] = res.IsSuccessStatusCode
+                ? _t["Entwurf verworfen."].Value
+                : _t["Der Entwurf ließ sich nicht verwerfen – vielleicht ist er schon eingereicht."].Value;
+            return zurueck == "status"
+                ? RedirectToAction(nameof(Status), new { filter = "entwuerfe" })
+                : RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>Alle eigenen Anträge aller Arten als Zeilen, neueste zuerst; null, wenn die API 401 meldet.</summary>
+        private async Task<List<AntragZeileVm>?> EigeneAntraegeAsync(CancellationToken ct)
+        {
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var zeilen = new List<AntragZeileVm>();
+
+            var pass = await client.GetAsync("api/antraege/reisepass", ct);
+            if (pass.StatusCode == HttpStatusCode.Unauthorized) return null;
+            if (pass.IsSuccessStatusCode)
+            {
+                zeilen.AddRange((await pass.Content.ReadFromJsonAsync<List<ReisepassSummaryResponse>>(cancellationToken: ct) ?? [])
+                    .Select(x => Zeile(x.Id, x.Typ, x.Status, x.Vorname, x.Nachname, x.CreatedUtc, x.SubmittedUtc)));
+            }
+
+            var sperr = await client.GetAsync("api/antraege/sperrmuell", ct);
+            if (sperr.StatusCode == HttpStatusCode.Unauthorized) return null;
+            if (sperr.IsSuccessStatusCode)
+            {
+                zeilen.AddRange((await sperr.Content.ReadFromJsonAsync<List<SperrmuellSummaryResponse>>(cancellationToken: ct) ?? [])
+                    .Select(x => Zeile(x.Id, x.Typ, x.Status, x.Vorname, x.Nachname, x.CreatedUtc, x.SubmittedUtc)));
+            }
+
+            return zeilen.OrderByDescending(z => z.Zeitpunkt).ToList();
+        }
+
+        private static AntragZeileVm Zeile(Guid id, int typ, int status, string? vorname, string? nachname, DateTime angelegt,
+            DateTime? eingereicht) => new()
+        {
+            Id = id,
+            Typ = typ,
+            Status = status,
+            Antragsteller = $"{vorname} {nachname}".Trim(),
+            Angelegt = angelegt.ToBerlin(),
+            Eingereicht = eingereicht?.ToBerlin(),
+        };
 
         //  STATUS: beide Antragstypen 
         [Authorize]

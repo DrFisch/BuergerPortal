@@ -9,7 +9,7 @@ namespace BuergerPortal.Web.Features.Antraege
     /// „{Schluessel}_Titel“, „{Schluessel}_Kurz“, „{Schluessel}_Unterlagen“ (durch | getrennt) und „{Schluessel}_Gebuehr“.
     /// </summary>
     public sealed record LeistungInfo(int Typ, string Schluessel, string Icon, string Farbe, int Niveau, int DauerMinuten,
-        string Controller, string Action, string DetailAction);
+        string Controller, string Action, string DetailAction, string EntwurfAction);
 
     /// <summary>
     /// Leistungskatalog der Anträge (2026-10-18): Übersicht, Assistenten und Detailseiten lesen Symbol, nötiges
@@ -29,9 +29,9 @@ namespace BuergerPortal.Web.Features.Antraege
         public static readonly IReadOnlyList<LeistungInfo> Alle =
         [
             new(Reisepass, "Reisepass", "bi-passport", "primary", TrustLevel.Substantial, 5,
-                "ReisepassAntraege", "NeuerReisepass", "Antrag"),
+                "ReisepassAntraege", "NeuerReisepass", "Antrag", "ReisepassStep2"),
             new(Sperrmuell, "Sperrmuell", "bi-truck", "success", TrustLevel.Normal, 3,
-                "SperrmuellAntraege", "NeuerSperrmuell", "SperrmuellAntrag"),
+                "SperrmuellAntraege", "NeuerSperrmuell", "SperrmuellAntrag", "SperrmuellStep2"),
         ];
 
         public static LeistungInfo? Von(int typ) => Alle.FirstOrDefault(l => l.Typ == typ);

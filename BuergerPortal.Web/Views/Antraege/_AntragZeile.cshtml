@@ -1,0 +1,65 @@
+@model BuergerPortal.Web.Features.Antraege.AntragZeileVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@* Ein eigener Antrag als Zeile (2026-10-18): ganze Zeile antippbar – Entwurf führt zurück in den Assistenten, sonst
+   zur Detailseite. ViewData["Zurueck"] = "status", wenn „Verwerfen“ nach „Meine Anträge“ zurückführen soll. *@
+@{
+    var l = Model.Leistung;
+    var name = l is null ? L["Unknown"].Value : LK[$"{l.Schluessel}_Name"].Value;
+}
+<div class="ap-zeile ap-farbe-@(l?.Farbe ?? "primary")">
+    <span class="ap-symbol ap-symbol-klein" aria-hidden="true"><i class="bi @(l?.Icon ?? "bi-file-earmark-text")"></i></span>
+    <div style="min-width: 0;">
+        <div class="ap-zeile-titel">
+            @if (l is null)
+            {
+                @name
+            }
+            else if (Model.IstEntwurf)
+            {
+                <a asp-controller="@l.Controller" asp-action="@l.EntwurfAction" asp-route-id="@Model.Id">@name</a>
+            }
+            else
+            {
+                <a asp-controller="Antraege" asp-action="@l.DetailAction" asp-route-id="@Model.Id">@name</a>
+            }
+        </div>
+        <div class="ap-zeile-meta">
+            @L["Number"] @Model.Vorgangsnummer ·
+            @if (Model.Eingereicht is { } eingereicht)
+            {
+                @L["SubmittedOn", eingereicht.ToString("d")]
+            }
+            else
+            {
+                @L["StartedOn", Model.Angelegt.ToString("d")]
+                <span aria-hidden="true">· @L["Continue"] →</span>
+            }
+        </div>
+        @if (!Model.IstEntwurf)
+        {
+            <div class="ap-fortschritt" aria-hidden="true">
+                <span class="@(Model.Stufe >= 1 ? "erreicht" : "")"></span>
+                <span class="@(Model.Stufe >= 2 ? "erreicht" : "")"></span>
+                <span class="@(Model.Stufe >= 3 ? "erreicht" : "")"></span>
+            </div>
+        }
+    </div>
+    <div class="ap-zeile-aktion d-flex flex-column align-items-end gap-1">
+        <span class="ap-status ap-status-@Model.Status">@LK[$"Status_{Model.Status}"]</span>
+        @if (Model.IstEntwurf)
+        {
+            <form method="post" asp-controller="Antraege" asp-action="Verwerfen" asp-route-id="@Model.Id"
+                  data-ap-bestaetigen="@L["Discard_Confirm"]">
+                <input type="hidden" name="zurueck" value="@(ViewData["Zurueck"] as string)" />
+                <button type="submit" class="btn btn-link btn-sm px-0 py-1 text-danger-emphasis"
+                        aria-label="@L["Discard_Label", name]">
+                    <i class="bi bi-trash3" aria-hidden="true"></i> @L["Discard"]
+                </button>
+            </form>
+        }
+    </div>
+</div>

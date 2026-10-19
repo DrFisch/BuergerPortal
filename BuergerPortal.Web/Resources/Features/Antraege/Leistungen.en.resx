@@ -46,4 +46,31 @@
 	<data name="Niveau_4" xml:space="preserve">
 		<value>high</value>
 	</data>
+  <data name="Reisepass_Name" xml:space="preserve">
+    <value>Passport application</value>
+  </data>
+  <data name="Reisepass_GebuehrKurz" xml:space="preserve">
+    <value>from €37.50</value>
+  </data>
+  <data name="Sperrmuell_Name" xml:space="preserve">
+    <value>Bulky waste pickup</value>
+  </data>
+  <data name="Sperrmuell_GebuehrKurz" xml:space="preserve">
+    <value>free</value>
+  </data>
+  <data name="Status_1" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Status_2" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="Status_3" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="Status_4" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Status_5" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
 </root>

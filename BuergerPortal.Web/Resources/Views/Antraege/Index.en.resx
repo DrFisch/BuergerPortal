@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,58 +13,76 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="Applications_Title" xml:space="preserve">
-    <value>Applications</value>
-  </data>
-
-	<data name="Applications_Status_Aria" xml:space="preserve">
-    <value>Go to my application status</value>
-  </data>
-	<data name="Applications_Status_Title" xml:space="preserve">
-    <value>My applications</value>
-  </data>
-	<data name="Applications_Status_Text" xml:space="preserve">
-    <value>Overview of all ongoing and completed applications</value>
-  </data>
-
-	<data name="Applications_Pass_Aria" xml:space="preserve">
-    <value>Start a new passport application</value>
-  </data>
-	<data name="Applications_Pass_Title" xml:space="preserve">
-    <value>New application: passport</value>
-  </data>
-	<data name="Applications_Pass_Text" xml:space="preserve">
-    <value>Enter your data and optionally book an appointment for filing the application.</value>
-  </data>
-	<data name="Applications_Pass_Badge" xml:space="preserve">
-    <value>approx. 5–10 min</value>
-  </data>
-
-	<data name="Applications_Bulk_Aria" xml:space="preserve">
-    <value>Start a new bulky waste request</value>
-  </data>
-	<data name="Applications_Bulk_Title" xml:space="preserve">
-    <value>New application: bulky waste</value>
-  </data>
-	<data name="Applications_Bulk_Text" xml:space="preserve">
-    <value>Enter the pickup address and items and suggest a preferred pickup date.</value>
-  </data>
-	<data name="Applications_Bulk_Badge" xml:space="preserve">
-    <value>max. 5 min</value>
-  </data>
-  <data name="Alert_LoginRequired_Title" xml:space="preserve">
-    <value>Login required</value>
-  </data>
-  <data name="Alert_LoginRequired_Text" xml:space="preserve">
-    <value>Please sign in with your BundID to use digital services and manage appointments.</value>
-  </data>
-  <data name="Login" xml:space="preserve">
-    <value>Sign in with BundID</value>
-  </data>
-	<data name="Start_Application" xml:space="preserve">
-    <value>Apply now</value>
-  </data>
-	<data name="Schedule_Pickup" xml:space="preserve">
-    <value>Register now</value>
-  </data>
+	<data name="Title" xml:space="preserve">
+		<value>Applications</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Applications</value>
+	</data>
+	<data name="Intro" xml:space="preserve">
+		<value>Deal with the authorities online – with your BundID. Applications you have started are saved.</value>
+	</data>
+	<data name="LoggedInLevel" xml:space="preserve">
+		<value>Signed in with BundID · level “{0}”</value>
+	</data>
+	<data name="Current_Heading" xml:space="preserve">
+		<value>Your applications</value>
+	</data>
+	<data name="Current_All" xml:space="preserve">
+		<value>Show all ({0})</value>
+	</data>
+	<data name="Drafts_Heading" xml:space="preserve">
+		<value>Started</value>
+	</data>
+	<data name="Drafts_Text" xml:space="preserve">
+		<value>Saved but not yet sent – tap an application to continue.</value>
+	</data>
+	<data name="New_Heading" xml:space="preserve">
+		<value>Start a new application</value>
+	</data>
+	<data name="Facts" xml:space="preserve">
+		<value>Key facts</value>
+	</data>
+	<data name="Minutes" xml:space="preserve">
+		<value>approx. {0} min</value>
+	</data>
+	<data name="Level" xml:space="preserve">
+		<value>Level “{0}”</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>Your BundID sign-in is sufficient.</value>
+	</data>
+	<data name="Level_StepUp" xml:space="preserve">
+		<value>Requires “{0}” (you: “{1}”) – when sending, you briefly sign in to BundID again.</value>
+	</data>
+	<data name="Fee_ForYou" xml:space="preserve">
+		<value>for you {0}</value>
+	</data>
+	<data name="Needs" xml:space="preserve">
+		<value>What you need</value>
+	</data>
+	<data name="Start" xml:space="preserve">
+		<value>Start application</value>
+	</data>
+	<data name="How_Heading" xml:space="preserve">
+		<value>How it works</value>
+	</data>
+	<data name="How1_Title" xml:space="preserve">
+		<value>Check your details</value>
+	</data>
+	<data name="How1_Text" xml:space="preserve">
+		<value>We take your name, date of birth and address from your BundID – no typing needed.</value>
+	</data>
+	<data name="How2_Title" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="How2_Text" xml:space="preserve">
+		<value>Before sending you see everything at a glance. If your trust level is not sufficient, you briefly sign in to BundID again.</value>
+	</data>
+	<data name="How3_Title" xml:space="preserve">
+		<value>Follow the status</value>
+	</data>
+	<data name="How3_Text" xml:space="preserve">
+		<value>Every processing step appears here and as a message in your BundID mailbox.</value>
+	</data>
 </root>

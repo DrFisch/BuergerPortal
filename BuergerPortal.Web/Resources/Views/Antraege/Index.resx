@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,58 +13,76 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="Applications_Title" xml:space="preserve">
-    <value>Anträge</value>
-  </data>
-
-	<data name="Applications_Status_Aria" xml:space="preserve">
-    <value>Zu meinen Antragsstatus</value>
-  </data>
-	<data name="Applications_Status_Title" xml:space="preserve">
-    <value>Meine Anträge</value>
-  </data>
-	<data name="Applications_Status_Text" xml:space="preserve">
-    <value>Übersicht aller laufenden und abgeschlossenen Anträge</value>
-  </data>
-
-	<data name="Applications_Pass_Aria" xml:space="preserve">
-    <value>Neuen Reisepass-Antrag starten</value>
-  </data>
-	<data name="Applications_Pass_Title" xml:space="preserve">
-    <value>Neuer Antrag: Reisepass</value>
-  </data>
-	<data name="Applications_Pass_Text" xml:space="preserve">
-    <value>Daten eingeben, Termin für Antragstellung optional direkt mitbuchen.</value>
-  </data>
-	<data name="Applications_Pass_Badge" xml:space="preserve">
-    <value>ca. 5–10 Min.</value>
-  </data>
-
-	<data name="Applications_Bulk_Aria" xml:space="preserve">
-    <value>Neuen Sperrmüll-Antrag starten</value>
-  </data>
-	<data name="Applications_Bulk_Title" xml:space="preserve">
-    <value>Neuer Antrag: Sperrmüll</value>
-  </data>
-	<data name="Applications_Bulk_Text" xml:space="preserve">
-    <value>Abholadresse und Gegenstände erfassen.</value>
-  </data>
-	<data name="Applications_Bulk_Badge" xml:space="preserve">
-    <value>max. 5 Min.</value>
-  </data>
-  <data name="Alert_LoginRequired_Title" xml:space="preserve">
-    <value>Anmeldung erforderlich</value>
-  </data>
-  <data name="Alert_LoginRequired_Text" xml:space="preserve">
-    <value>Bitte melden Sie sich mit Ihrer BundID an, um digitale Services zu nutzen und Termine zu verwalten.</value>
-  </data>
-  <data name="Login" xml:space="preserve">
-    <value>Mit BundID anmelden</value>
-  </data>
-	<data name="Start_Application" xml:space="preserve">
-    <value>Jetzt beantragen</value>
-  </data>
-	<data name="Schedule_Pickup" xml:space="preserve">
-    <value>Jetzt anmelden</value>
-  </data>
+	<data name="Title" xml:space="preserve">
+		<value>Anträge</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Anträge</value>
+	</data>
+	<data name="Intro" xml:space="preserve">
+		<value>Behördengänge online erledigen – mit Ihrer BundID. Angefangene Anträge bleiben gespeichert.</value>
+	</data>
+	<data name="LoggedInLevel" xml:space="preserve">
+		<value>Mit der BundID angemeldet · Niveau „{0}“</value>
+	</data>
+	<data name="Current_Heading" xml:space="preserve">
+		<value>Ihre Anträge</value>
+	</data>
+	<data name="Current_All" xml:space="preserve">
+		<value>Alle anzeigen ({0})</value>
+	</data>
+	<data name="Drafts_Heading" xml:space="preserve">
+		<value>Angefangen</value>
+	</data>
+	<data name="Drafts_Text" xml:space="preserve">
+		<value>Gespeichert, aber noch nicht abgeschickt – tippen Sie einen Antrag an, um weiterzumachen.</value>
+	</data>
+	<data name="New_Heading" xml:space="preserve">
+		<value>Neuen Antrag stellen</value>
+	</data>
+	<data name="Facts" xml:space="preserve">
+		<value>Eckdaten</value>
+	</data>
+	<data name="Minutes" xml:space="preserve">
+		<value>ca. {0} Min.</value>
+	</data>
+	<data name="Level" xml:space="preserve">
+		<value>Niveau „{0}“</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>Ihre BundID-Anmeldung reicht dafür.</value>
+	</data>
+	<data name="Level_StepUp" xml:space="preserve">
+		<value>Erfordert „{0}“ (Sie: „{1}“) – beim Absenden melden Sie sich kurz noch einmal bei der BundID an.</value>
+	</data>
+	<data name="Fee_ForYou" xml:space="preserve">
+		<value>für Sie {0}</value>
+	</data>
+	<data name="Needs" xml:space="preserve">
+		<value>Was Sie brauchen</value>
+	</data>
+	<data name="Start" xml:space="preserve">
+		<value>Antrag starten</value>
+	</data>
+	<data name="How_Heading" xml:space="preserve">
+		<value>So funktioniert es</value>
+	</data>
+	<data name="How1_Title" xml:space="preserve">
+		<value>Angaben prüfen</value>
+	</data>
+	<data name="How1_Text" xml:space="preserve">
+		<value>Name, Geburtsdatum und Anschrift übernehmen wir aus Ihrer BundID – Sie müssen nichts abtippen.</value>
+	</data>
+	<data name="How2_Title" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="How2_Text" xml:space="preserve">
+		<value>Vor dem Absenden sehen Sie alles auf einen Blick. Reicht Ihr Vertrauensniveau nicht, melden Sie sich kurz bei der BundID nach.</value>
+	</data>
+	<data name="How3_Title" xml:space="preserve">
+		<value>Status verfolgen</value>
+	</data>
+	<data name="How3_Text" xml:space="preserve">
+		<value>Jeder Schritt der Bearbeitung erscheint hier und als Nachricht in Ihrem BundID-Postfach.</value>
+	</data>
 </root>

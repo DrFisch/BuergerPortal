@@ -57,11 +57,16 @@ namespace BuergerPortal.Tests.Web
             var schluessel = XDocument.Load(pfad).Root!.Elements("data").Select(d => (string)d.Attribute("name")!).ToHashSet();
             foreach (var l in Leistungen.Alle)
             {
-                foreach (var teil in new[] { "Titel", "Kurz", "Unterlagen", "Gebuehr" })
+                foreach (var teil in new[] { "Titel", "Kurz", "Unterlagen", "Gebuehr", "GebuehrKurz", "Name" })
                 {
                     Assert.Contains($"{l.Schluessel}_{teil}", schluessel);
                 }
                 Assert.Contains($"Niveau_{l.Niveau}", schluessel);
+            }
+            // Status-Namen für alle Werte der API (1 Entwurf … 5 abgelehnt)
+            for (var status = 1; status <= 5; status++)
+            {
+                Assert.Contains($"Status_{status}", schluessel);
             }
         }
 
