@@ -351,6 +351,28 @@ namespace BuergerPortal.Infrastructure.Migrations
                     b.ToTable("UserSettings", (string)null);
                 });
 
+            modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.MeldebescheinigungAntrag", b =>
+                {
+                    b.HasBaseType("BuergerPortal.Domain.Antrag.Entity.Antrag");
+
+                    b.Property<int>("Art")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Geburtsname")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Geburtsort")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Zweck")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.ToTable("MeldebescheinigungAntraege", (string)null);
+                });
+
             modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.ReisepassAntrag", b =>
                 {
                     b.HasBaseType("BuergerPortal.Domain.Antrag.Entity.Antrag");
@@ -405,6 +427,123 @@ namespace BuergerPortal.Infrastructure.Migrations
                         .WithOne()
                         .HasForeignKey("BuergerPortal.Domain.Maengel.MangelFoto", "MaengelmeldungId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BuergerPortal.Domain.Antrag.Entity.MeldebescheinigungAntrag", b =>
+                {
+                    b.HasOne("BuergerPortal.Domain.Antrag.Entity.Antrag", null)
+                        .WithOne()
+                        .HasForeignKey("BuergerPortal.Domain.Antrag.Entity.MeldebescheinigungAntrag", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.Addresse", "Addresse", b1 =>
+                        {
+                            b1.Property<Guid>("MeldebescheinigungAntragId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Ort")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Ort");
+
+                            b1.Property<string>("PLZ")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("nvarchar(10)")
+                                .HasColumnName("PLZ");
+
+                            b1.Property<string>("Strasse")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("Strasse");
+
+                            b1.HasKey("MeldebescheinigungAntragId");
+
+                            b1.ToTable("MeldebescheinigungAntraege");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeldebescheinigungAntragId");
+                        });
+
+                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.PersonBirth", "Birth", b1 =>
+                        {
+                            b1.Property<Guid>("MeldebescheinigungAntragId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateOnly>("Geburtsdatum")
+                                .HasColumnType("date")
+                                .HasColumnName("Geburtsdatum");
+
+                            b1.HasKey("MeldebescheinigungAntragId");
+
+                            b1.ToTable("MeldebescheinigungAntraege");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeldebescheinigungAntragId");
+                        });
+
+                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.Kontakt", "Kontakt", b1 =>
+                        {
+                            b1.Property<Guid>("MeldebescheinigungAntragId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Email")
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("Email");
+
+                            b1.Property<string>("Telefon")
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)")
+                                .HasColumnName("Telefon");
+
+                            b1.HasKey("MeldebescheinigungAntragId");
+
+                            b1.ToTable("MeldebescheinigungAntraege");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeldebescheinigungAntragId");
+                        });
+
+                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.PersonName", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("MeldebescheinigungAntragId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Nachname")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Nachname");
+
+                            b1.Property<string>("Vorname")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Vorname");
+
+                            b1.HasKey("MeldebescheinigungAntragId");
+
+                            b1.ToTable("MeldebescheinigungAntraege");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeldebescheinigungAntragId");
+                        });
+
+                    b.Navigation("Addresse")
+                        .IsRequired();
+
+                    b.Navigation("Birth")
+                        .IsRequired();
+
+                    b.Navigation("Kontakt")
+                        .IsRequired();
+
+                    b.Navigation("Name")
                         .IsRequired();
                 });
 
@@ -499,6 +638,37 @@ namespace BuergerPortal.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.Addresse", "Addresse", b1 =>
+                        {
+                            b1.Property<Guid>("SperrmuellAntragId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Ort")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Ort");
+
+                            b1.Property<string>("PLZ")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("nvarchar(10)")
+                                .HasColumnName("PLZ");
+
+                            b1.Property<string>("Strasse")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("Strasse");
+
+                            b1.HasKey("SperrmuellAntragId");
+
+                            b1.ToTable("SperrmuellAntraege");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SperrmuellAntragId");
+                        });
+
                     b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.PersonBirth", "Birth", b1 =>
                         {
                             b1.Property<Guid>("SperrmuellAntragId")
@@ -555,37 +725,6 @@ namespace BuergerPortal.Infrastructure.Migrations
                                 .HasMaxLength(100)
                                 .HasColumnType("nvarchar(100)")
                                 .HasColumnName("Vorname");
-
-                            b1.HasKey("SperrmuellAntragId");
-
-                            b1.ToTable("SperrmuellAntraege");
-
-                            b1.WithOwner()
-                                .HasForeignKey("SperrmuellAntragId");
-                        });
-
-                    b.OwnsOne("BuergerPortal.Domain.Antrag.ValueObjects.Addresse", "Addresse", b1 =>
-                        {
-                            b1.Property<Guid>("SperrmuellAntragId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Ort")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("Ort");
-
-                            b1.Property<string>("PLZ")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("nvarchar(10)")
-                                .HasColumnName("PLZ");
-
-                            b1.Property<string>("Strasse")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)")
-                                .HasColumnName("Strasse");
 
                             b1.HasKey("SperrmuellAntragId");
 

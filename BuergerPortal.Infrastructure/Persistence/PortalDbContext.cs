@@ -23,6 +23,7 @@ namespace BuergerPortal.Infrastructure.Persistence
         public DbSet<Antrag> Antraege => Set<Antrag>();
         public DbSet<ReisepassAntrag> ReisepassAntraege => Set<ReisepassAntrag>();
         public DbSet<SperrmuellAntrag> SperrmuellAntraege => Set<SperrmuellAntrag>();
+        public DbSet<MeldebescheinigungAntrag> MeldebescheinigungAntraege => Set<MeldebescheinigungAntrag>();
         public DbSet<AntragStatusEreignis> AntragStatusEreignisse => Set<AntragStatusEreignis>();
         public DbSet<Maengelmeldung> Maengelmeldungen => Set<Maengelmeldung>();
         public DbSet<MangelFoto> MaengelFotos => Set<MangelFoto>();
@@ -165,6 +166,41 @@ namespace BuergerPortal.Infrastructure.Persistence
 
             sperr.Property(x => x.Hinweis)
                  .HasMaxLength(1000);
+
+            // -------------------------------------------------
+            // MELDEBESCHEINIGUNG (TPT + Owned Types, 2026-10-18)
+            // -------------------------------------------------
+            var melde = b.Entity<MeldebescheinigungAntrag>();
+            melde.ToTable("MeldebescheinigungAntraege");
+
+            melde.OwnsOne(x => x.Name, n =>
+            {
+                n.Property(p => p.Vorname).HasMaxLength(100).HasColumnName("Vorname").IsRequired();
+                n.Property(p => p.Nachname).HasMaxLength(100).HasColumnName("Nachname").IsRequired();
+            });
+
+            melde.OwnsOne(x => x.Birth, n =>
+            {
+                n.Property(p => p.Geburtsdatum).HasColumnName("Geburtsdatum").IsRequired();
+            });
+
+            melde.OwnsOne(x => x.Addresse, n =>
+            {
+                n.Property(p => p.Strasse).HasMaxLength(200).HasColumnName("Strasse").IsRequired();
+                n.Property(p => p.PLZ).HasMaxLength(10).HasColumnName("PLZ").IsRequired();
+                n.Property(p => p.Ort).HasMaxLength(100).HasColumnName("Ort").IsRequired();
+            });
+
+            melde.OwnsOne(x => x.Kontakt, n =>
+            {
+                n.Property(p => p.Email).HasMaxLength(200).HasColumnName("Email");
+                n.Property(p => p.Telefon).HasMaxLength(50).HasColumnName("Telefon");
+            });
+
+            melde.Property(x => x.Geburtsort).HasMaxLength(100);
+            melde.Property(x => x.Geburtsname).HasMaxLength(100);
+            melde.Property(x => x.Art).IsRequired();
+            melde.Property(x => x.Zweck).HasMaxLength(200);
 
             // -------------------------
             // USER SETTINGS
