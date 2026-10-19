@@ -1,3 +1,4 @@
+using BuergerPortal.Application.Antraege.AntragMeldebescheinigung;
 using BuergerPortal.Application.Interfaces.BusinessServices;
 using BuergerPortal.Application.Interfaces.Repositories;
 using BuergerPortal.Domain.Antrag.Entity;
@@ -38,7 +39,8 @@ namespace BuergerPortal.Application.Antraege.Status
                     if (await repo.SetStatusAsync(antrag.Id, nach, jetzt, null, ct))
                     {
                         wechsel.Add(new AntragStatuswechsel(antrag.Id, antrag.Typ, nach, jetzt, antrag.ApplicantUserId,
-                            antrag.PostkorbHandle, Name(antrag), (antrag as SperrmuellAntrag)?.Wunschzeit));
+                            antrag.PostkorbHandle, Name(antrag), (antrag as SperrmuellAntrag)?.Wunschzeit,
+                            Dokument(antrag, nach)));
                     }
                 }
             }
@@ -52,7 +54,12 @@ namespace BuergerPortal.Application.Antraege.Status
         {
             ReisepassAntrag r => $"{r.Name.Vorname} {r.Name.Nachname}",
             SperrmuellAntrag s => $"{s.Name.Vorname} {s.Name.Nachname}",
+            MeldebescheinigungAntrag m => $"{m.Name.Vorname} {m.Name.Nachname}",
             _ => null,
         };
+
+        // Die Meldebescheinigung selbst geht mit der Meldung "abgeschlossen" ins Postfach (es kennt keine Anhänge).
+        private static string? Dokument(Antrag antrag, AntragStatus nach) =>
+            antrag is MeldebescheinigungAntrag m && nach == AntragStatus.Genehmigt ? MeldebescheinigungDokument.Text(m) : null;
     }
 }

@@ -1,4 +1,5 @@
 using BuergerPortal.Api.Antraege;
+using BuergerPortal.Application.Antraege.AntragMeldebescheinigung;
 using BuergerPortal.Application.Antraege.Status;
 using BuergerPortal.Application.Interfaces.Postkorb;
 using BuergerPortal.Application.Interfaces.Repositories;
@@ -88,6 +89,40 @@ namespace BuergerPortal.Tests.Api
             Assert.Equal(1, nachricht.StorkQaaLevel);
             Assert.Equal($"/Antraege/SperrmuellAntrag/{id}", push.Url);
             Assert.DoesNotContain("Tina", push.Title + push.Body);   // Sperrbildschirm: keine Namen
+        }
+
+        [Fact]
+        public void Meldebescheinigung_abgeschlossen_enthaelt_die_Bescheinigung_lesbar_ab_hoch()
+        {
+            var id = Guid.NewGuid();
+            var antrag = new MeldebescheinigungAntrag
+            {
+                Name = new PersonName("Tina", "Test"),
+                Birth = new PersonBirth(new DateOnly(1990, 1, 1)),
+                Geburtsort = "Fürth",
+                Addresse = new Addresse("Rankestr. 13", "90461", "Nürnberg"),
+                Art = MeldebescheinigungArt.Erweitert,
+            };
+            var wechsel = new AntragStatuswechsel(id, AntragTyp.Meldebescheinigung, AntragStatus.Genehmigt,
+                new DateTime(2026, 10, 19, 8, 0, 0, DateTimeKind.Utc), Person, "h", "Tina Test", null,
+                MeldebescheinigungDokument.Text(antrag));
+
+            var nachricht = AntragStatusmeldung.Nachricht(wechsel);
+
+            Assert.Equal("Statusmeldung: Meldebescheinigung – abgeschlossen", nachricht.Title);
+            Assert.Equal(4, nachricht.StorkQaaLevel);
+            Assert.Contains("ERWEITERTE MELDEBESCHEINIGUNG", nachricht.Content);
+            Assert.Contains("MUSTER", nachricht.Content);
+            Assert.Contains("Geburtsdatum: 01.01.1990", nachricht.Content);
+            Assert.Contains("Geburtsort: Fürth", nachricht.Content);
+            Assert.Contains("Anschrift (Hauptwohnung): Rankestr. 13, 90461 Nürnberg", nachricht.Content);
+            Assert.Contains("Ausgestellt am: Montag, 19.10.2026, 10:00 Uhr", nachricht.Content);
+            Assert.DoesNotContain("\r", nachricht.Content);
+            Assert.Equal($"/Antraege/MeldebescheinigungAntrag/{id}", AntragStatusmeldung.Benachrichtigung(wechsel).Url);
+
+            // einfache Bescheinigung: nur Name und Anschrift
+            antrag.Art = MeldebescheinigungArt.Einfach;
+            Assert.DoesNotContain("Geburtsdatum", MeldebescheinigungDokument.Text(antrag));
         }
     }
 }

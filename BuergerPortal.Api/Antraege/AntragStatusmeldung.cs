@@ -18,10 +18,13 @@ namespace BuergerPortal.Api.Antraege
 
         public static PostkorbMessage Nachricht(AntragStatuswechsel w)
         {
-            var (leistung, service, niveau) = w.Typ == AntragTyp.Reisepass
-                // lesbar wie der Antrag selbst erst ab Niveau "substanziell"
-                ? ("Antrag auf einen Reisepass", "Reisepass", 3)
-                : ("Sperrmüll-Anmeldung", "Sperrmüll", 1);
+            var (leistung, service, niveau) = w.Typ switch
+            {
+                // lesbar wie der Antrag selbst erst ab Niveau "substanziell" bzw. "hoch"
+                AntragTyp.Reisepass => ("Antrag auf einen Reisepass", "Reisepass", 3),
+                AntragTyp.Meldebescheinigung => ("Meldebescheinigung", "Meldebescheinigung", 4),
+                _ => ("Sperrmüll-Anmeldung", "Sperrmüll", 1),
+            };
             var anrede = string.IsNullOrWhiteSpace(w.Name) ? "Guten Tag," : $"Guten Tag {w.Name},";
             var text = $"""
                 {anrede}
@@ -34,7 +37,7 @@ namespace BuergerPortal.Api.Antraege
                 Zeitpunkt: {PostkorbBenachrichtigung.Ortszeit(w.ZeitpunktUtc)}
                 Behörde: {Absender}
 
-                {Hinweis(w)}
+                {Hinweis(w)}{Bescheinigung(w)}
 
                 Diese Statusmeldung entstand durch die simulierte Bearbeitung des Studienprojekts (es gibt keine Sachbearbeitung).
                 """.ReplaceLineEndings("\n");
@@ -44,9 +47,12 @@ namespace BuergerPortal.Api.Antraege
         /// <summary>Benachrichtigung aufs Handy: nur Leistung und Status, ein Tipp öffnet den Antrag im Portal.</summary>
         public static PushNotification Benachrichtigung(AntragStatuswechsel w)
         {
-            var (leistung, ziel) = w.Typ == AntragTyp.Reisepass
-                ? ("Antrag auf einen Reisepass", $"/Antraege/Antrag/{w.AntragId}")
-                : ("Sperrmüll-Anmeldung", $"/Antraege/SperrmuellAntrag/{w.AntragId}");
+            var (leistung, ziel) = w.Typ switch
+            {
+                AntragTyp.Reisepass => ("Antrag auf einen Reisepass", $"/Antraege/Antrag/{w.AntragId}"),
+                AntragTyp.Meldebescheinigung => ("Meldebescheinigung", $"/Antraege/MeldebescheinigungAntrag/{w.AntragId}"),
+                _ => ("Sperrmüll-Anmeldung", $"/Antraege/SperrmuellAntrag/{w.AntragId}"),
+            };
             return new PushNotification($"{leistung}: {StatusText(w.Status)}", "Statusmeldung im BundID-Postfach", ziel,
                 $"antrag-{w.AntragId}");
         }
@@ -72,7 +78,20 @@ namespace BuergerPortal.Api.Antraege
                 w.WunschzeitUtc is { } tag
                     ? $"Die Abholung ist für Ihren Wunschtag bestätigt: {tag.ToString("dddd, dd.MM.yyyy", PostkorbBenachrichtigung.Deutsch)}."
                     : "Die Abholung ist bestätigt.",
+            (AntragTyp.Meldebescheinigung, AntragStatus.InPruefung) =>
+                "Wir prüfen Ihren Antrag. Die Bescheinigung kommt in dieses Postfach.",
+            (AntragTyp.Meldebescheinigung, AntragStatus.Genehmigt) =>
+                "Ihre Meldebescheinigung ist ausgestellt. Sie steht unten und im BürgerPortal zum Drucken bereit.",
             _ => string.Empty,
         };
+
+        // Inhalt der Meldebescheinigung (nur bei "abgeschlossen") mit Ausstellungsdatum und Behörde
+        private static string Bescheinigung(AntragStatuswechsel w) => string.IsNullOrEmpty(w.Dokument)
+            ? string.Empty
+            : string.Join("\n", "", "", Trennlinie, w.Dokument, "",
+                $"Ausgestellt am: {PostkorbBenachrichtigung.Ortszeit(w.ZeitpunktUtc)}", $"Ausstellende Stelle: {Absender}",
+                Trennlinie);
+
+        private const string Trennlinie = "----------------------------------------";
     }
 }
