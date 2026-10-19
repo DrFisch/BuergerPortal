@@ -33,6 +33,7 @@ namespace BuergerPortal.Application
             services.AddScoped<IAppointmentBusinessService, AppointmentBusinessService>();
             services.AddScoped<IUserSettingsBusinessService, UserSettingsBusinessService>();
             services.AddScoped<ISperrmuellAntragBusinessService, SperrmuellAntragBusinessService>();
+            services.AddScoped<IMeldebescheinigungAntragBusinessService, Antraege.AntragMeldebescheinigung.BusinessService.MeldebescheinigungAntragBusinessService>();
             services.AddScoped<IAntragStatusService, BuergerPortal.Application.Antraege.Status.AntragStatusService>();
             services.AddScoped<BuergerPortal.Application.Appointments.Erinnerung.ITerminErinnerungService, BuergerPortal.Application.Appointments.Erinnerung.TerminErinnerungService>();
             services.AddScoped<IPoiBusinessService, PoiBusinessService>();
@@ -47,6 +48,8 @@ namespace BuergerPortal.Application
             // SPerrmuellANtrag Validations
             services.AddScoped<IValidator<SperrmuellStep1Dto>, SperrmuellStep1Validator>();
             services.AddScoped<IValidator<SperrmuellStep2Dto>, SperrmuellStep2Validator>();
+            // Meldebescheinigung (2026-10-18)
+            services.AddScoped<IValidator<Antraege.AntragMeldebescheinigung.DTOs.MeldebescheinigungDto>, Antraege.AntragMeldebescheinigung.Validations.MeldebescheinigungValidator>();
             // User Settings Validations
             services.AddScoped<IValidator<UserSettingsUpdateDto>, UserSettingsUpdateDtoValidator>();
 
