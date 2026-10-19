@@ -97,89 +97,14 @@ namespace BuergerPortal.Web.Controllers
             Eingereicht = eingereicht?.ToBerlin(),
         };
 
-        //  STATUS: beide Antragstypen 
+        // „Meine Anträge“ (2026-10-18): alle Arten in einer Liste, Filter alle/laufend/entwuerfe/erledigt
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Status(CancellationToken ct)
+        public async Task<IActionResult> Status(string? filter, CancellationToken ct)
         {
-            var client = _cf.CreateClient("BuergerPortalApi");
-
-            // Reisepass-Anträge
-            var reisepassRes = await client.GetAsync("api/antraege/reisepass", ct);
-            if (reisepassRes.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
-            if (!reisepassRes.IsSuccessStatusCode)
-                return StatusCode((int)reisepassRes.StatusCode, await reisepassRes.Content.ReadAsStringAsync(ct));
-
-            var reisepassItems = await reisepassRes.Content
-                .ReadFromJsonAsync<List<ReisepassSummaryResponse>>(cancellationToken: ct)
-                ?? new();
-
-            // Sperrmüll-Anträge
-            var sperrmuellRes = await client.GetAsync("api/antraege/sperrmuell", ct);
-            if (sperrmuellRes.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
-            if (!sperrmuellRes.IsSuccessStatusCode)
-                return StatusCode((int)sperrmuellRes.StatusCode, await sperrmuellRes.Content.ReadAsStringAsync(ct));
-
-            var sperrmuellItems = await sperrmuellRes.Content
-                .ReadFromJsonAsync<List<SperrmuellSummaryResponse>>(cancellationToken: ct)
-                ?? new();
-
-            var vm = new StatusGesamtVm
-            {
-                ReisepassItems = reisepassItems
-                    .OrderByDescending(x => x.SubmittedUtc ?? x.CreatedUtc)
-                    .Select(x =>
-                    {
-                        var s = AntragStatusUi.Map(x.Status);
-                        var t = AntragTypUiMap.Map(x.Typ);
-
-                        return new StatusListItemVm
-                        {
-                            Id = x.Id,
-                            Antragsteller = $"{x.Vorname} {x.Nachname}",
-
-                            Typ = x.Typ,
-                            TypText = t.text,
-                            TypBadgeClass = t.badgeClass,
-
-                            Angelegt = x.CreatedUtc.ToBerlin(),
-                            Eingereicht = x.SubmittedUtc?.ToBerlin(),
-
-                            StatusText = s.text,
-                            Status = x.Status,
-                            BadgeClass = s.badge,
-                            ProgressPercent = s.progress
-                        };
-                    }).ToList(),
-
-                SperrmuellItems = sperrmuellItems
-                    .OrderByDescending(x => x.SubmittedUtc ?? x.CreatedUtc)
-                    .Select(x =>
-                    {
-                        var s = AntragStatusUi.Map(x.Status);
-                        var t = AntragTypUiMap.Map(x.Typ);
-
-                        return new StatusListItemVm
-                        {
-                            Id = x.Id,
-                            Antragsteller = $"{x.Vorname} {x.Nachname}",
-
-                            Typ = x.Typ,
-                            TypText = t.text,
-                            TypBadgeClass = t.badgeClass,
-
-                            Angelegt = x.CreatedUtc.ToBerlin(),
-                            Eingereicht = x.SubmittedUtc?.ToBerlin(),
-
-                            StatusText = s.text,
-                            Status = x.Status,
-                            BadgeClass = s.badge,
-                            ProgressPercent = s.progress
-                        };
-                    }).ToList()
-            };
-
-            return View("Status", vm);
+            var antraege = await EigeneAntraegeAsync(ct);
+            if (antraege is null) return Challenge();
+            return View("Status", new AntraegeStatusVm { Antraege = antraege, Filter = AntraegeStatusVm.Normalisieren(filter) });
         }
 
         // -------- Reisepass-Detail 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,53 +13,52 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="StatusList_Title" xml:space="preserve">
-    <value>Meine Anträge</value>
-  </data>
-	<data name="StatusList_Heading" xml:space="preserve">
-    <value>Meine Anträge</value>
-  </data>
-
-	<data name="StatusList_Empty_Title" xml:space="preserve">
-    <value>Noch keine Anträge</value>
-  </data>
-	<data name="StatusList_Empty_Text" xml:space="preserve">
-    <value>Starten Sie einen neuen Antrag – Reisepass oder Sperrmüll.</value>
-  </data>
-
-	<data name="StatusList_Field_SubmittedLabel" xml:space="preserve">
-    <value>Eingereicht:</value>
-  </data>
-	<data name="StatusList_Field_IdLabel" xml:space="preserve">
-    <value>ID: </value>
-  </data>
-
-	<data name="StatusList_Button_Details" xml:space="preserve">
-    <value>Details</value>
-  </data>
-
-	<data name="StatusList_Step_Draft" xml:space="preserve">
-    <value>Entwurf</value>
-  </data>
-	<data name="StatusList_Step_Submitted" xml:space="preserve">
-    <value>Eingereicht</value>
-  </data>
-	<data name="StatusList_Step_Review" xml:space="preserve">
-    <value>Prüfung</value>
-  </data>
-	<data name="StatusList_Step_Completed" xml:space="preserve">
-    <value>Abschluss</value>
-  </data>
-	<data name="StatusList_IntroText" xml:space="preserve">
-    <value>Hier finden Sie eine Übersicht Ihrer aktuellen Anträge und deren Bearbeitungsstand.</value>
-  </data>
-  <data name="StatusList_Empty_Button" xml:space="preserve">
-    <value>Antrag stellen</value>
-  </data>
-  <data name="StatusList_Section_Passport" xml:space="preserve">
-    <value>Reisepass-Anträge</value>
-  </data>
-  <data name="StatusList_Section_BulkyWaste" xml:space="preserve">
-    <value>Sperrmüll-Anträge</value>
-  </data>
+	<data name="Title" xml:space="preserve">
+		<value>Meine Anträge</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Meine Anträge</value>
+	</data>
+	<data name="Intro" xml:space="preserve">
+		<value>Alle Ihre Anträge mit Bearbeitungsstand – angefangene Entwürfe eingeschlossen.</value>
+	</data>
+	<data name="Filter_Label" xml:space="preserve">
+		<value>Anträge filtern</value>
+	</data>
+	<data name="Filter_alle" xml:space="preserve">
+		<value>Alle</value>
+	</data>
+	<data name="Filter_laufend" xml:space="preserve">
+		<value>Laufend</value>
+	</data>
+	<data name="Filter_entwuerfe" xml:space="preserve">
+		<value>Entwürfe</value>
+	</data>
+	<data name="Filter_erledigt" xml:space="preserve">
+		<value>Erledigt</value>
+	</data>
+	<data name="Empty_alle" xml:space="preserve">
+		<value>Noch keine Anträge</value>
+	</data>
+	<data name="Empty_laufend" xml:space="preserve">
+		<value>Gerade läuft kein Antrag</value>
+	</data>
+	<data name="Empty_entwuerfe" xml:space="preserve">
+		<value>Keine angefangenen Anträge</value>
+	</data>
+	<data name="Empty_erledigt" xml:space="preserve">
+		<value>Noch nichts erledigt</value>
+	</data>
+	<data name="Empty_Text" xml:space="preserve">
+		<value>Starten Sie einen neuen Antrag – Ihre Angaben übernehmen wir aus der BundID.</value>
+	</data>
+	<data name="Empty_Button" xml:space="preserve">
+		<value>Zu den Leistungen</value>
+	</data>
+	<data name="Postfach_Hint" xml:space="preserve">
+		<value>Jede Statusänderung kommt zusätzlich als Nachricht in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="New" xml:space="preserve">
+		<value>Neuen Antrag stellen</value>
+	</data>
 </root>

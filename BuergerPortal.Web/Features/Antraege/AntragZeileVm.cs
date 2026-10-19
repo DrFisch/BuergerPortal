@@ -41,4 +41,27 @@ namespace BuergerPortal.Web.Features.Antraege
         public IEnumerable<AntragZeileVm> Entwuerfe => Antraege.Where(a => a.IstEntwurf);
         public IEnumerable<AntragZeileVm> Aktuelle => Antraege.Where(a => !a.IstEntwurf);
     }
+
+    /// <summary>„Meine Anträge“: alle eigenen Anträge mit Filter (alle, laufend, entwuerfe, erledigt).</summary>
+    public sealed class AntraegeStatusVm
+    {
+        public static readonly IReadOnlyList<string> Filternamen = ["alle", "laufend", "entwuerfe", "erledigt"];
+
+        public IReadOnlyList<AntragZeileVm> Antraege { get; init; } = [];
+        public string Filter { get; init; } = "alle";
+
+        /// <summary>Unbekannte oder fehlende Filter zeigen alle Anträge.</summary>
+        public static string Normalisieren(string? filter) =>
+            filter is not null && Filternamen.Contains(filter) ? filter : "alle";
+
+        public IEnumerable<AntragZeileVm> Nach(string filter) => filter switch
+        {
+            "laufend" => Antraege.Where(a => a.IstLaufend),
+            "entwuerfe" => Antraege.Where(a => a.IstEntwurf),
+            "erledigt" => Antraege.Where(a => a.IstErledigt),
+            _ => Antraege,
+        };
+
+        public IReadOnlyList<AntragZeileVm> Gefiltert => Nach(Filter).ToList();
+    }
 }

@@ -1,226 +1,60 @@
-﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.StatusGesamtVm
+﻿@model BuergerPortal.Web.Features.Antraege.AntraegeStatusVm
+@using BuergerPortal.Web.Features.Antraege
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer L
-
+@* „Meine Anträge“ (2026-10-18): alle Antragsarten in einer Liste, Filter als Links (ohne Skript), Entwürfe sichtbar. *@
 @{
-    ViewData["Title"] = L["StatusList_Title"];
+    ViewData["Title"] = L["Title"];
+    ViewData["Zurueck"] = "status";
+    var liste = Model.Gefiltert;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
 }
 
-<div class="container py-4 status-page">
-    <div class="mb-5">
-        <h1 class="h3 fw-bold mb-2">@L["StatusList_Heading"]</h1>
-        <p class="text-muted">@L["StatusList_IntroText"]</p>
-    </div>
+<div class="container ap-seite ap-seite-schmal py-4">
+    <header class="ap-kopf ap-farbe-primary">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi bi-list-check"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@L["Heading"]</h1>
+            <p class="text-body-secondary mb-0">@L["Intro"]</p>
+        </div>
+    </header>
 
-    @{
-        var hasReisepass = Model.ReisepassItems.Any(a => a.Status != 1);
-        var hasSperrmuell = Model.SperrmuellItems.Any(a => a.Status != 1);
-    }
+    <nav class="ap-filter" aria-label="@L["Filter_Label"]">
+        @foreach (var f in AntraegeStatusVm.Filternamen)
+        {
+            <a asp-action="Status" asp-route-filter="@(f == "alle" ? null : f)" id="filter-@f"
+               aria-current="@(f == Model.Filter ? "page" : null)">
+                @L[$"Filter_{f}"] <span class="badge rounded-pill">@Model.Nach(f).Count()</span>
+            </a>
+        }
+    </nav>
 
-    @if (!hasReisepass && !hasSperrmuell)
+    @if (liste.Count == 0)
     {
-        <div class="card border-0 shadow-sm rounded-4 py-5 text-center bg-body-tertiary">
-            <div class="card-body">
-                <div class="feature-icon bg-secondary bg-opacity-10 text-secondary mb-3 mx-auto" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                    <i class="bi bi-file-earmark-text fs-2"></i>
-                </div>
-                <h5 class="fw-bold">@L["StatusList_Empty_Title"]</h5>
-                <p class="text-secondary">@L["StatusList_Empty_Text"]</p>
-                <a asp-controller="Antraege" asp-action="Index" class="btn btn-primary rounded-pill px-4">@L["StatusList_Empty_Button"]</a>
-            </div>
+        <div class="ap-karte text-center p-4 p-md-5">
+            <span class="ap-symbol mb-3" aria-hidden="true"><i class="bi bi-inbox"></i></span>
+            <h2 class="h5 fw-bold">@L[$"Empty_{Model.Filter}"]</h2>
+            <p class="text-body-secondary">@L["Empty_Text"]</p>
+            <a asp-action="Index" class="btn btn-primary">@L["Empty_Button"] <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
         </div>
     }
     else
     {
-        <div class="row g-4">
-            @* REISEPASS SEKTION *@
-            @if (hasReisepass)
+        <div class="ap-karte" id="antragsliste">
+            @foreach (var a in liste)
             {
-                <div class="col-12 col-xl-6">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <div class="feature-icon bg-primary bg-opacity-10 text-primary p-2 rounded-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                        <h2 class="h5 mb-0 fw-bold">@L["StatusList_Section_Passport"]</h2>
-                    </div>
-
-                    <div class="vstack gap-3">
-                        @foreach (var a in Model.ReisepassItems.Where(x => x.Status != 1))
-                        {
-                            var shortId = a.Id.ToString().Substring(0, 8);
-                            <div class="card status-card border-0 shadow-sm rounded-4 overflow-hidden">
-                                <div class="card-body p-4">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="status-indicator @a.BadgeClass"></span>
-                                            <h6 class="fw-bold mb-0">@a.Antragsteller</h6>
-                                        </div>
-                                        <span class="badge rounded-pill bg-light text-dark border px-3">@a.TypText</span>
-                                    </div>
-
-                                    <div class="row g-2 mb-4">
-                                        <div class="col-6">
-                                            <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.65rem;">@L["StatusList_Field_IdLabel"]</span>
-                                            <code class="small fw-bold">#@shortId</code>
-                                        </div>
-                                        @if (a.Eingereicht.HasValue)
-                                        {
-                                            <div class="col-6 text-end">
-                                                <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.65rem;">@L["StatusList_Field_SubmittedLabel"]</span>
-                                                <span class="small fw-medium">@a.Eingereicht.Value.ToString("dd.MM.yyyy")</span>
-                                            </div>
-                                        }
-                                    </div>
-
-                                    <div class="timeline-container">
-                                        <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                            <div class="progress-bar @a.BadgeClass shadow-none" role="progressbar" style="width: @a.ProgressPercent%"></div>
-                                        </div>
-                                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">
-                                            <span class="@(a.ProgressPercent >= 20 ? "text-primary" : "")">@L["StatusList_Step_Submitted"]</span>
-                                            <span class="@(a.ProgressPercent >= 70 ? "text-primary" : "")">@L["StatusList_Step_Review"]</span>
-                                            <span class="@(a.ProgressPercent >= 100 ? "text-success" : "")">@L["StatusList_Step_Completed"]</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-4 pt-3 border-top border-light-subtle text-end">
-                                        <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" asp-action="Antrag" asp-route-id="@a.Id">
-                                            @L["StatusList_Button_Details"] <i class="bi bi-chevron-right ms-1"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-
-            @* SPERRMÜLL SEKTION *@
-            @if (hasSperrmuell)
-            {
-                <div class="col-12 col-xl-6">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <div class="feature-icon bg-success bg-opacity-10 text-success p-2 rounded-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-truck"></i>
-                        </div>
-                        <h2 class="h5 mb-0 fw-bold">@L["StatusList_Section_BulkyWaste"]</h2>
-                    </div>
-
-                    <div class="vstack gap-3">
-                        @foreach (var a in Model.SperrmuellItems.Where(x => x.Status != 1))
-                        {
-                            var shortId = a.Id.ToString().Substring(0, 8);
-                            <div class="card status-card border-0 shadow-sm rounded-4 overflow-hidden">
-                                <div class="card-body p-4">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="status-indicator @a.BadgeClass"></span>
-                                            <h6 class="fw-bold mb-0">@a.Antragsteller</h6>
-                                        </div>
-                                        <span class="badge rounded-pill bg-light text-dark border px-3">@a.TypText</span>
-                                    </div>
-
-                                    <div class="row g-2 mb-4 text-muted small">
-                                        <div class="col-6">
-                                            <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.65rem;">@L["StatusList_Field_IdLabel"]</span>
-                                            <code class="small fw-bold">#@shortId</code>
-                                        </div>
-                                        @if (a.Eingereicht.HasValue)
-                                        {
-                                            <div class="col-6 text-end">
-                                                <span class="text-muted d-block small text-uppercase fw-bold" style="font-size: 0.65rem;">@L["StatusList_Field_SubmittedLabel"]</span>
-                                                <span class="small fw-medium">@a.Eingereicht.Value.ToString("dd.MM.yyyy")</span>
-                                            </div>
-                                        }
-                                    </div>
-
-                                    <div class="timeline-container">
-                                        <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                            <div class="progress-bar @a.BadgeClass shadow-none" role="progressbar" style="width: @a.ProgressPercent%"></div>
-                                        </div>
-                                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">
-                                            <span class="@(a.ProgressPercent >= 20 ? "text-primary" : "")">@L["StatusList_Step_Submitted"]</span>
-                                            <span class="@(a.ProgressPercent >= 70 ? "text-primary" : "")">@L["StatusList_Step_Review"]</span>
-                                            <span class="@(a.ProgressPercent >= 100 ? "text-success" : "")">@L["StatusList_Step_Completed"]</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-4 pt-3 border-top border-light-subtle text-end">
-                                        <a class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" asp-action="SperrmuellAntrag" asp-route-id="@a.Id">
-                                            @L["StatusList_Button_Details"] <i class="bi bi-chevron-right ms-1"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
+                <partial name="_AntragZeile" model="a" />
             }
         </div>
+        <p class="mt-3 small text-body-secondary"><i class="bi bi-envelope-paper me-1" aria-hidden="true"></i>@L["Postfach_Hint"]</p>
+        <p class="mt-3">
+            <a asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-plus-lg" aria-hidden="true"></i> @L["New"]</a>
+        </p>
     }
 </div>
 
-@section Styles {
-    <style>
-        /* === Basis Styling === */
-        .status-page {
-            background-color: var(--bs-body-bg);
-        }
-
-        /* === Status Card === */
-        .status-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: var(--bs-body-bg);
-            border: 1px solid var(--bs-border-color) !important;
-        }
-
-            .status-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
-            }
-
-        /* === Status Indikator (Punkt) === */
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
-        }
-
-            /* Badge Classes zu Punkt-Farben mappen */
-            .status-indicator.text-bg-success {
-                background-color: var(--bs-success);
-                box-shadow: 0 0 8px var(--bs-success);
-            }
-
-            .status-indicator.text-bg-info {
-                background-color: var(--bs-info);
-                box-shadow: 0 0 8px var(--bs-info);
-            }
-
-            .status-indicator.text-bg-warning {
-                background-color: var(--bs-warning);
-                box-shadow: 0 0 8px var(--bs-warning);
-            }
-
-            .status-indicator.text-bg-danger {
-                background-color: var(--bs-danger);
-                box-shadow: 0 0 8px var(--bs-danger);
-            }
-
-            .status-indicator.text-bg-secondary {
-                background-color: var(--bs-secondary);
-            }
-
-        /* === Dark Mode Feinschliff === */
-        [data-bs-theme="dark"] .status-card {
-            background-color: var(--bs-tertiary-bg);
-        }
-
-            [data-bs-theme="dark"] .status-card .bg-light {
-                background-color: var(--bs-body-bg) !important;
-                color: var(--bs-body-color) !important;
-            }
-    </style>
+@section Scripts {
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
 }
