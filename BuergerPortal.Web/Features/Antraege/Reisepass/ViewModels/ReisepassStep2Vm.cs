@@ -18,5 +18,12 @@ namespace BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels
         // Für die Ansicht: kurze Zusammenfassung aus Step1
         public string? AntragstellerName { get; set; }
         public DateTime? Geburtsdatum { get; set; }
+
+        /// <summary>Gebühr ohne Express nach § 27 PassV für das Alter der antragstellenden Person (2026-10-18).</summary>
+        public decimal GebuehrBasis => Geburtsdatum is { } g
+            ? Leistungen.ReisepassGebuehr(DateOnly.FromDateTime(g), DateOnly.FromDateTime(DateTime.Today), express: false)
+            : 70m;
+
+        public const decimal ExpressZuschlag = 32m;
     }
 }

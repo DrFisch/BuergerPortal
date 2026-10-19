@@ -353,6 +353,22 @@
     overflow-wrap: anywhere;
 }
 
+@media (max-width: 575.98px) {
+    /* Handy: Bezeichnung ueber dem Wert statt daneben */
+    .ap-angaben {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .ap-angaben dt {
+        font-size: .85rem;
+    }
+
+    .ap-angaben dd {
+        margin-bottom: .6rem;
+    }
+}
+
 /* Betrag */
 .ap-betrag {
     font-size: 1.5rem;

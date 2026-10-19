@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Apply for a passport – review and send</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="Step_Person" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Step_Options" xml:space="preserve">
+		<value>Options</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Phone</value>
+	</data>
+	<data name="Section_Options" xml:space="preserve">
+		<value>Options</value>
+	</data>
+	<data name="Change" xml:space="preserve">
+		<value>Change</value>
+	</data>
+	<data name="Express" xml:space="preserve">
+		<value>Express passport</value>
+	</data>
+	<data name="OldPassport" xml:space="preserve">
+		<value>Old passport available</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Note</value>
+	</data>
+	<data name="Yes" xml:space="preserve">
+		<value>yes</value>
+	</data>
+	<data name="No" xml:space="preserve">
+		<value>no</value>
+	</data>
+	<data name="Fee_Label" xml:space="preserve">
+		<value>Fee for you</value>
+	</data>
+	<data name="Fee_Hint" xml:space="preserve">
+		<value>according to § 27 PassV, payable at the appointment</value>
+	</data>
+	<data name="Section_Level" xml:space="preserve">
+		<value>BundID trust level</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>You are signed in with “{0}” – that is sufficient. The application is received directly when you send it.</value>
+	</data>
+	<data name="Level_StepUp" xml:space="preserve">
+		<value>For a passport the citizens' office requires the trust level “{0}”; you are signed in with “{1}”. When you send it, the portal briefly takes you to BundID – sign in there, for example with ELSTER or your online ID card. Afterwards you come back to this page and send the application.</value>
+	</data>
+	<data name="Level_Technical" xml:space="preserve">
+		<value>What happens technically</value>
+	</data>
+	<data name="Level_Technical_Text" xml:space="preserve">
+		<value>The portal starts a new OpenID Connect request with acr_values=STORK-QAA-Level-3. The auth server turns it into a SAML AuthnRequest with RequestedAuthnContext “substantial” (comparison minimum); BundID then only offers suitable identification methods. The signed response contains the level reached, and the API checks it again when the application is submitted.</value>
+	</data>
+	<data name="Section_Next" xml:space="preserve">
+		<value>What happens next</value>
+	</data>
+	<data name="Next1" xml:space="preserve">
+		<value>You receive a confirmation of receipt in your BundID mailbox.</value>
+	</data>
+	<data name="Next2" xml:space="preserve">
+		<value>For signature and fingerprints you need an appointment at the citizens' office –</value>
+	</data>
+	<data name="Next2_Link" xml:space="preserve">
+		<value>book an appointment</value>
+	</data>
+	<data name="Next3" xml:space="preserve">
+		<value>You can see the processing status at any time under “My applications”.</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Change options</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Send application</value>
+	</data>
+	<data name="Submit_StepUp" xml:space="preserve">
+		<value>Send – continue to BundID</value>
+	</data>
+  <data name="StepUp_Ok" xml:space="preserve">
+    <value>You are now signed in with the trust level “{0}”. Check your details and send the application.</value>
+  </data>
+</root>

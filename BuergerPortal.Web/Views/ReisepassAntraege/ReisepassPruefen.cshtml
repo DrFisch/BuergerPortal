@@ -1,0 +1,122 @@
+@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.ReisepassPruefenVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@* Reisepass, Schritt 3 von 3 „Prüfen und absenden“ (2026-10-18): alle Angaben, Gebühr, und – wenn das Niveau der
+   Anmeldung nicht reicht – der Step-up als eigener, erklärter Schritt (P2-15). Vor dem Wechsel zur BundID zeigt
+   bundid-hinweis.js wie bisher den Hinweis auf die Simulation (data-sim-hinweis="stepup"). *@
+@{
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Reisepass)!;
+    var schritte = new AntragSchritteVm([L["Step_Person"].Value, L["Step_Options"].Value, L["Step_Review"].Value], 3);
+    var noetig = LK[$"Niveau_{Model.NiveauNoetig}"].Value;
+    var aktuell = LK[$"Niveau_{Model.Niveau}"].Value;
+    string JaNein(bool wert) => wert ? L["Yes"].Value : L["No"].Value;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-primary">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@L["Heading"]</h1>
+            <p class="text-body-secondary mb-0">@LK["Reisepass_Name"] · @L["Number"] @Model.Vorgangsnummer</p>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    @if (ViewData["StepUpErfolgreich"] is true)
+    {
+        <div class="alert alert-success d-flex gap-2" role="status" id="stepupOk">
+            <i class="bi bi-shield-check" aria-hidden="true"></i><div>@L["StepUp_Ok", aktuell]</div>
+        </div>
+    }
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hAngaben">
+        <h2 id="hAngaben" class="h6 fw-bold mb-3">@L["Section_Person"]</h2>
+        <dl class="ap-angaben">
+            <dt>@L["Name"]</dt>
+            <dd>@Model.Antragsteller</dd>
+            <dt>@L["Birthdate"]</dt>
+            <dd>@Model.Geburtsdatum.ToString("d")</dd>
+            <dt>@L["Email"]</dt>
+            <dd>@(string.IsNullOrEmpty(Model.Email) ? "–" : Model.Email)</dd>
+            <dt>@L["Phone"]</dt>
+            <dd>@(string.IsNullOrEmpty(Model.Telefon) ? "–" : Model.Telefon)</dd>
+        </dl>
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hOptionen">
+        <div class="d-flex justify-content-between align-items-baseline gap-2 mb-3">
+            <h2 id="hOptionen" class="h6 fw-bold mb-0">@L["Section_Options"]</h2>
+            <a asp-action="ReisepassStep2" asp-route-id="@Model.Id" class="small" id="optionenAendern">@L["Change"]</a>
+        </div>
+        <dl class="ap-angaben">
+            <dt>@L["Express"]</dt>
+            <dd>@JaNein(Model.Express)</dd>
+            <dt>@L["OldPassport"]</dt>
+            <dd>@JaNein(Model.AltpassVorhanden)</dd>
+            <dt>@L["Note"]</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Hinweis) ? "–" : Model.Hinweis)</dd>
+        </dl>
+        <div class="ap-hinweis align-items-center mt-3">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i>
+            <div>
+                <div class="small text-body-secondary">@L["Fee_Label"]</div>
+                <div class="ap-betrag" id="gebuehr">@Leistungen.Euro(Model.Gebuehr, CultureInfo.CurrentUICulture)</div>
+                <div class="small text-body-secondary">@L["Fee_Hint"]</div>
+            </div>
+        </div>
+    </section>
+
+    @* Vertrauensniveau: reicht es, geht der Antrag direkt ein – sonst wird der Step-up hier erklärt *@
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hNiveau" id="niveau">
+        <h2 id="hNiveau" class="h6 fw-bold mb-3">@L["Section_Level"]</h2>
+        @if (Model.NiveauReicht)
+        {
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                <span class="ap-chip ap-chip-ok align-self-start"><i class="bi bi-shield-check" aria-hidden="true"></i> @aktuell</span>
+                <p class="mb-0">@L["Level_Ok", aktuell]</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3 mb-2">
+                <span class="ap-chip ap-chip-hinweis align-self-start"><i class="bi bi-shield-lock" aria-hidden="true"></i> @aktuell → @noetig</span>
+                <p class="mb-0">@L["Level_StepUp", noetig, aktuell]</p>
+            </div>
+            <details class="small">
+                <summary>@L["Level_Technical"]</summary>
+                <p class="mt-2 mb-0">@L["Level_Technical_Text"]</p>
+            </details>
+        }
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hDanach">
+        <h2 id="hDanach" class="h6 fw-bold mb-3">@L["Section_Next"]</h2>
+        <ol class="mb-0 ps-3">
+            <li>@L["Next1"]</li>
+            <li>@L["Next2"] <a asp-controller="Termine" asp-action="Buchen" asp-route-antragId="@Model.Id" asp-route-service="DokumenteUndAusweise">@L["Next2_Link"]</a></li>
+            <li>@L["Next3"]</li>
+        </ol>
+    </section>
+
+    <form asp-action="ReisepassEinreichen" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div class="ap-aktionen">
+            <a asp-action="ReisepassStep2" asp-route-id="@Model.Id" class="btn btn-link me-auto">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]
+            </a>
+            <button type="submit" class="btn btn-success btn-lg" id="absenden"
+                    data-sim-hinweis="@(Model.NiveauReicht ? null : "stepup")">
+                <i class="bi bi-send-check" aria-hidden="true"></i> @(Model.NiveauReicht ? L["Submit"] : L["Submit_StepUp"])
+            </button>
+        </div>
+    </form>
+</div>

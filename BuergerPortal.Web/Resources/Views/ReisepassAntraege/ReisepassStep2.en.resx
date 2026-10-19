@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,75 +13,55 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="PassportStep2_Title" xml:space="preserve">
-    <value>Passport – Step 2 of 2</value>
-  </data>
-
-	<data name="PassportStep2_Progress_Aria" xml:space="preserve">
-    <value>Progress</value>
-  </data>
-
-	<data name="PassportStep2_Step1" xml:space="preserve">
-    <value>Personal data</value>
-  </data>
-
-	<data name="PassportStep2_Step2" xml:space="preserve">
-    <value>Options &amp; submission</value>
-  </data>
-
-	<data name="PassportStep2_ProgressLabel" xml:space="preserve">
-    <value>Step 2/2</value>
-  </data>
-
-	<data name="PassportStep2_Heading" xml:space="preserve">
-    <value>Passport application – options &amp; submission</value>
-  </data>
-
-	<data name="PassportStep2_Applicant" xml:space="preserve">
-    <value>Applicant:</value>
-  </data>
-
-	<data name="PassportStep2_Birthdate" xml:space="preserve">
-    <value>Birthdate</value>
-  </data>
-
-	<data name="PassportStep2_Id" xml:space="preserve">
-    <value>ID</value>
-  </data>
-
-	<data name="PassportStep2_Cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-
-	<data name="PassportStep2_Save" xml:space="preserve">
-    <value>Save</value>
-  </data>
-
-	<data name="PassportStep2_Submit" xml:space="preserve">
-    <value>Submit now</value>
-  </data>
-  <data name="PassportStep2_BornOn" xml:space="preserve">
-    <value>Born on {0}</value>
-  </data>
-  <data name="PassportStep2_Options" xml:space="preserve">
-    <value>Additional options</value>
-  </data>
-  <data name="PassportStep2_Express" xml:space="preserve">
-    <value>Express production</value>
-  </data>
-  <data name="PassportStep2_Express_Hint" xml:space="preserve">
-    <value>Processing time is reduced to approx. 3-5 working days (additional fee).</value>
-  </data>
-  <data name="PassportStep2_OldPassport" xml:space="preserve">
-    <value>Old passport available</value>
-  </data>
-  <data name="PassportStep2_OldPassport_Hint" xml:space="preserve">
-    <value>Please bring your old passport to be invalidated when you collect the new one.</value>
-  </data>
-  <data name="PassportStep2_Note" xml:space="preserve">
-    <value>Additional notes for the office</value>
-  </data>
-  <data name="PassportStep2_Note_Placeholder" xml:space="preserve">
-    <value>Do you have any further comments on your application?</value>
-  </data>
+	<data name="Title" xml:space="preserve">
+		<value>Apply for a passport – options</value>
+	</data>
+	<data name="Step_Person" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Step_Options" xml:space="preserve">
+		<value>Options</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="BornOn" xml:space="preserve">
+		<value>born on {0}</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="Section_Options" xml:space="preserve">
+		<value>Options</value>
+	</data>
+	<data name="Express" xml:space="preserve">
+		<value>Express passport</value>
+	</data>
+	<data name="Express_Hint" xml:space="preserve">
+		<value>The passport is ready in about 3 to 5 working days instead of several weeks.</value>
+	</data>
+	<data name="OldPassport" xml:space="preserve">
+		<value>I still have an old passport</value>
+	</data>
+	<data name="OldPassport_Hint" xml:space="preserve">
+		<value>Bring it to the appointment – it will be invalidated.</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Note to the citizens' office (optional)</value>
+	</data>
+	<data name="Note_Placeholder" xml:space="preserve">
+		<value>e.g. “travelling on 10 Nov”</value>
+	</data>
+	<data name="Fee_Label" xml:space="preserve">
+		<value>Fee for you</value>
+	</data>
+	<data name="Fee_Hint" xml:space="preserve">
+		<value>according to § 27 PassV, payable at the appointment</value>
+	</data>
+	<data name="SaveDraft" xml:space="preserve">
+		<value>Save as draft</value>
+	</data>
+	<data name="Next" xml:space="preserve">
+		<value>Continue to review</value>
+	</data>
 </root>

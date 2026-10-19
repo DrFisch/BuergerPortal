@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Reisepass beantragen – prüfen und absenden</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Step_Person" xml:space="preserve">
+		<value>Ihre Angaben</value>
+	</data>
+	<data name="Step_Options" xml:space="preserve">
+		<value>Optionen</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Vorgang</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Ihre Angaben</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Geburtsdatum</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-Mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Telefon</value>
+	</data>
+	<data name="Section_Options" xml:space="preserve">
+		<value>Optionen</value>
+	</data>
+	<data name="Change" xml:space="preserve">
+		<value>Ändern</value>
+	</data>
+	<data name="Express" xml:space="preserve">
+		<value>Express-Pass</value>
+	</data>
+	<data name="OldPassport" xml:space="preserve">
+		<value>Alter Reisepass vorhanden</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Hinweis</value>
+	</data>
+	<data name="Yes" xml:space="preserve">
+		<value>ja</value>
+	</data>
+	<data name="No" xml:space="preserve">
+		<value>nein</value>
+	</data>
+	<data name="Fee_Label" xml:space="preserve">
+		<value>Gebühr für Sie</value>
+	</data>
+	<data name="Fee_Hint" xml:space="preserve">
+		<value>nach § 27 PassV, zahlbar beim Termin im Bürgeramt</value>
+	</data>
+	<data name="Section_Level" xml:space="preserve">
+		<value>Vertrauensniveau der BundID</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>Sie sind mit „{0}“ angemeldet – das reicht. Der Antrag geht beim Absenden direkt ein.</value>
+	</data>
+	<data name="Level_StepUp" xml:space="preserve">
+		<value>Für den Reisepass verlangt das Bürgeramt das Vertrauensniveau „{0}“, Sie sind mit „{1}“ angemeldet. Beim Absenden leitet Sie das Portal kurz zur BundID – dort melden Sie sich zum Beispiel mit ELSTER oder dem Online-Ausweis an. Danach kommen Sie auf diese Seite zurück und senden ab.</value>
+	</data>
+	<data name="Level_Technical" xml:space="preserve">
+		<value>Was dabei technisch passiert</value>
+	</data>
+	<data name="Level_Technical_Text" xml:space="preserve">
+		<value>Das Portal startet eine neue OpenID-Connect-Anfrage mit acr_values=STORK-QAA-Level-3. Der Auth-Server macht daraus einen SAML-AuthnRequest mit RequestedAuthnContext „substanziell“ (Comparison minimum); die BundID bietet dann nur passende Identifizierungsmittel an. Die signierte Antwort enthält das erreichte Niveau, und die API prüft es beim Einreichen selbst noch einmal.</value>
+	</data>
+	<data name="Section_Next" xml:space="preserve">
+		<value>Was danach passiert</value>
+	</data>
+	<data name="Next1" xml:space="preserve">
+		<value>Sie bekommen eine Eingangsbestätigung in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="Next2" xml:space="preserve">
+		<value>Für Unterschrift und Fingerabdrücke brauchen Sie einen Termin im Bürgeramt –</value>
+	</data>
+	<data name="Next2_Link" xml:space="preserve">
+		<value>Termin buchen</value>
+	</data>
+	<data name="Next3" xml:space="preserve">
+		<value>Den Bearbeitungsstand sehen Sie jederzeit unter „Meine Anträge“.</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Optionen ändern</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Verbindlich absenden</value>
+	</data>
+	<data name="Submit_StepUp" xml:space="preserve">
+		<value>Absenden – weiter zur BundID</value>
+	</data>
+  <data name="StepUp_Ok" xml:space="preserve">
+    <value>Sie sind jetzt mit dem Vertrauensniveau „{0}“ angemeldet. Prüfen Sie Ihre Angaben und senden Sie den Antrag ab.</value>
+  </data>
+</root>

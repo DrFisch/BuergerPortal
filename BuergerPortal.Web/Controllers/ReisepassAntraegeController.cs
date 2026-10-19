@@ -138,6 +138,18 @@ namespace BuergerPortal.Web.Controllers
             if (!put.IsSuccessStatusCode)
                 return View("ReisepassStep2", await AddModelErrorsAndReturn(vm, put, ct));
 
+            // Seit 2026-10-18 führt der Assistent über „Prüfen und absenden“; "submit" (direkt einreichen) bleibt für
+            // Mitschnitt und Skripte erhalten.
+            if (submitAction == "entwurf")
+            {
+                TempData["AntragSuccess"] = _t["Entwurf gespeichert – Sie finden ihn unter „Anträge“."].Value;
+                return RedirectToAction("Index", "Antraege");
+            }
+            if (submitAction != "submit")
+            {
+                return RedirectToAction(nameof(ReisepassPruefen), new { id });
+            }
+
             // Step-up: Einreichen verlangt BundID-Niveau "substanziell" (die API prüft es ebenfalls).
             // Die Angaben sind gespeichert; nach der erneuten Anmeldung geht es zurück zu Schritt 2.
             if (CurrentTrustLevel() < SubstantialLevel)
@@ -158,6 +170,68 @@ namespace BuergerPortal.Web.Controllers
             TempData["AntragSuccess"] = _t["Reisepassantrag eingereicht."].Value;
             TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
+        }
+
+        // Schritt 3 „Prüfen und absenden“ (2026-10-18): alles auf einen Blick, Gebühr, und ob das Niveau reicht
+        [HttpGet]
+        public async Task<IActionResult> ReisepassPruefen(Guid id, bool stepup, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return BadRequest();
+            // Rückkehr vom Step-up: TempData ginge mit der neuen Portal-Sitzung verloren (E-012) – daher der Parameter
+            ViewData["StepUpErfolgreich"] = stepup && CurrentTrustLevel() >= SubstantialLevel;
+
+            var res = await _cf.CreateClient("BuergerPortalApi").GetAsync($"api/antraege/reisepass/{id}", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            if (!res.IsSuccessStatusCode)
+                return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+
+            var d = await res.Content.ReadFromJsonAsync<ReisepassDetailResponse>(cancellationToken: ct);
+            if (d is null) return NotFound();
+            // schon eingereicht: nicht noch einmal prüfen, sondern den Vorgang zeigen
+            if (d.Status != 1) return RedirectToAction("Antrag", "Antraege", new { id });
+
+            var express = d.Express ?? false;
+            return View("ReisepassPruefen", new ReisepassPruefenVm
+            {
+                Id = d.Id,
+                Antragsteller = $"{d.Vorname} {d.Nachname}",
+                Geburtsdatum = d.Geburtsdatum.ToDateTime(TimeOnly.MinValue),
+                Email = d.Email,
+                Telefon = d.Telefon,
+                Express = express,
+                AltpassVorhanden = d.AltpassVorhanden ?? false,
+                Hinweis = d.Hinweis,
+                Gebuehr = Features.Antraege.Leistungen.ReisepassGebuehr(d.Geburtsdatum, DateOnly.FromDateTime(DateTime.Today), express),
+                Niveau = CurrentTrustLevel(),
+                NiveauNoetig = SubstantialLevel,
+            });
+        }
+
+        // Verbindlich absenden – reicht das Niveau nicht, zuerst der Step-up (acr_values), danach zurück zu „Prüfen“
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReisepassEinreichen(Guid id, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return BadRequest();
+
+            if (CurrentTrustLevel() < SubstantialLevel)
+            {
+                var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(ReisepassPruefen), new { id, stepup = true }) };
+                properties.Items["acr_values"] = "STORK-QAA-Level-3";
+                return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+            }
+
+            var submit = await _cf.CreateClient("BuergerPortalApi").PostAsync($"api/antraege/reisepass/{id}/submit", content: null, ct);
+            if (submit.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            if (!submit.IsSuccessStatusCode)
+            {
+                TempData["BookingError"] = _t["Der Antrag ließ sich nicht absenden. Bitte versuchen Sie es noch einmal."].Value;
+                return RedirectToAction(nameof(ReisepassPruefen), new { id });
+            }
+
+            TempData["AntragSuccess"] = _t["Reisepassantrag eingereicht."].Value;
+            TempData.MerkePostkorbStatus(submit);
+            return RedirectToAction("Antrag", "Antraege", new { id });
         }
 
         // -------- Helpers ----------
