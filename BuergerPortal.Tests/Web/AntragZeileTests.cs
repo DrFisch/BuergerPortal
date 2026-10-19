@@ -2,7 +2,7 @@ using BuergerPortal.Web.Features.Antraege;
 
 namespace BuergerPortal.Tests.Web
 {
-    /// <summary>„Meine Anträge“: Filter, Stufen des Fortschritts und Vorgangsnummer.</summary>
+    /// <summary>„Meine Anträge“: Filter, Stufen des Fortschritts, Vorgangsnummer und Zeitleiste der Detailseite.</summary>
     public class AntragZeileTests
     {
         private static AntragZeileVm Antrag(int status, int typ = Leistungen.Sperrmuell) => new()
@@ -46,6 +46,23 @@ namespace BuergerPortal.Tests.Web
             Assert.Equal("9B4EDE50", Antrag(2).Vorgangsnummer);
             Assert.Equal("SperrmuellStep2", Antrag(1).Leistung!.EntwurfAction);
             Assert.Equal("Antrag", Antrag(2, Leistungen.Reisepass).Leistung!.DetailAction);
+        }
+
+        [Theory]
+        [InlineData(1, false, false, false, false)]
+        [InlineData(2, true, false, false, true)]
+        [InlineData(3, true, true, false, true)]
+        [InlineData(4, true, true, true, false)]
+        [InlineData(5, true, true, true, false)]
+        public void Zeitleiste_folgt_dem_Status(int status, bool eingereicht, bool inBearbeitung, bool abgeschlossen,
+            bool hinweis)
+        {
+            var vm = new AntragVerlaufVm(status, new DateTime(2026, 10, 18, 9, 0, 0), null, null, null);
+
+            Assert.Equal(eingereicht, vm.IstEingereicht);
+            Assert.Equal(inBearbeitung, vm.IstInBearbeitung);
+            Assert.Equal(abgeschlossen, vm.IstAbgeschlossen);
+            Assert.Equal(hinweis, vm.ZeigeSimulationsHinweis);
         }
     }
 }

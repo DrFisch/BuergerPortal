@@ -1,0 +1,36 @@
+@model BuergerPortal.Web.Features.Antraege.AntragVerlaufVm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@* Zeitleiste eines Antrags (2026-10-18). Klasse modern-timeline, Zeitformat dd.MM.yyyy HH:mm und #simulationHinweis
+   bleiben wie bisher (t_buerger zählt die vier Zeitpunkte). *@
+@{
+    const string Format = "dd.MM.yyyy HH:mm";
+    var schritte = new (bool Erreicht, string Icon, string Titel, string Zeit)[]
+    {
+        (true, "bi-file-earmark-plus", L["Created"].Value, Model.Angelegt.ToString(Format)),
+        (Model.IstEingereicht, "bi-send", L["Submitted"].Value,
+            Model.Eingereicht?.ToString(Format) ?? L["NotYet"].Value),
+        (Model.IstInBearbeitung, "bi-search", L["InProgress"].Value,
+            Model.InBearbeitung?.ToString(Format) ?? (Model.IstInBearbeitung ? L["Done"].Value : L["Pending"].Value)),
+        (Model.IstAbgeschlossen, Model.Status == 5 ? "bi-x-lg" : "bi-check2-all", Model.Status == 5 ? L["Rejected"].Value : L["Completed"].Value,
+            Model.Abgeschlossen?.ToString(Format) ?? (Model.IstAbgeschlossen ? L["Done"].Value : L["Pending"].Value)),
+    };
+}
+<ol class="ap-verlauf modern-timeline">
+    @foreach (var s in schritte)
+    {
+        <li class="@(s.Erreicht ? "erreicht" : "")">
+            <span class="ap-verlauf-punkt" aria-hidden="true"><i class="bi @s.Icon"></i></span>
+            <div>
+                <div class="fw-semibold">@s.Titel</div>
+                <div class="small text-body-secondary">@s.Zeit</div>
+            </div>
+        </li>
+    }
+</ol>
+@if (Model.ZeigeSimulationsHinweis)
+{
+    <p class="small text-body-secondary mt-1 mb-0" id="simulationHinweis">
+        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>@L["SimulationHint"]
+    </p>
+}

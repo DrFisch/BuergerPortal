@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Created" xml:space="preserve">
+		<value>Angelegt</value>
+	</data>
+	<data name="Submitted" xml:space="preserve">
+		<value>Eingereicht</value>
+	</data>
+	<data name="InProgress" xml:space="preserve">
+		<value>In Bearbeitung</value>
+	</data>
+	<data name="Completed" xml:space="preserve">
+		<value>Abgeschlossen</value>
+	</data>
+	<data name="Rejected" xml:space="preserve">
+		<value>Abgelehnt</value>
+	</data>
+	<data name="NotYet" xml:space="preserve">
+		<value>noch nicht eingereicht</value>
+	</data>
+	<data name="Pending" xml:space="preserve">
+		<value>ausstehend</value>
+	</data>
+	<data name="Done" xml:space="preserve">
+		<value>erledigt</value>
+	</data>
+	<data name="SimulationHint" xml:space="preserve">
+		<value>Die Bearbeitung ist simuliert: Nach wenigen Minuten wechselt der Status, und Sie bekommen jeweils eine Nachricht in Ihr BundID-Postfach.</value>
+	</data>
+</root>
