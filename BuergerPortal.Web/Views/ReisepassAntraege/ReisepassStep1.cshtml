@@ -1,164 +1,104 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Reisepass.ViewModels.ReisepassStep1Vm
+@using BuergerPortal.Web.Features.Antraege
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
 @inject IViewLocalizer L
-
+@inject IStringLocalizer<Leistungen> LK
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
+@* Reisepass, Schritt 1 von 3 (2026-10-18): Angaben zur Person – aus der BundID vorbefüllt und so markiert; oben das nötige
+   Vertrauensniveau, damit der Step-up beim Absenden nicht überrascht. Feldnamen wie bisher (Mitschnitt, Skripte). *@
 @{
-    ViewData["Title"] = L["PassportStep1_Title"];
-    // Vorbefüllt wird im Controller aus der BundID-Anmeldung (Name, Geburtsdatum, E-Mail).
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Reisepass)!;
+    var niveau = CurrentUser.GetBundIdUser()?.TrustLevel ?? 1;
+    var reicht = Leistungen.NiveauReicht(niveau, leistung.Niveau);
+    var ausBundId = ViewData["AusBundId"] is true;
+    var schritte = new AntragSchritteVm([L["Step_Person"].Value, L["Step_Options"].Value, L["Step_Review"].Value], 1);
 }
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-
-            <div class="wizard-steps mb-5">
-                <div class="step active">
-                    <div class="step-icon">1</div>
-                    <div class="step-label">@L["PassportStep1_Step1"]</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="step">
-                    <div class="step-icon">2</div>
-                    <div class="step-label">@L["PassportStep1_Step2"]</div>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header bg-primary bg-opacity-10 border-0 p-4 text-center text-md-start">
-                    <h1 class="h4 fw-bold mb-1">@L["PassportStep1_Heading"]</h1>
-                    <p class="text-muted small mb-0">@L["PassportStep1_Info"]</p>
-                </div>
-
-                <div class="card-body p-4 p-md-5">
-                    @if (ViewData["AusBundId"] is true)
-                    {
-                        <div class="alert alert-info d-flex gap-2 small" role="status">
-                            <i class="bi bi-shield-check" aria-hidden="true"></i>
-                            <div>@L["PrefilledFromBundId"]</div>
-                        </div>
-                    }
-                    <form asp-action="ReisepassStep1" method="post" class="row g-4">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
-
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input asp-for="Vorname" class="form-control shadow-none border-secondary-subtle" placeholder="@L["Vorname"]" />
-                                <label asp-for="Vorname"></label>
-                                <span asp-validation-for="Vorname" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input asp-for="Nachname" class="form-control shadow-none border-secondary-subtle" placeholder="@L["Nachname"]" />
-                                <label asp-for="Nachname"></label>
-                                <span asp-validation-for="Nachname" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-floating">
-                                <input asp-for="Geburtsdatum" class="form-control shadow-none border-secondary-subtle" type="date" placeholder="DD.MM.YYYY" />
-                                <label asp-for="Geburtsdatum"></label>
-                                <span asp-validation-for="Geburtsdatum" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-7">
-                            <div class="form-floating">
-                                <input asp-for="Email" class="form-control shadow-none border-secondary-subtle" placeholder="name@@example.com" />
-                                <label asp-for="Email"></label>
-                                <span asp-validation-for="Email" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-5">
-                            <div class="form-floating">
-                                <input asp-for="Telefon" class="form-control shadow-none border-secondary-subtle" placeholder="+49..." />
-                                <label asp-for="Telefon"></label>
-                                <span asp-validation-for="Telefon" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-5 d-flex flex-column flex-md-row justify-content-between gap-3">
-                            <a asp-controller="Antraege" asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold order-2 order-md-1">
-                                <i class="bi bi-x-lg me-1"></i> @L["PassportStep1_Cancel"]
-                            </a>
-                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm py-2 fw-bold order-1 order-md-2">
-                                @L["PassportStep1_Next"] <i class="bi bi-arrow-right ms-2"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Styles {
-    <style>
-        .wizard-steps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 80px;
-        }
-
-        .step-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--bs-secondary-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--bs-secondary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .step.active .step-icon {
-            background: var(--bs-primary);
-            color: white;
-            box-shadow: 0 0 0 5px var(--bs-primary-bg-subtle);
-        }
-
-        .step-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--bs-secondary-color);
-        }
-
-        .step.active .step-label {
-            color: var(--bs-primary);
-        }
-
-        .step-line {
-            flex: 0 1 100px;
-            height: 2px;
-            background: var(--bs-secondary-bg);
-            margin-bottom: 1.5rem;
-        }
-
-        .form-floating > .form-control:focus {
-            border-color: var(--bs-primary);
-            box-shadow: 0 0 0 0.25rem var(--bs-primary-bg-subtle);
-        }
-
-        [data-bs-theme="dark"] .card {
-            background-color: var(--bs-tertiary-bg);
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
 }
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-primary">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@LK["Reisepass_Titel"]</h1>
+            <ul class="ap-chips" aria-label="@L["Facts"]">
+                <li class="ap-chip"><i class="bi bi-clock" aria-hidden="true"></i> @L["Minutes", leistung.DauerMinuten]</li>
+                <li class="ap-chip @(reicht ? "ap-chip-ok" : "ap-chip-hinweis")">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i> @L["Level", LK[$"Niveau_{leistung.Niveau}"]]
+                </li>
+                <li class="ap-chip"><i class="bi bi-cash-coin" aria-hidden="true"></i> @LK["Reisepass_GebuehrKurz"]</li>
+            </ul>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    @if (ausBundId)
+    {
+        <div class="ap-hinweis mb-3" role="status">
+            <i class="bi bi-shield-check" aria-hidden="true"></i>
+            <div>@L["PrefilledFromBundId"]</div>
+        </div>
+    }
+
+    <form asp-action="ReisepassStep1" method="post" class="ap-karte p-3 p-md-4" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small" role="alert"></div>
+
+        <fieldset class="mb-4">
+            <legend class="h6 fw-bold mb-3">@L["Section_Person"]</legend>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Vorname" class="form-label"></label>
+                    @if (ausBundId) { <span class="ap-bundid ms-1"><i class="bi bi-shield-check" aria-hidden="true"></i>BundID</span> }
+                    <input asp-for="Vorname" class="form-control form-control-lg" autocomplete="given-name" />
+                    <span asp-validation-for="Vorname" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Nachname" class="form-label"></label>
+                    @if (ausBundId) { <span class="ap-bundid ms-1"><i class="bi bi-shield-check" aria-hidden="true"></i>BundID</span> }
+                    <input asp-for="Nachname" class="form-control form-control-lg" autocomplete="family-name" />
+                    <span asp-validation-for="Nachname" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Geburtsdatum" class="form-label"></label>
+                    @if (ausBundId && Model.Geburtsdatum is not null) { <span class="ap-bundid ms-1"><i class="bi bi-shield-check" aria-hidden="true"></i>BundID</span> }
+                    <input asp-for="Geburtsdatum" class="form-control form-control-lg" type="date" autocomplete="bday" />
+                    <span asp-validation-for="Geburtsdatum" class="text-danger small"></span>
+                    <div class="form-text">@L["Birthdate_Hint"]</div>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend class="h6 fw-bold mb-1">@L["Section_Contact"]</legend>
+            <p class="small text-body-secondary mb-3">@L["Contact_Hint"]</p>
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <label asp-for="Email" class="form-label"></label>
+                    @if (ausBundId && !string.IsNullOrEmpty(Model.Email)) { <span class="ap-bundid ms-1"><i class="bi bi-shield-check" aria-hidden="true"></i>BundID</span> }
+                    <input asp-for="Email" class="form-control form-control-lg" type="email" autocomplete="email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="Telefon" class="form-label"></label>
+                    <input asp-for="Telefon" class="form-control form-control-lg" type="tel" inputmode="tel" autocomplete="tel" />
+                    <span asp-validation-for="Telefon" class="text-danger small"></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="ap-aktionen">
+            <a asp-controller="Antraege" asp-action="Index" class="btn btn-link me-auto">@L["Cancel"]</a>
+            <button type="submit" class="btn btn-primary btn-lg" id="weiter">
+                @L["Next"] <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

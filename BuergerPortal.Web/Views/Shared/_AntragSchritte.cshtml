@@ -1,0 +1,13 @@
+@model BuergerPortal.Web.Features.Antraege.AntragSchritteVm
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@* Schrittanzeige der Antrags-Assistenten (2026-10-18): Balken je Schritt, erledigte und aktiver farbig; für
+   Screenreader „Schritt 2 von 3“ und aria-current am aktiven Schritt. *@
+<ol class="ap-schritte" aria-label="@L["Label", Model.Aktiv, Model.Namen.Count]">
+    @for (var i = 0; i < Model.Namen.Count; i++)
+    {
+        var nr = i + 1;
+        <li class="@(nr < Model.Aktiv ? "erledigt" : nr == Model.Aktiv ? "aktiv" : "")"
+            aria-current="@(nr == Model.Aktiv ? "step" : null)"><span>@Model.Namen[i]</span></li>
+    }
+</ol>

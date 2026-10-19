@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,41 +13,46 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<data name="PassportStep1_Title" xml:space="preserve">
-    <value>Passport – Step 1 of 2</value>
-  </data>
-
-	<data name="PassportStep1_Progress_Aria" xml:space="preserve">
-    <value>Progress</value>
-  </data>
-
-	<data name="PassportStep1_Step1" xml:space="preserve">
-    <value>Personal data</value>
-  </data>
-	<data name="PassportStep1_Step2" xml:space="preserve">
-    <value>Options &amp; submission</value>
-  </data>
-
-	<data name="PassportStep1_ProgressLabel" xml:space="preserve">
-    <value>Step 1/2</value>
-  </data>
-
-	<data name="PassportStep1_Heading" xml:space="preserve">
-    <value>Passport application – personal data</value>
-  </data>
-
-	<data name="PassportStep1_Info" xml:space="preserve">
-    <value>Note: You can review and submit the application in the second step.</value>
-  </data>
-
-	<data name="PassportStep1_Cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-
-	<data name="PassportStep1_Next" xml:space="preserve">
-    <value>Continue to step 2</value>
-  </data>
-  <data name="PrefilledFromBundId" xml:space="preserve">
-    <value>We have taken your name, date of birth and email address from your BundID sign-in. Please check them; you can change them here.</value>
-  </data>
+	<data name="Title" xml:space="preserve">
+		<value>Apply for a passport – your details</value>
+	</data>
+	<data name="Facts" xml:space="preserve">
+		<value>Key facts</value>
+	</data>
+	<data name="Minutes" xml:space="preserve">
+		<value>approx. {0} min</value>
+	</data>
+	<data name="Level" xml:space="preserve">
+		<value>Level “{0}”</value>
+	</data>
+	<data name="Step_Person" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Step_Options" xml:space="preserve">
+		<value>Options</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="PrefilledFromBundId" xml:space="preserve">
+		<value>We took your name, date of birth and e-mail from your BundID sign-in (marked “BundID”). Please check the details – you can change everything.</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Person</value>
+	</data>
+	<data name="Birthdate_Hint" xml:space="preserve">
+		<value>Determines the fee: under 24 €37.50, from 24 €70.</value>
+	</data>
+	<data name="Section_Contact" xml:space="preserve">
+		<value>Contact (optional)</value>
+	</data>
+	<data name="Contact_Hint" xml:space="preserve">
+		<value>For questions from the citizens' office, for example about the appointment.</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Cancel</value>
+	</data>
+	<data name="Next" xml:space="preserve">
+		<value>Continue to options</value>
+	</data>
 </root>
