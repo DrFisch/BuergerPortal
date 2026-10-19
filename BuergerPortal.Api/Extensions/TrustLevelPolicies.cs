@@ -12,6 +12,9 @@ namespace BuergerPortal.Api.Extensions
     {
         public const string Substantial = "trustlevel.substantial";
         public const int SubstantialLevel = 3;
+        // seit 2026-10-18: Meldebescheinigung verlangt "hoch" (STORK-QAA-Level-4, z. B. Online-Ausweis)
+        public const string High = "trustlevel.high";
+        public const int HighLevel = 4;
 
         private const string StorkPrefix = "STORK-QAA-Level-";
 
@@ -22,6 +25,9 @@ namespace BuergerPortal.Api.Extensions
             options.AddPolicy(Substantial, policy =>
                 policy.RequireAuthenticatedUser()
                       .RequireAssertion(ctx => LevelOf(ctx.User) >= SubstantialLevel));
+            options.AddPolicy(High, policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireAssertion(ctx => LevelOf(ctx.User) >= HighLevel));
             return options;
         }
 

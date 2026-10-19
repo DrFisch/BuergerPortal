@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace BuergerPortal.Tests.Api
 {
-    /// <summary>Policy der API für Funktionen ab BundID-Niveau "substanziell" (Step-up).</summary>
+    /// <summary>Policies der API für Funktionen ab BundID-Niveau "substanziell" bzw. "hoch" (Step-up).</summary>
     public class TrustLevelPoliciesTests
     {
         private static ClaimsPrincipal User(string? acr)
@@ -15,13 +15,13 @@ namespace BuergerPortal.Tests.Api
             return new ClaimsPrincipal(new ClaimsIdentity(claims, authenticationType: "Bearer"));
         }
 
-        private static async Task<bool> IsAllowed(ClaimsPrincipal user)
+        private static async Task<bool> IsAllowed(ClaimsPrincipal user, string policy = TrustLevelPolicies.Substantial)
         {
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddAuthorization(o => o.AddTrustLevelPolicies());
             var authorization = services.BuildServiceProvider().GetRequiredService<IAuthorizationService>();
-            return (await authorization.AuthorizeAsync(user, null, TrustLevelPolicies.Substantial)).Succeeded;
+            return (await authorization.AuthorizeAsync(user, null, policy)).Succeeded;
         }
 
         [Theory]
@@ -43,6 +43,16 @@ namespace BuergerPortal.Tests.Api
         public async Task Policy_verlangt_mindestens_substanziell(string? acr, bool allowed)
         {
             Assert.Equal(allowed, await IsAllowed(User(acr)));
+        }
+
+        // Meldebescheinigung (2026-10-18): nur "hoch" reicht
+        [Theory]
+        [InlineData("STORK-QAA-Level-1", false)]
+        [InlineData("STORK-QAA-Level-3", false)]
+        [InlineData("STORK-QAA-Level-4", true)]
+        public async Task Policy_hoch_verlangt_Level_4(string? acr, bool allowed)
+        {
+            Assert.Equal(allowed, await IsAllowed(User(acr), TrustLevelPolicies.High));
         }
 
         [Fact]

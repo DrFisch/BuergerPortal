@@ -17,16 +17,20 @@ using System.Text.Encodings.Web;
 
 namespace BuergerPortal.Tests.Api
 {
-    /// <summary>Ersetzt die Prüfung des Access-Tokens: Header "X-Test-Sub" = Person (sub).</summary>
+    /// <summary>
+    /// Ersetzt die Prüfung des Access-Tokens: Header "X-Test-Sub" = Person (sub), optional "X-Test-Acr" = Niveau (acr).
+    /// </summary>
     public sealed class TestBearerHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder)
         : AuthenticationHandler<JwtBearerOptions>(options, logger, encoder)
     {
         public const string Header = "X-Test-Sub";
+        public const string AcrHeader = "X-Test-Acr";
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.TryGetValue(Header, out var sub)) return Task.FromResult(AuthenticateResult.NoResult());
             var identity = new ClaimsIdentity([new Claim("sub", sub!), new Claim("scope", "buergerportal_api")], JwtBearerDefaults.AuthenticationScheme);
+            if (Request.Headers.TryGetValue(AcrHeader, out var acr)) identity.AddClaim(new Claim("acr", acr!));
             return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), JwtBearerDefaults.AuthenticationScheme)));
         }
     }
@@ -82,6 +86,13 @@ namespace BuergerPortal.Tests.Api
         {
             request.Headers.Add(TestBearerHandler.Header, sub);
             return request;
+        }
+
+        /// <summary>Anfrage als angemeldete Person mit BundID-Niveau (1, 3 oder 4 → Claim "acr").</summary>
+        public static HttpRequestMessage As(this HttpRequestMessage request, string sub, int niveau)
+        {
+            request.Headers.Add(TestBearerHandler.AcrHeader, $"STORK-QAA-Level-{niveau}");
+            return request.As(sub);
         }
     }
 }
