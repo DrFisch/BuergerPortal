@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -13,109 +13,82 @@
 		<value>System.Resources.ResXResourceWriter</value>
 	</resheader>
 
-	<!-- Titel / Heading -->
-	<data name="ApplicationDetails_Title" xml:space="preserve">
-    <value>Antrag – Details</value>
-  </data>
-	<data name="ApplicationDetails_Heading" xml:space="preserve">
-    <value>Antragsdetails</value>
-  </data>
-
-	<!-- Datenteil -->
-	<data name="ApplicationDetails_DataCardTitle" xml:space="preserve">
-    <value>Antragsdaten</value>
-  </data>
-	<data name="ApplicationDetails_Field_Applicant" xml:space="preserve">
-    <value>Antragsteller</value>
-  </data>
-	<data name="ApplicationDetails_Field_BirthDate" xml:space="preserve">
-    <value>Geburtsdatum</value>
-  </data>
-	<data name="ApplicationDetails_Field_Note" xml:space="preserve">
-    <value>Hinweis</value>
-  </data>
-
-	<!-- Timeline -->
-	<data name="ApplicationDetails_Timeline_Title" xml:space="preserve">
-    <value>Verlauf</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Created" xml:space="preserve">
-    <value>Antrag erstellt</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Submitted" xml:space="preserve">
-    <value>Eingereicht</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Submitted_NotYet" xml:space="preserve">
-    <value>noch nicht eingereicht</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Review" xml:space="preserve">
-    <value>Prüfung</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Review_InProgressOrDone" xml:space="preserve">
-    <value>in Bearbeitung / abgeschlossen</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Pending" xml:space="preserve">
-    <value>ausstehend</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Completed" xml:space="preserve">
-    <value>Abschluss</value>
-  </data>
-	<data name="ApplicationDetails_Timeline_Completed_Done" xml:space="preserve">
-    <value>abgeschlossen</value>
-  </data>
-
-	<!-- Kontaktkarte -->
-	<data name="ApplicationDetails_ContactCardTitle" xml:space="preserve">
-    <value>Kontakt &amp; Aktionen</value>
-  </data>
-	<data name="ApplicationDetails_Email_Label" xml:space="preserve">
-    <value>E-Mail</value>
-  </data>
-	<data name="ApplicationDetails_Phone_Label" xml:space="preserve">
-    <value>Telefon</value>
-  </data>
-
-	<!-- Termin -->
-	<data name="ApplicationDetails_Appointment_Button" xml:space="preserve">
-    <value>Rückfrage-Termin buchen</value>
-  </data>
-	<data name="ApplicationDetails_Appointment_Info" xml:space="preserve">
-    <value>Sie werden zur Terminbuchung weitergeleitet (Dienstleistung „Antragsrückfrage“ ist bereits ausgewählt).</value>
-  </data>
-
-	<!-- Sperrmüll-spezifische Texte -->
-	<data name="SperrmuellDetail_PickupAddress_Title" xml:space="preserve">
-    <value>Abholadresse</value>
-  </data>
-	<data name="SperrmuellDetail_PickupAddress_Street" xml:space="preserve">
-    <value>Straße</value>
-  </data>
-	<data name="SperrmuellDetail_PickupAddress_PostalCity" xml:space="preserve">
-    <value>PLZ / Ort</value>
-  </data>
-
-	<data name="SperrmuellDetail_Section_SperrmuellData" xml:space="preserve">
-    <value>Daten zum Sperrmüll</value>
-  </data>
-	<data name="SperrmuellDetail_Field_Wood" xml:space="preserve">
-    <value>Holz (m³)</value>
-  </data>
-	<data name="SperrmuellDetail_Field_Other" xml:space="preserve">
-    <value>Sonstiges (m³)</value>
-  </data>
-	<data name="SperrmuellDetail_Field_Mattresses" xml:space="preserve">
-    <value>Matratzen</value>
-  </data>
-	<data name="SperrmuellDetail_Field_DesiredDate" xml:space="preserve">
-    <value>Wunschtermin</value>
-  </data>
-  <data name="ApplicationDetails_Timeline_SimulationHint" xml:space="preserve">
-    <value>Simulation: Die Bearbeitung läuft automatisch – nach etwa 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“. Jede Änderung kommt als Statusmeldung in Ihr BundID-Postfach.</value>
-  </data>
-  <data name="SperrmuellDetail_Kind" xml:space="preserve">
-    <value>Sperrmüll-Antrag</value>
-  </data>
-  <data name="SperrmuellDetail_Pieces" xml:space="preserve">
-    <value>Stk.</value>
-  </data>
+	<data name="Back" xml:space="preserve">
+		<value>Meine Anträge</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Vorgang</value>
+	</data>
+	<data name="SubmittedOn" xml:space="preserve">
+		<value>eingereicht am {0}</value>
+	</data>
+	<data name="Next_Heading" xml:space="preserve">
+		<value>Nächste Schritte</value>
+	</data>
+	<data name="Next_Draft" xml:space="preserve">
+		<value>Dieser Antrag ist noch nicht abgeschickt.</value>
+	</data>
+	<data name="Next_Draft_Button" xml:space="preserve">
+		<value>Weiter bearbeiten</value>
+	</data>
+	<data name="Next_Rejected" xml:space="preserve">
+		<value>Der Antrag wurde abgelehnt. Die Begründung steht in Ihrem BundID-Postfach.</value>
+	</data>
+	<data name="Timeline_Heading" xml:space="preserve">
+		<value>Bearbeitungsstand</value>
+	</data>
+	<data name="Applicant" xml:space="preserve">
+		<value>Antragsteller/in</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Hinweis</value>
+	</data>
+	<data name="Fee" xml:space="preserve">
+		<value>Gebühr</value>
+	</data>
+	<data name="Contact_Heading" xml:space="preserve">
+		<value>Kontakt und Hilfe</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-Mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Telefon</value>
+	</data>
+	<data name="Postfach" xml:space="preserve">
+		<value>Nachrichten im BundID-Postfach</value>
+	</data>
+	<data name="Question_Button" xml:space="preserve">
+		<value>Rückfrage-Termin buchen</value>
+	</data>
+	<data name="Print" xml:space="preserve">
+		<value>Bestätigung drucken</value>
+	</data>
+	<data name="Title" xml:space="preserve">
+		<value>Sperrmüll-Anmeldung</value>
+	</data>
+	<data name="Next_Pending" xml:space="preserve">
+		<value>Ihr Wunschtag ist {0}. Sobald er bestätigt ist, bekommen Sie eine Nachricht in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="Next_Confirmed" xml:space="preserve">
+		<value>Die Abholung am {0} ist bestätigt. Stellen Sie die Gegenstände bis 6 Uhr gut sichtbar bereit (Beispielregel der Simulation).</value>
+	</data>
+	<data name="Pickup_Heading" xml:space="preserve">
+		<value>Abholung</value>
+	</data>
+	<data name="Day" xml:space="preserve">
+		<value>Abholtag</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Adresse</value>
+	</data>
+	<data name="Wood" xml:space="preserve">
+		<value>Holz</value>
+	</data>
+	<data name="Other" xml:space="preserve">
+		<value>Sonstiges</value>
+	</data>
+	<data name="Mattresses" xml:space="preserve">
+		<value>Matratzen</value>
+	</data>
 </root>
