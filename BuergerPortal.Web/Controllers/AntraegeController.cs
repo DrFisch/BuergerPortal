@@ -130,6 +130,7 @@ namespace BuergerPortal.Web.Controllers
                 Id = d.Id,
                 Antragsteller = $"{d.Vorname} {d.Nachname}",
                 Geburtsdatum = d.Geburtsdatum.ToDateTime(TimeOnly.MinValue),
+                Status = d.Status,
                 StatusText = map.text,
                 BadgeClass = map.badge,
                 ProgressPercent = map.progress,
@@ -172,6 +173,7 @@ namespace BuergerPortal.Web.Controllers
                 Antragsteller = $"{d.Vorname} {d.Nachname}",
                 Geburtsdatum = d.Geburtsdatum.ToDateTime(TimeOnly.MinValue),
 
+                Status = (int)d.Status,
                 StatusText = map.text,
                 BadgeClass = map.badge,
                 ProgressPercent = map.progress,

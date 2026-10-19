@@ -5,6 +5,8 @@
         public Guid Id { get; set; }
         public string Antragsteller { get; set; } = "";
         public DateTime Geburtsdatum { get; set; }
+        // Status wie die API (1 Entwurf … 5 abgelehnt) – Zeitleiste und „Nächste Schritte“ (2026-10-18)
+        public int Status { get; set; }
         public string StatusText { get; set; } = "";
         public string BadgeClass { get; set; } = "text-bg-secondary";
         public int ProgressPercent { get; set; }

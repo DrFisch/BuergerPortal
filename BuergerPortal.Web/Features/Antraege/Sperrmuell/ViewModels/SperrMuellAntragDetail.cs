@@ -13,6 +13,8 @@
         public string? Telefon { get; set; }
 
         // Statusanzeige (UI-mapped, wie bei Reisepass)
+        // Status wie die API (1 Entwurf … 5 abgelehnt) – Zeitleiste und „Nächste Schritte“ (2026-10-18)
+        public int Status { get; set; }
         public string StatusText { get; set; } = string.Empty;
         public string BadgeClass { get; set; } = "text-bg-secondary";
         public int ProgressPercent { get; set; }
