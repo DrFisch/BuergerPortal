@@ -1,0 +1,122 @@
+@model BuergerPortal.Web.Features.Antraege.Meldebescheinigung.ViewModels.MeldebescheinigungPruefenVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@* Meldebescheinigung, Schritt 2 von 2 „Prüfen und absenden“ (2026-10-18): Angaben, Art, Zustellung, Gebühr und das
+   nötige Niveau „hoch“. Reicht die Anmeldung nicht, erklärt die Seite den Step-up (acr_values=STORK-QAA-Level-4) vor
+   dem Wechsel zur BundID; bundid-hinweis.js zeigt den Hinweis auf die Simulation (data-sim-hinweis="stepup"). *@
+@{
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Meldebescheinigung)!;
+    var schritte = new AntragSchritteVm([L["Step_Data"].Value, L["Step_Review"].Value], 2);
+    var noetig = LK[$"Niveau_{Model.NiveauNoetig}"].Value;
+    var aktuell = LK[$"Niveau_{Model.Niveau}"].Value;
+    var p = Model.Person;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-info">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@L["Heading"]</h1>
+            <p class="text-body-secondary mb-0">@LK["Meldebescheinigung_Name"] · @L["Number"] @Model.Vorgangsnummer</p>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    @if (ViewData["StepUpErfolgreich"] is true)
+    {
+        <div class="alert alert-success d-flex gap-2" role="status" id="stepupOk">
+            <i class="bi bi-shield-check" aria-hidden="true"></i><div>@L["StepUp_Ok", aktuell]</div>
+        </div>
+    }
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hPerson">
+        <h2 id="hPerson" class="h6 fw-bold mb-3">@L["Section_Person"]</h2>
+        <dl class="ap-angaben">
+            <dt>@L["Name"]</dt>
+            <dd>@p.Name</dd>
+            <dt>@L["Birthdate"]</dt>
+            <dd>@p.Geburtsdatum?.ToString("d")</dd>
+            <dt>@L["Birthplace"]</dt>
+            <dd>@(string.IsNullOrWhiteSpace(p.Geburtsort) ? "–" : p.Geburtsort)</dd>
+            @if (!string.IsNullOrWhiteSpace(p.Geburtsname))
+            {
+                <dt>@L["BirthName"]</dt>
+                <dd>@p.Geburtsname</dd>
+            }
+            <dt>@L["Address"]</dt>
+            <dd>@p.Anschrift</dd>
+        </dl>
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hBescheinigung">
+        <div class="d-flex justify-content-between align-items-baseline gap-2 mb-3">
+            <h2 id="hBescheinigung" class="h6 fw-bold mb-0">@L["Section_Certificate"]</h2>
+            <a asp-action="MeldebescheinigungAngaben" asp-route-id="@Model.Id" class="small" id="angabenAendern">@L["Change"]</a>
+        </div>
+        <dl class="ap-angaben">
+            <dt>@L["Type"]</dt>
+            <dd id="art">@(Model.Art == 2 ? L["Type_Extended"] : L["Type_Simple"])</dd>
+            <dt>@L["Purpose"]</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Zweck) ? "–" : Model.Zweck)</dd>
+            <dt>@L["Email"]</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Email) ? "–" : Model.Email)</dd>
+            <dt>@L["Delivery"]</dt>
+            <dd>@L["Delivery_Value"]</dd>
+            <dt>@L["Fee"]</dt>
+            <dd class="fw-semibold">@LK["Meldebescheinigung_GebuehrKurz"]</dd>
+        </dl>
+    </section>
+
+    @* Vertrauensniveau: „hoch“ nötig – sonst wird der Step-up hier erklärt *@
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hNiveau" id="niveau">
+        <h2 id="hNiveau" class="h6 fw-bold mb-3">@L["Section_Level"]</h2>
+        @if (Model.NiveauReicht)
+        {
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                <span class="ap-chip ap-chip-ok align-self-start"><i class="bi bi-shield-check" aria-hidden="true"></i> @aktuell</span>
+                <p class="mb-0">@L["Level_Ok", aktuell]</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3 mb-2">
+                <span class="ap-chip ap-chip-hinweis align-self-start"><i class="bi bi-shield-lock" aria-hidden="true"></i> @aktuell → @noetig</span>
+                <p class="mb-0">@L["Level_StepUp", noetig, aktuell]</p>
+            </div>
+            <details class="small">
+                <summary>@L["Level_Technical"]</summary>
+                <p class="mt-2 mb-0">@L["Level_Technical_Text"]</p>
+            </details>
+        }
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hDanach">
+        <h2 id="hDanach" class="h6 fw-bold mb-3">@L["Section_Next"]</h2>
+        <ol class="mb-0 ps-3">
+            <li>@L["Next1"]</li>
+            <li>@L["Next2"]</li>
+            <li>@L["Next3"]</li>
+        </ol>
+    </section>
+
+    <form asp-action="MeldebescheinigungEinreichen" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div class="ap-aktionen">
+            <a asp-action="MeldebescheinigungAngaben" asp-route-id="@Model.Id" class="btn btn-link me-auto">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]
+            </a>
+            <button type="submit" class="btn btn-success btn-lg" id="absenden"
+                    data-sim-hinweis="@(Model.NiveauReicht ? null : "stepup")">
+                <i class="bi bi-send-check" aria-hidden="true"></i> @(Model.NiveauReicht ? L["Submit"] : L["Submit_StepUp"])
+            </button>
+        </div>
+    </form>
+</div>

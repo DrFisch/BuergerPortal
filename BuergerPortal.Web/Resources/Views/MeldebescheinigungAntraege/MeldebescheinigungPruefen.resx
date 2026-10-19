@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Meldebescheinigung – prüfen und absenden</value>
+	</data>
+	<data name="Step_Data" xml:space="preserve">
+		<value>Angaben</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="StepUp_Ok" xml:space="preserve">
+		<value>Sie sind jetzt mit dem Vertrauensniveau „{0}“ angemeldet. Prüfen Sie Ihre Angaben und senden Sie den Antrag ab.</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Wer wird bescheinigt?</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Vorgang</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Geburtsdatum</value>
+	</data>
+	<data name="Birthplace" xml:space="preserve">
+		<value>Geburtsort</value>
+	</data>
+	<data name="BirthName" xml:space="preserve">
+		<value>Geburtsname</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Anschrift</value>
+	</data>
+	<data name="Type" xml:space="preserve">
+		<value>Art</value>
+	</data>
+	<data name="Type_Simple" xml:space="preserve">
+		<value>Einfache Meldebescheinigung</value>
+	</data>
+	<data name="Type_Extended" xml:space="preserve">
+		<value>Erweiterte Meldebescheinigung</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Zweck</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-Mail</value>
+	</data>
+	<data name="Delivery" xml:space="preserve">
+		<value>Zustellung</value>
+	</data>
+	<data name="Delivery_Value" xml:space="preserve">
+		<value>elektronisch in Ihr BundID-Postfach</value>
+	</data>
+	<data name="Fee" xml:space="preserve">
+		<value>Gebühr</value>
+	</data>
+	<data name="Section_Certificate" xml:space="preserve">
+		<value>Bescheinigung</value>
+	</data>
+	<data name="Change" xml:space="preserve">
+		<value>Ändern</value>
+	</data>
+	<data name="Section_Level" xml:space="preserve">
+		<value>Vertrauensniveau der BundID</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>Sie sind mit „{0}“ angemeldet – das reicht. Der Antrag geht beim Absenden direkt ein.</value>
+	</data>
+	<data name="Level_StepUp" xml:space="preserve">
+		<value>Für die Meldebescheinigung verlangt das Bürgeramt das höchste Vertrauensniveau „{0}“, Sie sind mit „{1}“ angemeldet. Beim Absenden leitet Sie das Portal kurz zur BundID – dort melden Sie sich mit dem Online-Ausweis an (im Simulator: „EID (Ausweis)“). Danach kommen Sie auf diese Seite zurück und senden ab.</value>
+	</data>
+	<data name="Level_Technical" xml:space="preserve">
+		<value>Was dabei technisch passiert</value>
+	</data>
+	<data name="Level_Technical_Text" xml:space="preserve">
+		<value>Das Portal startet eine neue OpenID-Connect-Anfrage mit acr_values=STORK-QAA-Level-4. Der Auth-Server macht daraus einen SAML-AuthnRequest mit RequestedAuthnContext „hoch“ (Comparison minimum); die BundID bietet dann nur Identifizierungsmittel mit hohem Niveau an (Online-Ausweis, eIDAS, FINK). Die signierte Antwort enthält das erreichte Niveau, und die API prüft es beim Einreichen selbst noch einmal (Policy „hoch“).</value>
+	</data>
+	<data name="Section_Next" xml:space="preserve">
+		<value>Was danach passiert</value>
+	</data>
+	<data name="Next1" xml:space="preserve">
+		<value>Sie bekommen sofort eine Eingangsbestätigung in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="Next2" xml:space="preserve">
+		<value>Die (simulierte) Bearbeitung dauert wenige Minuten; jeder Schritt kommt als Statusmeldung ins Postfach.</value>
+	</data>
+	<data name="Next3" xml:space="preserve">
+		<value>Danach liegt die Bescheinigung im Postfach und im Portal zum Drucken bereit.</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Angaben ändern</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Verbindlich absenden</value>
+	</data>
+	<data name="Submit_StepUp" xml:space="preserve">
+		<value>Absenden – weiter zur BundID</value>
+	</data>
+</root>
