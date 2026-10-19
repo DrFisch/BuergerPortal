@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Meldebescheinigung – Angaben</value>
+	</data>
+	<data name="Step_Data" xml:space="preserve">
+		<value>Angaben</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Intro" xml:space="preserve">
+		<value>Sie bekommen die Bescheinigung elektronisch – meist schneller als ein Termin im Bürgeramt.</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Wer wird bescheinigt?</value>
+	</data>
+	<data name="FromBundId" xml:space="preserve">
+		<value>aus Ihrer BundID</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Geburtsdatum</value>
+	</data>
+	<data name="Birthplace" xml:space="preserve">
+		<value>Geburtsort</value>
+	</data>
+	<data name="BirthName" xml:space="preserve">
+		<value>Geburtsname</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Anschrift</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Zweck</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-Mail</value>
+	</data>
+	<data name="Delivery" xml:space="preserve">
+		<value>Zustellung</value>
+	</data>
+	<data name="Person_Hint" xml:space="preserve">
+		<value>Diese Daten stammen aus Ihrer BundID-Anmeldung und lassen sich hier nicht ändern. Ein echtes Bürgeramt nähme sie aus dem Melderegister.</value>
+	</data>
+	<data name="Person_Missing" xml:space="preserve">
+		<value>Ihre BundID liefert nicht alle nötigen Angaben (Name, Geburtsdatum, Anschrift). Ergänzen Sie sie im BundID-Konto und melden Sie sich neu an.</value>
+	</data>
+	<data name="Section_Type" xml:space="preserve">
+		<value>Welche Bescheinigung brauchen Sie?</value>
+	</data>
+	<data name="Type_Simple" xml:space="preserve">
+		<value>Einfache Meldebescheinigung</value>
+	</data>
+	<data name="Type_Simple_Hint" xml:space="preserve">
+		<value>Name und Anschrift – reicht meist für Arbeitgeber, Bank oder Vermieter.</value>
+	</data>
+	<data name="Type_Extended" xml:space="preserve">
+		<value>Erweiterte Meldebescheinigung</value>
+	</data>
+	<data name="Type_Extended_Hint" xml:space="preserve">
+		<value>Zusätzlich Geburtsdatum, Geburtsort und Geburtsname – etwa für Behörden oder das Standesamt.</value>
+	</data>
+	<data name="Type_Help" xml:space="preserve">
+		<value>Unsicher? Fragen Sie bei der Stelle nach, die die Bescheinigung verlangt.</value>
+	</data>
+	<data name="Section_More" xml:space="preserve">
+		<value>Weitere Angaben</value>
+	</data>
+	<data name="Optional" xml:space="preserve">
+		<value>freiwillig</value>
+	</data>
+	<data name="Purpose_Placeholder" xml:space="preserve">
+		<value>z. B. für den Arbeitgeber</value>
+	</data>
+	<data name="Delivery_Hint" xml:space="preserve">
+		<value>Die Bescheinigung kommt in Ihr BundID-Postfach und steht im Portal zum Drucken bereit – online gebührenfrei.</value>
+	</data>
+	<data name="SaveDraft" xml:space="preserve">
+		<value>Als Entwurf speichern</value>
+	</data>
+	<data name="Next" xml:space="preserve">
+		<value>Weiter zur Prüfung</value>
+	</data>
+</root>

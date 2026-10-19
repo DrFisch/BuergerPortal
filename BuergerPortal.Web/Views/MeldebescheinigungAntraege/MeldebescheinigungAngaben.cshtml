@@ -1,0 +1,127 @@
+@model BuergerPortal.Web.Features.Antraege.Meldebescheinigung.ViewModels.MeldebescheinigungAngabenVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@* Meldebescheinigung, Schritt 1 von 2 (2026-10-18): Personendaten und Anschrift aus der BundID (nur angezeigt – der
+   Controller nimmt sie beim Speichern aus der Anmeldung, nicht aus dem Formular), dazu Art, Zweck und E-Mail. *@
+@{
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Meldebescheinigung)!;
+    var schritte = new AntragSchritteVm([L["Step_Data"].Value, L["Step_Review"].Value], 1);
+    var p = Model.Person;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-info">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@LK["Meldebescheinigung_Titel"]</h1>
+            <p class="text-body-secondary mb-0">@L["Intro"]</p>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    <form asp-action="MeldebescheinigungAngaben" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small" role="alert"></div>
+
+        <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hPerson" id="person">
+            <div class="d-flex justify-content-between align-items-baseline gap-2 mb-3">
+                <h2 id="hPerson" class="h6 fw-bold mb-0">@L["Section_Person"]</h2>
+                <span class="ap-chip"><i class="bi bi-person-badge" aria-hidden="true"></i> @L["FromBundId"]</span>
+            </div>
+            @if (p.Vollstaendig)
+            {
+                <dl class="ap-angaben">
+                    <dt>@L["Name"]</dt>
+                    <dd>@p.Name</dd>
+                    <dt>@L["Birthdate"]</dt>
+                    <dd>@p.Geburtsdatum!.Value.ToString("d")</dd>
+                    <dt>@L["Birthplace"]</dt>
+                    <dd>@(string.IsNullOrWhiteSpace(p.Geburtsort) ? "–" : p.Geburtsort)</dd>
+                    @if (!string.IsNullOrWhiteSpace(p.Geburtsname))
+                    {
+                        <dt>@L["BirthName"]</dt>
+                        <dd>@p.Geburtsname</dd>
+                    }
+                    <dt>@L["Address"]</dt>
+                    <dd>@p.Anschrift</dd>
+                </dl>
+                <p class="small text-body-secondary mt-3 mb-0">@L["Person_Hint"]</p>
+            }
+            else
+            {
+                <div class="ap-hinweis" id="ohneDaten">
+                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                    <div>@L["Person_Missing"]</div>
+                </div>
+            }
+        </section>
+
+        <fieldset class="ap-karte p-3 p-md-4 mb-3">
+            <legend class="h6 fw-bold mb-3">@L["Section_Type"]</legend>
+            <div class="ap-wahl">
+                <label for="artEinfach">
+                    <input class="form-check-input" type="radio" asp-for="Art" value="1" id="artEinfach" />
+                    <span>
+                        <span class="fw-semibold d-block">@L["Type_Simple"]</span>
+                        <span class="small text-body-secondary">@L["Type_Simple_Hint"]</span>
+                    </span>
+                </label>
+                <label for="artErweitert">
+                    <input class="form-check-input" type="radio" asp-for="Art" value="2" id="artErweitert" />
+                    <span>
+                        <span class="fw-semibold d-block">@L["Type_Extended"]</span>
+                        <span class="small text-body-secondary">@L["Type_Extended_Hint"]</span>
+                    </span>
+                </label>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">@L["Type_Help"]</p>
+        </fieldset>
+
+        <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hMehr">
+            <h2 id="hMehr" class="h6 fw-bold mb-3">@L["Section_More"]</h2>
+            <div class="mb-3">
+                <label asp-for="Zweck" class="form-label fw-semibold">@L["Purpose"] <span class="fw-normal text-body-secondary">(@L["Optional"])</span></label>
+                <input asp-for="Zweck" class="form-control" maxlength="200" placeholder="@L["Purpose_Placeholder"]" />
+                <span asp-validation-for="Zweck" class="text-danger small"></span>
+            </div>
+            <div>
+                <label asp-for="Email" class="form-label fw-semibold">@L["Email"] <span class="fw-normal text-body-secondary">(@L["Optional"])</span></label>
+                <input asp-for="Email" type="email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+        </section>
+
+        <div class="ap-hinweis align-items-center mb-3">
+            <i class="bi bi-envelope-paper" aria-hidden="true"></i>
+            <div>
+                <div class="fw-semibold">@L["Delivery"]</div>
+                <div class="small text-body-secondary">@L["Delivery_Hint"]</div>
+            </div>
+        </div>
+
+        <div class="ap-aktionen">
+            <button type="submit" name="submitAction" value="entwurf" class="btn btn-outline-secondary me-auto" id="entwurfSpeichern"
+                    disabled="@(!p.Vollstaendig)">
+                <i class="bi bi-floppy" aria-hidden="true"></i> @L["SaveDraft"]
+            </button>
+            <button type="submit" name="submitAction" value="pruefen" class="btn btn-primary btn-lg" id="weiter"
+                    disabled="@(!p.Vollstaendig)">
+                @L["Next"] <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
+}

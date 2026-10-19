@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Certificate of registration – details</value>
+	</data>
+	<data name="Step_Data" xml:space="preserve">
+		<value>Details</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Review and send</value>
+	</data>
+	<data name="Intro" xml:space="preserve">
+		<value>You receive the certificate electronically – usually faster than an appointment at the citizens' office.</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Who is certified?</value>
+	</data>
+	<data name="FromBundId" xml:space="preserve">
+		<value>from your BundID</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="Birthplace" xml:space="preserve">
+		<value>Place of birth</value>
+	</data>
+	<data name="BirthName" xml:space="preserve">
+		<value>Birth name</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Address</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Purpose</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-mail</value>
+	</data>
+	<data name="Delivery" xml:space="preserve">
+		<value>Delivery</value>
+	</data>
+	<data name="Person_Hint" xml:space="preserve">
+		<value>These details come from your BundID login and cannot be changed here. A real citizens' office would take them from the population register.</value>
+	</data>
+	<data name="Person_Missing" xml:space="preserve">
+		<value>Your BundID does not provide all required details (name, date of birth, address). Add them in your BundID account and sign in again.</value>
+	</data>
+	<data name="Section_Type" xml:space="preserve">
+		<value>Which certificate do you need?</value>
+	</data>
+	<data name="Type_Simple" xml:space="preserve">
+		<value>Simple certificate of registration</value>
+	</data>
+	<data name="Type_Simple_Hint" xml:space="preserve">
+		<value>Name and address – usually enough for employers, banks or landlords.</value>
+	</data>
+	<data name="Type_Extended" xml:space="preserve">
+		<value>Extended certificate of registration</value>
+	</data>
+	<data name="Type_Extended_Hint" xml:space="preserve">
+		<value>Also date and place of birth and birth name – e.g. for authorities or the registry office.</value>
+	</data>
+	<data name="Type_Help" xml:space="preserve">
+		<value>Not sure? Ask the office that requires the certificate.</value>
+	</data>
+	<data name="Section_More" xml:space="preserve">
+		<value>More details</value>
+	</data>
+	<data name="Optional" xml:space="preserve">
+		<value>optional</value>
+	</data>
+	<data name="Purpose_Placeholder" xml:space="preserve">
+		<value>e.g. for my employer</value>
+	</data>
+	<data name="Delivery_Hint" xml:space="preserve">
+		<value>The certificate arrives in your BundID mailbox and is ready to print in the portal – free of charge online.</value>
+	</data>
+	<data name="SaveDraft" xml:space="preserve">
+		<value>Save as draft</value>
+	</data>
+	<data name="Next" xml:space="preserve">
+		<value>Continue to review</value>
+	</data>
+</root>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Ihre BundID liefert nicht alle nötigen Angaben (Name, Geburtsdatum, Anschrift)." xml:space="preserve">
+		<value>Your BundID does not provide all required details (name, date of birth, address).</value>
+	</data>
+	<data name="Die Angaben ließen sich nicht speichern. Bitte versuchen Sie es noch einmal." xml:space="preserve">
+		<value>The details could not be saved. Please try again.</value>
+	</data>
+	<data name="Entwurf gespeichert – Sie finden ihn unter „Anträge“." xml:space="preserve">
+		<value>Draft saved – you will find it under “Applications”.</value>
+	</data>
+	<data name="Der Antrag ließ sich nicht absenden. Bitte versuchen Sie es noch einmal." xml:space="preserve">
+		<value>The application could not be sent. Please try again.</value>
+	</data>
+	<data name="Antrag auf eine Meldebescheinigung eingereicht." xml:space="preserve">
+		<value>Application for a certificate of registration submitted.</value>
+	</data>
+</root>
