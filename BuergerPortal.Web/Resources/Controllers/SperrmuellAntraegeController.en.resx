@@ -25,4 +25,10 @@
 	<data name="Sperrmüllantrag eingereicht." xml:space="preserve">
 		<value>Bulky waste application submitted.</value>
 	</data>
+  <data name="Entwurf gespeichert – Sie finden ihn unter „Anträge“." xml:space="preserve">
+    <value>Draft saved – you will find it under “Applications”.</value>
+  </data>
+  <data name="Der Antrag ließ sich nicht absenden. Bitte versuchen Sie es noch einmal." xml:space="preserve">
+    <value>The application could not be sent. Please try again.</value>
+  </data>
 </root>

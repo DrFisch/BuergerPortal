@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Sperrmüll anmelden – prüfen und absenden</value>
+	</data>
+	<data name="Heading" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Step_Person" xml:space="preserve">
+		<value>Ihre Angaben</value>
+	</data>
+	<data name="Step_Pickup" xml:space="preserve">
+		<value>Abholung</value>
+	</data>
+	<data name="Step_Review" xml:space="preserve">
+		<value>Prüfen und absenden</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Vorgang</value>
+	</data>
+	<data name="Section_Pickup" xml:space="preserve">
+		<value>Abholung</value>
+	</data>
+	<data name="Change" xml:space="preserve">
+		<value>Ändern</value>
+	</data>
+	<data name="Day" xml:space="preserve">
+		<value>Abholtag</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Adresse</value>
+	</data>
+	<data name="Wood" xml:space="preserve">
+		<value>Holz</value>
+	</data>
+	<data name="Other" xml:space="preserve">
+		<value>Sonstiges</value>
+	</data>
+	<data name="Mattresses" xml:space="preserve">
+		<value>Matratzen</value>
+	</data>
+	<data name="Note" xml:space="preserve">
+		<value>Hinweis</value>
+	</data>
+	<data name="Fee_Label" xml:space="preserve">
+		<value>Kosten</value>
+	</data>
+	<data name="Section_Person" xml:space="preserve">
+		<value>Ihre Angaben</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-Mail</value>
+	</data>
+	<data name="Phone" xml:space="preserve">
+		<value>Telefon</value>
+	</data>
+	<data name="Section_Level" xml:space="preserve">
+		<value>Vertrauensniveau der BundID</value>
+	</data>
+	<data name="Level_Ok" xml:space="preserve">
+		<value>Für eine Sperrmüll-Anmeldung reicht das Niveau „normal“ – der Antrag geht beim Absenden direkt ein.</value>
+	</data>
+	<data name="Section_Next" xml:space="preserve">
+		<value>Was danach passiert</value>
+	</data>
+	<data name="Next1" xml:space="preserve">
+		<value>Sie bekommen eine Eingangsbestätigung in Ihr BundID-Postfach.</value>
+	</data>
+	<data name="Next2" xml:space="preserve">
+		<value>Sobald der Abholtag bestätigt ist, kommt eine Statusmeldung (in der Simulation nach wenigen Minuten).</value>
+	</data>
+	<data name="Next3" xml:space="preserve">
+		<value>Stellen Sie die Gegenstände am Abholtag bis 6 Uhr gut sichtbar bereit (Beispielregel der Simulation).</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Abholung ändern</value>
+	</data>
+	<data name="Submit" xml:space="preserve">
+		<value>Verbindlich absenden</value>
+	</data>
+</root>

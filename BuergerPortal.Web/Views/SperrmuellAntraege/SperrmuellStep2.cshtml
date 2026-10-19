@@ -1,279 +1,135 @@
 ﻿@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellStep2Vm
+@using BuergerPortal.Web.Features.Antraege
+@using BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
 @inject IViewLocalizer L
-
+@inject IStringLocalizer<Leistungen> LK
+@* Sperrmüll, Schritt 2 von 3 (2026-10-18): Abholadresse (aus der BundID vorgeschlagen), Mengen mit Stepper, Abholtag als
+   Tages-Chips (nächste Werktage) oder freies Datum; als Entwurf speichern oder weiter zur Prüfung. Feldnamen wie bisher;
+   "submit" (direkt einreichen) nimmt der Controller weiter an. *@
 @{
-    ViewData["Title"] = L["SperrmuellStep2_Title"];
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Sperrmuell)!;
+    var schritte = new AntragSchritteVm([L["Step_Person"].Value, L["Step_Pickup"].Value, L["Step_Review"].Value], 2);
+    var tage = SperrmuellStep2Vm.NaechsteWerktage(DateOnly.FromDateTime(DateTime.Today), 8);
+    var ausBundId = ViewData["AusBundId"] is true;
 }
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-9">
-
-            <div class="wizard-steps mb-5">
-                <div class="step done">
-                    <div class="step-icon"><i class="bi bi-check-lg"></i></div>
-                    <div class="step-label">@L["Sperrmuell_Step1_Label"]</div>
-                </div>
-                <div class="step-line active"></div>
-                <div class="step active">
-                    <div class="step-icon">2</div>
-                    <div class="step-label">@L["Sperrmuell_Step2_Label"]</div>
-                </div>
-            </div>
-
-            @if (TempData["AntragInfo"] is string info)
-            {
-                <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
-                    <i class="bi bi-check-circle-fill me-2"></i> @info
-                </div>
-            }
-
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-body-tertiary">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                            <i class="bi bi-person-badge fs-4"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted small text-uppercase fw-bold mb-0" style="font-size: 0.65rem;">@L["SperrmuellStep2_Applicant"]</h6>
-                            <div class="h5 mb-0 fw-bold">@Model.AntragstellerName</div>
-                            <span class="text-secondary small">ID: #@Model.Id.ToString().Substring(0, 8)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @if (ViewData["AusBundId"] is true)
-            {
-                <div class="alert alert-info d-flex gap-2 small" role="status">
-                    <i class="bi bi-shield-check" aria-hidden="true"></i>
-                    <div>@L["AddressFromBundId"]</div>
-                </div>
-            }
-
-            <form asp-action="SperrmuellStep2" method="post" class="vstack gap-4">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="Id" />
-                <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
-
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt me-2 text-success" aria-hidden="true"></i>@L["SperrmuellStep2_PickupAddress"]</h5>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <input asp-for="Strasse" class="form-control" placeholder="@Html.DisplayNameFor(m => m.Strasse)" />
-                                <label asp-for="Strasse"></label>
-                                <span asp-validation-for="Strasse" class="text-danger small"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <input asp-for="PLZ" class="form-control" placeholder="@Html.DisplayNameFor(m => m.PLZ)" />
-                                <label asp-for="PLZ"></label>
-                                <span asp-validation-for="PLZ" class="text-danger small"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="form-floating">
-                                <input asp-for="Ort" class="form-control" placeholder="@Html.DisplayNameFor(m => m.Ort)" />
-                                <label asp-for="Ort"></label>
-                                <span asp-validation-for="Ort" class="text-danger small"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4"><i class="bi bi-box-seam me-2 text-success" aria-hidden="true"></i>@L["SperrmuellStep2_Quantities"]</h5>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label asp-for="HolzKubikmeter" class="form-label small fw-bold text-muted"></label>
-                            <div class="input-group">
-                                <input asp-for="HolzKubikmeter" class="form-control" type="number" min="0" />
-                                <span class="input-group-text">m³</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="SonstigesKubikmeter" class="form-label small fw-bold text-muted"></label>
-                            <div class="input-group">
-                                <input asp-for="SonstigesKubikmeter" class="form-control" type="number" min="0" />
-                                <span class="input-group-text">m³</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="Matratzen" class="form-label small fw-bold text-muted"></label>
-                            <div class="input-group">
-                                <input asp-for="Matratzen" class="form-control" type="number" min="0" />
-                                <span class="input-group-text">@L["SperrmuellStep2_Pieces"]</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label asp-for="Wunschzeit" class="form-label fw-bold small text-muted text-uppercase" style="font-size:0.7rem">@L["Sperrmuell_Date_Label"]</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-calendar-event text-success"></i></span>
-                            <input asp-for="Wunschzeit" class="form-control border-start-0 ps-0" type="date" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
-                        </div>
-                        <div id="weekendNote" class="alert alert-warning mt-2 small py-2 d-none">
-                            <i class="bi bi-info-circle me-2"></i> @L["Sperrmuell_Weekend_Hint"]
-                        </div>
-                        <span asp-validation-for="Wunschzeit" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label asp-for="Hinweis" class="form-label fw-bold small text-muted text-uppercase" style="font-size:0.7rem">@L["Sperrmuell_Note_Label"]</label>
-                        <textarea asp-for="Hinweis" rows="3" class="form-control rounded-3" placeholder="@L["Sperrmuell_Note_Placeholder"]"></textarea>
-                        <span asp-validation-for="Hinweis" class="text-danger small"></span>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-2">
-                    <a asp-controller="Antraege" asp-action="Index" class="btn btn-outline-secondary">
-                        Abbrechen
-                    </a>
-
-                    <button type="submit" name="submitAction" value="submit" class="btn btn-primary">
-                        Jetzt einreichen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @section Styles {
-    <style>
-        .wizard-steps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 80px;
-        }
-
-        .step-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--bs-secondary-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--bs-secondary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .step.active .step-icon {
-            background: var(--bs-success);
-            color: white;
-            box-shadow: 0 0 0 5px var(--bs-success-bg-subtle);
-        }
-
-        .step.done .step-icon {
-            background: var(--bs-success);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--bs-secondary-color);
-        }
-
-        .step-line {
-            flex: 0 1 100px;
-            height: 2px;
-            background: var(--bs-secondary-bg);
-            margin-bottom: 1.5rem;
-        }
-
-            .step-line.active {
-                background: var(--bs-success);
-            }
-
-        .form-floating > .form-control:focus {
-            border-color: var(--bs-success);
-            box-shadow: 0 0 0 0.25rem var(--bs-success-bg-subtle);
-        }
-
-        [data-bs-theme="dark"] .card {
-            background-color: var(--bs-tertiary-bg);
-        }
-
-        .input-group-text {
-            border-color: var(--bs-border-color);
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
 }
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-success">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@LK["Sperrmuell_Titel"]</h1>
+            <p class="text-body-secondary mb-0">@Model.AntragstellerName · @L["Number"] @Model.Id.ToString("N")[..8].ToUpperInvariant()</p>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    <form asp-action="SperrmuellStep2" method="post" class="ap-karte p-3 p-md-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" name="AntragstellerName" value="@Model.AntragstellerName" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small" role="alert"></div>
+
+        <fieldset class="mb-4">
+            <legend class="h6 fw-bold mb-3">
+                @L["Section_Address"]
+                @if (ausBundId) { <span class="ap-bundid ms-1"><i class="bi bi-shield-check" aria-hidden="true"></i>BundID</span> }
+            </legend>
+            @if (ausBundId)
+            {
+                <p class="small text-body-secondary">@L["AddressFromBundId"]</p>
+            }
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="Strasse" class="form-label"></label>
+                    <input asp-for="Strasse" class="form-control form-control-lg" autocomplete="street-address" />
+                    <span asp-validation-for="Strasse" class="text-danger small"></span>
+                </div>
+                <div class="col-4">
+                    <label asp-for="PLZ" class="form-label"></label>
+                    <input asp-for="PLZ" class="form-control form-control-lg" inputmode="numeric" maxlength="5" autocomplete="postal-code" />
+                    <span asp-validation-for="PLZ" class="text-danger small"></span>
+                </div>
+                <div class="col-8">
+                    <label asp-for="Ort" class="form-label"></label>
+                    <input asp-for="Ort" class="form-control form-control-lg" autocomplete="address-level2" />
+                    <span asp-validation-for="Ort" class="text-danger small"></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="mb-4">
+            <legend class="h6 fw-bold mb-1">@L["Section_Items"]</legend>
+            <p class="small text-body-secondary mb-3">@L["Items_Hint"]</p>
+            @foreach (var (feld, einheit, hilfe) in new[] { ("HolzKubikmeter", "m³", "Wood_Hint"), ("SonstigesKubikmeter", "m³", "Other_Hint"), ("Matratzen", L["Pieces"].Value, "Mattress_Hint") })
+            {
+                var wert = feld switch { "HolzKubikmeter" => Model.HolzKubikmeter, "SonstigesKubikmeter" => Model.SonstigesKubikmeter, _ => Model.Matratzen };
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-bottom">
+                    <div>
+                        <label for="@feld" class="fw-semibold d-block">@L[$"Label_{feld}"]</label>
+                        <span class="small text-body-secondary">@L[hilfe]</span>
+                    </div>
+                    <div class="ap-stepper">
+                        <button type="button" class="btn btn-outline-secondary" data-ap-minus data-ziel="@feld" aria-label="@L["Less", L[$"Label_{feld}"].Value]"><i class="bi bi-dash-lg" aria-hidden="true"></i></button>
+                        <input type="number" class="form-control" id="@feld" name="@feld" min="0" max="20" inputmode="numeric" value="@wert" />
+                        <button type="button" class="btn btn-outline-secondary" data-ap-plus data-ziel="@feld" aria-label="@L["More", L[$"Label_{feld}"].Value]"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+                        <span class="small text-body-secondary" style="min-width: 2.5rem;">@einheit</span>
+                    </div>
+                </div>
+            }
+        </fieldset>
+
+        <fieldset class="mb-4">
+            <legend class="h6 fw-bold mb-1">@L["Section_Day"]</legend>
+            <p class="small text-body-secondary mb-2">@L["Day_Hint"]</p>
+            <div class="ap-tage" role="group" aria-label="@L["Day_Chips"]">
+                @foreach (var tag in tage)
+                {
+                    var iso = tag.ToString("yyyy-MM-dd");
+                    <button type="button" data-ap-tag="@iso" data-ziel="Wunschzeit"
+                            aria-pressed="@(Model.Wunschzeit?.ToString("yyyy-MM-dd") == iso ? "true" : "false")">
+                        <small>@tag.ToString("ddd")</small><strong>@tag.ToString("dd.MM.")</strong>
+                    </button>
+                }
+            </div>
+            <label for="Wunschzeit" class="form-label small">@L["Day_Other"]</label>
+            <input type="date" class="form-control form-control-lg" id="Wunschzeit" name="Wunschzeit" style="max-width: 16rem;"
+                   value="@Model.Wunschzeit?.ToString("yyyy-MM-dd")" min="@tage[0].ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="Wunschzeit" class="text-danger small"></span>
+        </fieldset>
+
+        <div class="mb-4">
+            <label asp-for="Hinweis" class="form-label fw-semibold"></label>
+            <textarea asp-for="Hinweis" rows="3" class="form-control" placeholder="@L["Note_Placeholder"]"></textarea>
+            <span asp-validation-for="Hinweis" class="text-danger small"></span>
+        </div>
+
+        <div class="ap-hinweis align-items-center">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i>
+            <div>
+                <div class="small text-body-secondary">@L["Fee_Label"]</div>
+                <div class="fw-bold">@LK["Sperrmuell_Gebuehr"]</div>
+            </div>
+        </div>
+
+        <div class="ap-aktionen">
+            <button type="submit" name="submitAction" value="entwurf" class="btn btn-outline-secondary me-auto" id="entwurfSpeichern">
+                <i class="bi bi-floppy" aria-hidden="true"></i> @L["SaveDraft"]
+            </button>
+            <button type="submit" name="submitAction" value="pruefen" class="btn btn-success btn-lg" id="weiter">
+                @L["Next"] <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        (function() {
-            const dateInput = document.querySelector('input[name="Wunschzeit"]');
-            const note = document.getElementById('weekendNote');
-
-            function formatDate(date) {
-                const yyyy = date.getFullYear();
-                const mm = String(date.getMonth() + 1).padStart(2, '0');
-                const dd = String(date.getDate()).padStart(2, '0');
-                return `${yyyy}-${mm}-${dd}`;
-            }
-
-            function getNextWorkday(date) {
-                const next = new Date(date);
-                next.setDate(next.getDate() + 1); 
-
-                const day = next.getDay();
-                if (day === 6) {
-                    next.setDate(next.getDate() + 2);
-                } else if (day === 0) { 
-                    next.setDate(next.getDate() + 1);
-                }
-                return next;
-            }
-
-            if (dateInput) {
-
-                if (!dateInput.value) {
-                    const today = new Date();
-                    today.setHours(12, 0, 0, 0);
-                    const defaultDate = getNextWorkday(today);
-                    dateInput.value = formatDate(defaultDate);
-                }
-
-                dateInput.addEventListener('change', function() {
-                    if (!this.value) return;
-
-                    const parts = this.value.split('-');
-                    const selectedDate = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
-                    const day = selectedDate.getDay();
-
-                    if (day === 0 || day === 6) {
-                        note.classList.remove('d-none');
-
-                        const offset = (day === 6) ? 2 : 1;
-                        selectedDate.setDate(selectedDate.getDate() + offset);
-
-                        this.value = formatDate(selectedDate);
-
-                        setTimeout(() => note.classList.add('d-none'), 5000);
-                    } else {
-                        note.classList.add('d-none');
-                    }
-                });
-            }
-        })();
-    </script>
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
 }

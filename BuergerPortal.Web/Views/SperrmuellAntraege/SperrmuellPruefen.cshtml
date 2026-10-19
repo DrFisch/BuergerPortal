@@ -1,0 +1,99 @@
+@model BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellPruefenVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@inject BuergerPortal.Web.Services.HttpCurrentUserService CurrentUser
+@* Sperrmüll, Schritt 3 von 3 „Prüfen und absenden“ (2026-10-18). Niveau „normal“ reicht – kein Step-up. *@
+@{
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Sperrmuell)!;
+    var schritte = new AntragSchritteVm([L["Step_Person"].Value, L["Step_Pickup"].Value, L["Step_Review"].Value], 3);
+    var aktuell = LK[$"Niveau_{CurrentUser.GetBundIdUser()?.TrustLevel ?? 1}"].Value;
+    string Menge(int? wert) => wert is > 0 ? wert.Value.ToString() : "–";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite ap-seite-schmal py-4 ap-farbe-success">
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div>
+            <h1 class="h3 fw-bold">@L["Heading"]</h1>
+            <p class="text-body-secondary mb-0">@LK["Sperrmuell_Name"] · @L["Number"] @Model.Vorgangsnummer</p>
+        </div>
+    </header>
+
+    <partial name="_AntragSchritte" model="schritte" />
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hAbholung">
+        <div class="d-flex justify-content-between align-items-baseline gap-2 mb-3">
+            <h2 id="hAbholung" class="h6 fw-bold mb-0">@L["Section_Pickup"]</h2>
+            <a asp-action="SperrmuellStep2" asp-route-id="@Model.Id" class="small" id="abholungAendern">@L["Change"]</a>
+        </div>
+        <dl class="ap-angaben">
+            <dt>@L["Day"]</dt>
+            <dd class="fw-semibold" id="abholtag">@Model.Wunschzeit.ToString("dddd, dd.MM.yyyy")</dd>
+            <dt>@L["Address"]</dt>
+            <dd>@Model.Strasse, @Model.PLZ @Model.Ort</dd>
+            <dt>@L["Wood"]</dt>
+            <dd>@Menge(Model.HolzKubikmeter) m³</dd>
+            <dt>@L["Other"]</dt>
+            <dd>@Menge(Model.SonstigesKubikmeter) m³</dd>
+            <dt>@L["Mattresses"]</dt>
+            <dd>@Menge(Model.Matratzen)</dd>
+            <dt>@L["Note"]</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Hinweis) ? "–" : Model.Hinweis)</dd>
+        </dl>
+        <div class="ap-hinweis align-items-center mt-3">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i>
+            <div>
+                <div class="small text-body-secondary">@L["Fee_Label"]</div>
+                <div class="fw-bold">@LK["Sperrmuell_Gebuehr"]</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hAngaben">
+        <h2 id="hAngaben" class="h6 fw-bold mb-3">@L["Section_Person"]</h2>
+        <dl class="ap-angaben">
+            <dt>@L["Name"]</dt>
+            <dd>@Model.Antragsteller</dd>
+            <dt>@L["Email"]</dt>
+            <dd>@(string.IsNullOrEmpty(Model.Email) ? "–" : Model.Email)</dd>
+            <dt>@L["Phone"]</dt>
+            <dd>@(string.IsNullOrEmpty(Model.Telefon) ? "–" : Model.Telefon)</dd>
+        </dl>
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hNiveau" id="niveau">
+        <h2 id="hNiveau" class="h6 fw-bold mb-3">@L["Section_Level"]</h2>
+        <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+            <span class="ap-chip ap-chip-ok align-self-start"><i class="bi bi-shield-check" aria-hidden="true"></i> @aktuell</span>
+            <p class="mb-0">@L["Level_Ok"]</p>
+        </div>
+    </section>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hDanach">
+        <h2 id="hDanach" class="h6 fw-bold mb-3">@L["Section_Next"]</h2>
+        <ol class="mb-0 ps-3">
+            <li>@L["Next1"]</li>
+            <li>@L["Next2"]</li>
+            <li>@L["Next3"]</li>
+        </ol>
+    </section>
+
+    <form asp-action="SperrmuellEinreichen" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div class="ap-aktionen">
+            <a asp-action="SperrmuellStep2" asp-route-id="@Model.Id" class="btn btn-link me-auto">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]
+            </a>
+            <button type="submit" class="btn btn-success btn-lg" id="absenden">
+                <i class="bi bi-send-check" aria-hidden="true"></i> @L["Submit"]
+            </button>
+        </div>
+    </form>
+</div>

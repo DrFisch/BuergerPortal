@@ -28,6 +28,15 @@ namespace BuergerPortal.Tests.Web
         }
 
         [Fact]
+        public void Abholtage_sind_die_naechsten_Werktage_ab_morgen()
+        {
+            // Freitag, 23.10.2026 → Montag bis Mittwoch der Folgewoche
+            var tage = BuergerPortal.Web.Features.Antraege.Sperrmuell.ViewModels.SperrmuellStep2Vm
+                .NaechsteWerktage(new DateOnly(2026, 10, 23), 3);
+            Assert.Equal([new DateOnly(2026, 10, 26), new DateOnly(2026, 10, 27), new DateOnly(2026, 10, 28)], tage);
+        }
+
+        [Fact]
         public void Stufen_und_Vorgangsnummer()
         {
             Assert.Equal(0, Antrag(1).Stufe);

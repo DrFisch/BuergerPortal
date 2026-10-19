@@ -188,6 +188,18 @@ namespace BuergerPortal.Web.Controllers
             if (!put.IsSuccessStatusCode)
                 return View("SperrmuellStep2", await AddModelErrorsAndReturn(vm, put, ct));
 
+            // Seit 2026-10-18 führt der Assistent über „Prüfen und absenden“; "submit" (direkt einreichen) bleibt für
+            // Skripte (sperrmuell-einreichen.sh) erhalten.
+            if (submitAction == "entwurf")
+            {
+                TempData["AntragSuccess"] = _t["Entwurf gespeichert – Sie finden ihn unter „Anträge“."].Value;
+                return RedirectToAction("Index", "Antraege");
+            }
+            if (submitAction != "submit")
+            {
+                return RedirectToAction(nameof(SperrmuellPruefen), new { id });
+            }
+
             var submit = await client.PostAsync($"api/antraege/sperrmuell/{id}/submit", content: null, ct);
 
             if (submit.StatusCode == HttpStatusCode.Unauthorized)
@@ -199,6 +211,59 @@ namespace BuergerPortal.Web.Controllers
             TempData["AntragSuccess"] = _t["Sperrmüllantrag eingereicht."].Value;
             TempData.MerkePostkorbStatus(submit);
             return RedirectToAction("Status", "Antraege");
+        }
+
+        // Schritt 3 „Prüfen und absenden“ (2026-10-18)
+        [HttpGet]
+        public async Task<IActionResult> SperrmuellPruefen(Guid id, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return BadRequest();
+
+            var res = await _cf.CreateClient("BuergerPortalApi").GetAsync($"api/antraege/sperrmuell/{id}", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            if (!res.IsSuccessStatusCode)
+                return StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+
+            var d = await res.Content.ReadFromJsonAsync<SperrmuellDetailResponse>(cancellationToken: ct);
+            if (d is null) return NotFound();
+            if ((int)d.Status != 1) return RedirectToAction("SperrmuellAntrag", "Antraege", new { id });
+
+            return View("SperrmuellPruefen", new SperrmuellPruefenVm
+            {
+                Id = d.Id,
+                Antragsteller = $"{d.Vorname} {d.Nachname}",
+                Geburtsdatum = d.Geburtsdatum.ToDateTime(TimeOnly.MinValue),
+                Email = d.Email,
+                Telefon = d.Telefon,
+                Strasse = d.Strasse,
+                PLZ = d.PLZ,
+                Ort = d.Ort,
+                HolzKubikmeter = d.HolzKubikmeter,
+                SonstigesKubikmeter = d.SonstigesKubikmeter,
+                Matratzen = d.Matratzen,
+                Wunschzeit = d.Wunschzeit.ToLocalTime(),
+                Hinweis = d.Hinweis,
+            });
+        }
+
+        // Verbindlich absenden (Niveau „normal“ reicht – kein Step-up), danach zur Detailseite
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SperrmuellEinreichen(Guid id, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return BadRequest();
+
+            var submit = await _cf.CreateClient("BuergerPortalApi").PostAsync($"api/antraege/sperrmuell/{id}/submit", content: null, ct);
+            if (submit.StatusCode == HttpStatusCode.Unauthorized) return Challenge();
+            if (!submit.IsSuccessStatusCode)
+            {
+                TempData["BookingError"] = _t["Der Antrag ließ sich nicht absenden. Bitte versuchen Sie es noch einmal."].Value;
+                return RedirectToAction(nameof(SperrmuellPruefen), new { id });
+            }
+
+            TempData["AntragSuccess"] = _t["Sperrmüllantrag eingereicht."].Value;
+            TempData.MerkePostkorbStatus(submit);
+            return RedirectToAction("SperrmuellAntrag", "Antraege", new { id });
         }
 
         // -------- Helpers ----------
