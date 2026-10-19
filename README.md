@@ -1,6 +1,6 @@
 # BürgerPortal mit BundID-Anmeldung (Studienprojekt)
 
-Bürgerportal einer Stadt (Termine, Reisepass- und Sperrmüll-Anträge, Mängelmeldungen), bei dem die Anmeldung
+Bürgerportal einer Stadt (Termine, Anträge auf Reisepass, Sperrmüll und Meldebescheinigung, Mängelmeldungen), bei dem die Anmeldung
 **ausschließlich über die BundID** erfolgt – hier über einen erweiterten **BundID-Simulator** der Bundesagentur für
 Arbeit. Bestätigungen landen in einem simulierten **BundID-Postfach** (Zentrales Bürgerpostfach), das – wie bei der
 echten BundID – Teil des BundID-Auftritts ist. Für das Postfach gibt es zwei umschaltbare Varianten (siehe unten).
@@ -25,8 +25,8 @@ flowchart LR
 | Projekt | Aufgabe |
 |---|---|
 | `AuthenticationServer` | ASP.NET Identity + OpenIddict; meldet Personen per SAML 2.0 bei der BundID an (`prompt=login` → `ForceAuthn`), legt Konten per bPK2 an, stellt OIDC-Tokens aus (Vertrauensniveau als `acr`, Postkorb-Handle, Refresh-Token) |
-| `BuergerPortal.Web` | Oberfläche und installierbare App (PWA); ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“; Sitzungsdaten serverseitig |
-| `BuergerPortal.Api` | Fachlogik (Terminprüfung je Standort, Feiertage); Policy für Vertrauensniveau; sendet Bestätigungen an das Postfach und Benachrichtigungen per Web Push |
+| `BuergerPortal.Web` | Oberfläche und installierbare App (PWA); ohne Anmeldung nur die Einstiegsseite; „Meine Daten“, Step-up auf Niveau „substanziell“ bzw. „hoch“ (erklärt auf „Prüfen und absenden“); Sitzungsdaten serverseitig |
+| `BuergerPortal.Api` | Fachlogik (Terminprüfung je Standort, Feiertage); Policies für das Vertrauensniveau (`trustlevel.substantial`, `trustlevel.high`); sendet Bestätigungen an das Postfach und Benachrichtigungen per Web Push |
 | `BuergerPortal.PostkorbSimulation` | Postfach-Variante „dienst“: REST nach ZBP `CreateMessage`; Oberfläche meldet sich als eigener SAML-SP über die bestehende BundID-Sitzung an, ohne `ForceAuthn` |
 | `BuergerPortal.BundId` / `.Core` | gemeinsamer SAML-Ablauf (ITfoxtec.Identity.Saml2) bzw. Claim-Namen und Vertrauensniveaus |
 | `BuergerPortal.Tests` | xUnit: SAML-Prüfungen und Angriffsfälle, Kontoanlage, Policies, Postkorb, Sitzung, Terminprüfung, Web Push (RFC-8291-Beispiel) |
@@ -94,7 +94,12 @@ ACS-Adresse und das `InResponseTo` der signierten Bearer-Bestätigung (SAML Prof
   `Termine.Checkin`); die Seite `/Termine/Einchecken` zeigt ohne Anmeldung nur Leistung, Zeit, Standort und Status –
   keine Personendaten. Erinnerung **24 h vorher** ins BundID-Postfach und als Benachrichtigung
   (`TerminErinnerung:StundenVorher`, `:IntervallMinuten`, `:Enabled`); kurzfristige Buchungen bekommen keine.
-- **Anträge:** Zeitleiste mit Zeitpunkten (eingereicht, in Bearbeitung, abgeschlossen; Tabelle
+- **Anträge:** Leistungskatalog (`Features/Antraege/Leistungen.cs`: Dauer, Gebühr, nötiges Vertrauensniveau –
+  Sperrmüll normal, Reisepass substanziell, Meldebescheinigung hoch), Entwürfe (verwerfen: `DELETE api/antraege/{id}`),
+  Assistenten mit „Prüfen und absenden“, einheitliche Detailseiten. Die **Meldebescheinigung** übernimmt Name,
+  Geburtsdaten und Anschrift aus der BundID-Anmeldung, wird erst mit Niveau „hoch“ eingereicht und kommt nach Abschluss
+  als Text ins BundID-Postfach (`storkQaaLevel` 4) sowie als druckbares Muster-Blatt ins Portal.
+  Zeitleiste mit Zeitpunkten (eingereicht, in Bearbeitung, abgeschlossen; Tabelle
   `AntragStatusEreignisse`). Jede Statusänderung kommt als Nachricht ins BundID-Postfach (wie `CreateState` des
   echten Zentralen Bürgerpostfachs) und als Benachrichtigung. Die Bearbeitung durch die Behörde ist **simuliert**:
   nach 2 Minuten „in Bearbeitung“, nach weiteren 5 Minuten „abgeschlossen“ (`AntragSimulation:InBearbeitungNachMinuten`,
