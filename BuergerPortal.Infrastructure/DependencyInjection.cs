@@ -29,6 +29,7 @@ namespace BuergerPortal.Infrastructure
             services.AddScoped<IAppointmentBookingLock, SqlServerAppointmentBookingLock>();
             services.AddScoped<IReisepassRepository, ReisepassRepository>();
             services.AddScoped<ISperrmuellRepository, SperrmuellRepository>();
+            services.AddScoped<IMeldebescheinigungRepository, MeldebescheinigungRepository>();
             services.AddScoped<IAntragStatusRepository, AntragStatusRepository>();
             services.AddScoped<BuergerPortal.Application.Appointments.Erinnerung.ITerminErinnerungRepository, TerminErinnerungRepository>();
             services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
