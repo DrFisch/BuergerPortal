@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Meldebescheinigung (Muster)</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Zurück zum Antrag</value>
+	</data>
+	<data name="Print" xml:space="preserve">
+		<value>Drucken oder als PDF speichern</value>
+	</data>
+	<data name="Specimen" xml:space="preserve">
+		<value>MUSTER</value>
+	</data>
+	<data name="Authority" xml:space="preserve">
+		<value>Ausstellende Stelle</value>
+	</data>
+	<data name="IssuedOn" xml:space="preserve">
+		<value>ausgestellt am {0}</value>
+	</data>
+	<data name="Heading_Simple" xml:space="preserve">
+		<value>Einfache Meldebescheinigung</value>
+	</data>
+	<data name="Heading_Extended" xml:space="preserve">
+		<value>Erweiterte Meldebescheinigung</value>
+	</data>
+	<data name="Legal" xml:space="preserve">
+		<value>nach § 18 Bundesmeldegesetz (BMG)</value>
+	</data>
+	<data name="Confirms" xml:space="preserve">
+		<value>Hiermit wird bescheinigt, dass folgende Person gemeldet ist:</value>
+	</data>
+	<data name="FamilyName" xml:space="preserve">
+		<value>Familienname</value>
+	</data>
+	<data name="GivenNames" xml:space="preserve">
+		<value>Vornamen</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Vorgang</value>
+	</data>
+	<data name="BirthName" xml:space="preserve">
+		<value>Geburtsname</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Geburtsdatum</value>
+	</data>
+	<data name="Birthplace" xml:space="preserve">
+		<value>Geburtsort</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Zweck</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Anschrift (Hauptwohnung)</value>
+	</data>
+	<data name="Disclaimer" xml:space="preserve">
+		<value>Simulation des Studienprojekts: Die Daten stammen aus der BundID-Anmeldung (BundID-Simulator), nicht aus einem Melderegister. Dieses Blatt ist keine amtliche Bescheinigung.</value>
+	</data>
+</root>

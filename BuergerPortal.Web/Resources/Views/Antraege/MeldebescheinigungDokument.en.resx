@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Certificate of registration (specimen)</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Back to the application</value>
+	</data>
+	<data name="Print" xml:space="preserve">
+		<value>Print or save as PDF</value>
+	</data>
+	<data name="Specimen" xml:space="preserve">
+		<value>SPECIMEN</value>
+	</data>
+	<data name="Authority" xml:space="preserve">
+		<value>Issuing authority</value>
+	</data>
+	<data name="IssuedOn" xml:space="preserve">
+		<value>issued on {0}</value>
+	</data>
+	<data name="Heading_Simple" xml:space="preserve">
+		<value>Simple certificate of registration</value>
+	</data>
+	<data name="Heading_Extended" xml:space="preserve">
+		<value>Extended certificate of registration</value>
+	</data>
+	<data name="Legal" xml:space="preserve">
+		<value>pursuant to Section 18 of the Federal Registration Act (BMG)</value>
+	</data>
+	<data name="Confirms" xml:space="preserve">
+		<value>This is to certify that the following person is registered:</value>
+	</data>
+	<data name="FamilyName" xml:space="preserve">
+		<value>Family name</value>
+	</data>
+	<data name="GivenNames" xml:space="preserve">
+		<value>Given names</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="BirthName" xml:space="preserve">
+		<value>Birth name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="Birthplace" xml:space="preserve">
+		<value>Place of birth</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Purpose</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Address (main residence)</value>
+	</data>
+	<data name="Disclaimer" xml:space="preserve">
+		<value>Simulation of the student project: the data come from the BundID login (BundID simulator), not from a population register. This sheet is not an official certificate.</value>
+	</data>
+</root>

@@ -1,0 +1,80 @@
+@model BuergerPortal.Web.Features.Antraege.Meldebescheinigung.ViewModels.MeldebescheinigungDetailVm
+@using BuergerPortal.Web.Features.Antraege
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@* Die (simulierte) Meldebescheinigung als druckbares Blatt (2026-10-18): deutlich als MUSTER gekennzeichnet, Inhalt wie
+   im BundID-Postfach (MeldebescheinigungDokument der API) – einfach: Name und Anschrift, erweitert: mit Geburtsdaten. *@
+@{
+    ViewData["Title"] = L["Title"];
+    var p = Model.Person;
+    var ausgestellt = Model.AbgeschlossenAm ?? Model.SubmittedUtc ?? Model.CreatedUtc;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite py-4 ap-farbe-info">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 ap-nicht-drucken">
+        <a asp-action="MeldebescheinigungAntrag" asp-route-id="@Model.Id" class="small">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]
+        </a>
+        <button type="button" class="btn btn-primary" data-ap-drucken id="drucken">
+            <i class="bi bi-printer" aria-hidden="true"></i> @L["Print"]
+        </button>
+    </div>
+
+    <article class="ap-blatt" data-muster="@L["Specimen"]" aria-labelledby="hBlatt" id="bescheinigung">
+        <div class="ap-blatt-kopf">
+            <div>
+                <div class="small text-body-secondary">@L["Authority"]</div>
+                <div class="fw-semibold">BürgerPortal (Studienprojekt)</div>
+            </div>
+            <div class="text-end small">
+                <div>@L["Number"] <strong>@Model.Vorgangsnummer</strong></div>
+                <div>@L["IssuedOn", ausgestellt.ToString("d")]</div>
+            </div>
+        </div>
+
+        <h1 id="hBlatt" class="h3 fw-bold mb-1">@(Model.Erweitert ? L["Heading_Extended"] : L["Heading_Simple"])</h1>
+        <p class="text-body-secondary mb-4">@L["Legal"]</p>
+
+        <p>@L["Confirms"]</p>
+        <dl class="ap-angaben mb-4">
+            <dt>@L["FamilyName"]</dt>
+            <dd class="fw-semibold">@p.Nachname</dd>
+            <dt>@L["GivenNames"]</dt>
+            <dd class="fw-semibold">@p.Vorname</dd>
+            @if (Model.Erweitert)
+            {
+                @if (!string.IsNullOrWhiteSpace(p.Geburtsname))
+                {
+                    <dt>@L["BirthName"]</dt>
+                    <dd>@p.Geburtsname</dd>
+                }
+                <dt>@L["Birthdate"]</dt>
+                <dd>@p.Geburtsdatum?.ToString("d")</dd>
+                @if (!string.IsNullOrWhiteSpace(p.Geburtsort))
+                {
+                    <dt>@L["Birthplace"]</dt>
+                    <dd>@p.Geburtsort</dd>
+                }
+            }
+            <dt>@L["Address"]</dt>
+            <dd class="fw-semibold">@p.Strasse<br />@p.PLZ @p.Ort</dd>
+            @if (!string.IsNullOrWhiteSpace(Model.Zweck))
+            {
+                <dt>@L["Purpose"]</dt>
+                <dd>@Model.Zweck</dd>
+            }
+        </dl>
+
+        <div class="ap-hinweis" id="musterHinweis">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <div>@L["Disclaimer"]</div>
+        </div>
+    </article>
+</div>
+
+@section Scripts {
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
+}
