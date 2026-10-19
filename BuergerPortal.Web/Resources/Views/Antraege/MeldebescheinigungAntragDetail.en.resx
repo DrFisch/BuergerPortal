@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Title" xml:space="preserve">
+		<value>Certificate of registration</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>My applications</value>
+	</data>
+	<data name="SubmittedOn" xml:space="preserve">
+		<value>submitted on {0}</value>
+	</data>
+	<data name="Next_Heading" xml:space="preserve">
+		<value>Next steps</value>
+	</data>
+	<data name="Next_Draft" xml:space="preserve">
+		<value>This application has not been sent yet.</value>
+	</data>
+	<data name="Next_Draft_Button" xml:space="preserve">
+		<value>Continue</value>
+	</data>
+	<data name="Next_Pending" xml:space="preserve">
+		<value>We are checking your application. The certificate will arrive in your BundID mailbox – readable after signing in with the trust level “high”.</value>
+	</data>
+	<data name="Next_Ready" xml:space="preserve">
+		<value>Your certificate of registration has been issued.</value>
+	</data>
+	<data name="Next_Ready_Show" xml:space="preserve">
+		<value>View and print certificate</value>
+	</data>
+	<data name="Postfach" xml:space="preserve">
+		<value>Open in BundID mailbox</value>
+	</data>
+	<data name="Next_Rejected" xml:space="preserve">
+		<value>The application was rejected. The reasons are in your BundID mailbox.</value>
+	</data>
+	<data name="Timeline_Heading" xml:space="preserve">
+		<value>Processing status</value>
+	</data>
+	<data name="Data_Heading" xml:space="preserve">
+		<value>Your details</value>
+	</data>
+	<data name="Number" xml:space="preserve">
+		<value>Case</value>
+	</data>
+	<data name="Type" xml:space="preserve">
+		<value>Type</value>
+	</data>
+	<data name="Type_Simple" xml:space="preserve">
+		<value>Simple certificate of registration</value>
+	</data>
+	<data name="Type_Extended" xml:space="preserve">
+		<value>Extended certificate of registration</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="Birthdate" xml:space="preserve">
+		<value>Date of birth</value>
+	</data>
+	<data name="Address" xml:space="preserve">
+		<value>Address</value>
+	</data>
+	<data name="Purpose" xml:space="preserve">
+		<value>Purpose</value>
+	</data>
+	<data name="Fee" xml:space="preserve">
+		<value>Fee</value>
+	</data>
+	<data name="Email" xml:space="preserve">
+		<value>E-mail</value>
+	</data>
+	<data name="Delivery" xml:space="preserve">
+		<value>Delivery</value>
+	</data>
+	<data name="Delivery_Value" xml:space="preserve">
+		<value>electronically to your BundID mailbox</value>
+	</data>
+	<data name="Contact_Heading" xml:space="preserve">
+		<value>Contact and help</value>
+	</data>
+	<data name="Question_Button" xml:space="preserve">
+		<value>Book an appointment for questions</value>
+	</data>
+	<data name="Print" xml:space="preserve">
+		<value>Print confirmation</value>
+	</data>
+</root>

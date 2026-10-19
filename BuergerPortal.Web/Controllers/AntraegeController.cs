@@ -1,5 +1,7 @@
 ﻿
 using BuergerPortal.Web.Features.Antraege;
+using BuergerPortal.Web.Features.Antraege.Meldebescheinigung.Contracts;
+using BuergerPortal.Web.Features.Antraege.Meldebescheinigung.ViewModels;
 using BuergerPortal.Web.Features.Antraege.Reisepass;
 using BuergerPortal.Web.Helper;
 using BuergerPortal.Web.Features.Antraege.Reisepass.Contracts;
@@ -80,6 +82,14 @@ namespace BuergerPortal.Web.Controllers
             if (sperr.IsSuccessStatusCode)
             {
                 zeilen.AddRange((await sperr.Content.ReadFromJsonAsync<List<SperrmuellSummaryResponse>>(cancellationToken: ct) ?? [])
+                    .Select(x => Zeile(x.Id, x.Typ, x.Status, x.Vorname, x.Nachname, x.CreatedUtc, x.SubmittedUtc)));
+            }
+
+            var melde = await client.GetAsync("api/antraege/meldebescheinigung", ct);
+            if (melde.StatusCode == HttpStatusCode.Unauthorized) return null;
+            if (melde.IsSuccessStatusCode)
+            {
+                zeilen.AddRange((await melde.Content.ReadFromJsonAsync<List<MeldebescheinigungSummaryResponse>>(cancellationToken: ct) ?? [])
                     .Select(x => Zeile(x.Id, x.Typ, x.Status, x.Vorname, x.Nachname, x.CreatedUtc, x.SubmittedUtc)));
             }
 
@@ -199,6 +209,53 @@ namespace BuergerPortal.Web.Controllers
             };
 
             return View("SperrmuellAntragDetail", vm);
+        }
+
+        // -------- Meldebescheinigung (2026-10-18): Detail und – nach Abschluss – die Bescheinigung als Druckansicht
+
+        [HttpGet]
+        public async Task<IActionResult> MeldebescheinigungAntrag(Guid id, CancellationToken ct)
+        {
+            var (vm, fehler) = await MeldebescheinigungAsync(id, ct);
+            return vm is null ? fehler! : View("MeldebescheinigungAntragDetail", vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MeldebescheinigungDokument(Guid id, CancellationToken ct)
+        {
+            var (vm, fehler) = await MeldebescheinigungAsync(id, ct);
+            if (vm is null) return fehler!;
+            // erst nach Abschluss gibt es eine Bescheinigung
+            return vm.Status == 4 ? View("MeldebescheinigungDokument", vm) : RedirectToAction(nameof(MeldebescheinigungAntrag), new { id });
+        }
+
+        private async Task<(MeldebescheinigungDetailVm? Vm, IActionResult? Fehler)> MeldebescheinigungAsync(Guid id, CancellationToken ct)
+        {
+            if (id == Guid.Empty) return (null, BadRequest());
+
+            var client = _cf.CreateClient("BuergerPortalApi");
+            var res = await client.GetAsync($"api/antraege/meldebescheinigung/{id}", ct);
+            if (res.StatusCode == HttpStatusCode.Unauthorized) return (null, Challenge());
+            if (!res.IsSuccessStatusCode)
+                return (null, StatusCode((int)res.StatusCode, await res.Content.ReadAsStringAsync(ct)));
+
+            var d = await res.Content.ReadFromJsonAsync<MeldebescheinigungDetailResponse>(cancellationToken: ct);
+            if (d is null) return (null, NotFound());
+
+            var verlauf = await VerlaufAsync(client, id, ct);
+            return (new MeldebescheinigungDetailVm
+            {
+                Id = d.Id,
+                Status = d.Status,
+                Person = MeldebescheinigungAntraegeController.AusAntrag(d),
+                Art = d.Art,
+                Zweck = d.Zweck,
+                Email = d.Email,
+                CreatedUtc = d.CreatedUtc.ToBerlin(),
+                SubmittedUtc = d.SubmittedUtc?.ToBerlin(),
+                InBearbeitungSeit = verlauf.InBearbeitung,
+                AbgeschlossenAm = verlauf.Abgeschlossen,
+            }, null);
         }
 
         // Zeitleiste: wann der Antrag in Bearbeitung ging und wann er abgeschlossen wurde (Statusverlauf der API, in

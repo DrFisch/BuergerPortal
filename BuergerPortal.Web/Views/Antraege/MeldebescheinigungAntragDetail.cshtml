@@ -1,0 +1,136 @@
+@model BuergerPortal.Web.Features.Antraege.Meldebescheinigung.ViewModels.MeldebescheinigungDetailVm
+@using BuergerPortal.Web.Features.Antraege
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer L
+@inject IStringLocalizer<Leistungen> LK
+@inject IConfiguration Config
+@* Meldebescheinigung-Detail (2026-10-18): gleicher Aufbau wie Reisepass und Sperrmüll; nach Abschluss führen „Nächste
+   Schritte“ zur Bescheinigung (Druckansicht) und ins BundID-Postfach, wo sie ebenfalls liegt (lesbar ab „hoch“). *@
+@{
+    ViewData["Title"] = L["Title"];
+    var leistung = Leistungen.Von(Leistungen.Meldebescheinigung)!;
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+    var verlauf = new AntragVerlaufVm(Model.Status, Model.CreatedUtc, Model.SubmittedUtc, Model.InBearbeitungSeit, Model.AbgeschlossenAm);
+    var p = Model.Person;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/antraege.css" asp-append-version="true" />
+}
+
+<div class="container ap-seite py-4 ap-farbe-info">
+    <p class="ap-nicht-drucken mb-2">
+        <a asp-action="Status" class="small"><i class="bi bi-arrow-left" aria-hidden="true"></i> @L["Back"]</a>
+    </p>
+    <header class="ap-kopf">
+        <span class="ap-symbol" aria-hidden="true"><i class="bi @leistung.Icon"></i></span>
+        <div class="flex-grow-1">
+            <h1 class="h3 fw-bold">@LK["Meldebescheinigung_Name"]</h1>
+            <p class="text-body-secondary mb-2">
+                @L["Number"] <strong>@Model.Vorgangsnummer</strong>
+                @if (Model.SubmittedUtc is { } eingereicht)
+                {
+                    <span>· @L["SubmittedOn", eingereicht.ToString("d")]</span>
+                }
+            </p>
+            <span class="ap-status ap-status-@Model.Status" id="status">@LK[$"Status_{Model.Status}"]</span>
+        </div>
+    </header>
+
+    <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hNaechste" id="naechsteSchritte">
+        <h2 id="hNaechste" class="h6 fw-bold mb-2">@L["Next_Heading"]</h2>
+        @switch (Model.Status)
+        {
+            case 1:
+                <p class="mb-2">@L["Next_Draft"]</p>
+                <a class="btn btn-primary" asp-controller="MeldebescheinigungAntraege" asp-action="MeldebescheinigungAngaben" asp-route-id="@Model.Id">@L["Next_Draft_Button"]</a>
+                break;
+            case 2:
+            case 3:
+                <p class="mb-0">@L["Next_Pending"]</p>
+                break;
+            case 4:
+                <p class="mb-2">@L["Next_Ready"]</p>
+                <div class="d-flex flex-wrap gap-2 ap-nicht-drucken">
+                    <a class="btn btn-primary" asp-action="MeldebescheinigungDokument" asp-route-id="@Model.Id" id="bescheinigungAnzeigen">
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @L["Next_Ready_Show"]
+                    </a>
+                    @if (!string.IsNullOrWhiteSpace(postfachUrl))
+                    {
+                        <a class="btn btn-outline-primary" href="@postfachUrl" data-sim-hinweis="postfach">
+                            <i class="bi bi-envelope-paper" aria-hidden="true"></i> @L["Postfach"]
+                        </a>
+                    }
+                </div>
+                break;
+            default:
+                <p class="mb-0">@L["Next_Rejected"]</p>
+                break;
+        }
+    </section>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-8">
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hVerlauf">
+                <h2 id="hVerlauf" class="h6 fw-bold mb-3">@L["Timeline_Heading"]</h2>
+                <partial name="_AntragVerlauf" model="verlauf" />
+            </section>
+
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hAngaben">
+                <h2 id="hAngaben" class="h6 fw-bold mb-3">@L["Data_Heading"]</h2>
+                <dl class="ap-angaben">
+                    <dt>@L["Type"]</dt>
+                    <dd>@(Model.Erweitert ? L["Type_Extended"] : L["Type_Simple"])</dd>
+                    <dt>@L["Name"]</dt>
+                    <dd>@p.Name</dd>
+                    <dt>@L["Birthdate"]</dt>
+                    <dd>@p.Geburtsdatum?.ToString("d")</dd>
+                    <dt>@L["Address"]</dt>
+                    <dd>@p.Anschrift</dd>
+                    @if (!string.IsNullOrWhiteSpace(Model.Zweck))
+                    {
+                        <dt>@L["Purpose"]</dt>
+                        <dd>@Model.Zweck</dd>
+                    }
+                    <dt>@L["Fee"]</dt>
+                    <dd>@LK["Meldebescheinigung_GebuehrKurz"]</dd>
+                </dl>
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="ap-karte p-3 p-md-4 mb-3" aria-labelledby="hKontakt">
+                <h2 id="hKontakt" class="h6 fw-bold mb-3">@L["Contact_Heading"]</h2>
+                <dl class="ap-angaben ap-angaben-gestapelt mb-3">
+                    <dt>@L["Email"]</dt>
+                    <dd>@(string.IsNullOrEmpty(Model.Email) ? "–" : Model.Email)</dd>
+                    <dt>@L["Delivery"]</dt>
+                    <dd>@L["Delivery_Value"]</dd>
+                </dl>
+                <div class="d-grid gap-2 ap-nicht-drucken">
+                    @if (!string.IsNullOrWhiteSpace(postfachUrl) && Model.Status is 2 or 3)
+                    {
+                        <a class="btn btn-outline-primary" href="@postfachUrl" data-sim-hinweis="postfach">
+                            <i class="bi bi-envelope-paper" aria-hidden="true"></i> @L["Postfach"]
+                        </a>
+                    }
+                    <a class="btn btn-outline-secondary" asp-controller="Termine" asp-action="Buchen"
+                       asp-route-service="@(ServiceType.AntragRueckfrage)" asp-route-antragId="@Model.Id">
+                        <i class="bi bi-chat-dots" aria-hidden="true"></i> @L["Question_Button"]
+                    </a>
+                    @if (Model.Status >= 2)
+                    {
+                        <button type="button" class="btn btn-outline-secondary" data-ap-drucken>
+                            <i class="bi bi-printer" aria-hidden="true"></i> @L["Print"]
+                        </button>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/antraege.js" asp-append-version="true"></script>
+}
