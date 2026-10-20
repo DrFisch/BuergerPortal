@@ -1,3 +1,4 @@
 ﻿@{
-    Layout = "_Layout";
+    // Portal 2 (Ui:Modern bzw. ?ui=modern, Services/UiVariante.cs) bekommt sein eigenes Layout, sonst das bisherige.
+    Layout = BuergerPortal.Web.Services.UiVariante.IsModern(Context) ? "_LayoutModern" : "_Layout";
 }

@@ -1,0 +1,14 @@
+@* Layout von Portal 2 (nur bei Ui:Modern=true bzw. ?ui=modern, gefunden über ModernViewLocationExpander).
+   Erster Schritt: nutzt noch das bisherige Layout, damit jede Seite funktioniert; das Kennzeichen bp-ui=modern im
+   Kopf zeigt Tests, welche Oberfläche gewählt ist. Das eigene App-Layout ohne Bootstrap folgt. *@
+@{
+    Layout = "_Layout";
+}
+@section Styles {
+    <meta name="bp-ui" content="modern" />
+    @RenderSection("Styles", required: false)
+}
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+@RenderBody()

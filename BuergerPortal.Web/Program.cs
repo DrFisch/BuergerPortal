@@ -25,8 +25,10 @@ builder.Services
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
 // Oberfläche: Portal 2 (Ui:Modern=true) oder die bisherige (false), dazu ?ui= je Browser – Services/UiVariante.cs.
-// IOptionsMonitor liest die Einstellung je Anfrage neu.
+// IOptionsMonitor liest die Einstellung je Anfrage neu; die View-Suche fällt ohne moderne View auf die klassische zurück.
 builder.Services.Configure<UiOptions>(builder.Configuration.GetSection(UiOptions.Section));
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions>(o =>
+    o.ViewLocationExpanders.Add(new ModernViewLocationExpander()));
 // Antiforgery-Cookie mit Präfix __Host- (nur Secure, Path=/, ohne Domain): Eine andere Subdomain kann kein eigenes
 // Token unterschieben (X5).
 builder.Services.AddAntiforgery(o =>
