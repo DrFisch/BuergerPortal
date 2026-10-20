@@ -86,6 +86,8 @@ builder.Services.AddFileTicketStore(!string.IsNullOrWhiteSpace(dataProtectionKey
 // QR-Code zum Einchecken im Bürgeramt: geschützte, zeitlich begrenzte Kennung des Termins (Services/TerminCheckinLink.cs)
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<TerminCheckinLink>();
+// Portal 2: Daten der Startseite „Heute“ (nächster Termin, offene Anträge) über dieselbe API (Services/ModernHeute.cs)
+builder.Services.AddScoped<ModernHeute>();
 
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
