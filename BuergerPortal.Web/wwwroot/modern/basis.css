@@ -1,0 +1,440 @@
+/*
+ * Portal 2 – Grundlage: Design-Tokens und Grundstil (E-028: „ruhig & klar“ mit Elementen von „System-nativ“).
+ * Eigenes, kleines CSS ohne Bootstrap. Alle Farben, Abstände, Radien, Schatten, Schriftgrade und Bewegungen stehen
+ * als CSS-Variablen (Präfix --m-) hier; die Bausteine nutzen nur diese Variablen. Dunkelmodus über data-bs-theme
+ * (gesetzt wie in der bisherigen Oberfläche, js/theme.js), dazu prefers-contrast und prefers-reduced-motion.
+ * Eine Akzentfarbe: Petrol. Kontraste nach WCAG 2.2 AA gemessen (siehe Doku, Portal 2 Block 2).
+ * Eigenes Erscheinungsbild – keine Nachahmung des Bundes oder einer Behörde.
+ */
+
+:root {
+    color-scheme: light;
+
+    /* Farben – hell */
+    --m-akzent: #0b7285;            /* Petrol: Knöpfe, Links, aktive Navigation */
+    --m-akzent-stark: #085a69;      /* gedrückt / darüber */
+    --m-akzent-zart: #e2f2f4;       /* getönte Flächen (Chips, Auswahl) */
+    --m-auf-akzent: #ffffff;        /* Text auf Akzent */
+    --m-grund: #f3f5f6;             /* Hintergrund der App */
+    --m-flaeche: #ffffff;           /* Karten, Leisten */
+    --m-flaeche-2: #eaeef0;         /* zweite Ebene: gedrückte Zeilen, Segmente */
+    --m-text: #111a1f;
+    --m-text-2: #4d585e;            /* Nebentext */
+    --m-linie: #dce2e5;
+    --m-linie-stark: #7d888e;      /* Feldrahmen: ≥ 3:1 (WCAG 1.4.11) */
+    --m-erfolg: #1b6e36;
+    --m-erfolg-zart: #e3f3e8;
+    --m-warnung: #7a4f00;
+    --m-warnung-zart: #fdf1d8;
+    --m-fehler: #b02a20;
+    --m-fehler-zart: #fbe7e5;
+    --m-hinweis: #0b5f8a;
+    --m-hinweis-zart: #e3f0f8;
+    --m-bundid: #0b4f8a;            /* Knopf „Mit BundID anmelden“ (wie bisher, eigenes Symbol) */
+    --m-fokus: #0b7285;
+    --m-ueberlagerung: rgb(10 18 22 / 0.45);
+
+    /* Abstände (4er-Raster) */
+    --m-a-1: 0.25rem;
+    --m-a-2: 0.5rem;
+    --m-a-3: 0.75rem;
+    --m-a-4: 1rem;
+    --m-a-5: 1.5rem;
+    --m-a-6: 2rem;
+    --m-a-7: 3rem;
+
+    /* Radien */
+    --m-r-s: 8px;
+    --m-r: 14px;
+    --m-r-l: 20px;
+    --m-r-voll: 999px;
+
+    /* Schatten – flach, ruhig */
+    --m-schatten-1: 0 1px 2px rgb(16 26 31 / 0.05), 0 1px 3px rgb(16 26 31 / 0.07);
+    --m-schatten-2: 0 6px 20px rgb(16 26 31 / 0.10), 0 2px 6px rgb(16 26 31 / 0.06);
+    --m-schatten-3: 0 18px 48px rgb(16 26 31 / 0.18);
+
+    /* Schrift: Systemschrift (iPhone SF Pro, Android Roboto, Windows Segoe UI) – kein Download */
+    --m-schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --m-schrift-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --m-g-titel: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem);   /* großer Seitentitel */
+    --m-g-h2: 1.25rem;
+    --m-g-h3: 1.0625rem;
+    --m-g-text: 1rem;
+    --m-g-klein: 0.875rem;
+    --m-g-mini: 0.8125rem;
+
+    /* Bewegung */
+    --m-dauer: 180ms;
+    --m-dauer-lang: 280ms;
+    --m-kurve: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* Maße des App-Rahmens */
+    --m-tab-hoehe: 64px;
+    --m-kopf-hoehe: 56px;
+    --m-leiste-breite: 264px;
+    --m-inhalt-max: 1120px;
+    --m-ziel: 44px;                 /* Mindestgröße für Touch-Ziele */
+}
+
+/* Dunkelmodus – gleichwertig, nicht nur invertiert */
+[data-bs-theme="dark"] {
+    color-scheme: dark;
+    --m-akzent: #5cc0d0;
+    --m-akzent-stark: #8ad5e0;
+    --m-akzent-zart: #12353b;
+    --m-auf-akzent: #041417;
+    --m-grund: #0d1114;
+    --m-flaeche: #161c20;
+    --m-flaeche-2: #1f272c;
+    --m-text: #e7edf0;
+    --m-text-2: #a4b0b6;
+    --m-linie: #2a3439;
+    --m-linie-stark: #66757d;
+    --m-erfolg: #6fd394;
+    --m-erfolg-zart: #133222;
+    --m-warnung: #f1c164;
+    --m-warnung-zart: #352a12;
+    --m-fehler: #ff8f85;
+    --m-fehler-zart: #3a1a17;
+    --m-hinweis: #7cc4f0;
+    --m-hinweis-zart: #12293a;
+    --m-bundid: #2a71b8;
+    --m-fokus: #8ad5e0;
+    --m-ueberlagerung: rgb(0 0 0 / 0.6);
+    --m-schatten-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --m-schatten-2: 0 6px 20px rgb(0 0 0 / 0.45);
+    --m-schatten-3: 0 18px 48px rgb(0 0 0 / 0.6);
+}
+
+/* Mehr Kontrast auf Wunsch des Systems */
+@media (prefers-contrast: more) {
+    :root {
+        --m-text-2: #2b3438;
+        --m-linie: #8d999f;
+        --m-linie-stark: #4f5b61;
+        --m-akzent: #075866;
+    }
+    [data-bs-theme="dark"] {
+        --m-text-2: #d5dde1;
+        --m-linie: #6b7a82;
+        --m-akzent: #8ad5e0;
+    }
+}
+
+/* Weniger Bewegung auf Wunsch des Systems */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --m-dauer: 0ms;
+        --m-dauer-lang: 0ms;
+    }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---------- Grundstil ---------- */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    font-family: var(--m-schrift);
+    font-size: var(--m-g-text);
+    line-height: 1.5;
+    color: var(--m-text);
+    background: var(--m-grund);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis-weight: none;
+}
+
+h1, h2, h3, h4, p, ul, ol, dl, figure, blockquote {
+    margin: 0;
+}
+
+h1, h2, h3, h4 {
+    line-height: 1.25;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+}
+
+h2 { font-size: var(--m-g-h2); }
+h3 { font-size: var(--m-g-h3); }
+
+p, li { text-wrap: pretty; }
+
+ul[role="list"], ol[role="list"] {
+    list-style: none;
+    padding: 0;
+}
+
+img, svg, video {
+    display: block;
+    max-width: 100%;
+}
+
+img { height: auto; }
+
+a {
+    color: var(--m-akzent);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+}
+
+a:hover { color: var(--m-akzent-stark); }
+
+button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button { cursor: pointer; }
+
+[hidden] { display: none !important; }
+
+:focus-visible {
+    outline: 3px solid var(--m-fokus);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+::selection {
+    background: var(--m-akzent-zart);
+    color: var(--m-text);
+}
+
+code, kbd, samp, .m-mono {
+    font-family: var(--m-schrift-mono);
+    font-size: 0.92em;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--m-linie);
+    margin: var(--m-a-5) 0;
+}
+
+/* Nur für Screenreader sichtbar */
+.m-sr {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Symbole (SVG-Satz wwwroot/modern/symbole.svg, Tag-Helper <m-icon>) */
+.m-i {
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -0.25em;
+}
+
+.m-i--gross { width: 1.75rem; height: 1.75rem; }
+
+/* ---------- Text-Hilfen ---------- */
+
+.m-neben { color: var(--m-text-2); }
+.m-klein { font-size: var(--m-g-klein); }
+.m-mini { font-size: var(--m-g-mini); }
+.m-fett { font-weight: 650; }
+.m-zahl { font-variant-numeric: tabular-nums; }
+.m-abschnitt-titel {
+    font-size: var(--m-g-mini);
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--m-text-2);
+    margin: var(--m-a-5) var(--m-a-1) var(--m-a-2);
+}
+
+/* ---------- Knöpfe ---------- */
+
+.m-knopf {
+    --knopf-grund: var(--m-akzent);
+    --knopf-text: var(--m-auf-akzent);
+    --knopf-rand: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--m-a-2);
+    min-height: 48px;
+    padding: 0 var(--m-a-5);
+    border: 1px solid var(--knopf-rand);
+    border-radius: var(--m-r);
+    background: var(--knopf-grund);
+    color: var(--knopf-text);
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: background-color var(--m-dauer) var(--m-kurve), transform var(--m-dauer) var(--m-kurve),
+        box-shadow var(--m-dauer) var(--m-kurve);
+}
+
+.m-knopf:hover {
+    color: var(--knopf-text);
+    filter: brightness(0.96);
+}
+
+.m-knopf:active {
+    transform: scale(0.98);
+}
+
+.m-knopf[disabled], .m-knopf[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.m-knopf--zweit {
+    --knopf-grund: var(--m-akzent-zart);
+    --knopf-text: var(--m-akzent-stark);
+}
+
+[data-bs-theme="dark"] .m-knopf--zweit { --knopf-text: var(--m-akzent-stark); }
+
+.m-knopf--rand {
+    --knopf-grund: var(--m-flaeche);
+    --knopf-text: var(--m-text);
+    --knopf-rand: var(--m-linie-stark);
+}
+
+.m-knopf--text {
+    --knopf-grund: transparent;
+    --knopf-text: var(--m-akzent);
+    padding: 0 var(--m-a-3);
+}
+
+.m-knopf--gefahr {
+    --knopf-grund: var(--m-fehler-zart);
+    --knopf-text: var(--m-fehler);
+}
+
+.m-knopf--bundid {
+    --knopf-grund: var(--m-bundid);
+    --knopf-text: #ffffff;
+}
+
+.m-knopf--klein {
+    min-height: var(--m-ziel);
+    padding: 0 var(--m-a-4);
+    font-size: var(--m-g-klein);
+    border-radius: var(--m-r-s);
+}
+
+.m-knopf--breit { width: 100%; }
+
+.m-knopf--rund {
+    width: var(--m-ziel);
+    min-height: var(--m-ziel);
+    padding: 0;
+    border-radius: var(--m-r-voll);
+}
+
+.m-knopfreihe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--m-a-3);
+    align-items: center;
+}
+
+/* ---------- Formulare ---------- */
+
+.m-feld {
+    display: grid;
+    gap: var(--m-a-1);
+    margin-bottom: var(--m-a-4);
+}
+
+.m-feld > label, .m-label {
+    font-weight: 600;
+    font-size: var(--m-g-klein);
+}
+
+.m-eingabe, .m-feld input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+.m-feld select, .m-feld textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: var(--m-a-3) var(--m-a-4);
+    border: 1px solid var(--m-linie-stark);
+    border-radius: var(--m-r);
+    background: var(--m-flaeche);
+    color: var(--m-text);
+    font-size: 1rem;    /* ≥ 16 px: iOS zoomt sonst beim Antippen */
+    transition: border-color var(--m-dauer), box-shadow var(--m-dauer);
+}
+
+.m-feld textarea { min-height: 7rem; resize: vertical; }
+
+.m-eingabe:focus, .m-feld input:focus, .m-feld select:focus, .m-feld textarea:focus {
+    outline: none;
+    border-color: var(--m-akzent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--m-akzent) 28%, transparent);
+}
+
+.m-feld .m-hilfe { font-size: var(--m-g-mini); color: var(--m-text-2); }
+
+.m-feld .field-validation-error, .m-fehlertext, .validation-summary-errors {
+    color: var(--m-fehler);
+    font-size: var(--m-g-klein);
+    font-weight: 600;
+}
+
+.validation-summary-valid { display: none; }
+
+.input-validation-error { border-color: var(--m-fehler) !important; }
+
+.m-auswahl {
+    display: flex;
+    align-items: center;
+    gap: var(--m-a-3);
+    min-height: var(--m-ziel);
+    cursor: pointer;
+}
+
+.m-auswahl input {
+    width: 1.375rem;
+    height: 1.375rem;
+    accent-color: var(--m-akzent);
+    flex: none;
+}
+
+/* Sprunglink zum Inhalt (WCAG 2.4.1) */
+.m-sprunglink {
+    position: absolute;
+    left: var(--m-a-3);
+    top: -100px;
+    z-index: 2000;
+    padding: var(--m-a-2) var(--m-a-4);
+    border-radius: var(--m-r-s);
+    background: var(--m-akzent);
+    color: var(--m-auf-akzent);
+    font-weight: 600;
+}
+
+.m-sprunglink:focus { top: var(--m-a-3); color: var(--m-auf-akzent); }
