@@ -396,3 +396,78 @@ body:not(.m-mit-tabs) .m-app-hinweise { bottom: calc(env(safe-area-inset-bottom)
 
 /* Verträglichkeit mit gemeinsamen Skripten beider Oberflächen (pwa-install.js schaltet d-none) */
 .d-none { display: none !important; }
+
+/* ---------- Segment-Umschalter (Radiogruppe, z. B. Filter Anstehend · Vergangen · Storniert) ---------- */
+
+.m-segment {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    max-width: 100%;
+    padding: 3px;
+    border-radius: var(--m-r);
+    background: var(--m-flaeche-2);
+}
+
+.m-segment input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.m-segment label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 var(--m-a-4);
+    border-radius: calc(var(--m-r) - 3px);
+    color: var(--m-text-2);
+    font-size: var(--m-g-klein);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--m-dauer), color var(--m-dauer);
+}
+
+.m-segment input:checked + label {
+    background: var(--m-flaeche);
+    color: var(--m-text);
+    box-shadow: var(--m-schatten-1);
+}
+
+.m-segment input:focus-visible + label {
+    outline: 3px solid var(--m-fokus);
+    outline-offset: 1px;
+}
+
+.m-segment__zahl {
+    min-width: 22px;
+    padding: 0 6px;
+    border-radius: var(--m-r-voll);
+    background: var(--m-linie);
+    color: var(--m-text);
+    font-size: var(--m-g-mini);
+    line-height: 20px;
+    text-align: center;
+}
+
+/* ---------- Kalenderblatt (Wochentag, Tag, Monat) ---------- */
+
+.m-kalenderblatt {
+    display: grid;
+    justify-items: center;
+    flex: none;
+    width: 48px;
+    padding: 4px 0 6px;
+    border-radius: 12px;
+    background: var(--m-akzent-zart);
+    color: var(--m-akzent-stark);
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.m-kalenderblatt__wt, .m-kalenderblatt__mo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; }
+.m-kalenderblatt__tag { font-size: 1.25rem; font-weight: 780; color: var(--m-text); }
+
+.m-kalenderblatt--gross { width: 64px; padding: 6px 0 8px; border-radius: 16px; }
+.m-kalenderblatt--gross .m-kalenderblatt__tag { font-size: 1.75rem; }
