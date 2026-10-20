@@ -360,3 +360,39 @@ body:not(.m-mit-tabs) .m-app-hinweise { bottom: calc(env(safe-area-inset-bottom)
     background: #fff;
     box-shadow: inset 0 0 0 1px var(--m-linie);
 }
+
+/* ---------- Leerzustand ---------- */
+
+.m-leer {
+    display: grid;
+    justify-items: center;
+    gap: var(--m-a-2);
+    padding: var(--m-a-6) var(--m-a-4);
+    border: 2px dashed var(--m-linie);
+    border-radius: var(--m-r-l);
+    text-align: center;
+}
+
+.m-leer__titel { font-weight: 650; }
+.m-leer .m-knopf { margin-top: var(--m-a-2); }
+
+/* ---------- Fortschritt in drei Stufen (eingereicht → in Bearbeitung → erledigt) ---------- */
+
+.m-fortschritt {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    max-width: 180px;
+    margin-top: 6px;
+}
+
+.m-fortschritt > span {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--m-flaeche-2);
+}
+
+.m-fortschritt > .m-fortschritt--erreicht { background: var(--m-akzent); }
+
+/* Verträglichkeit mit gemeinsamen Skripten beider Oberflächen (pwa-install.js schaltet d-none) */
+.d-none { display: none !important; }
