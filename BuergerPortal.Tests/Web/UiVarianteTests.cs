@@ -175,13 +175,49 @@ namespace BuergerPortal.Tests.Web
         }
 
         [Fact]
-        public async Task Modern_true_nimmt_das_Layout_von_Portal_2_und_faellt_bei_der_Seite_zurueck()
+        public async Task Modern_true_zeigt_die_Einstiegsseite_von_Portal_2_ohne_Bootstrap()
         {
             using var factory = new PortalFactory(modern: true);
             var html = await (await Get(factory, "/")).Content.ReadAsStringAsync();
 
-            Assert.Contains(Kennzeichen, html);                 // Views/Modern/Shared/_LayoutModern.cshtml
-            Assert.Contains("id=\"start-heading\"", html);     // Einstiegsseite: noch die klassische View
+            Assert.Contains(Kennzeichen, html);                         // Views/Modern/Shared/_LayoutModern.cshtml
+            Assert.Contains("id=\"start-heading\"", html);             // Views/Modern/Home/Start.cshtml
+            Assert.Contains("/modern/basis.css", html);
+            Assert.DoesNotContain("bootstrap", html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("id=\"simHinweisModal\"", html);           // Hinweis vor der BundID bleibt
+            Assert.Contains("/Account/Login", html);
+        }
+
+        [Fact]
+        public async Task Seite_ohne_moderne_View_kommt_vollstaendig_in_der_alten_Oberflaeche()
+        {
+            using var factory = new PortalFactory(modern: true);
+            var html = await (await Get(factory, "/Home/Impressum")).Content.ReadAsStringAsync();
+
+            Assert.DoesNotContain(Kennzeichen, html);
+            Assert.Contains("bootstrap.min.css", html);
+        }
+
+        [Theory]
+        [InlineData("de", "Start")]
+        [InlineData("en", "Home")]
+        public void Portal_2_nutzt_die_Texte_der_klassischen_Views(string sprache, string erwartet)
+        {
+            using var factory = new PortalFactory();
+            var localizer = factory.Services.GetRequiredService<Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory>()
+                .Fuer("Shared/_TabLeiste");
+            var vorher = System.Globalization.CultureInfo.CurrentUICulture;
+            try
+            {
+                System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo(sprache);
+                var text = localizer["Home"];
+                Assert.False(text.IsResourceNotFound);
+                Assert.Equal(erwartet, text.Value);
+            }
+            finally
+            {
+                System.Globalization.CultureInfo.CurrentUICulture = vorher;
+            }
         }
 
         [Fact]
