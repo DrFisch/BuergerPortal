@@ -108,7 +108,7 @@ public static class UiVariante
         }
         var rest = request.Query
             .Where(p => !string.Equals(p.Key, QueryKey, StringComparison.OrdinalIgnoreCase))
-            .SelectMany(p => p.Value.Select(v => new KeyValuePair<string, string?>(p.Key, v)));
+            .SelectMany(p => p.Value.Select(v => new KeyValuePair<string, string>(p.Key, v ?? "")));
         return pfad + new QueryBuilder(rest).ToQueryString();
     }
 }
