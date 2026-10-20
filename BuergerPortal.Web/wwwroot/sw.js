@@ -5,7 +5,9 @@
 // Neue Cache-Version: Beim Aktivieren werden ältere Caches gelöscht – auch bp-v6, das noch HTML-Seiten enthielt.
 // v8: Offline-Seite ohne Inline-Skript (Content-Security-Policy). Seit 6.88 zusätzlich Benachrichtigungen (push, notificationclick).
 // v9: Teilen eines Fotos an den Mängelmelder (share_target, Cache bp-geteilt nur bis zur Übernahme ins Formular).
-const CACHE_NAME = 'bp-static-v9';
+// v10: Portal 2 (Ui:Modern bzw. ?ui=modern) – Stile, Skript und Symbole unter /modern/ zusätzlich vorhalten; beide
+// Oberflächen laden ihre Dateien mit Versionskennung (?v=…), nach dem Umschalten hängen keine alten Stile.
+const CACHE_NAME = 'bp-static-v10';
 const SHARE_CACHE = 'bp-geteilt';
 const OFFLINE_URL = '/offline.html';
 const PRECACHE = [
@@ -13,6 +15,12 @@ const PRECACHE = [
     '/css/site.css',
     '/js/site.js',
     '/lib/bootstrap/dist/css/bootstrap.min.css',
+    '/modern/basis.css',
+    '/modern/rahmen.css',
+    '/modern/bausteine.css',
+    '/modern/seiten.css',
+    '/modern/app.js',
+    '/modern/symbole.svg',
     '/icons/portal-128.png',
     '/icons/portal-192.png',
     '/icons/portal-512.png'
