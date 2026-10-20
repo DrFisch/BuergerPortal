@@ -1,0 +1,28 @@
+@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Services
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@* Seitenübergreifende Hinweise nach einer Weiterleitung (TempData) in Portal 2 – gleiche Schlüssel und Texte wie
+   Views/Shared/_Meldungen.cshtml. *@
+@{
+    var T = F.Fuer("Shared/_Meldungen");
+}
+<div class="m-meldungen">
+@foreach (var key in new[] { "BookingSuccess", "AntragSuccess" })
+{
+    if (TempData[key] is string erfolg)
+    {
+        <div class="m-hinweis m-hinweis--erfolg" role="status"><m-icon name="circle-check" /><div>@erfolg</div></div>
+    }
+}
+@if (TempData["BookingError"] is string fehler)
+{
+    <div class="m-hinweis m-hinweis--fehler" role="alert"><m-icon name="alert-triangle" /><div>@fehler</div></div>
+}
+@if (TempData[PostkorbStatusExtensions.TempDataKey] is string postkorb && postkorb == "fehlgeschlagen")
+{
+    <div class="m-hinweis m-hinweis--warnung" role="status">
+        <m-icon name="mail" />
+        <div><strong>@T["Postkorb_Fehlgeschlagen_Titel"]</strong><br />@T["Postkorb_Fehlgeschlagen_Text"]</div>
+    </div>
+}
+</div>

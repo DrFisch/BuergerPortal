@@ -1,0 +1,64 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@using BuergerPortal.Web.Services
+@*
+    Hinweis vor dem Wechsel zur BundID-Simulation in Portal 2 – Inhalt und Verhalten wie in der bisherigen Oberfläche
+    (Views/Shared/_SimulationsHinweis.cshtml, gleiche Texte, gleiche Daten-Attribute für js/bundid-hinweis.js), aber als
+    <dialog>: am Handy ein Blatt von unten, am Computer ein Dialog in der Mitte.
+*@
+@{
+    var L = F.Fuer("Shared/_SimulationsHinweis");
+    var postfachImSimulator = string.Equals(Config["Postkorb:Variante"], "simulator", StringComparison.OrdinalIgnoreCase);
+}
+<dialog class="m-blatt" id="simHinweisModal" aria-labelledby="simHinweisTitel">
+    <div class="m-blatt__griff" aria-hidden="true"></div>
+    <div class="m-blatt__kopf">
+        <span class="m-kachel m-kachel--warnung"><m-icon name="alert-triangle" /></span>
+        <div class="m-blatt__titel">
+            <span class="m-chip m-chip--sim">@L["Badge"]</span>
+            <h2 id="simHinweisTitel">
+                <span data-sim-variante="login stepup">@L["Login_Title"]</span>
+                <span data-sim-variante="postfach">@L["Postfach_Title"]</span>
+            </h2>
+        </div>
+        <button type="button" class="m-rund" data-bs-dismiss="modal" aria-label="@L["Close"]"><m-icon name="x" /></button>
+    </div>
+    <div class="m-blatt__inhalt m-stapel m-klein">
+        <div data-sim-variante="login stepup" class="m-stapel m-stapel--eng">
+            <p>@L["Login_Intro"]</p>
+            <p class="m-hinweis" data-sim-variante="stepup"><m-icon name="shield-check" /><span>@L["StepUp_Note"]</span></p>
+            <details class="m-aufklapp" data-sim-mehr open>
+                <summary>@L["MoreInfo"]</summary>
+                <p class="m-fett">@L["WhatHappens"]</p>
+                <ul>
+                    <li>@L["Login_Step1"]</li>
+                    <li>@L["Login_Step2"]</li>
+                </ul>
+                <p><span class="m-fett">@L["InReality"]</span> @L["Login_Real"]</p>
+            </details>
+        </div>
+        <div data-sim-variante="postfach" class="m-stapel m-stapel--eng">
+            <p>@L["Postfach_Intro"]</p>
+            <details class="m-aufklapp" data-sim-mehr open>
+                <summary>@L["MoreInfo"]</summary>
+                <p class="m-fett">@L["WhatHappens"]</p>
+                <ul>
+                    <li>@(postfachImSimulator ? L["Postfach_Step1_Simulator"] : L["Postfach_Step1"])</li>
+                    <li>@L["Postfach_Step2"]</li>
+                    <li>@L["Postfach_Step3"]</li>
+                </ul>
+                <p><span class="m-fett">@L["InReality"]</span> @L["Postfach_Real"]</p>
+            </details>
+        </div>
+        <p class="m-neben">@L["NoRealData"]</p>
+        @* Lernpfad „Schritt für Schritt“ (Services/Lernpfad.cs): nur bei Anmeldung und Step-up *@
+        <p class="m-neben" data-sim-variante="login stepup"><m-icon name="graduation-cap" /> @L["LearnMode_Hint"]</p>
+    </div>
+    <div class="m-blatt__fuss">
+        <button type="button" class="m-knopf m-knopf--text" data-bs-dismiss="modal">@L["Cancel"]</button>
+        <button type="button" class="m-knopf m-knopf--zweit" data-sim-lernpfad data-sim-variante="login stepup">
+            <m-icon name="graduation-cap" />@L["LearnMode"]
+        </button>
+        <button type="button" class="m-knopf" data-sim-weiter>@L["Continue"]<m-icon name="arrow-right" /></button>
+    </div>
+</dialog>

@@ -1,0 +1,25 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@using BuergerPortal.Web.Services
+@*
+    Warnung kurz vor dem automatischen Abmelden in Portal 2 – gleiche Texte und Daten-Attribute wie
+    Views/Shared/_SitzungsWarnung.cshtml (gesteuert von js/sitzung.js). data-m-fest: schließt nicht über den Hintergrund
+    oder Escape (wie data-bs-backdrop="static").
+*@
+@{
+    var L = F.Fuer("Shared/_SitzungsWarnung");
+}
+<dialog class="m-blatt" id="sitzungModal" aria-labelledby="sitzungTitel" data-m-fest>
+    <div class="m-blatt__kopf">
+        <span class="m-kachel m-kachel--warnung"><m-icon name="hourglass" /></span>
+        <h2 class="m-blatt__titel" id="sitzungTitel">@L["Title"]</h2>
+    </div>
+    <div class="m-blatt__inhalt m-stapel m-stapel--eng">
+        <p>@L["Text_Before"] <strong class="m-mono" data-sitzung-rest>2:00</strong> @L["Text_After"]</p>
+        <p class="m-klein m-neben" data-sitzung-normal>@L["Reason_Idle"]</p>
+        <p class="m-klein m-neben" data-sitzung-hoechstdauer hidden>@L["Reason_Max"]</p>
+    </div>
+    <div class="m-blatt__fuss">
+        <a class="m-knopf m-knopf--rand" asp-controller="Account" asp-action="Logout">@L["Logout"]</a>
+        <button type="button" class="m-knopf" data-sitzung-verlaengern>@L["Stay"]</button>
+    </div>
+</dialog>
