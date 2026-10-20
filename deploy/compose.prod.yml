@@ -190,6 +190,10 @@ services:
       Csp__Header: ${BPSIM_CSP_HEADER:-Content-Security-Policy}
       # Link „SAML-Inspektor“ in „Meine Daten“ – gleicher Schalter wie im Auth-Server
       BundId__Inspektor__Enabled: ${BPSIM_INSPEKTOR:-true}
+      # Oberfläche: false = bisherige, true = Portal 2 (überschreibt Ui:Modern aus appsettings.json; deploy/ui-modus.ps1).
+      # ?ui=modern|klassisch|standard wählt je Browser, solange BPSIM_UI_URL=true
+      Ui__Modern: ${BPSIM_UI_MODERN:-false}
+      Ui__UrlUmschalter: ${BPSIM_UI_URL:-true}
     volumes:
       - webkeys:/data/keys
       - ./secrets/dataprotection:/dpcert:ro
