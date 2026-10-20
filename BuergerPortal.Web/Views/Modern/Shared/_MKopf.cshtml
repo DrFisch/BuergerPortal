@@ -15,20 +15,23 @@
     var zurueckText = ViewData["M_ZurueckText"]?.ToString() ?? M["Back"].Value;
 }
 <header class="m-kopf" data-m-kopf>
-    @if (!string.IsNullOrEmpty(zurueckUrl))
-    {
-        <a class="m-zurueck" href="@zurueckUrl"><m-icon name="chevron-left" /><span>@zurueckText</span></a>
-    }
-    else
-    {
-        <a class="m-marke" asp-controller="Home" asp-action="Index">
-            <span class="m-marke__zeichen"><m-icon name="home-doc" /></span><span>@Nav["BrandTitle"]</span>
-        </a>
-    }
-    @if (!string.IsNullOrEmpty(titel) && ViewData["M_EigenerKopf"] is not true)
-    {
-        <div class="m-kopf__titel" aria-hidden="true"><span>@titel</span></div>
-    }
+    @* Links: Marke bzw. „Zurück“; der kleine Titel blendet beim Scrollen an derselben Stelle ein (wwwroot/modern/app.js) *@
+    <div class="m-kopf__links@(string.IsNullOrEmpty(zurueckUrl) ? "" : " m-kopf__links--zurueck")">
+        @if (!string.IsNullOrEmpty(zurueckUrl))
+        {
+            <a class="m-zurueck" href="@zurueckUrl"><m-icon name="chevron-left" /><span class="m-zurueck__text">@zurueckText</span></a>
+        }
+        else
+        {
+            <a class="m-marke" asp-controller="Home" asp-action="Index">
+                <span class="m-marke__zeichen"><m-icon name="home-doc" /></span><span>@Nav["BrandTitle"]</span>
+            </a>
+        }
+        @if (!string.IsNullOrEmpty(titel) && ViewData["M_EigenerKopf"] is not true)
+        {
+            <div class="m-kopf__titel" aria-hidden="true">@titel</div>
+        }
+    </div>
     <div class="m-kopf__rechts">
         <partial name="_MSprachwahl" />
         @if (bundIdUser == null)

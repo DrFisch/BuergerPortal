@@ -76,35 +76,45 @@ html:has(dialog[open]) {
 
 .m-marke__zeichen .m-i { width: 18px; height: 18px; }
 
-/* kleiner Titel in der Kopfzeile, erscheint, sobald der große Titel aus dem Bild scrollt (wwwroot/modern/app.js) */
-.m-kopf__titel {
-    position: absolute;
-    left: 25%;
-    right: 25%;
-    top: env(safe-area-inset-top);
-    bottom: 0;
-    display: flex;
+/* links: Marke bzw. „Zurück“ und der kleine Titel in derselben Zelle – der Titel blendet ein, sobald der große Titel
+   aus dem Bild scrollt (wwwroot/modern/app.js); die rechte Seite (Sprache, Niveau) bleibt immer frei */
+.m-kopf__links {
+    flex: 1;
+    min-width: 0;
+    display: grid;
     align-items: center;
-    justify-content: center;
+}
+
+.m-kopf__links > * {
+    grid-area: 1 / 1;
+    min-width: 0;
+}
+
+.m-kopf__links--zurueck { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--m-a-2); }
+.m-kopf__links--zurueck > .m-kopf__titel { grid-column: 2; }
+
+.m-kopf__titel {
+    overflow: hidden;
     font-weight: 650;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     opacity: 0;
     transform: translateY(4px);
     transition: opacity var(--m-dauer) var(--m-kurve), transform var(--m-dauer) var(--m-kurve);
     pointer-events: none;
 }
 
-.m-kopf__titel > span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+.m-kopf .m-marke { transition: opacity var(--m-dauer) var(--m-kurve); }
 
 .m-kopf--titel .m-kopf__titel {
     opacity: 1;
     transform: none;
 }
 
-.m-kopf--titel .m-kopf__links-titel { opacity: 0; }
+.m-kopf--titel .m-kopf__links > .m-marke { opacity: 0; visibility: hidden; }
+
+/* mit kleinem Titel: „Zurück“ nur noch als Pfeil */
+.m-kopf--titel .m-zurueck__text { display: none; }
 
 .m-kopf__rechts {
     margin-left: auto;
@@ -311,7 +321,6 @@ html:has(dialog[open]) {
     .m-tabs { display: none; }
     .m-mit-tabs .m-fuss { padding-bottom: calc(var(--m-a-4) + env(safe-area-inset-bottom)); }
     .m-mit-tabs .m-kopf .m-marke { display: none; }   /* angemeldet steht die Marke in der Leiste links */
-    .m-mit-tabs .m-kopf__titel { left: var(--m-a-5); right: 40%; justify-content: flex-start; }
     .m-inhalt { padding-left: var(--m-a-6); padding-right: var(--m-a-6); }
     .m-fuss { padding-left: var(--m-a-6); padding-right: var(--m-a-6); }
 
