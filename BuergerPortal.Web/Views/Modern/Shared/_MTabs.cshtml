@@ -1,0 +1,37 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<BuergerPortal.Web.Services.ModernTexte> M
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@using BuergerPortal.Web.Services
+@*
+    Tab-Leiste von Portal 2 am Handy und Tablet (bis 1023 px): Start · Termine · Anträge · Postfach · Konto – fünf Tabs
+    wie in der bisherigen Oberfläche (E-022). Der aktive Tab trägt aria-current="page" und eine getönte Pille hinter dem
+    Symbol (Stil von Android). „Konto“ öffnet das Blatt _MKontoBlatt.
+*@
+@{
+    var Tab = F.Fuer("Shared/_TabLeiste");
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+    string? Aktuell(params string[] b) => ModernNavigation.Aktuell(ViewContext, b);
+    var kontoAktiv = Aktuell(ModernNavigation.MeineDaten, ModernNavigation.Einstellungen, ModernNavigation.MangelMelden,
+        ModernNavigation.Meldungen, ModernNavigation.Entdecken);
+}
+<nav class="m-tabs" aria-label="@Tab["Label"]">
+    <a class="m-tab" asp-controller="Home" asp-action="Index" aria-current="@Aktuell(ModernNavigation.Start)">
+        <span class="m-tab__symbol"><m-icon name="home" /></span><span>@Tab["Home"]</span>
+    </a>
+    <a class="m-tab" asp-controller="Termine" asp-action="Index" aria-current="@Aktuell(ModernNavigation.Termine)">
+        <span class="m-tab__symbol"><m-icon name="calendar" /></span><span>@Tab["Appointments"]</span>
+    </a>
+    <a class="m-tab" asp-controller="Antraege" asp-action="Index" aria-current="@Aktuell(ModernNavigation.Antraege)">
+        <span class="m-tab__symbol"><m-icon name="file-text" /></span><span>@Tab["Applications"]</span>
+    </a>
+    @if (!string.IsNullOrWhiteSpace(postfachUrl))
+    {
+        <a class="m-tab" href="@postfachUrl" data-sim-hinweis="postfach">
+            <span class="m-tab__symbol"><m-icon name="mail" /></span><span>@Tab["Mailbox"]</span>
+        </a>
+    }
+    <button type="button" class="m-tab" data-m-blatt="#mKontoBlatt" aria-haspopup="dialog" aria-controls="mKontoBlatt"
+            aria-current="@kontoAktiv" aria-label="@M["Account_Open"]">
+        <span class="m-tab__symbol"><m-icon name="user-circle" /></span><span aria-hidden="true">@Tab["Account"]</span>
+    </button>
+</nav>

@@ -1,0 +1,12 @@
+@* Sprachwahl Deutsch/Englisch in Portal 2 – in der Kopfzeile immer sichtbar (Wunsch Lukas 2026-10-10), gleiche Ziele
+   wie in der bisherigen Oberfläche (LanguageController, Cookie). Klasse bp-sprachwahl für die Browser-Tests. *@
+@{
+    var aktuell = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var zurueck = Uri.EscapeDataString(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString);
+}
+<div class="m-sprache bp-sprachwahl" role="group" aria-label="Sprache / Language">
+    <a href="~/sprache/de?returnUrl=@zurueck" hreflang="de" lang="de" title="Deutsch"
+       aria-current="@(aktuell == "de" ? "true" : null)">DE</a>
+    <a href="~/sprache/en?returnUrl=@zurueck" hreflang="en" lang="en" title="English"
+       aria-current="@(aktuell == "en" ? "true" : null)">EN</a>
+</div>
