@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+
+	<data name="Nav_Label" xml:space="preserve">
+		<value>Main navigation</value>
+	</data>
+	<data name="Nav_More" xml:space="preserve">
+		<value>More</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Back</value>
+	</data>
+	<data name="Simulation" xml:space="preserve">
+		<value>Simulation</value>
+	</data>
+	<data name="Simulation_Title" xml:space="preserve">
+		<value>Student project with a BundID simulator – no real data</value>
+	</data>
+	<data name="Language" xml:space="preserve">
+		<value>Language</value>
+	</data>
+	<data name="Account_Open" xml:space="preserve">
+		<value>Open account and more functions</value>
+	</data>
+	<data name="Sheet_Close" xml:space="preserve">
+		<value>Close</value>
+	</data>
+	<data name="Footer_Note" xml:space="preserve">
+		<value>Student project · sign-in via a BundID simulator</value>
+	</data>
+  <data name="Einstieg_Ablauf_Titel" xml:space="preserve">
+    <value>How sign-in works</value>
+  </data>
+  <data name="Einstieg_Ablauf_1_Titel" xml:space="preserve">
+    <value>Start here</value>
+  </data>
+  <data name="Einstieg_Ablauf_1_Text" xml:space="preserve">
+    <value>The portal sends you to BundID with a sign-in request (SAML).</value>
+  </data>
+  <data name="Einstieg_Ablauf_2_Titel" xml:space="preserve">
+    <value>Sign in with BundID</value>
+  </data>
+  <data name="Einstieg_Ablauf_2_Text" xml:space="preserve">
+    <value>Simulated in this student project: choose a test person and the level of assurance.</value>
+  </data>
+  <data name="Einstieg_Ablauf_3_Titel" xml:space="preserve">
+    <value>Back in the portal</value>
+  </data>
+  <data name="Einstieg_Ablauf_3_Text" xml:space="preserve">
+    <value>BundID confirms your identity – signed. The portal recognises your account by its bPK2.</value>
+  </data>
+  <data name="Einstieg_Sim_Banner" xml:space="preserve">
+    <value>Student project: a simulator answers instead of the real BundID. No real data is processed.</value>
+  </data>
+  <data name="Einstieg_Sicher" xml:space="preserve">
+    <value>The portal never sees your password.</value>
+  </data>
+</root>
