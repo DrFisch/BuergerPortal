@@ -1,0 +1,133 @@
+/*
+ * Portal 2 – Seiten: Gestaltung, die nur einzelne Seiten brauchen (Einstieg, Start „Heute“, Termine, Anträge, Konto …).
+ * Bausteine und Tokens kommen aus bausteine.css und basis.css.
+ */
+
+/* ---------- Einstieg (ohne Anmeldung, Views/Modern/Home/Start.cshtml) ---------- */
+
+.m-einstieg__meldung { margin: var(--m-a-2) 0 var(--m-a-4); }
+
+.m-einstieg {
+    position: relative;
+    display: grid;
+    gap: var(--m-a-5);
+    padding: var(--m-a-4) 0 var(--m-a-2);
+}
+
+/* ruhiger Farbschimmer hinter dem Einstieg */
+.m-einstieg::before {
+    content: "";
+    position: absolute;
+    inset: -40px -20vw auto;
+    height: 360px;
+    z-index: -1;
+    background:
+        radial-gradient(60% 70% at 15% 30%, color-mix(in srgb, var(--m-akzent) 16%, transparent), transparent 70%),
+        radial-gradient(50% 60% at 85% 10%, color-mix(in srgb, var(--m-hinweis) 12%, transparent), transparent 70%);
+    pointer-events: none;
+}
+
+.m-einstieg__text { display: grid; gap: var(--m-a-3); justify-items: start; }
+
+.m-einstieg__titel {
+    font-size: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+    font-weight: 780;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+}
+
+.m-einstieg__lead {
+    max-width: 40rem;
+    color: var(--m-text-2);
+    font-size: 1.125rem;
+}
+
+.m-einstieg__anmelden { display: grid; gap: var(--m-a-3); }
+
+.m-einstieg__knopf { min-height: 56px; font-size: 1.0625rem; }
+
+.m-einstieg__anmelden .m-knopf--text { justify-content: flex-start; text-align: left; padding-left: 0; }
+
+.m-einstieg__sicher {
+    display: flex;
+    align-items: center;
+    gap: var(--m-a-2);
+    color: var(--m-erfolg);
+    font-weight: 600;
+}
+
+@media (min-width: 900px) {
+    .m-einstieg {
+        grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
+        align-items: center;
+        gap: var(--m-a-7);
+        padding: var(--m-a-6) 0 var(--m-a-4);
+    }
+}
+
+/* Ablauf der Anmeldung in drei Schritten (Portal → BundID → zurück) */
+.m-ablauf {
+    display: grid;
+    gap: var(--m-a-3);
+    margin: 0 0 var(--m-a-4);
+    padding: 0;
+    counter-reset: ablauf;
+}
+
+.m-ablauf__schritt {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--m-a-3);
+    padding: var(--m-a-4);
+    border-radius: var(--m-r-l);
+    background: var(--m-flaeche);
+    box-shadow: var(--m-schatten-1);
+}
+
+[data-bs-theme="dark"] .m-ablauf__schritt { box-shadow: none; border: 1px solid var(--m-linie); }
+
+.m-ablauf__nr {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    color: var(--m-linie-stark);
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.m-ablauf__titel { font-size: var(--m-g-h3); margin-bottom: 2px; }
+
+/* Verbindungslinie zwischen den Schritten: am Handy senkrecht, am Computer waagerecht */
+.m-ablauf__schritt + .m-ablauf__schritt::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--m-a-4) + 19px);
+    top: calc(-1 * var(--m-a-3));
+    height: var(--m-a-3);
+    border-left: 2px dashed var(--m-linie-stark);
+}
+
+@media (min-width: 900px) {
+    .m-ablauf { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--m-a-5); }
+    .m-ablauf__schritt { flex-direction: column; }
+    .m-ablauf__schritt + .m-ablauf__schritt::before {
+        left: calc(-1 * var(--m-a-5));
+        top: calc(var(--m-a-4) + 19px);
+        width: var(--m-a-5);
+        height: 0;
+        border-left: 0;
+        border-top: 2px dashed var(--m-linie-stark);
+    }
+}
+
+.m-einstieg__leistungen { margin: 0; padding: 0; list-style: none; gap: var(--m-a-3); }
+
+.m-einstieg__leistung {
+    border-radius: var(--m-r);
+    background: var(--m-flaeche);
+    align-items: flex-start;
+}
+
+.m-einstieg__hinweis { margin-top: var(--m-a-3); }

@@ -1,14 +1,146 @@
-@* Layout von Portal 2 (nur bei Ui:Modern=true bzw. ?ui=modern, gefunden über ModernViewLocationExpander).
-   Erster Schritt: nutzt noch das bisherige Layout, damit jede Seite funktioniert; das Kennzeichen bp-ui=modern im
-   Kopf zeigt Tests, welche Oberfläche gewählt ist. Das eigene App-Layout ohne Bootstrap folgt. *@
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@using Microsoft.AspNetCore.Authentication
+@using BuergerPortal.Web.Services
+@*
+    Layout von Portal 2 (E-027 bis E-029) – nur für Views unter Views/Modern/ (Auswahl in Views/_ViewStart.cshtml).
+    Seiten ohne moderne View kommen vollständig in der bisherigen Oberfläche. Kein Bootstrap: eigenes CSS unter
+    wwwroot/modern/ (basis.css = Design-Tokens, rahmen.css = App-Rahmen, bausteine.css = Bausteine). Die gemeinsamen
+    Skripte (Hinweis vor der BundID, Sitzungswarnung, Hell/Dunkel, App installieren) laufen unverändert; app.js stellt
+    ihnen <dialog> statt Bootstrap-Modal bereit.
+    ViewData: Title (großer Titel), M_Untertitel, M_EigenerKopf (Seite zeigt eigenen Kopf), M_ZurueckUrl/M_ZurueckText.
+*@
 @{
-    Layout = "_Layout";
+    var Lay = F.Fuer("Shared/_Layout");
+    var Nav = F.Fuer("Shared/_Navbar");
+    var angemeldet = User.Identity?.IsAuthenticated == true;
+    var titel = ViewData["Title"]?.ToString();
+    var eigenerKopf = ViewData["M_EigenerKopf"] is true;
 }
-@section Styles {
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" data-ui="modern">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@titel – @Lay["SiteName"]</title>
+    <meta name="app-env" content="@Env.EnvironmentName" />
     <meta name="bp-ui" content="modern" />
+    @if (angemeldet)
+    {
+        @* Restzeit bis zum automatischen Abmelden, für js/sitzung.js (wie in der bisherigen Oberfläche) *@
+        var anmeldung = (await Context.AuthenticateAsync()).Properties is { } sitzung
+            ? PortalSession.LoginTime(sitzung) : null;
+        <meta name="bpsim-sitzung" content="@((int)PortalSession.Remaining(DateTimeOffset.UtcNow, anmeldung).TotalSeconds)" />
+    }
+
+    @* Farbschema vor dem ersten Zeichnen setzen (gleiche Regeln wie die bisherige Oberfläche, js/theme.js) *@
+    <script>
+        (function () {
+          function readCookie(n){
+            return document.cookie.split('; ').find(x=>x.startsWith(n+'='))?.split('=')[1];
+          }
+          const cookieTheme = readCookie('theme');
+          const lsTheme     = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+          const theme = cookieTheme || lsTheme || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-bs-theme', theme);
+          if (cookieTheme && cookieTheme !== lsTheme) {
+            localStorage.setItem('theme', cookieTheme);
+          }
+        })();
+    </script>
+
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#f3f5f6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d1114" media="(prefers-color-scheme: dark)">
+    <link rel="icon" sizes="128x128" href="/icons/portal-128.png">
+    <link rel="apple-touch-icon" href="/icons/portal-192.png">
+    <meta name="apple-mobile-web-app-title" content="BürgerPortal">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="~/modern/basis.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/modern/rahmen.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/modern/bausteine.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/modern/seiten.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
-}
-@section Scripts {
+
+    @* Sofort-Navigation: Seiten beim Zeigen/Antippen vorladen (Speculation Rules, nur eigene Seiten ohne Nebenwirkung –
+       nicht An-/Abmelden, Sprache, ?ui=, Einchecken, Links zur BundID) *@
+    <script type="speculationrules">
+    {
+      "prefetch": [{
+        "where": { "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[data-sim-hinweis], [data-m-kein-vorladen], [rel~=nofollow], [download], [target], [href*='/Account/'], [href*='/account/'], [href^='/login'], [href^='/logout'], [href*='/sprache/'], [href*='/Auth/'], [href*='Einchecken'], [href*='ui='], [href*='/Lernpfad']" } }
+        ] },
+        "eagerness": "moderate"
+      }]
+    }
+    </script>
+</head>
+<body class="m-body@(angemeldet ? " m-mit-tabs" : "")">
+    <a class="m-sprunglink" href="#hauptinhalt">@Nav["SkipToContent"]</a>
+
+    <div class="m-app">
+        @if (angemeldet)
+        {
+            <partial name="_MLeiste" />
+        }
+        <div class="m-spalte">
+            <partial name="_MKopf" />
+
+            <main id="hauptinhalt" class="m-inhalt" tabindex="-1">
+                @if (!eigenerKopf && !string.IsNullOrEmpty(titel))
+                {
+                    <header class="m-seitenkopf">
+                        <h1 class="m-grosstitel" data-m-titel>@titel</h1>
+                        @if (ViewData["M_Untertitel"] is { } untertitel)
+                        {
+                            <p class="m-untertitel">@untertitel</p>
+                        }
+                        @if (IsSectionDefined("TitelAktionen"))
+                        {
+                            <div class="m-titel-aktionen">@RenderSection("TitelAktionen")</div>
+                        }
+                    </header>
+                }
+                <partial name="_MMeldungen" />
+                @RenderBody()
+            </main>
+
+            <footer class="m-fuss">
+                <span>© @DateTime.UtcNow.Year @Lay["FooterBrand"]</span>
+                <div class="m-knopfreihe">
+                    <a asp-controller="Home" asp-action="Impressum">@Lay["Imprint"]</a>
+                    <a asp-controller="Home" asp-action="Datenschutz">@Lay["Privacy"]</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    @if (angemeldet)
+    {
+        <partial name="_MTabs" />
+        <partial name="_MKontoBlatt" />
+    }
+
+    @* Hinweis vor dem Wechsel zur BundID-Simulation, App installieren, Hinweise der App, Sitzungswarnung *@
+    <partial name="_MSimHinweis" />
+    <partial name="_MAppInstallieren" />
+    <partial name="_MAppHinweise" />
+    @if (angemeldet)
+    {
+        <partial name="_MSitzungsWarnung" />
+    }
+
+    @* app.js zuerst: stellt den übrigen Skripten <dialog> statt Bootstrap-Modal bereit *@
+    <script src="~/modern/app.js" asp-append-version="true"></script>
+    <script src="~/js/bundid-hinweis.js" asp-append-version="true"></script>
+    <script src="~/js/sitzung.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/pwa-install.js" asp-append-version="true"></script>
+
     @RenderSection("Scripts", required: false)
-}
-@RenderBody()
+</body>
+</html>
