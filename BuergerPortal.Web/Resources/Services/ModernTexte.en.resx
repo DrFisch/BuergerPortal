@@ -67,4 +67,118 @@
   <data name="Einstieg_Sicher" xml:space="preserve">
     <value>The portal never sees your password.</value>
   </data>
+  <data name="Heute_Gruss_Morgen" xml:space="preserve">
+    <value>Good morning</value>
+  </data>
+  <data name="Heute_Gruss_Tag" xml:space="preserve">
+    <value>Good afternoon</value>
+  </data>
+  <data name="Heute_Gruss_Abend" xml:space="preserve">
+    <value>Good evening</value>
+  </data>
+  <data name="Heute_Angemeldet" xml:space="preserve">
+    <value>Signed in with BundID</value>
+  </data>
+  <data name="Heute_Termin_Titel" xml:space="preserve">
+    <value>Next appointment</value>
+  </data>
+  <data name="Heute_Alle" xml:space="preserve">
+    <value>Show all</value>
+  </data>
+  <data name="Heute_Uhr" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Heute_Termin_Qr" xml:space="preserve">
+    <value>Scan at the entrance of the citizens' office</value>
+  </data>
+  <data name="Heute_Termin_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Heute_Termin_Kalender" xml:space="preserve">
+    <value>Add to calendar</value>
+  </data>
+  <data name="Heute_Termin_Weitere" xml:space="preserve">
+    <value>+ {0} more</value>
+  </data>
+  <data name="Heute_Termin_Leer" xml:space="preserve">
+    <value>No appointment planned</value>
+  </data>
+  <data name="Heute_Termin_Leer_Text" xml:space="preserve">
+    <value>Book an appointment at the citizens' office in a few steps.</value>
+  </data>
+  <data name="Heute_Termin_Buchen" xml:space="preserve">
+    <value>Book appointment</value>
+  </data>
+  <data name="Heute_Termin_Fehler" xml:space="preserve">
+    <value>Appointments cannot be loaded right now.</value>
+  </data>
+  <data name="Heute_Antraege_Titel" xml:space="preserve">
+    <value>Your applications</value>
+  </data>
+  <data name="Heute_Antraege_Leer" xml:space="preserve">
+    <value>No open applications</value>
+  </data>
+  <data name="Heute_Antraege_Leer_Text" xml:space="preserve">
+    <value>Passport, bulky waste or registration certificate – apply online with your BundID.</value>
+  </data>
+  <data name="Heute_Antraege_Stellen" xml:space="preserve">
+    <value>Start an application</value>
+  </data>
+  <data name="Heute_Antraege_Fehler" xml:space="preserve">
+    <value>Applications cannot be loaded right now.</value>
+  </data>
+  <data name="Heute_Antraege_Mehr" xml:space="preserve">
+    <value>and {0} more</value>
+  </data>
+  <data name="Heute_Schnell_Titel" xml:space="preserve">
+    <value>Quick actions</value>
+  </data>
+  <data name="Heute_Schnell_Termin" xml:space="preserve">
+    <value>Book appointment</value>
+  </data>
+  <data name="Heute_Schnell_Antrag" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Heute_Schnell_Mangel" xml:space="preserve">
+    <value>Report an issue</value>
+  </data>
+  <data name="Heute_Schnell_Postfach" xml:space="preserve">
+    <value>BundID mailbox</value>
+  </data>
+  <data name="Heute_Mehr_Titel" xml:space="preserve">
+    <value>More for you</value>
+  </data>
+  <data name="Heute_Mehr_MeineDaten_Text" xml:space="preserve">
+    <value>What BundID has transmitted</value>
+  </data>
+  <data name="Heute_Mehr_Entdecken_Text" xml:space="preserve">
+    <value>City map, locations, news</value>
+  </data>
+  <data name="Heute_Mehr_Einstellungen_Text" xml:space="preserve">
+    <value>Language, design, notifications</value>
+  </data>
+  <data name="Heute_Wetter" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="Wetter_sun" xml:space="preserve">
+    <value>Sunny</value>
+  </data>
+  <data name="Wetter_cloud-sun" xml:space="preserve">
+    <value>Partly cloudy</value>
+  </data>
+  <data name="Wetter_cloud-fog" xml:space="preserve">
+    <value>Fog</value>
+  </data>
+  <data name="Wetter_cloud-rain" xml:space="preserve">
+    <value>Rain</value>
+  </data>
+  <data name="Wetter_cloud-snow" xml:space="preserve">
+    <value>Snow</value>
+  </data>
+  <data name="Wetter_cloud-lightning" xml:space="preserve">
+    <value>Thunderstorm</value>
+  </data>
+  <data name="Wetter_cloud" xml:space="preserve">
+    <value>Cloudy</value>
+  </data>
 </root>

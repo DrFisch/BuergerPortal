@@ -67,4 +67,118 @@
   <data name="Einstieg_Sicher" xml:space="preserve">
     <value>Ihr Passwort sieht das Portal nie.</value>
   </data>
+  <data name="Heute_Gruss_Morgen" xml:space="preserve">
+    <value>Guten Morgen</value>
+  </data>
+  <data name="Heute_Gruss_Tag" xml:space="preserve">
+    <value>Guten Tag</value>
+  </data>
+  <data name="Heute_Gruss_Abend" xml:space="preserve">
+    <value>Guten Abend</value>
+  </data>
+  <data name="Heute_Angemeldet" xml:space="preserve">
+    <value>Mit BundID angemeldet</value>
+  </data>
+  <data name="Heute_Termin_Titel" xml:space="preserve">
+    <value>Nächster Termin</value>
+  </data>
+  <data name="Heute_Alle" xml:space="preserve">
+    <value>Alle anzeigen</value>
+  </data>
+  <data name="Heute_Uhr" xml:space="preserve">
+    <value>Uhr</value>
+  </data>
+  <data name="Heute_Termin_Qr" xml:space="preserve">
+    <value>Beim Bürgeramt am Eingang scannen</value>
+  </data>
+  <data name="Heute_Termin_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Heute_Termin_Kalender" xml:space="preserve">
+    <value>Zum Kalender</value>
+  </data>
+  <data name="Heute_Termin_Weitere" xml:space="preserve">
+    <value>+ {0} weitere</value>
+  </data>
+  <data name="Heute_Termin_Leer" xml:space="preserve">
+    <value>Kein Termin geplant</value>
+  </data>
+  <data name="Heute_Termin_Leer_Text" xml:space="preserve">
+    <value>Einen Termin im Bürgeramt buchen Sie in wenigen Schritten.</value>
+  </data>
+  <data name="Heute_Termin_Buchen" xml:space="preserve">
+    <value>Termin buchen</value>
+  </data>
+  <data name="Heute_Termin_Fehler" xml:space="preserve">
+    <value>Termine können gerade nicht geladen werden.</value>
+  </data>
+  <data name="Heute_Antraege_Titel" xml:space="preserve">
+    <value>Ihre Anträge</value>
+  </data>
+  <data name="Heute_Antraege_Leer" xml:space="preserve">
+    <value>Keine offenen Anträge</value>
+  </data>
+  <data name="Heute_Antraege_Leer_Text" xml:space="preserve">
+    <value>Reisepass, Sperrmüll oder Meldebescheinigung – online beantragen mit Ihrer BundID.</value>
+  </data>
+  <data name="Heute_Antraege_Stellen" xml:space="preserve">
+    <value>Antrag stellen</value>
+  </data>
+  <data name="Heute_Antraege_Fehler" xml:space="preserve">
+    <value>Anträge können gerade nicht geladen werden.</value>
+  </data>
+  <data name="Heute_Antraege_Mehr" xml:space="preserve">
+    <value>und {0} weitere</value>
+  </data>
+  <data name="Heute_Schnell_Titel" xml:space="preserve">
+    <value>Schnell erledigt</value>
+  </data>
+  <data name="Heute_Schnell_Termin" xml:space="preserve">
+    <value>Termin buchen</value>
+  </data>
+  <data name="Heute_Schnell_Antrag" xml:space="preserve">
+    <value>Antrag stellen</value>
+  </data>
+  <data name="Heute_Schnell_Mangel" xml:space="preserve">
+    <value>Mangel melden</value>
+  </data>
+  <data name="Heute_Schnell_Postfach" xml:space="preserve">
+    <value>BundID-Postfach</value>
+  </data>
+  <data name="Heute_Mehr_Titel" xml:space="preserve">
+    <value>Mehr für Sie</value>
+  </data>
+  <data name="Heute_Mehr_MeineDaten_Text" xml:space="preserve">
+    <value>Was die BundID übermittelt hat</value>
+  </data>
+  <data name="Heute_Mehr_Entdecken_Text" xml:space="preserve">
+    <value>Stadtplan, Standorte, Neuigkeiten</value>
+  </data>
+  <data name="Heute_Mehr_Einstellungen_Text" xml:space="preserve">
+    <value>Sprache, Design, Benachrichtigungen</value>
+  </data>
+  <data name="Heute_Wetter" xml:space="preserve">
+    <value>Wetter</value>
+  </data>
+  <data name="Wetter_sun" xml:space="preserve">
+    <value>Sonnig</value>
+  </data>
+  <data name="Wetter_cloud-sun" xml:space="preserve">
+    <value>Leicht bewölkt</value>
+  </data>
+  <data name="Wetter_cloud-fog" xml:space="preserve">
+    <value>Nebel</value>
+  </data>
+  <data name="Wetter_cloud-rain" xml:space="preserve">
+    <value>Regen</value>
+  </data>
+  <data name="Wetter_cloud-snow" xml:space="preserve">
+    <value>Schneefall</value>
+  </data>
+  <data name="Wetter_cloud-lightning" xml:space="preserve">
+    <value>Gewitter</value>
+  </data>
+  <data name="Wetter_cloud" xml:space="preserve">
+    <value>Bewölkt</value>
+  </data>
 </root>

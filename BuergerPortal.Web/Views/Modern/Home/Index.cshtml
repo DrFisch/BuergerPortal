@@ -1,0 +1,228 @@
+@model BuergerPortal.Web.Features.Home.ViewModels.HomeIndexVm
+@using System.Globalization
+@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Features.Antraege
+@using BuergerPortal.Web.Helper
+@using BuergerPortal.Web.Services
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<ModernTexte> M
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Leistungen> LK
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@inject HttpCurrentUserService CurrentUser
+@inject ModernHeute Heute
+@inject TerminCheckinLink Links
+@*
+    Portal 2 – Start „Heute“ (P2-12): Begrüßung mit Datum, BundID-Niveau und Wetter; der nächste Termin als Ticket-Karte
+    mit QR-Code zum Einchecken; offene Anträge mit Fortschritt; Schnellaktionen; „Mehr für Sie“. Termine und Anträge holt
+    ModernHeute über dieselbe API wie die übrigen Seiten (E-030); die bisherige Startseite bleibt unverändert.
+*@
+@{
+    var Tab = F.Fuer("Shared/_TabLeiste");
+    var Idx = F.Fuer("Home/Index");
+    var Z = F.Fuer("Antraege/_AntragZeile");
+    var person = CurrentUser.GetBundIdUser();
+    var de = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de";
+    var datumFormat = de ? "dddd, d. MMMM" : "dddd, d MMMM";
+    var jetzt = DateTime.UtcNow.ToBerlin();
+    var gruss = (jetzt.Hour < 11 ? M["Heute_Gruss_Morgen"] : jetzt.Hour < 18 ? M["Heute_Gruss_Tag"] : M["Heute_Gruss_Abend"]).Value;
+    var vorname = string.IsNullOrWhiteSpace(person?.GivenName) ? person?.DisplayName : person!.GivenName;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(vorname) ? gruss : $"{gruss}, {vorname}";
+    ViewData["M_Untertitel"] = jetzt.ToString(datumFormat, CultureInfo.CurrentCulture);
+
+    var daten = await Heute.LadenAsync(Context.RequestAborted);
+    var t = daten.NaechsterTermin;
+    var checkinUrl = t is null ? null
+        : Url.Action("Einchecken", "Termine", new { id = Links.Create(t.Id, t.EndUtc) }, Context.Request.Scheme);
+    var postfachUrl = Config["Postkorb:PostfachUrl"];
+
+    string StatusTon(int status) => status switch
+    {
+        1 => "m-chip--rand",
+        2 => "m-chip--hinweis",
+        3 => "m-chip--warnung",
+        4 => "m-chip--erfolg",
+        5 => "m-chip--fehler",
+        _ => "",
+    };
+}
+
+@section TitelAktionen {
+    <div class="m-knopfreihe m-heute__chips">
+        @if (person is { TrustLevel: > 0 })
+        {
+            <span class="m-chip @(person.TrustLevel >= 3 ? "m-chip--erfolg" : "m-chip--rand")">
+                <m-icon name="shield-check" />@M["Heute_Angemeldet"] · @Tab[$"Level_{person.TrustLevel}_Name"]
+            </span>
+        }
+        @if (Model.Weather is { } wetter)
+        {
+            var wetterSymbol = ModernSymbole.Wetter(wetter.IconClass);
+            <span class="m-chip" title="@M["Heute_Wetter"]"><m-icon name="@wetterSymbol" /><span class="m-zahl">@wetter.Temperature.ToString("0", CultureInfo.CurrentCulture) °C</span> · @M["Wetter_" + wetterSymbol]</span>
+        }
+    </div>
+}
+
+@* „Als App installieren“ (wwwroot/pwa-install.js schaltet die Klasse d-none) *@
+<div id="pwaInlineInstallAlert" class="d-none m-hinweis m-heute__app">
+    <m-icon name="smartphone" />
+    <span class="m-wachsen m-klein m-fett">@Idx["PWA_Inline_Short"]</span>
+    <button type="button" class="m-knopf m-knopf--klein" data-pwa-install>@Idx["PWA_Install_Short"]</button>
+    <button type="button" class="m-rund" data-pwa-spaeter aria-label="@Idx["PWA_Later"]"><m-icon name="x" /></button>
+</div>
+
+<div class="m-heute">
+        <section class="m-heute__termin" aria-labelledby="h-termin">
+            <div class="m-abschnitt__kopf">
+                <h2 id="h-termin">@M["Heute_Termin_Titel"]</h2>
+                <a asp-controller="Termine" asp-action="Index">@M["Heute_Alle"]<m-icon name="chevron-right" /></a>
+            </div>
+            @if (t is not null)
+            {
+                <article class="m-ticket" id="naechsterTermin" aria-labelledby="ticketLeistung">
+                    <div class="m-ticket__haupt">
+                        <p class="m-ticket__leistung" id="ticketLeistung">@t.Service.ToDisplayName(LF)</p>
+                        <p class="m-ticket__datum">@t.StartLokal.ToString(datumFormat, CultureInfo.CurrentCulture)</p>
+                        <p class="m-ticket__zeit m-zahl">@t.StartLokal.ToString("HH:mm") <span aria-hidden="true">–</span><span class="m-sr">-</span> @t.EndLokal.ToString("HH:mm") @M["Heute_Uhr"]</p>
+                        <p class="m-ticket__ort"><m-icon name="map-pin" />@t.Location.ToDisplay()</p>
+                        <div class="m-knopfreihe m-ticket__aktionen">
+                            <a class="m-knopf m-knopf--klein m-ticket__knopf" asp-controller="Termine" asp-action="Details" asp-route-id="@t.Id">@M["Heute_Termin_Details"]</a>
+                            <a class="m-knopf m-knopf--klein m-knopf--text m-ticket__link" asp-controller="Termine" asp-action="Kalender" asp-route-id="@t.Id" data-m-kein-vorladen>
+                                <m-icon name="calendar-plus" />@M["Heute_Termin_Kalender"]
+                            </a>
+                        </div>
+                    </div>
+                    @if (checkinUrl is not null)
+                    {
+                        <div class="m-ticket__abriss">
+                            <div class="m-ticket__qr" role="img" aria-label="@M["Heute_Termin_Qr"]" data-url="@checkinUrl">@Html.Raw(ModernHeute.QrSvg(checkinUrl))</div>
+                            <p class="m-mini m-neben">@M["Heute_Termin_Qr"]</p>
+                        </div>
+                    }
+                </article>
+                @if (daten.WeitereTermine > 0)
+                {
+                    <p class="m-klein m-neben m-heute__weitere"><a asp-controller="Termine" asp-action="Index">@M["Heute_Termin_Weitere", daten.WeitereTermine]</a></p>
+                }
+            }
+            else
+            {
+                <div class="m-leer">
+                    <span class="m-kachel"><m-icon name="calendar" /></span>
+                    <p class="m-leer__titel">@(daten.TermineFehler ? M["Heute_Termin_Fehler"] : M["Heute_Termin_Leer"])</p>
+                    @if (!daten.TermineFehler)
+                    {
+                        <p class="m-klein m-neben">@M["Heute_Termin_Leer_Text"]</p>
+                    }
+                    <a class="m-knopf m-knopf--zweit m-knopf--klein" asp-controller="Termine" asp-action="Buchen"><m-icon name="calendar-plus" />@M["Heute_Termin_Buchen"]</a>
+                </div>
+            }
+        </section>
+
+        <section class="m-heute__antraege" aria-labelledby="h-antraege">
+            <div class="m-abschnitt__kopf">
+                <h2 id="h-antraege">@M["Heute_Antraege_Titel"]</h2>
+                <a asp-controller="Antraege" asp-action="Status">@M["Heute_Alle"]<m-icon name="chevron-right" /></a>
+            </div>
+            @if (daten.OffeneAntraege.Count > 0)
+            {
+                <ul class="m-liste m-liste--symbole" role="list" id="offeneAntraege">
+                    @foreach (var a in daten.OffeneAntraege.Take(3))
+                    {
+                        var l = a.Leistung;
+                        var name = l is null ? Z["Unknown"].Value : LK[$"{l.Schluessel}_Name"].Value;
+                        var ziel = l is null ? Url.Action("Status", "Antraege")
+                            : a.IstEntwurf ? Url.Action(l.EntwurfAction, l.Controller, new { id = a.Id })
+                            : Url.Action(l.DetailAction, "Antraege", new { id = a.Id });
+                        <li>
+                            <a class="m-zeile" href="@ziel">
+                                <span class="m-kachel m-kachel--klein @ModernSymbole.KachelTon(l)"><m-icon name="@ModernSymbole.Leistung(l)" /></span>
+                                <span class="m-zeile__text">
+                                    <span class="m-zeile__titel">@name</span>
+                                    <span class="m-zeile__neben">
+                                        @Z["Number"] @a.Vorgangsnummer ·
+                                        @if (a.Eingereicht is { } eingereicht)
+                                        {
+                                            @Z["SubmittedOn", eingereicht.ToString("d")]
+                                        }
+                                        else
+                                        {
+                                            @Z["StartedOn", a.Angelegt.ToString("d")]
+                                        }
+                                    </span>
+                                    @if (!a.IstEntwurf)
+                                    {
+                                        <span class="m-fortschritt" aria-hidden="true">
+                                            <span class="@(a.Stufe >= 1 ? "m-fortschritt--erreicht" : "")"></span>
+                                            <span class="@(a.Stufe >= 2 ? "m-fortschritt--erreicht" : "")"></span>
+                                            <span class="@(a.Stufe >= 3 ? "m-fortschritt--erreicht" : "")"></span>
+                                        </span>
+                                    }
+                                </span>
+                                <span class="m-chip @StatusTon(a.Status)">@LK[$"Status_{a.Status}"]</span>
+                                <span class="m-zeile__pfeil"><m-icon name="chevron-right" /></span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+                @if (daten.OffeneAntraege.Count > 3)
+                {
+                    <p class="m-klein m-neben m-heute__weitere"><a asp-controller="Antraege" asp-action="Status">@M["Heute_Antraege_Mehr", daten.OffeneAntraege.Count - 3]</a></p>
+                }
+            }
+            else
+            {
+                <div class="m-leer">
+                    <span class="m-kachel m-kachel--hinweis"><m-icon name="file-text" /></span>
+                    <p class="m-leer__titel">@(daten.AntraegeFehler ? M["Heute_Antraege_Fehler"] : M["Heute_Antraege_Leer"])</p>
+                    @if (!daten.AntraegeFehler)
+                    {
+                        <p class="m-klein m-neben">@M["Heute_Antraege_Leer_Text"]</p>
+                    }
+                    <a class="m-knopf m-knopf--zweit m-knopf--klein" asp-controller="Antraege" asp-action="Index"><m-icon name="plus" />@M["Heute_Antraege_Stellen"]</a>
+                </div>
+            }
+        </section>
+
+        <section class="m-heute__schnell" aria-labelledby="h-schnell">
+            <h2 id="h-schnell" class="m-abschnitt-titel">@M["Heute_Schnell_Titel"]</h2>
+            <div class="m-schnell">
+                <a class="m-schnell__eintrag" asp-controller="Termine" asp-action="Buchen">
+                    <span class="m-kachel"><m-icon name="calendar-plus" /></span><span>@M["Heute_Schnell_Termin"]</span>
+                </a>
+                <a class="m-schnell__eintrag" asp-controller="Antraege" asp-action="Index">
+                    <span class="m-kachel m-kachel--hinweis"><m-icon name="file-text" /></span><span>@M["Heute_Schnell_Antrag"]</span>
+                </a>
+                <a class="m-schnell__eintrag" asp-controller="Maengel" asp-action="Create">
+                    <span class="m-kachel m-kachel--warnung"><m-icon name="camera" /></span><span>@M["Heute_Schnell_Mangel"]</span>
+                </a>
+                @if (!string.IsNullOrWhiteSpace(postfachUrl))
+                {
+                    <a class="m-schnell__eintrag" href="@postfachUrl" data-sim-hinweis="postfach">
+                        <span class="m-kachel m-kachel--erfolg"><m-icon name="mail" /></span><span>@M["Heute_Schnell_Postfach"]</span>
+                    </a>
+                }
+            </div>
+        </section>
+
+        <section class="m-heute__mehr" aria-labelledby="h-mehr">
+            <h2 id="h-mehr" class="m-abschnitt-titel">@M["Heute_Mehr_Titel"]</h2>
+            <ul class="m-liste m-liste--symbole" role="list">
+                <li><a class="m-zeile" asp-controller="MeineDaten" asp-action="Index">
+                    <span class="m-kachel m-kachel--klein m-kachel--grau"><m-icon name="id-card" /></span>
+                    <span class="m-zeile__text"><span class="m-zeile__titel">@Tab["MyData"]</span><span class="m-zeile__neben">@M["Heute_Mehr_MeineDaten_Text"]</span></span>
+                    <span class="m-zeile__pfeil"><m-icon name="chevron-right" /></span>
+                </a></li>
+                <li><a class="m-zeile" asp-controller="Entdecken" asp-action="Index">
+                    <span class="m-kachel m-kachel--klein m-kachel--hinweis"><m-icon name="compass" /></span>
+                    <span class="m-zeile__text"><span class="m-zeile__titel">@Tab["Discover"]</span><span class="m-zeile__neben">@M["Heute_Mehr_Entdecken_Text"]</span></span>
+                    <span class="m-zeile__pfeil"><m-icon name="chevron-right" /></span>
+                </a></li>
+                <li><a class="m-zeile" asp-controller="Settings" asp-action="Index">
+                    <span class="m-kachel m-kachel--klein m-kachel--grau"><m-icon name="sliders" /></span>
+                    <span class="m-zeile__text"><span class="m-zeile__titel">@Tab["Settings"]</span><span class="m-zeile__neben">@M["Heute_Mehr_Einstellungen_Text"]</span></span>
+                    <span class="m-zeile__pfeil"><m-icon name="chevron-right" /></span>
+                </a></li>
+            </ul>
+        </section>
+</div>
