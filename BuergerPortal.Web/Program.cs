@@ -24,6 +24,9 @@ builder.Services
     .AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
+// Oberfläche: Portal 2 (Ui:Modern=true) oder die bisherige (false), dazu ?ui= je Browser – Services/UiVariante.cs.
+// IOptionsMonitor liest die Einstellung je Anfrage neu.
+builder.Services.Configure<UiOptions>(builder.Configuration.GetSection(UiOptions.Section));
 // Antiforgery-Cookie mit Präfix __Host- (nur Secure, Path=/, ohne Domain): Eine andere Subdomain kann kein eigenes
 // Token unterschieben (X5).
 builder.Services.AddAntiforgery(o =>
@@ -332,6 +335,9 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
 app.UseStaticFiles();
+
+// Welche Oberfläche diese Anfrage bekommt (Cookie aus ?ui= vor Ui:Modern); ?ui=… leitet auf die Adresse ohne ui um.
+app.UseUiVariante();
 
 var locOptions = app.Services.GetRequiredService<
     Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
