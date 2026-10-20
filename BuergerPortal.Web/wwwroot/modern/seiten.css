@@ -286,3 +286,45 @@
 [data-bs-theme="dark"] .m-schnell__eintrag { box-shadow: none; border: 1px solid var(--m-linie); }
 .m-schnell__eintrag:hover { color: var(--m-text); box-shadow: var(--m-schatten-2); }
 .m-schnell__eintrag:active { transform: scale(0.97); }
+
+/* ---------- Termine (Views/Modern/Termine/Index.cshtml, Details.cshtml) ---------- */
+
+.m-termine__filter { margin-bottom: var(--m-a-5); }
+
+.m-termin-naechster { display: grid; gap: var(--m-a-4); border-left: 6px solid var(--m-akzent); }
+
+.m-termin-naechster__kopf {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--m-a-2);
+}
+
+.m-termin-naechster__label { margin: 0; color: var(--m-akzent-stark); }
+
+.m-termin-naechster__inhalt { display: flex; gap: var(--m-a-4); align-items: flex-start; }
+
+.m-termin-naechster__inhalt p { display: flex; align-items: center; gap: var(--m-a-2); }
+
+.m-termin-naechster__titel { font-size: 1.375rem; font-weight: 700; }
+
+.m-termin-naechster__aktionen { padding-top: var(--m-a-3); border-top: 1px solid var(--m-linie); }
+
+.m-termin-naechster__storno { margin-left: auto; }
+
+.m-termin__stornieren { --knopf-text: var(--m-fehler); }
+
+.m-termin__titel { font-size: 1rem; font-weight: 600; }
+
+.m-termin__titel--storniert { text-decoration: line-through; color: var(--m-text-2); }
+
+.m-termin__antrag { border-radius: var(--m-r); background: var(--m-flaeche); }
+
+.m-ticket--storniert .m-ticket__haupt { background: var(--m-text-2); }
+
+.m-ticket__hinweis { opacity: 0.9; }
+
+@media (max-width: 575.98px) {
+    .m-termin-naechster__storno { margin-left: 0; width: 100%; }
+    .m-termin-naechster__aktionen .m-knopf { flex: 1 1 auto; }
+}

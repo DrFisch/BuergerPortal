@@ -1,0 +1,156 @@
+@using BuergerPortal.Web.Extensions
+@using BuergerPortal.Web.Features.Termine.ViewModels
+@using BuergerPortal.Web.Services
+@model TermineIndexVm
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizerFactory F
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory LF
+@*
+    Portal 2 – Termine (P2-14): der nächste Termin groß als Karte mit Kalenderblatt und „in 3 Tagen“, weitere als
+    Listenzeilen; Segment-Umschalter Anstehend · Vergangen · Storniert (gleiche Namen/IDs wie die bisherige Seite, Karten
+    in .appointment-container, ausgeblendete mit d-none – so zählen die Browser-Tests in beiden Oberflächen gleich).
+    Stornieren nur nach Rückfrage (form[data-confirm], wwwroot/modern/app.js). Texte aus Resources/Views/Termine/Index.
+*@
+@{
+    var L = F.Fuer("Termine/Index");
+    ViewData["Title"] = L["Termine_Heading"].Value;
+    ViewData["M_Untertitel"] = L["Termine_IntroText"].Value;
+    var termine = Model?.Termine ?? new();
+    var anstehend = termine.Where(t => !t.Storniert && !t.Vergangen).OrderBy(t => t.Start).ToList();
+    var vergangen = termine.Where(t => !t.Storniert && t.Vergangen).OrderByDescending(t => t.Start).ToList();
+    var storniert = termine.Where(t => t.Storniert).OrderByDescending(t => t.Start).ToList();
+    var naechster = anstehend.FirstOrDefault();
+    var heute = (Model?.Heute ?? DateTime.Today).Date;
+    string Relativ(DateTime tag) => (tag.Date - heute).Days switch
+    {
+        <= 0 => L["Rel_Today"].Value,
+        1 => L["Rel_Tomorrow"].Value,
+        var n => string.Format(L["Rel_InDays"].Value, n),
+    };
+
+    // Kalenderblatt: Wochentag, Tag, Monat
+    async Task Blatt(DateTime tag, bool gross)
+    {
+        <span class="m-kalenderblatt@(gross ? " m-kalenderblatt--gross" : "")" aria-hidden="true">
+            <span class="m-kalenderblatt__wt">@tag.ToString("ddd")</span>
+            <span class="m-kalenderblatt__tag">@tag.ToString("dd")</span>
+            <span class="m-kalenderblatt__mo">@tag.ToString("MMM")</span>
+        </span>
+        await Task.CompletedTask;
+    }
+
+    // versteckt: Gruppen „Vergangen“ und „Storniert“ starten ausgeblendet (d-none, wie bisher – Tests zählen daran)
+    async Task Zeile(TerminListItemVm t, bool versteckt)
+    {
+        var vorbei = !t.Storniert && t.Vergangen;
+        <li class="appointment-container@(versteckt ? " d-none" : "")@(t.Storniert ? " is-cancelled" : vorbei ? " is-past" : "")">
+            <a class="m-zeile bp-terminkarte@(t.Storniert ? " storniert" : "")" asp-action="Details" asp-route-id="@t.Id">
+                @{ await Blatt(t.Datum, false); }
+                <div class="m-zeile__text">
+                    <h2 class="m-zeile__titel m-termin__titel@(t.Storniert ? " m-termin__titel--storniert" : "")">@t.Service.ToDisplayName(LF)</h2>
+                    <span class="m-zeile__neben"><span class="m-termin__datum">@t.Datum.ToString("dddd, dd.MM.yyyy")</span> · @t.Uhrzeit @L["Termine_Clock"]</span>
+                    <span class="m-zeile__neben"><m-icon name="map-pin" /> @t.Location.ToDisplay()</span>
+                </div>
+                @if (t.Storniert)
+                {
+                    <span class="m-chip m-chip--fehler">@L["Termine_Status_Cancelled"]</span>
+                }
+                else if (vorbei)
+                {
+                    <span class="m-chip m-chip--warnung">@L["Termine_Status_Past"]</span>
+                }
+                <span class="m-zeile__pfeil"><m-icon name="chevron-right" /></span>
+            </a>
+        </li>
+    }
+}
+
+@section TitelAktionen {
+    <a asp-action="Buchen" class="m-knopf"><m-icon name="calendar-plus" />@L["Termine_NewAppointment_Button"]</a>
+}
+
+@if (termine.Count > 0)
+{
+    @* Filter: Anstehend (Standard), Vergangen, Storniert – ohne Skript bleiben nur die anstehenden sichtbar *@
+    <div class="m-segment m-termine__filter" role="radiogroup" aria-label="@L["Filter_Aria"]" data-m-filter="terminFilter">
+        <input type="radio" name="terminFilter" id="filterAnstehend" value="anstehend" checked />
+        <label for="filterAnstehend">@L["Filter_Upcoming"] <span class="m-segment__zahl">@anstehend.Count</span></label>
+        <input type="radio" name="terminFilter" id="filterVergangen" value="vergangen" />
+        <label for="filterVergangen">@L["Filter_Past"] <span class="m-segment__zahl">@vergangen.Count</span></label>
+        <input type="radio" name="terminFilter" id="filterStorniert" value="storniert" />
+        <label for="filterStorniert">@L["Filter_Cancelled"] <span class="m-segment__zahl">@storniert.Count</span></label>
+    </div>
+}
+
+<div data-gruppe="anstehend" class="m-stapel m-stapel--weit">
+    @if (naechster == null)
+    {
+        <div class="m-leer">
+            <span class="m-kachel"><m-icon name="calendar" /></span>
+            <p>@L["Termine_Empty_Text"]</p>
+            <a asp-action="Buchen" class="m-knopf m-knopf--zweit m-knopf--klein"><m-icon name="calendar-plus" />@L["Termine_Empty_Button"]</a>
+        </div>
+    }
+    else
+    {
+        <div class="appointment-container">
+            <article class="m-karte m-termin-naechster bp-terminkarte">
+                <div class="m-termin-naechster__kopf">
+                    <span class="m-abschnitt-titel m-termin-naechster__label">@L["Next_Label"]</span>
+                    <span class="m-chip m-chip--akzent">@Relativ(naechster.Datum)</span>
+                </div>
+                <div class="m-termin-naechster__inhalt">
+                    @{ await Blatt(naechster.Datum, true); }
+                    <div class="m-stapel m-stapel--eng">
+                        <h2 class="m-termin-naechster__titel">@naechster.Service.ToDisplayName(LF)</h2>
+                        <p class="m-neben"><m-icon name="calendar" /> <span class="m-termin__datum">@naechster.Datum.ToString("dddd, dd.MM.yyyy")</span></p>
+                        <p class="m-neben"><m-icon name="clock" /> @naechster.Uhrzeit @L["Termine_Clock"]</p>
+                        <p class="m-neben"><m-icon name="map-pin" /> @naechster.Location.ToDisplay()</p>
+                    </div>
+                </div>
+                <div class="m-knopfreihe m-termin-naechster__aktionen">
+                    <a asp-action="Details" asp-route-id="@naechster.Id" class="m-knopf">@L["Termine_Action_ViewDetails"]</a>
+                    <a asp-action="Kalender" asp-route-id="@naechster.Id" class="m-knopf m-knopf--zweit" data-m-kein-vorladen>
+                        <m-icon name="calendar-plus" />@L["Action_Calendar"]
+                    </a>
+                    <form method="post" asp-action="Stornieren" class="m-termin-naechster__storno"
+                          data-confirm="@L["Termine_Cancel_Confirm", naechster.Service.ToDisplayName(LF), naechster.Datum.ToString("dd.MM.yyyy"), naechster.Uhrzeit]">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@naechster.Id" />
+                        <button type="submit" class="m-knopf m-knopf--text m-termin__stornieren"><m-icon name="circle-x" />@L["Termine_Action_Cancel"]</button>
+                    </form>
+                </div>
+            </article>
+        </div>
+        @if (anstehend.Count > 1)
+        {
+            <section aria-labelledby="h-weitere">
+                <h2 id="h-weitere" class="m-abschnitt-titel">@L["More_Title"]</h2>
+                <ul class="m-liste" role="list">
+                    @foreach (var t in anstehend.Skip(1))
+                    {
+                        await Zeile(t, false);
+                    }
+                </ul>
+            </section>
+        }
+    }
+</div>
+
+@foreach (var (gruppe, liste, leer) in new[] { ("vergangen", vergangen, L["Empty_Past"].Value), ("storniert", storniert, L["Empty_Cancelled"].Value) })
+{
+    <div data-gruppe="@gruppe" hidden>
+        @if (liste.Count == 0)
+        {
+            <div class="m-leer"><span class="m-kachel m-kachel--grau"><m-icon name="calendar" /></span><p class="m-neben">@leer</p></div>
+        }
+        else
+        {
+            <ul class="m-liste" role="list">
+                @foreach (var t in liste)
+                {
+                    await Zeile(t, true);
+                }
+            </ul>
+        }
+    </div>
+}
