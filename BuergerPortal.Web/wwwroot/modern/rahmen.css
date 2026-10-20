@@ -1,0 +1,522 @@
+/*
+ * Portal 2 – App-Rahmen (Views/Modern/Shared/_LayoutModern.cshtml): Kopfzeile mit großem Seitentitel, der beim
+ * Scrollen klein in die Kopfzeile wandert; am Handy Tab-Leiste unten (Start · Termine · Anträge · Postfach · Konto),
+ * am Computer (ab 1024 px) Navigation links; Blätter von unten (<dialog>), am Computer als Dialog in der Mitte;
+ * Seitenübergänge mit View Transitions (ohne Unterstützung einfach ohne). Safe-Area für Kerbe und Home-Balken.
+ */
+
+html:has(dialog[open]) {
+    overflow: hidden;   /* Hintergrund scrollt nicht mit, solange ein Blatt offen ist */
+}
+
+.m-app {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.m-spalte {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;   /* Schmuck (z. B. Farbschimmer) macht die Seite nie breiter als den Bildschirm */
+}
+
+/* nur auf breiteren Bildschirmen (z. B. Hell/Dunkel ohne Anmeldung – am Handy folgt das Farbschema dem Gerät) */
+@media (max-width: 575.98px) {
+    .m-nur-breit { display: none !important; }
+}
+
+/* ---------- Kopfzeile ---------- */
+
+.m-kopf {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    gap: var(--m-a-2);
+    min-height: calc(var(--m-kopf-hoehe) + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) max(var(--m-a-3), env(safe-area-inset-right)) 0 max(var(--m-a-3), env(safe-area-inset-left));
+    background: color-mix(in srgb, var(--m-grund) 84%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    backdrop-filter: saturate(180%) blur(18px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--m-dauer) var(--m-kurve);
+    view-transition-name: m-kopf;
+}
+
+.m-kopf--titel, .m-kopf--linie {
+    border-bottom-color: var(--m-linie);
+}
+
+.m-marke {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--m-a-2);
+    min-height: var(--m-ziel);
+    color: var(--m-text);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+}
+
+.m-marke:hover { color: var(--m-text); }
+
+.m-marke__zeichen {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--m-akzent);
+    color: var(--m-auf-akzent);
+}
+
+.m-marke__zeichen .m-i { width: 18px; height: 18px; }
+
+/* kleiner Titel in der Kopfzeile, erscheint, sobald der große Titel aus dem Bild scrollt (wwwroot/modern/app.js) */
+.m-kopf__titel {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    top: env(safe-area-inset-top);
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 650;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--m-dauer) var(--m-kurve), transform var(--m-dauer) var(--m-kurve);
+    pointer-events: none;
+}
+
+.m-kopf__titel > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.m-kopf--titel .m-kopf__titel {
+    opacity: 1;
+    transform: none;
+}
+
+.m-kopf--titel .m-kopf__links-titel { opacity: 0; }
+
+.m-kopf__rechts {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--m-a-2);
+}
+
+.m-zurueck {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: var(--m-ziel);
+    padding-right: var(--m-a-2);
+    color: var(--m-akzent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Sprachwahl als Segment (DE | EN) */
+.m-sprache {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: var(--m-r-voll);
+    background: var(--m-flaeche-2);
+}
+
+.m-sprache a {
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 38px;
+    border-radius: var(--m-r-voll);
+    color: var(--m-text-2);
+    font-size: var(--m-g-mini);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.m-sprache a[aria-current="true"] {
+    background: var(--m-flaeche);
+    color: var(--m-text);
+    box-shadow: var(--m-schatten-1);
+}
+
+/* Hell/Dunkel: Mond im hellen, Sonne im dunklen Modus (js/theme.js setzt data-bs-theme) */
+.js-theme-toggle .m-symbol-sonne { display: none; }
+[data-bs-theme="dark"] .js-theme-toggle .m-symbol-sonne { display: block; }
+[data-bs-theme="dark"] .js-theme-toggle .m-symbol-mond { display: none; }
+
+.m-rund {
+    display: inline-grid;
+    place-items: center;
+    width: var(--m-ziel);
+    height: var(--m-ziel);
+    border: 0;
+    border-radius: var(--m-r-voll);
+    background: transparent;
+    color: var(--m-text);
+    transition: background-color var(--m-dauer);
+}
+
+.m-rund:hover { background: var(--m-flaeche-2); color: var(--m-text); }
+.m-rund:active { background: var(--m-linie); }
+
+/* ---------- Inhalt und großer Titel ---------- */
+
+.m-inhalt {
+    flex: 1;
+    width: 100%;
+    max-width: var(--m-inhalt-max);
+    margin: 0 auto;
+    padding: var(--m-a-2) max(var(--m-a-4), env(safe-area-inset-right)) var(--m-a-6) max(var(--m-a-4), env(safe-area-inset-left));
+}
+
+.m-inhalt:focus { outline: none; }
+
+.m-seitenkopf {
+    padding: var(--m-a-2) 0 var(--m-a-4);
+}
+
+.m-grosstitel {
+    font-size: var(--m-g-titel);
+    font-weight: 750;
+    letter-spacing: -0.025em;
+}
+
+.m-untertitel {
+    margin-top: var(--m-a-1);
+    color: var(--m-text-2);
+}
+
+.m-titel-aktionen {
+    margin-top: var(--m-a-3);
+}
+
+/* ---------- Fußzeile ---------- */
+
+.m-fuss {
+    width: 100%;
+    max-width: var(--m-inhalt-max);
+    margin: 0 auto;
+    padding: var(--m-a-4) max(var(--m-a-4), env(safe-area-inset-right)) calc(var(--m-a-4) + env(safe-area-inset-bottom)) max(var(--m-a-4), env(safe-area-inset-left));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--m-a-2) var(--m-a-4);
+    border-top: 1px solid var(--m-linie);
+    color: var(--m-text-2);
+    font-size: var(--m-g-mini);
+}
+
+.m-fuss nav { display: flex; gap: var(--m-a-4); }
+
+.m-fuss a {
+    display: inline-block;
+    padding: 4px 0;     /* Ziel ≥ 24 px (WCAG 2.5.8) */
+    color: var(--m-text-2);
+}
+
+.m-mit-tabs .m-fuss {
+    padding-bottom: calc(var(--m-tab-hoehe) + env(safe-area-inset-bottom) + var(--m-a-4));
+}
+
+/* ---------- Tab-Leiste (Handy, Tablet) ---------- */
+
+.m-tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 950;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 6px max(var(--m-a-2), env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(var(--m-a-2), env(safe-area-inset-left));
+    background: color-mix(in srgb, var(--m-flaeche) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    backdrop-filter: saturate(180%) blur(18px);
+    border-top: 1px solid var(--m-linie);
+    view-transition-name: m-tabs;
+}
+
+.m-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 52px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: var(--m-text-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.m-tab > span:last-child {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.m-tab__symbol {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 30px;
+    border-radius: var(--m-r-voll);
+    transition: background-color var(--m-dauer) var(--m-kurve), transform var(--m-dauer) var(--m-kurve);
+}
+
+.m-tab:hover { color: var(--m-text); }
+.m-tab:active .m-tab__symbol { background: var(--m-flaeche-2); transform: scale(0.94); }
+
+.m-tab[aria-current="page"] { color: var(--m-akzent-stark); }
+.m-tab[aria-current="page"] .m-tab__symbol { background: var(--m-akzent-zart); }
+
+.m-tab__zaehler {
+    position: absolute;
+    transform: translate(12px, -9px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--m-r-voll);
+    background: var(--m-fehler);
+    color: #fff;
+    font-size: 0.6875rem;
+    line-height: 18px;
+    text-align: center;
+}
+
+/* ---------- Navigation links (Computer) ---------- */
+
+.m-leiste { display: none; }
+
+@media (min-width: 1024px) {
+    .m-tabs { display: none; }
+    .m-mit-tabs .m-fuss { padding-bottom: calc(var(--m-a-4) + env(safe-area-inset-bottom)); }
+    .m-mit-tabs .m-kopf .m-marke { display: none; }   /* angemeldet steht die Marke in der Leiste links */
+    .m-mit-tabs .m-kopf__titel { left: var(--m-a-5); right: 40%; justify-content: flex-start; }
+    .m-inhalt { padding-left: var(--m-a-6); padding-right: var(--m-a-6); }
+    .m-fuss { padding-left: var(--m-a-6); padding-right: var(--m-a-6); }
+
+    .m-leiste {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        flex: none;
+        width: var(--m-leiste-breite);
+        height: 100vh;
+        height: 100dvh;
+        padding: var(--m-a-4) var(--m-a-3);
+        overflow-y: auto;
+        background: var(--m-flaeche);
+        border-right: 1px solid var(--m-linie);
+        view-transition-name: m-leiste;
+    }
+}
+
+.m-leiste__marke { padding: 0 var(--m-a-2); }
+
+.m-leiste__nav {
+    display: grid;
+    gap: 2px;
+    margin-top: var(--m-a-5);
+}
+
+.m-leiste__eintrag {
+    display: flex;
+    align-items: center;
+    gap: var(--m-a-3);
+    min-height: var(--m-ziel);
+    padding: 0 var(--m-a-3);
+    border-radius: var(--m-r);
+    color: var(--m-text);
+    font-weight: 550;
+    text-decoration: none;
+    transition: background-color var(--m-dauer);
+}
+
+button.m-leiste__eintrag {
+    width: 100%;
+    border: 0;
+    background: none;
+    text-align: left;
+}
+
+.m-leiste__eintrag:hover { background: var(--m-flaeche-2); color: var(--m-text); }
+.m-leiste__eintrag--gefahr, .m-leiste__eintrag--gefahr:hover { color: var(--m-fehler); }
+.m-leiste__eintrag--gefahr .m-i { color: currentColor; }
+.m-leiste__eintrag .m-i { color: var(--m-text-2); }
+
+.m-leiste__eintrag[aria-current="page"] {
+    background: var(--m-akzent-zart);
+    color: var(--m-akzent-stark);
+    font-weight: 650;
+}
+
+.m-leiste__eintrag[aria-current="page"] .m-i { color: currentColor; }
+
+.m-leiste__abschnitt {
+    margin: var(--m-a-5) var(--m-a-3) var(--m-a-1);
+    color: var(--m-text-2);
+    font-size: var(--m-g-mini);
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.m-leiste__wer { padding-inline: var(--m-a-2); }
+
+.m-leiste__person {
+    margin-top: auto;
+    padding-top: var(--m-a-4);
+    border-top: 1px solid var(--m-linie);
+    display: grid;
+    gap: var(--m-a-2);
+}
+
+/* ---------- Blätter und Dialoge (<dialog>) ---------- */
+
+dialog.m-blatt {
+    max-width: 100vw;
+    max-height: min(88dvh, 760px);
+    padding: 0;
+    border: 0;
+    color: var(--m-text);
+    background: var(--m-flaeche);
+    box-shadow: var(--m-schatten-3);
+    overscroll-behavior: contain;
+}
+
+dialog.m-blatt[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+dialog.m-blatt::backdrop {
+    background: var(--m-ueberlagerung);
+}
+
+/* Handy: Blatt von unten */
+dialog.m-blatt {
+    width: 100%;
+    margin: auto 0 0;
+    border-radius: var(--m-r-l) var(--m-r-l) 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+dialog.m-blatt[open] { animation: m-blatt-rein var(--m-dauer-lang) var(--m-kurve); }
+dialog.m-blatt[open]::backdrop { animation: m-blende var(--m-dauer-lang) ease; }
+
+@keyframes m-blatt-rein { from { transform: translateY(100%); } }
+@keyframes m-blende { from { opacity: 0; } }
+@keyframes m-dialog-rein { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+
+.m-blatt__griff {
+    flex: none;
+    width: 40px;
+    height: 5px;
+    margin: 8px auto 0;
+    border-radius: 3px;
+    background: var(--m-linie-stark);
+}
+
+.m-blatt__kopf {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--m-a-3);
+    padding: var(--m-a-3) var(--m-a-4) var(--m-a-2);
+}
+
+.m-blatt__titel {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-blatt__titel h2, h2.m-blatt__titel { font-size: var(--m-g-h2); }
+
+.m-blatt__inhalt {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 var(--m-a-4) var(--m-a-4);
+}
+
+.m-blatt__fuss {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--m-a-2);
+    padding: var(--m-a-3) var(--m-a-4) var(--m-a-4);
+    border-top: 1px solid var(--m-linie);
+}
+
+/* Handy: Knöpfe im Daumenbereich untereinander, Hauptknopf unten */
+@media (max-width: 575.98px) {
+    .m-blatt__fuss { flex-direction: column-reverse; }
+    .m-blatt__fuss .m-knopf { width: 100%; }
+}
+
+/* Computer und Tablet: Dialog in der Mitte */
+@media (min-width: 768px) {
+    dialog.m-blatt {
+        width: min(560px, calc(100vw - 2rem));
+        margin: auto;
+        border-radius: var(--m-r-l);
+        padding-bottom: 0;
+    }
+    dialog.m-blatt[open] { animation-name: m-dialog-rein; }
+    .m-blatt__griff { display: none; }
+    .m-blatt__kopf { padding-top: var(--m-a-4); }
+}
+
+/* ---------- Seitenübergänge (View Transitions für mehrseitige Anwendungen) ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+
+    ::view-transition-old(root) {
+        animation: m-vt-raus 140ms ease both;
+    }
+
+    ::view-transition-new(root) {
+        animation: m-vt-rein 220ms var(--m-kurve) both;
+    }
+
+    /* Rahmen bleibt stehen, nur der Inhalt wechselt */
+    ::view-transition-group(m-kopf), ::view-transition-group(m-tabs), ::view-transition-group(m-leiste),
+    ::view-transition-old(m-kopf), ::view-transition-old(m-tabs), ::view-transition-old(m-leiste),
+    ::view-transition-new(m-kopf), ::view-transition-new(m-tabs), ::view-transition-new(m-leiste) {
+        animation: none;
+    }
+
+    @keyframes m-vt-raus { to { opacity: 0; } }
+    @keyframes m-vt-rein { from { opacity: 0; transform: translateY(6px); } }
+}
+
+/* ---------- Druck ---------- */
+
+@media print {
+    .m-kopf, .m-tabs, .m-leiste, .m-fuss, dialog { display: none !important; }
+    body { background: #fff; color: #000; }
+    .m-inhalt { max-width: none; padding: 0; }
+}
