@@ -7,6 +7,7 @@
 //    ein Tipp auf den abgedunkelten Hintergrund auch (außer bei data-m-fest, z. B. Sitzungswarnung).
 // 3. Großer Titel: Scrollt er aus dem Bild, erscheint er klein in der Kopfzeile (wie iOS/Android).
 // 4. Toast: window.mToast(text) zeigt kurz eine Meldung unten.
+// 5. Rückfrage vor Formularen mit data-confirm. 6. Segment-Filter [data-m-filter] (Gruppen [data-gruppe]).
 (function () {
     'use strict';
 
@@ -94,4 +95,28 @@
 
     // Meldungen aus dem Server (TempData), die als Toast erscheinen sollen: <template data-m-toast>Text</template>
     document.querySelectorAll('template[data-m-toast]').forEach(t => window.mToast(t.content.textContent.trim()));
+
+    // ---------- 5. Rückfrage vor folgenreichen Formularen (z. B. Termin stornieren): form[data-confirm] ----------
+    document.addEventListener('submit', e => {
+        const form = e.target.closest('form[data-confirm]');
+        if (form && !window.confirm(form.dataset.confirm)) {
+            e.preventDefault();
+        }
+    });
+
+    // ---------- 6. Segment-Filter: [data-m-filter="name"] zeigt die Gruppe [data-gruppe] zum gewählten Wert ----------
+    // Karten anderer Gruppen (.appointment-container) bekommen d-none – wie in der bisherigen Oberfläche, die
+    // Browser-Tests zählen daran.
+    document.querySelectorAll('[data-m-filter]').forEach(segment => {
+        const name = segment.getAttribute('data-m-filter');
+        segment.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.querySelectorAll('[data-gruppe]').forEach(gruppe => {
+                    const sichtbar = gruppe.dataset.gruppe === radio.value;
+                    gruppe.hidden = !sichtbar;
+                    gruppe.querySelectorAll('.appointment-container').forEach(k => k.classList.toggle('d-none', !sichtbar));
+                });
+            });
+        });
+    });
 })();
