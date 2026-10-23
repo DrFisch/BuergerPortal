@@ -140,6 +140,17 @@ Voraussetzungen: .NET SDK 10 (siehe `global.json`; alle Projekte zielen auf `net
 
 Tests: `dotnet test BuergerPortal.Tests`.
 
+**Zugangsdaten:** Im Repository stehen keine Zugangsdaten (seit 2026-10-24 auch nicht mehr die Altlasten aus der Zeit
+vor dem BundID-Umbau). Mailjet steht auf `disabled` – es werden keine Mails verschickt. Das Client-Secret von `mvc_web`
+ist in `appsettings.Development.json` ein offen benannter Wert nur für `localhost`. Eigene Werte (z. B. echte
+Mailjet-Schlüssel) gehören in die User-Secrets (gelten in der Umgebung `Development`), nicht in eine `appsettings*.json`:
+```
+dotnet user-secrets --project BuergerPortal.Api init          # einmalig
+dotnet user-secrets --project BuergerPortal.Api set "MailJet:ApiKey" "<Wert>"
+dotnet user-secrets --project BuergerPortal.Api set "MailJet:SecretKey" "<Wert>"
+```
+Im Betrieb kommen alle Werte aus der `.env` neben `deploy/compose.prod.yml`.
+
 ## Betrieb (Container)
 
 Alles läuft in Containern auf einer VM, auch SQL Server; nur Caddy (HTTPS) ist von außen erreichbar.
