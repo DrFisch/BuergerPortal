@@ -29,7 +29,7 @@
     <value>Push-Benachrichtigungen</value>
   </data>
 	<data name="Settings_Tab_Install" xml:space="preserve">
-    <value>App-Installation (PWA)</value>
+    <value>App installieren</value>
   </data>
 	<data name="Settings_Tab_Privacy" xml:space="preserve">
     <value>Datenschutz</value>
@@ -111,10 +111,10 @@
 
 	<!-- Install -->
 	<data name="Settings_Install_Title" xml:space="preserve">
-    <value>App-Installation</value>
+    <value>Das BürgerPortal als App</value>
   </data>
 	<data name="Settings_Install_Description" xml:space="preserve">
-    <value>Installiere die WebApp als PWA für Offline-Modus und Homescreen-Zugriff.</value>
+    <value>Installieren Sie das BürgerPortal auf Ihrem Gerät – es startet dann wie eine eigene App vom Startbildschirm oder aus der Taskleiste. Auf dem iPhone gibt es Benachrichtigungen nur in der installierten App.</value>
   </data>
 	<data name="Settings_Install_Button" xml:space="preserve">
     <value>App installieren</value>

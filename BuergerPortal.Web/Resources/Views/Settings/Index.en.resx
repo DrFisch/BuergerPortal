@@ -29,7 +29,7 @@
     <value>Push notifications</value>
   </data>
 	<data name="Settings_Tab_Install" xml:space="preserve">
-    <value>App installation (PWA)</value>
+    <value>Install app</value>
   </data>
 	<data name="Settings_Tab_Privacy" xml:space="preserve">
     <value>Privacy</value>
@@ -111,10 +111,10 @@
 
 	<!-- Install -->
 	<data name="Settings_Install_Title" xml:space="preserve">
-    <value>App installation</value>
+    <value>The BürgerPortal as an app</value>
   </data>
 	<data name="Settings_Install_Description" xml:space="preserve">
-    <value>Install the web app as a PWA for offline use and homescreen access.</value>
+    <value>Install the BürgerPortal on your device – it then starts like a separate app from the home screen or taskbar. On iPhone, notifications are only available in the installed app.</value>
   </data>
 	<data name="Settings_Install_Button" xml:space="preserve">
     <value>Install app</value>
