@@ -1,7 +1,3 @@
 ﻿@{
-    // Portal 2 (Ui:Modern bzw. ?ui=modern, Services/UiVariante.cs): Views unter Views/Modern/ bekommen das neue Layout.
-    // Alle übrigen – auch Seiten, die es in Portal 2 noch nicht gibt – kommen vollständig in der bisherigen Oberfläche.
-    Layout = BuergerPortal.Web.Services.UiVariante.IsModern(Context)
-        && ViewContext.View.Path.StartsWith("/Views/Modern/", StringComparison.Ordinal)
-        ? "_LayoutModern" : "_Layout";
+    Layout = "_Layout";
 }

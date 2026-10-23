@@ -24,11 +24,6 @@ builder.Services
     .AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
-// Oberfläche: Portal 2 (Ui:Modern=true) oder die bisherige (false), dazu ?ui= je Browser – Services/UiVariante.cs.
-// IOptionsMonitor liest die Einstellung je Anfrage neu; die View-Suche fällt ohne moderne View auf die klassische zurück.
-builder.Services.Configure<UiOptions>(builder.Configuration.GetSection(UiOptions.Section));
-builder.Services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions>(o =>
-    o.ViewLocationExpanders.Add(new ModernViewLocationExpander()));
 // Antiforgery-Cookie mit Präfix __Host- (nur Secure, Path=/, ohne Domain): Eine andere Subdomain kann kein eigenes
 // Token unterschieben (X5).
 builder.Services.AddAntiforgery(o =>
@@ -86,8 +81,6 @@ builder.Services.AddFileTicketStore(!string.IsNullOrWhiteSpace(dataProtectionKey
 // QR-Code zum Einchecken im Bürgeramt: geschützte, zeitlich begrenzte Kennung des Termins (Services/TerminCheckinLink.cs)
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<TerminCheckinLink>();
-// Portal 2: Daten der Startseite „Heute“ (nächster Termin, offene Anträge) über dieselbe API (Services/ModernHeute.cs)
-builder.Services.AddScoped<ModernHeute>();
 
 // --- 3. AccessTokenHandler für API ---
 builder.Services.AddHttpContextAccessor();
@@ -339,9 +332,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
 app.UseStaticFiles();
-
-// Welche Oberfläche diese Anfrage bekommt (Cookie aus ?ui= vor Ui:Modern); ?ui=… leitet auf die Adresse ohne ui um.
-app.UseUiVariante();
 
 var locOptions = app.Services.GetRequiredService<
     Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
