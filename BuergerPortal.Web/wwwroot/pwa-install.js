@@ -85,14 +85,24 @@ function hinweisZurueckgestellt() {
     }
 }
 
+/**
+ * Lässt sich das Portal in diesem Browser überhaupt als App installieren? Firefox am Computer kann es nicht (dort gäbe es
+ * nur den Hinweis, Edge oder Chrome zu nehmen) – deshalb wird „App installieren“ dort gar nicht erst angeboten (Wunsch
+ * Lukas 2026-10-23). Handy (auch Firefox für Android), Edge/Chrome und Safari am Computer: ja.
+ */
+function installierbar() {
+    return plattform() !== 'firefox';
+}
+
 function updateInstallUi() {
     const standalone = isStandalone();
+    const anbieten = !standalone && installierbar();
     document.documentElement.classList.toggle('pwa-standalone', standalone);
-    document.querySelectorAll('[data-pwa-install-item], [data-pwa-install]').forEach(el => { el.hidden = standalone; });
+    document.querySelectorAll('[data-pwa-install-item], [data-pwa-install]').forEach(el => { el.hidden = !anbieten; });
 
-    // Karte auf der Startseite: immer, solange die App nicht installiert ist
+    // Karte auf der Startseite: immer, solange die App nicht installiert ist und sich installieren lässt
     const card = document.getElementById('pwaInstallCard');
-    if (card) card.style.display = standalone ? 'none' : 'block';
+    if (card) card.style.display = anbieten ? 'block' : 'none';
 
     // Hinweis oben auf der Startseite: auf dem Handy oder wenn der Browser das Installieren anbietet – bis „Später“
     const inlineAlert = document.getElementById('pwaInlineInstallAlert');
