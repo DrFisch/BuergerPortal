@@ -12,12 +12,12 @@ DB:
     => ext: 35.198.73.207, intern: 10.156.0.2
     => pw: 1234, user: sa
 
-    => ConnString: Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;
+    => ConnString: Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=<aus-der-Umgebung>;TrustServerCertificate=True;
 
   commands:
 
   docker run -e "ACCEPT_EULA=Y" \
-    -e "MSSQL_SA_PASSWORD=HalloGort123!" \
+    -e "MSSQL_SA_PASSWORD=<aus-der-Umgebung>" \
     -p 1433:1433 \
     --name buergerportal-sql \
     --network buergerportal-net \

@@ -12,7 +12,7 @@
             "previewLimit": 50,
             "server": "localhost",
             "driver": "MSSQL",
-            "connectString": "Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=HalloGort123!;TrustServerCertificate=True;",
+            "connectString": "Server=35.198.73.207,1433;Database=BuergerPortalDB;User Id=sa;Password=<aus-der-Umgebung>;TrustServerCertificate=True;",
             "name": "buergerportal"
         }
     ]
