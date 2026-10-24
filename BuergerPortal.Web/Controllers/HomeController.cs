@@ -129,7 +129,7 @@ namespace BuergerPortal.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Fehler beim Laden der n�chsten Termine (Index).");
+                    _logger.LogError(ex, "Fehler beim Laden der nächsten Termine (Index).");
                 }
             }
 
@@ -203,11 +203,11 @@ namespace BuergerPortal.Web.Controllers
             return View("Error", new ErrorViewModel());
         }
 
-        // Hilfsmethodne f�r wetter
+        // Hilfsmethoden für das Wetter
         private string GetWeatherDescription(int code) => code switch
         {
             0 => "Sonnig",
-            1 or 2 or 3 => "Leicht bew�lkt",
+            1 or 2 or 3 => "Leicht bewölkt",
             45 or 48 => "Nebel",
             51 or 53 or 55 => "Nieselregen",
             61 or 63 or 65 => "Regen",
