@@ -4,7 +4,8 @@ Bürgerportal einer Stadt (Termine, Anträge auf Reisepass, Sperrmüll und Melde
 **ausschließlich über die BundID** erfolgt – hier über einen erweiterten **BundID-Simulator** der Bundesagentur für
 Arbeit. Bestätigungen landen in einem simulierten **BundID-Postfach** (Zentrales Bürgerpostfach), das – wie bei der
 echten BundID – Teil des BundID-Auftritts ist. Für das Postfach gibt es zwei umschaltbare Varianten (siehe unten).
-Branch `feature/bundidsimulator`; jeder Umbau-Schritt ist ein eigener, begründeter Commit.
+Branch `feature/bundidsimulator`; jeder Umbau-Schritt ist ein eigener, begründeter Commit. **Version 1.1** – die
+Fußzeile des Portals zeigt sie mit dem Commit, aus dem gebaut wurde.
 
 ## Architektur
 
@@ -158,6 +159,7 @@ Alles läuft in Containern auf einer VM, auch SQL Server; nur Caddy (HTTPS) ist 
 | Datei | Zweck |
 |---|---|
 | `Dockerfile.auth`, `.api`, `.portal`, `.postkorb` | Images (Multi-Stage, Nicht-root, ohne lokale Einstellungen) |
+| `Directory.Build.props` | Versionsnummer aller Projekte (1.1); `deploy.ps1` gibt den Commit als Build-Argument `SOURCE_REVISION` mit → Fußzeile „Version 1.1 (&lt;commit&gt;)“ |
 | `deploy/compose.prod.yml` | alle Dienste mit Limits, Volumes, Healthcheck; Konfiguration nur aus `.env` (u. a. `BPSIM_POSTFACH`) |
 | `deploy/Caddyfile` | Hosts, automatisches TLS, Postfach unter `bundid.<domain>/postfach` (Ziel je Variante), Simulator-Actuator und Einlieferungs-REST von außen gesperrt |
 | `deploy/.env.example` | alle benötigten Werte (die echte `.env` gehört nie ins Repository) |
