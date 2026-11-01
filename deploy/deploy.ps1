@@ -9,6 +9,8 @@ param([string]$Tag = "", [switch]$SkipBuild, [switch]$Yes)
 $cfg = Get-BpsimConfig
 $repo = Split-Path $PSScriptRoot -Parent
 if (-not $Tag) { $Tag = (git -C $repo rev-parse --short HEAD).Trim() }
+# Commit für die Versionsanzeige im Portal („1.1+<commit>“) – im Container fehlt .git, daher als Build-Argument
+$commit = (git -C $repo rev-parse --short HEAD).Trim()
 if (-not $cfg.ENV_FILE -or -not $cfg.SECRETS_DIR) { throw "ENV_FILE und SECRETS_DIR in der Konfiguration angeben (Pfade außerhalb des Repos)." }
 if (-not $cfg.ACME_EMAIL) { throw "ACME_EMAIL fehlt (Kontakt für Let's Encrypt)." }
 
@@ -105,7 +107,7 @@ if (-not (Test-Path $dpPfx)) {
 if (-not $SkipBuild) {
     foreach ($i in $images.GetEnumerator()) {
         Write-Host "Baue $($i.Key) ..."
-        docker build --platform linux/amd64 -q -f (Join-Path $repo $i.Value) -t $i.Key $repo | Out-Null
+        docker build --platform linux/amd64 -q -f (Join-Path $repo $i.Value) --build-arg "SOURCE_REVISION=$commit" -t $i.Key $repo | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "Build fehlgeschlagen: $($i.Key)" }
     }
     Write-Host "Baue $simImage aus $simSource ..."

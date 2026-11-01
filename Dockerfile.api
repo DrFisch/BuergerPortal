@@ -20,8 +20,10 @@ COPY BuergerPortal.Domain/ BuergerPortal.Domain/
 COPY BuergerPortal.Infrastructure/ BuergerPortal.Infrastructure/
 COPY BuergerPortal.Infrastructure.Email/ BuergerPortal.Infrastructure.Email/
 COPY BuergerPortal.Infrastructure.Postkorb/ BuergerPortal.Infrastructure.Postkorb/
+# Commit für die Versionsanzeige („1.1+<commit>“), von deploy.ps1 übergeben; ohne Angabe nur die Nummer
+ARG SOURCE_REVISION=
 RUN dotnet publish BuergerPortal.Api/BuergerPortal.Api.csproj -c Release -o /app/publish \
-    --no-restore /p:UseAppHost=false
+    --no-restore /p:UseAppHost=false /p:SourceRevisionId=$SOURCE_REVISION
 
 # ---------- Laufzeit ----------
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final

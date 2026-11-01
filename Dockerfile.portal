@@ -12,8 +12,10 @@ COPY BuergerPortal.BundId.Core/BuergerPortal.BundId.Core.csproj BuergerPortal.Bu
 RUN dotnet restore BuergerPortal.Web/BuergerPortal.Web.csproj
 COPY BuergerPortal.Web/ BuergerPortal.Web/
 COPY BuergerPortal.BundId.Core/ BuergerPortal.BundId.Core/
+# Commit für die Versionsanzeige („1.1+<commit>“), von deploy.ps1 übergeben; ohne Angabe nur die Nummer
+ARG SOURCE_REVISION=
 RUN dotnet publish BuergerPortal.Web/BuergerPortal.Web.csproj -c Release -o /app/publish \
-    --no-restore /p:UseAppHost=false
+    --no-restore /p:UseAppHost=false /p:SourceRevisionId=$SOURCE_REVISION
 
 # ---------- Laufzeit ----------
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
