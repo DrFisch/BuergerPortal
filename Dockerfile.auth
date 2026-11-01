@@ -5,6 +5,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 # Erst nur die Projektdateien: Die Restore-Schicht bleibt im Cache, solange sich keine Abhängigkeit ändert.
+# Directory.Build.props enthält die Versionsnummer für alle Projekte.
+COPY Directory.Build.props ./
 COPY AuthenticationServer/AuthenticationServer.csproj AuthenticationServer/
 COPY BuergerPortal.BundId/BuergerPortal.BundId.csproj BuergerPortal.BundId/
 COPY BuergerPortal.BundId.Core/BuergerPortal.BundId.Core.csproj BuergerPortal.BundId.Core/

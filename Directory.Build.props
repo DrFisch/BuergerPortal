@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Versionsnummer des BürgerPortals an einer Stelle für alle Projekte (Wunsch Lukas 2026-11-01). Das SDK schreibt
+       sie in jede Assembly; als AssemblyInformationalVersion mit angehängtem Commit („1.1+<commit>“, lokal aus Git,
+       im Container aus dem Build-Argument SOURCE_REVISION von deploy.ps1). Das Portal zeigt beides in der Fußzeile. -->
+  <PropertyGroup>
+    <Version>1.1</Version>
+  </PropertyGroup>
+
+</Project>
