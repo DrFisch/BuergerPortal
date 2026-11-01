@@ -60,7 +60,8 @@
 
     <footer class="text-center text-muted small py-3 border-top">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <span>© @DateTime.UtcNow.Year @T["FooterBrand"]</span>
+            @* Version aus Directory.Build.props mit Commit des Builds, z. B. „Version 1.1 (f44a706)“ *@
+            <span>© @DateTime.UtcNow.Year @T["FooterBrand"] · Version @BuergerPortal.Web.Services.AppVersion.Display</span>
             <div class="d-flex align-items-center gap-3">
                 @* d-inline-block py-1: Touch-Ziel mindestens 24 px hoch (WCAG 2.2, 2.5.8; Plan A8) *@
                 <a class="link-secondary link-underline-opacity-0 d-inline-block py-1" asp-controller="Home" asp-action="Impressum">@T["Imprint"]</a>
